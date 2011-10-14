@@ -48,8 +48,8 @@ public class BlobTests extends AndroidTestCase {
 			getWriter().createContainer(containerName, null, ContainerAccess.PRIVATE);
 			
 			ACLCollection aclCollection = new ACLCollection();
-			Date start = new Date(2012 - 1900, 1 - 1, 1);
-			Date expiry = new Date(2012 - 1900, 1 - 1, 2);
+			Date start = Util.localDateToGmtDate(new Date(2012 - 1900, 1 - 1, 1));
+			Date expiry = Util.localDateToGmtDate(new Date(2012 - 1900, 1 - 1, 2));
 			aclCollection.add(ACL.newACL(start, expiry, Permission.FULL));
 			BlobOperationResponse response = getWriter().setContainerACL(containerName, ContainerAccess.CONTAINER, aclCollection);
 			Assert.assertEquals(HttpStatusCode.OK, response.getHttpStatusCode());
@@ -262,7 +262,7 @@ public class BlobTests extends AndroidTestCase {
 				Assert.assertEquals(HttpStatusCode.PreconditionFailed, blob.getHttpStatusCode());
 				
 				getWriter().deleteBlob(null, blobName, null, null);
-			} else {
+			} else if (!isMockTest()){
 				String containerName = generateContainerName("testconditions");
 				getWriter().createContainer(containerName, null, ContainerAccess.PRIVATE);
 				
@@ -614,9 +614,18 @@ public class BlobTests extends AndroidTestCase {
 	public void testListBlobs() {
 		try
 		{
-			AzureBlobCollection collection = getReader().listAllBlobs("images");
+			String containerName = generateContainerName("images");
+			getWriter().createContainer(containerName, null, ContainerAccess.PRIVATE);
+			
+			String blobName = "greetings";
+			TextBlobData blobData = new TextBlobData("Hello, world.");
+			getWriter().putBlockBlob(containerName, blobName, null, null, blobData, null);
+		
+			AzureBlobCollection collection = getReader().listAllBlobs(containerName);
 			Assert.assertEquals(HttpStatusCode.OK, collection.getHttpStatusCode());
-			Assert.assertTrue(collection.getBlobs().size() > 0);
+			Assert.assertEquals(collection.getBlobs().size(), 1);
+
+			getWriter().deleteContainer(containerName, null);
 		}
 		catch (Exception e)
 		{
@@ -632,7 +641,6 @@ public class BlobTests extends AndroidTestCase {
 			
 			AzureContainerCollection collection = getReader().listAllContainers();
 			Assert.assertEquals(HttpStatusCode.OK, collection.getHttpStatusCode());
-			Assert.assertTrue(collection.getContainers().size() > 0);
 		}
 		catch (Exception e)
 		{

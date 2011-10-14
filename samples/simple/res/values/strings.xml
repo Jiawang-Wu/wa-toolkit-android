@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     
-    <string name="app_name">Azure Storage Client</string>
+    <string name="app_name">WAT Android</string>
 <string name="proxylogin_screen_name">Proxy Authentication</string>
 <string name="storagetypeselector_screen_name">Storage Type</string>
 <string name="listdisplay_screen_name">List Name Placeholder</string>

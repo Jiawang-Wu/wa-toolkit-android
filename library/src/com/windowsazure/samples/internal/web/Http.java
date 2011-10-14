@@ -91,15 +91,16 @@ public final class Http {
 	    if (hasContent)
 	    	bw.write(data);
 	    bw.flush();
-	    bw.close();
-	    osw.close();
 		
 	    //Logger.verbose("Http", "reading");
 		InputStreamReader isr = new InputStreamReader(socket.getInputStream());
 		BufferedReader br = new BufferedReader(isr, 8192);
 		HttpResult result = buildResult(method, br);
 		
-		br.close();
+	    bw.close();
+	    osw.close();
+
+	    br.close();
 		isr.close();
 		socket.close();
 		Logger.verbose("Http", "end");

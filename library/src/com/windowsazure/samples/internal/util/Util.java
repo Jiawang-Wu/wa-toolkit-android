@@ -13,6 +13,10 @@ public final class Util {
         return gmtFormatSdf.format(date);
 	}
 	
+	public static Date localDateToGmtDate(Date date) {
+		return new Date(TimeZone.getDefault().getOffset(date.getTime()) + date.getTime());
+	}
+
 	public static String dateToXmlStringWithoutTZ(Date date) {
 		xmlFormatSdf.setTimeZone(TimeZone.getTimeZone(GMT_TZ));
         return xmlFormatSdf.format(date);
@@ -64,7 +68,8 @@ public final class Util {
 		int hour = Integer.parseInt(text.substring(11, 13));
 		int minute = Integer.parseInt(text.substring(14, 16));
 		int second = Integer.parseInt(text.substring(17, 19));
-		return new Date(year - 1900, month - 1, day, hour, minute, second);
+		Date localDate = new Date(year - 1900, month - 1, day, hour, minute, second);
+		return Util.localDateToGmtDate(localDate);
 	}
 	
 	private Util() {};

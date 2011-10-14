@@ -12,6 +12,7 @@ import com.windowsazure.samples.PropertyCollection;
 import com.windowsazure.samples.authentication.AuthenticationToken;
 import com.windowsazure.samples.authentication.NotAuthenticatedException;
 import com.windowsazure.samples.internal.table.IfMatch;
+import com.windowsazure.samples.internal.util.Util;
 import com.windowsazure.samples.table.AzureTable;
 import com.windowsazure.samples.table.AzureTableCollection;
 import com.windowsazure.samples.table.AzureTableEntity;
@@ -154,7 +155,7 @@ public class TableTests extends AndroidTestCase {
 			representation = expression.getRepresentation();
 			Assert.assertEquals("IsActive%20eq%20true", representation);
 			
-			Date testDate = new Date(2008 - 1900, 6, 10, 0, 0, 0);
+			Date testDate = Util.localDateToGmtDate(new Date(2008 - 1900, 6, 10, 0, 0, 0));
 			expression = Filter.Equal("CustomerSince", testDate);
 			representation = expression.getRepresentation();
 			Assert.assertEquals("CustomerSince%20eq%20datetime'2008-07-10T00:00:00+0000'", representation);

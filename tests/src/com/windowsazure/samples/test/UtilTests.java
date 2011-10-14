@@ -3,7 +3,6 @@ package com.windowsazure.samples.test;
 import java.util.Collection;
 import java.util.Date;
 import java.util.EnumSet;
-
 import junit.framework.Assert;
 
 import android.test.AndroidTestCase;
@@ -68,7 +67,7 @@ public class UtilTests extends AndroidTestCase {
 		try
 		{
 			String expected = "Sun, 02 Jan 2011 03:04:05 GMT";
-			String actual = Util.dateToGmtString(new Date(2011 - 1900, 1 - 1, 2, 3, 4, 5));
+			String actual = Util.dateToGmtString(Util.localDateToGmtDate(new Date(2011 - 1900, 1 - 1, 2, 3, 4, 5)));
 			Assert.assertEquals(expected, actual);
 		}
 		catch (Exception e)
@@ -81,7 +80,7 @@ public class UtilTests extends AndroidTestCase {
 		try
 		{
 			String expected = "2011-01-02T03:04:05";
-			String actual = Util.dateToXmlStringWithoutTZ(new Date(2011 - 1900, 1 - 1, 2, 3, 4, 5));
+			String actual = Util.dateToXmlStringWithoutTZ(Util.localDateToGmtDate(new Date(2011 - 1900, 1 - 1, 2, 3, 4, 5)));
 			Assert.assertEquals(expected, actual);
 		}
 		catch (Exception e)
@@ -94,7 +93,7 @@ public class UtilTests extends AndroidTestCase {
 		try
 		{
 			String expected = "2011-01-02T03:04:05+0000";
-			String actual = Util.dateToXmlStringWithTZ(new Date(2011 - 1900, 1 - 1, 2, 3, 4, 5));
+			String actual = Util.dateToXmlStringWithTZ(Util.localDateToGmtDate(new Date(2011 - 1900, 1 - 1, 2, 3, 4, 5)));
 			Assert.assertEquals(expected, actual);
 		}
 		catch (Exception e)

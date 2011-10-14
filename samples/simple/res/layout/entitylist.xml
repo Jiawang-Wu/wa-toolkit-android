@@ -1,9 +1,7 @@
 <LinearLayout android:id="@+id/EntityListLayout" android:layout_width="fill_parent" android:layout_height="fill_parent" android:orientation="vertical" xmlns:android="http://schemas.android.com/apk/res/android">
-
-<LinearLayout android:layout_height="wrap_content" android:gravity="center" android:id="@+id/AddButtonLayout" android:layout_width="fill_parent">
-<Button android:layout_height="wrap_content" android:text="Add" android:id="@+id/AddItemButton" android:layout_width="wrap_content"></Button>
+<ExpandableListView android:id="@+id/EntityListView" android:layout_height="wrap_content" android:layout_width="fill_parent"></ExpandableListView>
+<LinearLayout android:gravity="center" android:layout_height="wrap_content" android:layout_width="fill_parent" android:id="@+id/AddButtonLayout">
+    <Button android:layout_height="wrap_content" android:layout_width="150dp" android:text="Add" android:id="@+id/AddItemButton"></Button>
 </LinearLayout>
-
-<ExpandableListView android:id="@+id/EntityListView" android:layout_width="fill_parent" android:layout_height="wrap_content"></ExpandableListView>
 
 </LinearLayout>

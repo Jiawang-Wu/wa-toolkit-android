@@ -37,10 +37,5 @@
 			<type>2</type>
 			<locationURI>_android_AzureLib_64012d96/src</locationURI>
 		</link>
-		<link>
-			<name>library_src</name>
-			<type>2</type>
-			<locationURI>_android_library_9e824bb/src</locationURI>
-		</link>
 	</linkedResources>
 </projectDescription>

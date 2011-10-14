@@ -1,10 +1,9 @@
 <LinearLayout android:id="@+id/ModifyItemLayout" android:layout_width="fill_parent" android:layout_height="fill_parent" android:orientation="vertical" xmlns:android="http://schemas.android.com/apk/res/android">
 
-<LinearLayout android:layout_height="wrap_content" android:gravity="center" android:id="@+id/UpdateDeleteButtonLayout" android:layout_width="fill_parent">
-<Button android:layout_height="wrap_content" android:text="Update" android:id="@+id/itemAddUpdateButton" android:layout_width="wrap_content"></Button>
-<Button android:layout_height="wrap_content" android:text="Delete" android:id="@+id/itemDeleteButton" android:layout_width="wrap_content"></Button>
-</LinearLayout>
-
 <ListView android:id="@+id/itemFieldListView" android:layout_width="fill_parent" android:layout_height="wrap_content"></ListView>
+<LinearLayout android:gravity="center" android:weightSum="1" android:layout_height="wrap_content" android:layout_width="fill_parent" android:id="@+id/UpdateDeleteButtonLayout">
+    <Button android:layout_weight="0.07" android:layout_height="50dp" android:layout_width="150dp" android:text="Update" android:id="@+id/itemAddUpdateButton"></Button>
+    <Button android:layout_weight="0.05" android:layout_height="50dp" android:layout_width="150dp" android:text="Delete" android:id="@+id/itemDeleteButton"></Button>
+</LinearLayout>
 
 </LinearLayout>

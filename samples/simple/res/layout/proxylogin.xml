@@ -1,13 +1,14 @@
-<LinearLayout android:id="@+id/LinearLayout01" android:layout_width="fill_parent" android:layout_height="fill_parent" android:orientation="vertical" xmlns:android="http://schemas.android.com/apk/res/android">
-<TextView android:text="Proxy URL:" android:id="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
-<EditText android:text="" android:id="@+id/proxyURLField" android:layout_width="fill_parent" android:layout_height="wrap_content"></EditText>
-<TextView android:text="Username:" android:id="@+id/TextView02" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
-<EditText android:text="" android:id="@+id/usernameField" android:layout_width="fill_parent" android:layout_height="wrap_content"></EditText>
-<TextView android:text="Password:" android:id="@+id/TextView03" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
-<EditText android:text="" android:id="@+id/passwordField" android:layout_width="fill_parent" android:layout_height="wrap_content"></EditText>
-
-<LinearLayout android:id="@+id/LinearLayout02" android:layout_width="fill_parent" android:layout_height="wrap_content" android:gravity="center">
-<Button android:text="Login" android:id="@+id/LoginButton" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
-</LinearLayout>
+<LinearLayout android:id="@+id/LinearLayout01" android:layout_width="fill_parent" android:layout_height="fill_parent" android:orientation="vertical" xmlns:android="http://schemas.android.com/apk/res/android" android:fadingEdge="horizontal|vertical">
+    <TextView android:layout_height="wrap_content" android:layout_width="wrap_content" android:textAppearance="?android:attr/textAppearanceLarge" android:id="@+id/textView1" android:textSize="60px" android:layout_marginLeft="10px" android:text="log in"></TextView>
+    <TextView android:layout_height="wrap_content" android:layout_width="wrap_content" android:textAppearance="?android:attr/textAppearanceMedium" android:id="@+id/textView2" android:text="Enter your credentials to log in into the application" android:layout_marginTop="15px" android:layout_marginLeft="10px"></TextView>
+<TextView android:id="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="10px" android:layout_marginTop="10px" android:text="WAZ Services Base URL:"></TextView>
+<EditText android:id="@+id/proxyURLField" android:layout_height="wrap_content" android:background="#BDBDBD" android:text="" android:layout_width="match_parent" android:layout_marginLeft="10px" android:layout_marginRight="10px" android:textColor="#000000" android:paddingLeft="10px"></EditText>
+<TextView android:text="Username:" android:id="@+id/TextView02" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="10px" android:layout_marginTop="10px"></TextView>
+<EditText android:id="@+id/usernameField" android:layout_width="fill_parent" android:layout_height="wrap_content" android:background="#BDBDBD" android:text="" android:layout_marginLeft="10px" android:layout_marginRight="10px" android:textColor="#000000" android:paddingLeft="10px"></EditText>
+<TextView android:text="Password:" android:id="@+id/TextView03" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="10px" android:layout_marginTop="10px"></TextView>
+<EditText android:id="@+id/passwordField" android:layout_width="fill_parent" android:layout_height="wrap_content" android:background="#BDBDBD" android:text="" android:layout_marginLeft="10px" android:layout_marginRight="10px" android:textColor="#000000" android:paddingLeft="10px" android:inputType="textPassword"></EditText>
+<RelativeLayout android:id="@+id/relativeLayout1" android:layout_height="wrap_content" android:layout_width="match_parent">
+    <Button android:text="log in" android:id="@+id/LoginButton" android:layout_height="wrap_content" android:layout_alignParentTop="true" android:layout_alignParentRight="true" android:layout_width="wrap_content" android:layout_marginRight="10px" android:layout_marginTop="10px"></Button>
+</RelativeLayout>
 
 </LinearLayout>
