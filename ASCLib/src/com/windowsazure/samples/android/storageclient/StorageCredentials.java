@@ -24,12 +24,12 @@ public abstract class StorageCredentials
     }
 
     public abstract String computeHmac256(String s)
-        throws NotImplementedException, InvalidKeyException;
+        throws InvalidKeyException, NotImplementedException;
 
     public abstract String computeHmac512(String s)
-        throws NotImplementedException, InvalidKeyException;
+        throws InvalidKeyException, NotImplementedException;
 
-    public abstract String getAccountName() throws NotImplementedException;
+    public abstract String getAccountName();
 
     public abstract void signRequest(HttpURLConnection httpurlconnection, long l)
         throws NotImplementedException, InvalidKeyException, StorageException;
@@ -49,4 +49,6 @@ public abstract class StorageCredentials
     protected abstract Boolean canCredentialsSignRequestLite() throws NotImplementedException;
 
     protected abstract Boolean doCredentialsNeedTransformUri() throws NotImplementedException;
+
+	public abstract String containerEndpointPostfix();
 }

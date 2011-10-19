@@ -5,9 +5,8 @@ import java.util.Date;
 public class RequestResult
 {
 
-    public RequestResult() throws NotImplementedException
+    public RequestResult()
     {
-    	throw new NotImplementedException();
     }
 
     public Exception exception;

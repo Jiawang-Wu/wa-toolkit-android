@@ -5,9 +5,8 @@ import java.util.Date;
 public final class BlobContainerProperties
 {
 
-    public BlobContainerProperties() throws NotImplementedException
+    public BlobContainerProperties()
     {
-    	throw new NotImplementedException();
     }
 
     public String eTag;

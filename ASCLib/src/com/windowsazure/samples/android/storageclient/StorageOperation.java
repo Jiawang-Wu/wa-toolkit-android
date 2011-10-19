@@ -4,21 +4,23 @@ import java.net.HttpURLConnection;
 
 abstract class StorageOperation
 {
+    public abstract Object execute(Object firstArgument, Object secondArgument) throws Exception;
 
-    public abstract Object execute(Object obj, Object obj1)
-        throws NotImplementedException, Exception;
-
-    protected void initialize() throws NotImplementedException
+    protected void initialize()
     {
-    	throw new NotImplementedException();
+        result = new RequestResult();
     }
 
     protected StorageException materializeException(HttpURLConnection httpurlconnection) throws NotImplementedException
     {
-    	throw new NotImplementedException();
+        if(exceptionReference != null)
+            return exceptionReference;
+        else
+            return StorageException.translateException(httpurlconnection, null);
     }
 
     protected StorageException exceptionReference;
-    protected boolean nonExceptionedRetryableFailure;
     protected RequestResult result;
+    boolean nonExceptionedRetryableFailure;
+    HttpURLConnection httpurlconnection;
 }

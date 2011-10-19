@@ -8,18 +8,61 @@ import javax.xml.namespace.QName;
 public class SharedAccessPolicy
 {
 
-    public static EnumSet permissionsFromString(String s) throws NotImplementedException
+    public static EnumSet permissionsFromString(String s)
     {
-    	throw new NotImplementedException();
+        char ac[] = s.toCharArray();
+        EnumSet enumset = EnumSet.noneOf(SharedAccessPermissions.class);
+        char ac1[] = ac;
+        int i = ac1.length;
+        for(int j = 0; j < i; j++)
+        {
+            char c = ac1[j];
+            switch(c)
+            {
+            case 114: // 'r'
+                enumset.add(SharedAccessPermissions.READ);
+                break;
+
+            case 119: // 'w'
+                enumset.add(SharedAccessPermissions.WRITE);
+                break;
+
+            case 100: // 'd'
+                enumset.add(SharedAccessPermissions.DELETE);
+                break;
+
+            case 108: // 'l'
+                enumset.add(SharedAccessPermissions.LIST);
+                break;
+
+            default:
+                throw new IllegalArgumentException("value");
+            }
+        }
+
+        return enumset;
     }
 
-    public static String permissionsToString(EnumSet enumset) throws NotImplementedException
+    public static String permissionsToString(EnumSet enumset)
     {
-    	throw new NotImplementedException();
+        if(enumset == null)
+            return "";
+        StringBuilder stringbuilder = new StringBuilder();
+        if(enumset.contains(SharedAccessPermissions.READ))
+            stringbuilder.append("r");
+        if(enumset.contains(SharedAccessPermissions.WRITE))
+            stringbuilder.append("w");
+        if(enumset.contains(SharedAccessPermissions.DELETE))
+            stringbuilder.append("d");
+        if(enumset.contains(SharedAccessPermissions.LIST))
+            stringbuilder.append("l");
+        return stringbuilder.toString();
     }
 
-    public SharedAccessPolicy() throws NotImplementedException
+    protected SharedAccessPolicy()
+        throws NotImplementedException
     {
+        throw new NotImplementedException();
     }
 
     public EnumSet permissions;

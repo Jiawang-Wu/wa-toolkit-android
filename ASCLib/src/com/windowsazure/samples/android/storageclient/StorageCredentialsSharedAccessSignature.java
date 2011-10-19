@@ -5,71 +5,75 @@ import java.net.*;
 public final class StorageCredentialsSharedAccessSignature extends StorageCredentials
 {
 
-    public StorageCredentialsSharedAccessSignature(String s) throws NotImplementedException
-    {
-    	throw new NotImplementedException();
-    }
+ public StorageCredentialsSharedAccessSignature(String s)
+ {
+     m_Token = s;
+ }
 
-    protected Boolean canCredentialsComputeHmac() throws NotImplementedException
-    {
-    	throw new NotImplementedException();
-    }
+ protected Boolean canCredentialsComputeHmac()
+ {
+     return Boolean.valueOf(false);
+ }
 
-    protected Boolean canCredentialsSignRequest() throws NotImplementedException
-    {
-    	throw new NotImplementedException();
-    }
+ protected Boolean canCredentialsSignRequest()
+ {
+     return Boolean.valueOf(false);
+ }
 
-    protected Boolean canCredentialsSignRequestLite() throws NotImplementedException
-    {
-    	throw new NotImplementedException();
-    }
+ protected Boolean canCredentialsSignRequestLite()
+ {
+     return Boolean.valueOf(false);
+ }
 
-    public String computeHmac256(String s) throws NotImplementedException
-    {
-    	throw new NotImplementedException();
-    }
+ public String computeHmac256(String s)
+ {
+     return null;
+ }
 
-    public String computeHmac512(String s) throws NotImplementedException
-    {
-    	throw new NotImplementedException();
-    }
+ public String computeHmac512(String s)
+ {
+     return null;
+ }
 
-    protected Boolean doCredentialsNeedTransformUri() throws NotImplementedException
-    {
-    	throw new NotImplementedException();
-    }
+  protected Boolean doCredentialsNeedTransformUri()
+ {
+     return Boolean.valueOf(true);
+ }
 
-    public String getAccountName() throws NotImplementedException
-    {
-    	throw new NotImplementedException();
-    }
+ public String getAccountName()
+ {
+     return null;
+ }
 
-    public String getToken() throws NotImplementedException
-    {
-    	throw new NotImplementedException();
-    }
+ public String getToken()
+ {
+     return m_Token;
+ }
 
-    public void signRequest(HttpURLConnection httpurlconnection, long l) throws NotImplementedException
-    {
-    	throw new NotImplementedException();
-    }
+ public void signRequest(HttpURLConnection httpurlconnection, long l)
+ {
+ }
 
-    public void signRequestLite(HttpURLConnection httpurlconnection, long l) throws NotImplementedException
-    {
-    	throw new NotImplementedException();
-    }
+ public void signRequestLite(HttpURLConnection httpurlconnection, long l)
+ {
+ }
 
-    public String toString(Boolean boolean1)
-    {
-    	return null;
-    }
+ public String toString(Boolean boolean1)
+ {
+     return String.format("%s=%s", new Object[] {
+         "SharedAccessSignature", boolean1.booleanValue() ? m_Token : "[signature hidden]"
+     });
+ }
 
-    public URI transformUri(URI uri)
-        throws NotImplementedException, URISyntaxException, StorageException
-    {
-    	throw new NotImplementedException();
-    }
+public URI transformUri(URI uri)
+     throws URISyntaxException, StorageException
+ {
+     return PathUtility.addToQuery(uri, m_Token);
+ }
 
-    private String m_Token;
+@Override
+public String containerEndpointPostfix() {
+	return "";
+}
+ private String m_Token;
 }

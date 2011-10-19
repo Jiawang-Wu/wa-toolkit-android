@@ -88,7 +88,7 @@ public class WAZServiceAccount {
 		String loginXmlString = new LoginRequestDOMBuilder(this.m_WazServiceData.getUsername(),
 				this.m_WazServiceData.getPassword()).getXmlString(true);
 		String path = this.m_WazServiceBaseUri.getPath() + LOGIN_PATH;
-		XmlHttpResult result = XmlHttp.PostSSL(this.m_WazServiceBaseUri.getAuthority(), path, null, loginXmlString);
+		XmlHttpResult result = XmlHttp.PostSSL(this.m_WazServiceBaseUri.getHost(), path, null, loginXmlString);
 		if (result.getStatusCode() == com.windowsazure.samples.android.storageclient.internal.web.HttpStatusCode.OK)
 		{
 			LoginResponse response = new LoginResponseDOMAdapter(result.getXmlString()).build();

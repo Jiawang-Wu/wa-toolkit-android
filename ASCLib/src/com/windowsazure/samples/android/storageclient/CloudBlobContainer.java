@@ -6,6 +6,8 @@ import java.security.InvalidKeyException;
 import java.text.ParseException;
 import java.util.*;
 
+import com.windowsazure.samples.android.storageclient.internal.web.HttpStatusCode;
+
 public final class CloudBlobContainer
 {
 
@@ -15,27 +17,96 @@ public final class CloudBlobContainer
     	throw new NotImplementedException();
     }
 
-    private CloudBlobContainer(CloudBlobClient cloudblobclient) throws NotImplementedException, NotImplementedException
+    private CloudBlobContainer(CloudBlobClient cloudBlobClient)
     {
-    	throw new NotImplementedException();
+        m_Metadata = new HashMap();
+        m_Properties = new BlobContainerProperties();
+        m_ServiceClient = cloudBlobClient;
+        containerRequest = new ContainerWASServiceRequest();
     }
 
-    public CloudBlobContainer(String s, CloudBlobClient cloudblobclient)
-        throws NotImplementedException, URISyntaxException, StorageException
+    public CloudBlobContainer(String containerName, CloudBlobClient cloudBlobClient)
+        throws URISyntaxException, StorageException
     {
-    	throw new NotImplementedException();
+        this(cloudBlobClient);
+        URI uri = PathUtility.appendPathToUri(cloudBlobClient.getContainerEndpoint(), containerName);
+        m_ContainerOperationsUri = uri;
+        m_Name = PathUtility.getContainerNameFromUri(uri, cloudBlobClient.m_UsePathStyleUris);
+        parseQueryAndVerify(m_ContainerOperationsUri, cloudBlobClient, cloudBlobClient.m_UsePathStyleUris);
     }
 
-    public CloudBlobContainer(URI uri, CloudBlobClient cloudblobclient)
-        throws NotImplementedException, URISyntaxException, StorageException
+    private void parseQueryAndVerify(URI completeUri, CloudBlobClient cloudBlobClient, boolean usePathStyleUris)
+            throws URISyntaxException, StorageException
+        {
+            Utility.assertNotNull("completeUri", completeUri);
+            if(!completeUri.isAbsolute())
+            {
+                String s = String.format("Address '%s' is not an absolute address. Relative addresses are not permitted in here.", new Object[] {
+                    completeUri.toString()
+                });
+                throw new IllegalArgumentException(s);
+            }
+            m_ContainerOperationsUri = PathUtility.stripURIQueryAndFragment(completeUri);
+            HashMap hashmap = PathUtility.parseQueryString(completeUri.getQuery());
+            StorageCredentialsSharedAccessSignature storagecredentialssharedaccesssignature = SharedAccessSignatureHelper.parseQuery(hashmap);
+            if(storagecredentialssharedaccesssignature == null)
+                return;
+            Boolean boolean1 = Boolean.valueOf(cloudBlobClient != null ? Utility.areCredentialsEqual(storagecredentialssharedaccesssignature, cloudBlobClient.getCredentials()) : false);
+            if(cloudBlobClient == null || !boolean1.booleanValue())
+                m_ServiceClient = new CloudBlobClient(new URI(PathUtility.getServiceClientBaseAddress(m_ContainerOperationsUri, usePathStyleUris)), storagecredentialssharedaccesssignature);
+            if(cloudBlobClient != null && !boolean1.booleanValue())
+            {
+                m_ServiceClient.setPageBlobStreamWriteSizeInBytes(cloudBlobClient.getPageBlobStreamWriteSizeInBytes());
+                m_ServiceClient.setSingleBlobPutThresholdInBytes(cloudBlobClient.getSingleBlobPutThresholdInBytes());
+                m_ServiceClient.setStreamMinimumReadSizeInBytes(cloudBlobClient.getStreamMinimumReadSizeInBytes());
+                m_ServiceClient.setWriteBlockSizeInBytes(cloudBlobClient.getWriteBlockSizeInBytes());
+                m_ServiceClient.setConcurrentRequestCount(cloudBlobClient.getConcurrentRequestCount());
+                m_ServiceClient.setDirectoryDelimiter(cloudBlobClient.getDirectoryDelimiter());
+                m_ServiceClient.setTimeoutInMs(cloudBlobClient.getTimeoutInMs());
+            }
+        }
+
+    public CloudBlobContainer(URI uri, CloudBlobClient cloudBlobClient)
+        throws URISyntaxException, StorageException , NotImplementedException
     {
-    	throw new NotImplementedException();
+        this(cloudBlobClient);
+        m_ContainerOperationsUri = uri;
+        m_Name = PathUtility.getContainerNameFromUri(uri, cloudBlobClient.m_UsePathStyleUris);
+        parseQueryAndVerify(m_ContainerOperationsUri, cloudBlobClient, cloudBlobClient.m_UsePathStyleUris);
     }
 
-    public void create()
-        throws NotImplementedException, StorageException
+    public void create() throws StorageException, NotImplementedException
     {
-    	throw new NotImplementedException();
+        StorageOperation storageoperation = new StorageOperation() {
+            public Void execute(CloudBlobClient cloudBlobClient, CloudBlobContainer cloudBlobContainer) throws Exception
+            {
+                httpurlconnection = containerRequest.create(cloudBlobContainer.m_ContainerOperationsUri, cloudBlobClient.getTimeoutInMs());
+                containerRequest.addMetadata(httpurlconnection, cloudBlobContainer.m_Metadata);
+                cloudBlobClient.getCredentials().signRequest(httpurlconnection, 0L);
+                result = ExecutionEngine.processRequest(httpurlconnection);
+
+                if (result.statusCode != HttpStatusCode.Created.ordinal())
+                {
+                    return null;
+                } 
+                else
+                {
+                    BlobContainerAttributes blobcontainerattributes = ContainerResponse.getAttributes(httpurlconnection,
+                    		cloudBlobClient.m_UsePathStyleUris);
+                    cloudBlobContainer.setMetadata(blobcontainerattributes.metadata);
+                    cloudBlobContainer.m_Properties = blobcontainerattributes.properties;
+                    cloudBlobContainer.m_Name = blobcontainerattributes.name;
+                    return null;
+                }
+            }
+
+            public Object execute(Object cloudBlobClient, Object cloudBlobContainer) throws Exception
+            {
+                return execute((CloudBlobClient)cloudBlobClient, (CloudBlobContainer)cloudBlobContainer);
+            }
+        };
+
+        ExecutionEngine.execute(m_ServiceClient, this, storageoperation);
     }
 
     public Boolean createIfNotExist()
@@ -153,7 +224,7 @@ public final class CloudBlobContainer
     	throw new NotImplementedException();
     }
 
-    public URI getUri() throws NotImplementedException, NotImplementedException
+    public URI getUri() throws NotImplementedException
     {
     	throw new NotImplementedException();
     }
@@ -184,12 +255,6 @@ public final class CloudBlobContainer
     }
 
     public Iterable listContainers(String s, ContainerListingDetails containerlistingdetails) throws NotImplementedException, NotImplementedException
-    {
-    	throw new NotImplementedException();
-    }
-
-    private void parseQueryAndVerify(URI uri, CloudBlobClient cloudblobclient, boolean flag)
-        throws NotImplementedException, URISyntaxException, StorageException
     {
     	throw new NotImplementedException();
     }
@@ -229,6 +294,7 @@ public final class CloudBlobContainer
     protected HashMap m_Metadata;
     BlobContainerProperties m_Properties;
     String m_Name;
-    URI m_Uri;
+    URI m_ContainerOperationsUri;
     private CloudBlobClient m_ServiceClient;
+    AbstractContainerRequest containerRequest;
 }

@@ -6,9 +6,8 @@ import java.util.HashMap;
 final class BlobContainerAttributes
 {
 
-    protected BlobContainerAttributes() throws NotImplementedException
+    protected BlobContainerAttributes()
     {
-    	throw new NotImplementedException();
     }
 
     protected HashMap metadata;

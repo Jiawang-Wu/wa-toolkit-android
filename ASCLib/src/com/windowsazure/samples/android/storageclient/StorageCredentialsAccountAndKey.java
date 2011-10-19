@@ -49,9 +49,9 @@ public final class StorageCredentialsAccountAndKey extends StorageCredentials
     	throw new NotImplementedException();
     }
 
-    public String getAccountName() throws NotImplementedException
+    public String getAccountName()
     {
-    	throw new NotImplementedException();
+        return m_Credentials.getAccountName();
     }
 
     protected String getBase64EncodedKey() throws NotImplementedException
@@ -92,4 +92,9 @@ public final class StorageCredentialsAccountAndKey extends StorageCredentials
     }
 
     private Credentials m_Credentials;
+
+	@Override
+	public String containerEndpointPostfix() {
+		return "";
+	}
 }

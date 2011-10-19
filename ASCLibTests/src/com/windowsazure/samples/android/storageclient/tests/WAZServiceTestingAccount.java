@@ -7,7 +7,8 @@ import com.windowsazure.samples.android.storageclient.wazservice.WAZServiceAccou
 import com.windowsazure.samples.android.storageclient.wazservice.WAZServiceUsernameAndPassword;
 
 public class WAZServiceTestingAccount {
-	public static final String PROXY_HOST_STRING = "https://wazmobiletoolkit.cloudapp.net";
+	//public static final String PROXY_HOST_STRING = "https://wazmobiletoolkit.cloudapp.net";
+	public static final String PROXY_HOST_STRING = "http://192.168.129.28:10080";
 	public static final String PROXY_PASSWORD = "s1m0n1";
 	public static final String PROXY_USERNAME = "sguest";
 

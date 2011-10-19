@@ -32,8 +32,7 @@ public class WAZServiceAccountCredentials extends StorageCredentials {
 	}
 
 	@Override
-	public String getAccountName() throws NotImplementedException {
-		// TODO Auto-generated method stub
+	public String getAccountName() {
 		return null;
 	}
 
@@ -41,8 +40,7 @@ public class WAZServiceAccountCredentials extends StorageCredentials {
 	public void signRequest(HttpURLConnection httpurlconnection, long l)
 			throws NotImplementedException, InvalidKeyException,
 			StorageException {
-		// TODO Auto-generated method stub
-
+        httpurlconnection.setRequestProperty("AuthToken", m_AuthorizationToken);
 	}
 
 	@Override
@@ -94,4 +92,8 @@ public class WAZServiceAccountCredentials extends StorageCredentials {
 		return null;
 	}
 
+	@Override
+	public String containerEndpointPostfix() {
+		return "/SharedAccessSignatureService/container/";
+	}
 }

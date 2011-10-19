@@ -32,6 +32,11 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>Android Storage Client Library_src</name>
+			<type>2</type>
+			<locationURI>_android_Android_Storage_Client_Library_f355dabc/src</locationURI>
+		</link>
+		<link>
 			<name>AzureLib_src</name>
 			<type>2</type>
 			<locationURI>_android_AzureLib_64012d96/src</locationURI>

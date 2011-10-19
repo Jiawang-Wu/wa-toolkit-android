@@ -11,7 +11,7 @@ public final class CloudBlobClient
     	throw new NotImplementedException();
     }
 
-    public CloudBlobClient(URI endpointUri, StorageCredentials storageCredentials) throws NotImplementedException, NotImplementedException
+    public CloudBlobClient(URI endpointUri, StorageCredentials storageCredentials)
     {
         Utility.assertNotNull("baseUri", endpointUri);
         Utility.assertNotNull("storagecredentials", storageCredentials);
@@ -47,9 +47,9 @@ public final class CloudBlobClient
     	throw new NotImplementedException();
     }
 
-    public int getConcurrentRequestCount() throws NotImplementedException, NotImplementedException
+    public int getConcurrentRequestCount()
     {
-    	throw new NotImplementedException();
+        return m_ConcurrentRequestCount;
     }
 
     public CloudBlobContainer getContainerReference(String s)
@@ -58,14 +58,14 @@ public final class CloudBlobClient
     	throw new NotImplementedException();
     }
 
-    public StorageCredentials getCredentials() throws NotImplementedException, NotImplementedException
+    public StorageCredentials getCredentials()
     {
-    	throw new NotImplementedException();
+        return m_Credentials;
     }
 
-    public String getDirectoryDelimiter() throws NotImplementedException, NotImplementedException
+    public String getDirectoryDelimiter()
     {
-    	throw new NotImplementedException();
+    	return m_DirectoryDelimiter;
     }
 
     public CloudBlobDirectory getDirectoryReference(String s)
@@ -74,11 +74,16 @@ public final class CloudBlobClient
     	throw new NotImplementedException();
     }
 
-    public URI getEndpoint() throws NotImplementedException, NotImplementedException
+    public URI getEndpoint()
     {
-    	throw new NotImplementedException();
+        return m_Endpoint;
     }
 
+    public URI getContainerEndpoint() throws URISyntaxException
+    {
+    	return PathUtility.appendPathToUri(this.getEndpoint(), this.getCredentials().containerEndpointPostfix());
+    }
+    
     public CloudPageBlob getPageBlobReference(String s)
         throws NotImplementedException, URISyntaxException, StorageException
     {
@@ -91,29 +96,29 @@ public final class CloudBlobClient
     	throw new NotImplementedException();
     }
 
-    public int getPageBlobStreamWriteSizeInBytes() throws NotImplementedException, NotImplementedException
+    public int getPageBlobStreamWriteSizeInBytes()
     {
-    	throw new NotImplementedException();
+        return m_PageBlobStreamWriteSizeInBytes;
     }
 
-    public int getSingleBlobPutThresholdInBytes() throws NotImplementedException, NotImplementedException
+    public int getSingleBlobPutThresholdInBytes()
     {
-    	throw new NotImplementedException();
+        return m_SingleBlobPutThresholdInBytes;
     }
 
-    public int getStreamMinimumReadSizeInBytes() throws NotImplementedException, NotImplementedException
+    public int getStreamMinimumReadSizeInBytes()
     {
-    	throw new NotImplementedException();
+        return m_StreamMinimumReadSizeInBytes;
     }
 
-    public int getTimeoutInMs() throws NotImplementedException, NotImplementedException
+    public int getTimeoutInMs()
     {
-    	throw new NotImplementedException();
+        return m_TimeoutInMs;
     }
 
-    public int getWriteBlockSizeInBytes() throws NotImplementedException, NotImplementedException
+    public int getWriteBlockSizeInBytes()
     {
-    	throw new NotImplementedException();
+        return m_WriteBlockSizeInBytes;
     }
 
     public Iterable listContainers() throws NotImplementedException, NotImplementedException
@@ -141,47 +146,74 @@ public final class CloudBlobClient
     	throw new NotImplementedException();
     }
 
-    public void setConcurrentRequestCount(int i) throws NotImplementedException, NotImplementedException
+    public void setConcurrentRequestCount(int i)
     {
-    	throw new NotImplementedException();
+        m_ConcurrentRequestCount = i;
     }
 
-    protected void setCredentials(StorageCredentials storagecredentials) throws NotImplementedException, NotImplementedException
+    protected void setCredentials(StorageCredentials storagecredentials)
     {
-    	throw new NotImplementedException();
+        m_Credentials = storagecredentials;
     }
 
-    public void setDirectoryDelimiter(String s) throws NotImplementedException, NotImplementedException
+    public void setDirectoryDelimiter(String s)
     {
-    	throw new NotImplementedException();
+        m_DirectoryDelimiter = s;
     }
 
-    public void setPageBlobStreamWriteSizeInBytes(int i) throws NotImplementedException, NotImplementedException
+    public void setPageBlobStreamWriteSizeInBytes(int i)
     {
-    	throw new NotImplementedException();
+        if(i > 0x400000 || i < 512 || i % 512 != 0)
+        {
+            throw new IllegalArgumentException("PageBlobStreamWriteSizeInBytes");
+        } else
+        {
+            m_PageBlobStreamWriteSizeInBytes = i;
+        }
     }
 
     public void setSingleBlobPutThresholdInBytes(int i)
-        throws NotImplementedException, IllegalArgumentException
-    {
-    	throw new NotImplementedException();
-    }
+            throws IllegalArgumentException
+        {
+            if(i > 0x4000000 || i < 0x100000)
+            {
+                throw new IllegalArgumentException("SingleBlobUploadThresholdInBytes");
+            } else
+            {
+                m_SingleBlobPutThresholdInBytes = i;
+                return;
+            }
+        }
 
-    public void setStreamMinimumReadSizeInBytes(int i) throws NotImplementedException, NotImplementedException
-    {
-    	throw new NotImplementedException();
-    }
+        public void setStreamMinimumReadSizeInBytes(int i)
+        {
+            if(i > 0x4000000 || i < 512)
+            {
+                throw new IllegalArgumentException("MinimumReadSize");
+            } else
+            {
+                m_StreamMinimumReadSizeInBytes = i;
+                return;
+            }
+        }
 
-    public void setTimeoutInMs(int i) throws NotImplementedException, NotImplementedException
-    {
-    	throw new NotImplementedException();
-    }
+        public void setTimeoutInMs(int i)
+        {
+            m_TimeoutInMs = i;
+        }
 
-    public void setWriteBlockSizeInBytes(int i)
-        throws NotImplementedException, IllegalArgumentException
-    {
-    	throw new NotImplementedException();
-    }
+        public void setWriteBlockSizeInBytes(int i)
+                throws IllegalArgumentException
+            {
+                if(i > 0x400000 || i < 0x100000)
+                {
+                    throw new IllegalArgumentException("WriteBlockSizeInBytes");
+                } else
+                {
+                    m_WriteBlockSizeInBytes = i;
+                    return;
+                }
+            }
 
     private URI m_Endpoint;
     private StorageCredentials m_Credentials;

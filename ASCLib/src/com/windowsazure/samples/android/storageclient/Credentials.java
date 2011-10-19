@@ -24,9 +24,9 @@ public final class Credentials
     	throw new NotImplementedException();
     }
 
-    public String getAccountName() throws NotImplementedException, NotImplementedException
+    public String getAccountName()
     {
-    	throw new NotImplementedException();
+        return m_AccountName;
     }
 
     public StorageKey getKey() throws NotImplementedException, NotImplementedException
