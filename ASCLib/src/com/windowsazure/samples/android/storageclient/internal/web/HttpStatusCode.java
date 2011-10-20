@@ -93,4 +93,8 @@ public enum HttpStatusCode {
 	}
 	
 	private int status;
+
+	public int getStatus() {
+		return status;
+	}
 }

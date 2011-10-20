@@ -7,6 +7,7 @@ import java.text.ParseException;
 import java.util.*;
 
 import com.windowsazure.samples.android.storageclient.internal.web.HttpStatusCode;
+import com.windowsazure.samples.android.storageclient.internal.xml.DOMAdapter;
 
 public final class CloudBlobContainer
 {
@@ -29,6 +30,7 @@ public final class CloudBlobContainer
         throws URISyntaxException, StorageException
     {
         this(cloudBlobClient);
+        Utility.assertNotNullOrEmpty("containerName", containerName);
         URI uri = PathUtility.appendPathToUri(cloudBlobClient.getContainerEndpoint(), containerName);
         m_ContainerOperationsUri = uri;
         m_Name = PathUtility.getContainerNameFromUri(uri, cloudBlobClient.m_UsePathStyleUris);
@@ -66,16 +68,7 @@ public final class CloudBlobContainer
             }
         }
 
-    public CloudBlobContainer(URI uri, CloudBlobClient cloudBlobClient)
-        throws URISyntaxException, StorageException , NotImplementedException
-    {
-        this(cloudBlobClient);
-        m_ContainerOperationsUri = uri;
-        m_Name = PathUtility.getContainerNameFromUri(uri, cloudBlobClient.m_UsePathStyleUris);
-        parseQueryAndVerify(m_ContainerOperationsUri, cloudBlobClient, cloudBlobClient.m_UsePathStyleUris);
-    }
-
-    public void create() throws StorageException, NotImplementedException
+    public void create() throws StorageException, NotImplementedException, UnsupportedEncodingException, IOException
     {
         StorageOperation storageoperation = new StorageOperation() {
             public Void execute(CloudBlobClient cloudBlobClient, CloudBlobContainer cloudBlobContainer) throws Exception
@@ -85,17 +78,20 @@ public final class CloudBlobContainer
                 cloudBlobClient.getCredentials().signRequest(httpurlconnection, 0L);
                 result = ExecutionEngine.processRequest(httpurlconnection);
 
-                if (result.statusCode != HttpStatusCode.Created.ordinal())
+                if (result.statusCode != HttpStatusCode.OK.getStatus())
                 {
-                    return null;
+                    throw new StorageInnerException("Couldn't create a blob container");
                 } 
                 else
                 {
-                    BlobContainerAttributes blobcontainerattributes = ContainerResponse.getAttributes(httpurlconnection,
+                	if (containerRequest.isUsingWasServiceDirectly())
+                	{
+                		BlobContainerAttributes blobcontainerattributes = ContainerResponse.getAttributes(httpurlconnection,
                     		cloudBlobClient.m_UsePathStyleUris);
-                    cloudBlobContainer.setMetadata(blobcontainerattributes.metadata);
-                    cloudBlobContainer.m_Properties = blobcontainerattributes.properties;
-                    cloudBlobContainer.m_Name = blobcontainerattributes.name;
+	                    cloudBlobContainer.setMetadata(blobcontainerattributes.metadata);
+	                    cloudBlobContainer.m_Properties = blobcontainerattributes.properties;
+	                    cloudBlobContainer.m_Name = blobcontainerattributes.name;
+                	}
                     return null;
                 }
             }
@@ -116,15 +112,30 @@ public final class CloudBlobContainer
     }
 
     public void delete()
-        throws NotImplementedException, StorageException
+        throws NotImplementedException, StorageException, UnsupportedEncodingException, IOException, StorageInnerException
     {
-    	throw new NotImplementedException();
-    }
+        StorageOperation storageoperation = new StorageOperation() {
+            public Void execute(CloudBlobClient cloudblobclient, CloudBlobContainer cloudblobcontainer)
+                throws Exception
+            {
+                HttpURLConnection httpurlconnection = containerRequest.delete(cloudblobcontainer.m_ContainerOperationsUri, cloudblobclient.getTimeoutInMs());
+                cloudblobclient.getCredentials().signRequest(httpurlconnection, -1L);
+                result = ExecutionEngine.processRequest(httpurlconnection);
+                if (HttpStatusCode.fromInt(result.statusCode) != HttpStatusCode.OK)
+                {
+                	throw new StorageInnerException("Couldn't delete a blob container");
+                }
+                return null;
+            }
 
-    public Boolean deleteIfExists()
-        throws NotImplementedException, StorageException
-    {
-    	throw new NotImplementedException();
+            public Object execute(Object obj, Object obj1)
+                throws Exception
+            {
+                return execute((CloudBlobClient)obj, (CloudBlobContainer)obj1);
+            }
+        };
+        
+        ExecutionEngine.execute(m_ServiceClient, this, storageoperation);
     }
 
     public void downloadAttributes()
@@ -224,9 +235,54 @@ public final class CloudBlobContainer
     	throw new NotImplementedException();
     }
 
-    public URI getUri() throws NotImplementedException
+    public URI getUri() throws StorageException, NotImplementedException, UnsupportedEncodingException, IOException
     {
-    	throw new NotImplementedException();
+   	
+    	class GetSASResponseDOMAdapter extends DOMAdapter<URI> {
+    		
+    		public GetSASResponseDOMAdapter(String xmlString) {
+    			super(xmlString);
+    		}
+
+    		@Override
+    		public URI build() throws URISyntaxException
+    		{
+    			return new URI(getRootNode().getInnerText());
+    		}
+    	}
+    	
+    	if (containerRequest.isUsingWasServiceDirectly())
+    	{
+    		return this.m_ContainerOperationsUri;
+    	}
+    	
+        StorageOperation storageoperation = new StorageOperation()
+        {
+            public URI execute(CloudBlobClient cloudblobclient, CloudBlobContainer cloudblobcontainer)
+                throws Exception
+            {
+                HttpURLConnection httpurlconnection = containerRequest.getUri(cloudblobcontainer.m_ContainerOperationsUri,
+                		cloudblobclient.getTimeoutInMs());
+                cloudblobclient.getCredentials().signRequest(httpurlconnection, -1L);
+                result = ExecutionEngine.processRequest(httpurlconnection);
+                if(result.statusCode == HttpStatusCode.OK.getStatus())
+                {
+                    return new GetSASResponseDOMAdapter(Utility.getHttpResponseBody(httpurlconnection)).build();
+                }
+                else
+                {
+                    throw new StorageInnerException("Couldn't get a blob container uri");
+                }
+            }
+
+			@Override
+			public Object execute(Object firstArgument, Object secondArgument)
+					throws Exception {
+                return execute((CloudBlobClient)firstArgument, (CloudBlobContainer)secondArgument);
+			}
+        };
+        
+        return (URI)ExecutionEngine.execute(m_ServiceClient, this, storageoperation);
     }
 
     public Iterable listBlobs() throws NotImplementedException, NotImplementedException

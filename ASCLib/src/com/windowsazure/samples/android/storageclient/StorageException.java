@@ -1,20 +1,21 @@
 package com.windowsazure.samples.android.storageclient;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 
 public final class StorageException extends Exception
 {
 
-    public StorageException(String s, String s1, int i, StorageExtendedErrorInformation storageextendederrorinformation, Exception exception)
+    public StorageException(String s, String detailMessage, int i, StorageExtendedErrorInformation storageextendederrorinformation, Exception exception)
     {
-        super(s1, exception);
+        super(detailMessage, exception);
         errorCode = s;
         httpStatusCode = i;
         extendedErrorInformation = storageextendederrorinformation;
     }
 
-    protected static StorageExtendedErrorInformation getErrorDetailsFromRequest(HttpURLConnection httpurlconnection) throws NotImplementedException
+    protected static StorageExtendedErrorInformation getErrorDetailsFromRequest(HttpURLConnection httpurlconnection) throws NotImplementedException, UnsupportedEncodingException, IOException
     {
         if(httpurlconnection == null)
         return null;
@@ -22,18 +23,18 @@ public final class StorageException extends Exception
         return storageerrorresponse.getExtendedErrorInformation();
     }
 
-    public static StorageException translateException(HttpURLConnection httpurlconnection, Exception exception) throws NotImplementedException
+    public static StorageException translateException(HttpURLConnection httpUrlConnection, Exception exception) throws NotImplementedException, UnsupportedEncodingException, IOException
     {
-        if(httpurlconnection == null)
+        if(httpUrlConnection == null)
             return new StorageException("Client error", "A Client side exception occurred, please check the inner exception for details", 306, null, exception);
-        StorageExtendedErrorInformation storageextendederrorinformation = getErrorDetailsFromRequest(httpurlconnection);
+        StorageExtendedErrorInformation storageextendederrorinformation = getErrorDetailsFromRequest(httpUrlConnection);
         StorageException storageexception = null;
         String s = "";
         int i = 0;
         try
         {
-            i = httpurlconnection.getResponseCode();
-            s = httpurlconnection.getResponseMessage();
+            i = httpUrlConnection.getResponseCode();
+            s = httpUrlConnection.getResponseMessage();
         }
         catch(IOException ioexception) { }
         if(s == null)

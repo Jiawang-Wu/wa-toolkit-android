@@ -1,6 +1,14 @@
 package com.windowsazure.samples.android.storageclient;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URLDecoder;
@@ -192,4 +200,22 @@ public class Utility {
 	 * simpledateformat.setTimeZone(GMT_ZONE); return
 	 * simpledateformat.format(new Date()); }
 	 */
+
+	public static String getHttpResponseBody(HttpURLConnection httpurlconnection) throws UnsupportedEncodingException, IOException {
+		 Reader reader = new BufferedReader(new InputStreamReader(httpurlconnection.getInputStream(), "UTF-8"));
+		 char[] buffer = new char[httpurlconnection.getContentLength()];
+		 reader.read(buffer);
+		 return new String(buffer);
+	}
+	public static String readStringFromStream(InputStream inputStream) throws UnsupportedEncodingException, IOException {
+		Writer writer = new StringWriter();
+		 Reader reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+		 char[] buffer = new char[1024];
+		 int bytesRead;
+		 while ((bytesRead = reader.read(buffer)) != -1)
+		 {
+			 writer.write(buffer, 0, bytesRead);
+		 }
+		 return writer.toString();
+	}
 }

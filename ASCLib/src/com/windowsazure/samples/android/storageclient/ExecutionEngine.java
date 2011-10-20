@@ -4,6 +4,7 @@ package com.windowsazure.samples.android.storageclient;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.*;
 import java.security.InvalidKeyException;
 import java.util.ArrayList;
@@ -12,7 +13,7 @@ import java.util.concurrent.TimeoutException;
 
 final class ExecutionEngine
 {
-    protected static Object execute(Object obj, Object obj1, StorageOperation storageoperation) throws StorageException, NotImplementedException
+    protected static Object execute(Object obj, Object obj1, StorageOperation storageoperation) throws StorageException, NotImplementedException, UnsupportedEncodingException, IOException
     {
         	storageoperation.initialize();
 			try 

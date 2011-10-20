@@ -30,7 +30,30 @@ final class ContainerWASServiceRequest implements AbstractContainerRequest
             return create(uri, false, false);
         }
 
-    /*
+	@Override
+	public HttpURLConnection getUri(URI containerOperationsUri, int timeoutInMs) throws IOException, URISyntaxException, StorageException {
+        HttpURLConnection httpurlconnection = BaseRequest.createURLConnection(containerOperationsUri, 0, new UriQueryBuilder());
+        httpurlconnection.setFixedLengthStreamingMode(0);
+        httpurlconnection.setDoOutput(true);
+        httpurlconnection.setRequestMethod("GET");
+        return httpurlconnection;
+	}
+
+	@Override
+	public boolean isUsingWasServiceDirectly() {
+		return false;
+	}
+
+	@Override
+	public HttpURLConnection delete(URI containerOperationsUri,
+			int timeoutInMs) throws IOException, URISyntaxException,
+			IllegalArgumentException, StorageException
+	{
+		UriQueryBuilder uriquerybuilder = new UriQueryBuilder();
+	    return BaseRequest.delete(containerOperationsUri, 0, uriquerybuilder);
+	}
+
+	/*
     ContainerRequest()
     {
     }

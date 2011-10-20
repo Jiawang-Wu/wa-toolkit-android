@@ -64,6 +64,17 @@ final class BaseRequest
 
     private static String m_UserAgent;
 
+    public static HttpURLConnection delete(URI uri, int i, UriQueryBuilder uriquerybuilder)
+            throws IOException, URISyntaxException, StorageException
+        {
+            if(uriquerybuilder == null)
+                uriquerybuilder = new UriQueryBuilder();
+            HttpURLConnection httpurlconnection = createURLConnection(uri, i, uriquerybuilder);
+            httpurlconnection.setDoOutput(true);
+            httpurlconnection.setRequestMethod("DELETE");
+            return httpurlconnection;
+        }
+
     /*
     BaseRequest()
     {
@@ -86,17 +97,6 @@ final class BaseRequest
     {
         if(s != null)
             uriquerybuilder.add("snapshot", s);
-    }
-
-    public static HttpURLConnection delete(URI uri, int i, UriQueryBuilder uriquerybuilder)
-        throws IOException, URISyntaxException, StorageException
-    {
-        if(uriquerybuilder == null)
-            uriquerybuilder = new UriQueryBuilder();
-        HttpURLConnection httpurlconnection = createURLConnection(uri, i, uriquerybuilder);
-        httpurlconnection.setDoOutput(true);
-        httpurlconnection.setRequestMethod("DELETE");
-        return httpurlconnection;
     }
 
     public static HttpURLConnection getMetadata(URI uri, int i, UriQueryBuilder uriquerybuilder)

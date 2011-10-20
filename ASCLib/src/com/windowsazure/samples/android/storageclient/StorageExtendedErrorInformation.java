@@ -7,9 +7,9 @@ public final class StorageExtendedErrorInformation
     implements Serializable
 {
 
-    public StorageExtendedErrorInformation() throws NotImplementedException
+    public StorageExtendedErrorInformation()
     {
-    	throw new NotImplementedException();
+    	additionalDetails = new HashMap();
     }
 
     private static final long serialVersionUID = 0x15310acda3ffd515L;

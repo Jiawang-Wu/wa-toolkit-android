@@ -10,8 +10,15 @@ public interface AbstractContainerRequest {
 
 	void addMetadata(HttpURLConnection httpurlconnection, HashMap m_Metadata);
 
-	HttpURLConnection create(URI m_Uri, int timeoutInMs) 
+	HttpURLConnection create(URI containerOperationsUri, int timeoutInMs) 
 			throws IOException, URISyntaxException, 
 			IllegalArgumentException, StorageException;
+
+	HttpURLConnection getUri(URI containerOperationsUri, int timeoutInMs) throws IOException, URISyntaxException, StorageException;
+
+	boolean isUsingWasServiceDirectly();
+
+	HttpURLConnection delete(URI m_ContainerOperationsUri, int timeoutInMs) throws IOException, URISyntaxException, IllegalArgumentException, StorageException;
+	
 }
 
