@@ -8,8 +8,8 @@ import com.windowsazure.samples.android.storageclient.wazservice.WAZServiceAccou
 import com.windowsazure.samples.android.storageclient.wazservice.WAZServiceUsernameAndPassword;
 
 public class WAZServiceTestingAccount {
-	public static final String PROXY_HOST_STRING = "https://wazmobiletoolkit.cloudapp.net:443";
-	//public static final String PROXY_HOST_STRING = "http://wazmobiletoolkit.cloudapp.net:10080";
+	//public static final String PROXY_HOST_STRING = "https://wazmobiletoolkit.cloudapp.net:443";
+	public static final String PROXY_HOST_STRING = "http://wazmobiletoolkit.cloudapp.net:10080";
 	//public static final String PROXY_HOST_STRING = "http://192.168.129.28:10080";
 	//public static final String PROXY_HOST_STRING = "https://192.168.129.28";
 	public static final String PROXY_PASSWORD = "s1m0n1";
