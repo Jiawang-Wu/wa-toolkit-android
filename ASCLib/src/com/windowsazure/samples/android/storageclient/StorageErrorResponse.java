@@ -13,8 +13,15 @@ import com.windowsazure.samples.android.storageclient.internal.xml.DOMAdapter;
 final class StorageErrorResponse
 {
 
+    public StorageErrorResponse()
+    {
+    	m_IsParsed = false;
+    	m_ErrorInfo = new StorageExtendedErrorInformation();
+    	m_ErrorInfo.errorMessage = "The server response couldn't be parsed. Further details aren't available.";
+    }
     public StorageErrorResponse(InputStream errorStream) throws NotImplementedException, UnsupportedEncodingException, IOException
     {
+    	Utility.assertNotNull("errorStream", errorStream);
     	m_StreamRef = errorStream;
     	m_IsParsed = false;
     	m_ErrorInfo = new StorageExtendedErrorInformation();
@@ -44,7 +51,14 @@ final class StorageErrorResponse
     	}
 
     	String xmlString = Utility.readStringFromStream(m_StreamRef);
-    	m_ErrorInfo.errorMessage = new StorageErrorResponseDOMAdapter(xmlString).build();
+    	try
+    	{
+    		m_ErrorInfo.errorMessage = new StorageErrorResponseDOMAdapter(xmlString).build();
+    	}
+    	catch (Exception exception)
+    	{
+    		m_ErrorInfo.errorMessage = xmlString;
+    	}
     	m_IsParsed = true;
     }
 

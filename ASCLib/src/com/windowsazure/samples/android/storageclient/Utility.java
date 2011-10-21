@@ -208,6 +208,7 @@ public class Utility {
 		 return new String(buffer);
 	}
 	public static String readStringFromStream(InputStream inputStream) throws UnsupportedEncodingException, IOException {
+		Utility.assertNotNull("inputStream", inputStream);
 		Writer writer = new StringWriter();
 		 Reader reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
 		 char[] buffer = new char[1024];

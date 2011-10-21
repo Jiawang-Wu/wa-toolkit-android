@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 
 import junit.framework.Assert;
 
@@ -94,12 +95,6 @@ public class CloudBlobContainerUsingSASServiceTests extends TestCaseWithManagedC
 		}, StorageException.class);
 	}
 
-	public void testContainerUriIsWABlobUri() throws Exception {
-		CloudBlobContainer container = this.createContainer("testcontaineruriiswabloburi");
-		URI uri = container.getUri();
-		Assert.assertTrue(uri.getAuthority().endsWith(".blob.core.windows.net"));
-	}
-
 	public void testDeleteNonexistantContainerThrowsException() throws Exception {
 		final CloudBlobContainer container = new CloudBlobContainer("non-existant-container", cloudBlobClient);
 		this.assertThrows(new ExpectedExceptionRunnable() {
@@ -131,12 +126,38 @@ public class CloudBlobContainerUsingSASServiceTests extends TestCaseWithManagedC
 		}, StorageException.class);
 	}
 
+	public void testContainersDoesntShareUris() throws Exception {
+		CloudBlobContainer container = this.createContainer("testcontainersdoesntshareuris-1");
+		CloudBlobContainer otherContainer = this.createContainer("testcontainersdoesntshareuris-2");
+		URI firstUri = container.getUri();
+		URI secondUri = container.getUri();
+		Assert.assertTrue(firstUri != secondUri);
+	}
+
+	public void testContainerUriHasProperPattern() throws Exception {
+		CloudBlobContainer container = this.createContainer("testcontainerurihasproperpattern");
+		URI uri = container.getUri();
+		Assert.assertTrue(uri.getAuthority().endsWith(".blob.core.windows.net"));
+		Assert.assertEquals(uri.getPath(), "/testcontainerurihasproperpattern");
+		String query = uri.getQuery();
+		String[] arguments = query.split("&");
+		ArrayList<String> argumentNames = new ArrayList<String>();
+		for (String argument : arguments)
+		{
+			argumentNames.add(argument.split("=")[0]);
+		}
+		Assert.assertTrue(argumentNames.contains("se"));
+		Assert.assertTrue(argumentNames.contains("amp;sr"));
+		Assert.assertTrue(argumentNames.contains("amp;sp"));
+		Assert.assertTrue(argumentNames.contains("amp;sig"));
+	}
+
 	private CloudBlobClient cloudBlobClient;
 
 	private CloudBlobClient otherCloudBlobClient;
 	
 	private CloudBlobContainerUsingSASServiceTests thisTest;
-	
+
 	public void setUp()
 	{
 		thisTest = this;

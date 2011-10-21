@@ -1,6 +1,7 @@
 package com.windowsazure.samples.android.storageclient;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 
@@ -19,7 +20,16 @@ public final class StorageException extends Exception
     {
         if(httpurlconnection == null)
         return null;
-        StorageErrorResponse storageerrorresponse = new StorageErrorResponse(httpurlconnection.getErrorStream());
+        InputStream errorStream = httpurlconnection.getErrorStream();
+        StorageErrorResponse storageerrorresponse;
+        if (errorStream != null)
+        {
+            storageerrorresponse = new StorageErrorResponse(errorStream);
+        }
+        else
+        {
+            storageerrorresponse = new StorageErrorResponse();
+        }
         return storageerrorresponse.getExtendedErrorInformation();
     }
 
