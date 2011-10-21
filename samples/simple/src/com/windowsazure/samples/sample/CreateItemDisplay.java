@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.util.Date;
 
 import com.windowsazure.samples.sample.R;
+import com.windowsazure.samples.android.storageclient.CloudBlobContainer;
 import com.windowsazure.samples.blob.AzureBlobManager;
 import com.windowsazure.samples.blob.ContainerAccess;
 import com.windowsazure.samples.blob.data.BitmapBlobData;
@@ -89,7 +90,7 @@ public class CreateItemDisplay extends Activity
 	        if (listType == StorageTypeSelector.STORAGE_TYPE_BLOB)
 	        {
 	        	AzureBlobManager blobWriter = new AzureBlobManager(ProxySelector.credential);
-	        	blobWriter.createContainer(itemName.getText().toString(), null, ContainerAccess.PRIVATE);
+        		new CloudBlobContainer(itemName.getText().toString(), ProxySelector.blobClient).create();
 	        }
 	        if (listType == StorageTypeSelector.STORAGE_TYPE_QUEUE)
 	        {

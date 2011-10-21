@@ -1,5 +1,6 @@
 package com.windowsazure.samples.sample;
 
+import com.windowsazure.samples.android.storageclient.CloudBlobClient;
 import com.windowsazure.samples.android.storageclient.StorageCredentials;
 import com.windowsazure.samples.android.storageclient.wazservice.WAZServiceAccountCredentials;
 import com.windowsazure.samples.authentication.AuthenticationToken;
@@ -21,7 +22,7 @@ public class ProxySelector extends Activity
 	public static String ACCOUNT = "account";
 	public static String ACCESS_KEY = "accesskey";
 	public static AuthenticationToken credential;
-	public static StorageCredentials blobCredentials;
+	public static CloudBlobClient blobClient;
 
     @Override
     public void onCreate(Bundle savedInstanceState)

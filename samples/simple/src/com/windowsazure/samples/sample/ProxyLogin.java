@@ -40,9 +40,9 @@ public class ProxyLogin extends Activity
 			String username = usernameField.getText().toString();
 			String password = passwordField.getText().toString();
 			ProxySelector.credential = AuthenticationTokenFactory.buildProxyToken(host, username, password);
-			ProxySelector.blobCredentials = new WAZServiceAccount(
+			ProxySelector.blobClient = new WAZServiceAccount(
 					new WAZServiceUsernameAndPassword(username, password), 
-					new URI("https://" + host)).getCredentials();
+					new URI("https://" + host)).createCloudBlobClient();
 	    	Intent launchStorageTypeSelector = new Intent(this, StorageTypeSelector.class);
 	    	startActivity (launchStorageTypeSelector);
 		}

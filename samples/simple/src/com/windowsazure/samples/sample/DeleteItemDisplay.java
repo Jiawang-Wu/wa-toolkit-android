@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.windowsazure.samples.sample.R;
+import com.windowsazure.samples.android.storageclient.CloudBlobContainer;
+import com.windowsazure.samples.android.storageclient.CloudStorageAccount;
 import com.windowsazure.samples.blob.AzureBlob;
 import com.windowsazure.samples.blob.AzureBlobCollection;
 import com.windowsazure.samples.blob.AzureBlobManager;
@@ -148,7 +150,7 @@ public class DeleteItemDisplay extends Activity implements OnItemClickListener
 	        	AzureBlobManager blobWriter = new AzureBlobManager(ProxySelector.credential);
 	        	if (listSubtype == ModifyItemDisplay.MODIFY_ITEM_SUBTYPE_CONTAINER)
 	        	{
-		        	blobWriter.deleteContainer(items.get(selectedRow), null);
+	        		new CloudBlobContainer(items.get(selectedRow), ProxySelector.blobClient).delete();
 	        	}
 	        	else if (listSubtype == ModifyItemDisplay.MODIFY_ITEM_SUBTYPE_BLOB)
 	        	{
