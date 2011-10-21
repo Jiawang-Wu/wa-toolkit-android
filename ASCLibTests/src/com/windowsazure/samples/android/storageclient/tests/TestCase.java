@@ -1,6 +1,6 @@
 package com.windowsazure.samples.android.storageclient.tests;
 
-//import junit.framework.Assert;
+import junit.framework.Assert;
 import android.test.AndroidTestCase;
 
 public abstract class TestCase extends AndroidTestCase {
