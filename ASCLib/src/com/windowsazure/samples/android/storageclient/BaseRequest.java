@@ -57,7 +57,7 @@ final class BaseRequest
     {
         if(m_UserAgent == null)
             m_UserAgent = String.format("%s/%s", new Object[] {
-                "WA-Storage", Package.getPackage("com.windowsazure.storageclient").getImplementationVersion()
+                "WA-Storage", Package.getPackage("com.windowsazure.samples.android.storageclient").getImplementationVersion()
             });
         return m_UserAgent;
     }

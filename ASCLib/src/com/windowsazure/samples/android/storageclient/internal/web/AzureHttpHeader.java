@@ -28,7 +28,7 @@ public final class AzureHttpHeader extends HttpHeader {
 		
 		// 1. Retrieve all headers for the resource that begin with x-ms-
 		Vector<Pair<String, String>> xmsHeaders = new Vector<Pair<String, String>>();
-		for (Entry<String,String> item : this.entrySet()) {
+		for (java.util.Map.Entry<String, String> item : this.entrySet()) {
 			if (item.getKey().indexOf(CANONICALIZED_HEADER_PREFIX) == 0)
 				xmsHeaders.add(new Pair<String, String>(item.getKey(), item.getValue()));
 		}

@@ -33,9 +33,8 @@ final class ContainerWASServiceRequest implements AbstractContainerRequest
 	@Override
 	public HttpURLConnection getUri(URI containerOperationsUri, int timeoutInMs) throws IOException, URISyntaxException, StorageException {
         HttpURLConnection httpurlconnection = BaseRequest.createURLConnection(containerOperationsUri, 0, new UriQueryBuilder());
-        httpurlconnection.setFixedLengthStreamingMode(0);
-        httpurlconnection.setDoOutput(true);
         httpurlconnection.setRequestMethod("GET");
+        httpurlconnection.setDoOutput(false);
         return httpurlconnection;
 	}
 
