@@ -3,6 +3,8 @@ package com.windowsazure.samples.sample;
 import com.windowsazure.samples.sample.R;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -43,10 +45,29 @@ public class StorageTypeSelector extends Activity
 
     private void listBlobs()
 	{
-    	Intent launchBlobDisplay = new Intent(this, ListDisplay.class);
-    	launchBlobDisplay.putExtra("com.windowsazure.samples.sample.listdisplay.type", STORAGE_TYPE_BLOB);
-    	launchBlobDisplay.putExtra("com.windowsazure.samples.sample.listdisplay.title", "Blob Storage");
-    	startActivity (launchBlobDisplay);
+    	final StorageTypeSelector activity = this;
+    	AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle("Blob's Functionality");  
+		builder.setMessage("The Blob's functionality is still under development, and it's not stable yet.\nAre you sure you want to continue?");
+    	builder.setCancelable(true);
+		builder.setPositiveButton("Continue Anyway", new DialogInterface.OnClickListener() {  
+		    @Override  
+		    public void onClick(DialogInterface dialog, int which) {  
+		        dialog.dismiss();            
+		    	Intent launchBlobDisplay = new Intent(activity, ListDisplay.class);
+		    	launchBlobDisplay.putExtra("com.windowsazure.samples.sample.listdisplay.type", STORAGE_TYPE_BLOB);
+		    	launchBlobDisplay.putExtra("com.windowsazure.samples.sample.listdisplay.title", "Blob Storage");
+		    	startActivity (launchBlobDisplay);
+		    }  
+		});  
+		builder.setNegativeButton("Don't Continue", new DialogInterface.OnClickListener() {  
+		    @Override  
+		    public void onClick(DialogInterface dialog, int which) {  
+		        dialog.dismiss();                      
+		    }  
+		});  
+		AlertDialog ad = builder.create();  
+		ad.show();
 	}
 
     private void listQueues()
