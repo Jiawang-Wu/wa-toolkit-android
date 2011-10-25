@@ -9,7 +9,6 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
-import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -17,6 +16,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
+
+import org.apache.http.HttpResponse;
 
 public class Utility {
 	protected static boolean determinePathStyleFromUri(URI endpointUri,
@@ -128,7 +129,7 @@ public class Utility {
     					e);
     		}
         }
-    
+
     public static StorageException generateNewUnexpectedStorageException(
 			Exception exception) {
 		StorageException storageexception = new StorageException(
@@ -186,24 +187,24 @@ public class Utility {
 		}
 	}
 	/*
-	 * protected static String getStandardHeaderValue(HttpURLConnection
-	 * httpurlconnection, String s) { String s1 =
-	 * httpurlconnection.getRequestProperty(s); return s1 != null ? s1 : ""; }
-	 * 
+	 * protected static String getStandardHeaderValue(HttpBaseRequest
+	 * request, String s) { String s1 =
+	 * request.getRequestProperty(s); return s1 != null ? s1 : ""; }
+	 *
 	 * protected static String getGMTTime(Date date) { SimpleDateFormat
 	 * simpledateformat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z",
 	 * LOCALE_US); simpledateformat.setTimeZone(GMT_ZONE); return
 	 * simpledateformat.format(date); }
-	 * 
+	 *
 	 * protected static String getGMTTime() { SimpleDateFormat simpledateformat
 	 * = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", LOCALE_US);
 	 * simpledateformat.setTimeZone(GMT_ZONE); return
 	 * simpledateformat.format(new Date()); }
 	 */
 
-	public static String getHttpResponseBody(HttpURLConnection httpurlconnection) throws UnsupportedEncodingException, IOException {
-		 Reader reader = new BufferedReader(new InputStreamReader(httpurlconnection.getInputStream(), "UTF-8"));
-		 char[] buffer = new char[httpurlconnection.getContentLength()];
+	public static String getHttpResponseBody(HttpResponse response) throws UnsupportedEncodingException, IOException {
+		 Reader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
+		 char[] buffer = new char[(int) response.getEntity().getContentLength()];
 		 reader.read(buffer);
 		 return new String(buffer);
 	}

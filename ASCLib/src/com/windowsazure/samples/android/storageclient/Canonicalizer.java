@@ -3,7 +3,6 @@
 package com.windowsazure.samples.android.storageclient;
 
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.*;
 
@@ -14,9 +13,9 @@ abstract class Canonicalizer
     {
     }
 
-    private static void addCanonicalizedHeaders(HttpURLConnection httpurlconnection, StringBuilder stringbuilder)
+    private static void addCanonicalizedHeaders(HttpBaseRequest request, StringBuilder stringbuilder)
     {
-        Map map = httpurlconnection.getRequestProperties();
+        Map map = request.getRequestProperties();
         ArrayList arraylist = new ArrayList();
         Iterator iterator = map.keySet().iterator();
         do
@@ -121,44 +120,44 @@ abstract class Canonicalizer
         return arraylist;
     }
 
-    protected static String canonicalizeHttpRequest(URL url, String s, String s1, String s2, long l, String s3, HttpURLConnection httpurlconnection)
+    protected static String canonicalizeHttpRequest(URL url, String s, String s1, String s2, long l, String s3, HttpBaseRequest request)
         throws StorageException
     {
-        StringBuilder stringbuilder = new StringBuilder(httpurlconnection.getRequestMethod());
-        appendCanonicalizedElement(stringbuilder, Utility.getStandardHeaderValue(httpurlconnection, "Content-Encoding"));
-        appendCanonicalizedElement(stringbuilder, Utility.getStandardHeaderValue(httpurlconnection, "Content-Language"));
+        StringBuilder stringbuilder = new StringBuilder(request.getRequestMethod());
+        appendCanonicalizedElement(stringbuilder, Utility.getStandardHeaderValue(request, "Content-Encoding"));
+        appendCanonicalizedElement(stringbuilder, Utility.getStandardHeaderValue(request, "Content-Language"));
         appendCanonicalizedElement(stringbuilder, l != -1L ? String.valueOf(l) : "");
-        appendCanonicalizedElement(stringbuilder, Utility.getStandardHeaderValue(httpurlconnection, "Content-MD5"));
+        appendCanonicalizedElement(stringbuilder, Utility.getStandardHeaderValue(request, "Content-MD5"));
         appendCanonicalizedElement(stringbuilder, s2 == null ? "" : s2);
-        String s4 = Utility.getStandardHeaderValue(httpurlconnection, "x-ms-date");
+        String s4 = Utility.getStandardHeaderValue(request, "x-ms-date");
         appendCanonicalizedElement(stringbuilder, s4.equals("") ? s3 : "");
         String s5 = "";
-        if(httpurlconnection.getIfModifiedSince() > 0L)
-            s5 = Utility.getGMTTime(new Date(httpurlconnection.getIfModifiedSince()));
+        if(request.getIfModifiedSince() > 0L)
+            s5 = Utility.getGMTTime(new Date(request.getIfModifiedSince()));
         appendCanonicalizedElement(stringbuilder, s5);
-        appendCanonicalizedElement(stringbuilder, Utility.getStandardHeaderValue(httpurlconnection, "If-Match"));
-        appendCanonicalizedElement(stringbuilder, Utility.getStandardHeaderValue(httpurlconnection, "If-None-Match"));
-        appendCanonicalizedElement(stringbuilder, Utility.getStandardHeaderValue(httpurlconnection, "If-Unmodified-Since"));
-        appendCanonicalizedElement(stringbuilder, Utility.getStandardHeaderValue(httpurlconnection, "Range"));
-        addCanonicalizedHeaders(httpurlconnection, stringbuilder);
+        appendCanonicalizedElement(stringbuilder, Utility.getStandardHeaderValue(request, "If-Match"));
+        appendCanonicalizedElement(stringbuilder, Utility.getStandardHeaderValue(request, "If-None-Match"));
+        appendCanonicalizedElement(stringbuilder, Utility.getStandardHeaderValue(request, "If-Unmodified-Since"));
+        appendCanonicalizedElement(stringbuilder, Utility.getStandardHeaderValue(request, "Range"));
+        addCanonicalizedHeaders(request, stringbuilder);
         appendCanonicalizedElement(stringbuilder, getCanonicalizedResource(url, s));
         return stringbuilder.toString();
     }
 
-    protected static String canonicalizeHttpRequestLite(URL url, String s, String s1, String s2, long l, String s3, HttpURLConnection httpurlconnection)
+    protected static String canonicalizeHttpRequestLite(URL url, String s, String s1, String s2, long l, String s3, HttpBaseRequest request)
         throws StorageException
     {
-        StringBuilder stringbuilder = new StringBuilder(httpurlconnection.getRequestMethod());
-        String s4 = Utility.getStandardHeaderValue(httpurlconnection, "Content-MD5");
+        StringBuilder stringbuilder = new StringBuilder(request.getRequestMethod());
+        String s4 = Utility.getStandardHeaderValue(request, "Content-MD5");
         appendCanonicalizedElement(stringbuilder, s4);
         appendCanonicalizedElement(stringbuilder, s2);
-        String s5 = Utility.getStandardHeaderValue(httpurlconnection, "x-ms-date");
+        String s5 = Utility.getStandardHeaderValue(request, "x-ms-date");
         appendCanonicalizedElement(stringbuilder, s5.equals("") ? s3 : "");
-        addCanonicalizedHeaders(httpurlconnection, stringbuilder);
+        addCanonicalizedHeaders(request, stringbuilder);
         appendCanonicalizedElement(stringbuilder, getCanonicalizedResource(url, s));
         return stringbuilder.toString();
     }
 
-    protected abstract String canonicalize(HttpURLConnection httpurlconnection, String s, Long long1)
+    protected abstract String canonicalize(HttpBaseRequest request, String s, Long long1)
         throws StorageException;
 */}

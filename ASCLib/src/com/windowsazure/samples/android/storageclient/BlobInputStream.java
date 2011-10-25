@@ -1,7 +1,6 @@
 package com.windowsazure.samples.android.storageclient;
 
 import java.io.*;
-import java.net.HttpURLConnection;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;

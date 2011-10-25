@@ -1,9 +1,10 @@
 package com.windowsazure.samples.android.storageclient.wazservice;
 
-import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
+
+import org.apache.http.client.methods.HttpRequestBase;
 
 import com.windowsazure.samples.android.storageclient.NotImplementedException;
 import com.windowsazure.samples.android.storageclient.StorageCredentials;
@@ -37,14 +38,14 @@ public class WAZServiceAccountCredentials extends StorageCredentials {
 	}
 
 	@Override
-	public void signRequest(HttpURLConnection httpurlconnection, long l)
+	public void signRequest(HttpRequestBase request, long l)
 			throws NotImplementedException, InvalidKeyException,
 			StorageException {
-        httpurlconnection.setRequestProperty("AuthToken", m_AuthorizationToken);
+        request.addHeader("AuthToken", m_AuthorizationToken);
 	}
 
 	@Override
-	public void signRequestLite(HttpURLConnection httpurlconnection, long l)
+	public void signRequestLite(HttpRequestBase request, long l)
 			throws NotImplementedException, StorageException,
 			InvalidKeyException {
 		// TODO Auto-generated method stub

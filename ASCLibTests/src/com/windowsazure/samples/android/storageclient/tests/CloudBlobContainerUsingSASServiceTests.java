@@ -2,9 +2,22 @@ package com.windowsazure.samples.android.storageclient.tests;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.ParameterizedType;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
+
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.impl.client.DefaultHttpClient;
 
 import junit.framework.Assert;
 
@@ -14,11 +27,11 @@ import com.windowsazure.samples.android.storageclient.NotImplementedException;
 import com.windowsazure.samples.android.storageclient.StorageException;
 import com.windowsazure.samples.android.storageclient.StorageInnerException;
 
-public class CloudBlobContainerUsingSASServiceTests extends TestCaseWithManagedCleanUp {
+public abstract class CloudBlobContainerUsingSASServiceTests<T extends WAZServiceAccountProvider> extends TestCaseWithManagedResources {
 	
 	public void testCreateContainerWithInvalidNameThrowsException()
 			throws Exception {
-		this.assertThrows(new ExpectedExceptionRunnable() {
+		this.assertThrows(new RunnableWithExpectedException() {
 			@Override
 			public void run() throws Exception {
 				thisTest.createContainer("my_test_container");
@@ -28,7 +41,7 @@ public class CloudBlobContainerUsingSASServiceTests extends TestCaseWithManagedC
 
 	public void testCreateContainerWithEmptydNameThrowsException()
 			throws Exception {
-		this.assertThrows(new ExpectedExceptionRunnable() {
+		this.assertThrows(new RunnableWithExpectedException() {
 			@Override
 			public void run() throws Exception {
 				new CloudBlobContainer("", cloudBlobClient);
@@ -38,7 +51,7 @@ public class CloudBlobContainerUsingSASServiceTests extends TestCaseWithManagedC
 
 	public void testCreateContainerWithNullNameThrowsException()
 			throws Exception {
-		this.assertThrows(new ExpectedExceptionRunnable() {
+		this.assertThrows(new RunnableWithExpectedException() {
 			@Override
 			public void run() throws Exception {
 				new CloudBlobContainer((String) null, cloudBlobClient);
@@ -49,7 +62,7 @@ public class CloudBlobContainerUsingSASServiceTests extends TestCaseWithManagedC
 	public void testCreateContainerTwiceThrowsException()
 			throws Exception {
 		final CloudBlobContainer container = this.createContainer("testcreatecontainertwicethrowsexception");
-		this.assertThrows(new ExpectedExceptionRunnable() {
+		this.assertThrows(new RunnableWithExpectedException() {
 			@Override
 			public void run() throws Exception {
 				container.create();
@@ -62,7 +75,7 @@ public class CloudBlobContainerUsingSASServiceTests extends TestCaseWithManagedC
 		String containerName = "testcreatecontainercreatedbyotheraccountthrowsexception";
 		final CloudBlobContainer container = this.createContainer(containerName);
 		final CloudBlobContainer sameContainer = new CloudBlobContainer(containerName, otherCloudBlobClient);
-		this.assertThrows(new ExpectedExceptionRunnable() {
+		this.assertThrows(new RunnableWithExpectedException() {
 			@Override
 			public void run() throws Exception {
 				sameContainer.create();
@@ -75,7 +88,7 @@ public class CloudBlobContainerUsingSASServiceTests extends TestCaseWithManagedC
 		String containerName = "testdeletecontainerwithoutpermissionsthrowsexception";
 		final CloudBlobContainer container = this.createContainer(containerName);
 		final CloudBlobContainer sameContainer = new CloudBlobContainer(containerName, otherCloudBlobClient);
-		this.assertThrows(new ExpectedExceptionRunnable() {
+		this.assertThrows(new RunnableWithExpectedException() {
 			@Override
 			public void run() throws Exception {
 				sameContainer.delete();
@@ -87,7 +100,7 @@ public class CloudBlobContainerUsingSASServiceTests extends TestCaseWithManagedC
 	public void testCreateExistentContainerThrowsException()
 			throws Exception {
 		this.createContainer("testcreateexistentcontainerthrowsexception");
-		this.assertThrows(new ExpectedExceptionRunnable() {
+		this.assertThrows(new RunnableWithExpectedException() {
 			@Override
 			public void run() throws Exception {
 				thisTest.createContainer("testcreateexistentcontainerthrowsexception");
@@ -97,7 +110,7 @@ public class CloudBlobContainerUsingSASServiceTests extends TestCaseWithManagedC
 
 	public void testDeleteNonexistantContainerThrowsException() throws Exception {
 		final CloudBlobContainer container = new CloudBlobContainer("non-existant-container", cloudBlobClient);
-		this.assertThrows(new ExpectedExceptionRunnable() {
+		this.assertThrows(new RunnableWithExpectedException() {
 			@Override
 			public void run() throws Exception {
 				container.delete();
@@ -107,7 +120,7 @@ public class CloudBlobContainerUsingSASServiceTests extends TestCaseWithManagedC
 
 	public void testDeleteContainerWithInvalidNameThrowsException() throws Exception {
 		final CloudBlobContainer container = new CloudBlobContainer("invalid_container", cloudBlobClient);
-		this.assertThrows(new ExpectedExceptionRunnable() {
+		this.assertThrows(new RunnableWithExpectedException() {
 			@Override
 			public void run() throws Exception {
 				container.delete();
@@ -118,7 +131,7 @@ public class CloudBlobContainerUsingSASServiceTests extends TestCaseWithManagedC
 	public void testDeleteContainerTwiceThrowsException() throws Exception {
 		final CloudBlobContainer container = this.createContainer("testdeletecontainertwicethrowsexception");
 		container.delete();
-		this.assertThrows(new ExpectedExceptionRunnable() {
+		this.assertThrows(new RunnableWithExpectedException() {
 			@Override
 			public void run() throws Exception {
 				container.delete();
@@ -162,8 +175,9 @@ public class CloudBlobContainerUsingSASServiceTests extends TestCaseWithManagedC
 	{
 		thisTest = this;
 		try {
-			cloudBlobClient = WAZServiceTestingAccount.getCloudBlobClient();
-			otherCloudBlobClient = WAZServiceTestingAccount.getCloudBlobClientWithDifferentAccount();
+			T accountProvider = SuperClassTypeParameterCreator.create(this, 0);
+			cloudBlobClient = accountProvider.getCloudBlobClient();
+			otherCloudBlobClient = accountProvider.getCloudBlobClientWithDifferentAccount();
 		} catch (Exception e) {
 			e.printStackTrace();
 			Assert.fail();
@@ -173,9 +187,9 @@ public class CloudBlobContainerUsingSASServiceTests extends TestCaseWithManagedC
 	private CloudBlobContainer createContainer(String containerName) throws StorageException, NotImplementedException, URISyntaxException, UnsupportedEncodingException, IOException {
 		final CloudBlobContainer container = new CloudBlobContainer(containerName, cloudBlobClient);
 		container.create();
-		this.addCleanUp(new Cleaner()
+		this.addCleanUp(new ResourceCleaner()
 		{
-			public void run() throws NotImplementedException, StorageException, UnsupportedEncodingException, IOException
+			public void clean() throws NotImplementedException, StorageException, UnsupportedEncodingException, IOException
 			{
 				try
 				{

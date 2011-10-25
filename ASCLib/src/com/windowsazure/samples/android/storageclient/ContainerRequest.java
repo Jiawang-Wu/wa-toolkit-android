@@ -8,14 +8,19 @@ import java.net.*;
 import java.security.InvalidKeyException;
 import java.util.*;
 
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpRequestBase;
+
 final class ContainerRequest implements AbstractContainerRequest
 {
-    public void addMetadata(HttpURLConnection httpurlconnection, HashMap hashmap)
+    public void addMetadata(HttpRequestBase request, HashMap hashmap)
     {
-        BaseRequest.addMetadata(httpurlconnection, hashmap);
+        BaseRequest.addMetadata(request, hashmap);
     }
 
-    public HttpURLConnection create(URI uri, int i)
+    public HttpPut create(URI uri, int i)
             throws IOException, URISyntaxException, IllegalArgumentException, StorageException
         {
             UriQueryBuilder uriquerybuilder = getContainerUriQueryBuilder();
@@ -38,7 +43,7 @@ final class ContainerRequest implements AbstractContainerRequest
         }
 
 	@Override
-	public HttpURLConnection getUri(URI containerOperationsUri, int timeoutInMs) throws IOException, URISyntaxException, StorageException {
+	public HttpGet getUri(URI containerOperationsUri, int timeoutInMs) throws IOException, URISyntaxException, StorageException {
 		return null;
 	}
 
@@ -47,7 +52,7 @@ final class ContainerRequest implements AbstractContainerRequest
 		return true;
 	}
 
-    public HttpURLConnection delete(URI uri, int i)
+    public HttpDelete delete(URI uri, int i)
             throws IOException, URISyntaxException, IllegalArgumentException, StorageException
         {
             UriQueryBuilder uriquerybuilder = getContainerUriQueryBuilder();
@@ -59,36 +64,36 @@ final class ContainerRequest implements AbstractContainerRequest
     {
     }
 
-    public void addMetadata(HttpURLConnection httpurlconnection, String s, String s1)
+    public void addMetadata(HttpBaseRequest request, String s, String s1)
     {
-        BaseRequest.addMetadata(httpurlconnection, s, s1);
+        BaseRequest.addMetadata(request, s, s1);
     }
 
-    public HttpURLConnection getAcl(URI uri, int i)
+    public HttpBaseRequest getAcl(URI uri, int i)
         throws IOException, URISyntaxException, StorageException
     {
         UriQueryBuilder uriquerybuilder = getContainerUriQueryBuilder();
         uriquerybuilder.add("comp", "acl");
-        HttpURLConnection httpurlconnection = createURLConnection(uri, i, uriquerybuilder);
-        httpurlconnection.setRequestMethod("GET");
-        return httpurlconnection;
+        HttpBaseRequest request = createURLConnection(uri, i, uriquerybuilder);
+        request.setRequestMethod("GET");
+        return request;
     }
 
-    public HttpURLConnection getMetadata(URI uri, int i)
+    public HttpBaseRequest getMetadata(URI uri, int i)
         throws IllegalArgumentException, IOException, URISyntaxException, StorageException
     {
         UriQueryBuilder uriquerybuilder = getContainerUriQueryBuilder();
         return BaseRequest.getMetadata(uri, i, uriquerybuilder);
     }
 
-    public HttpURLConnection getProperties(URI uri, int i)
+    public HttpBaseRequest getProperties(URI uri, int i)
         throws IllegalArgumentException, IOException, URISyntaxException, StorageException
     {
         UriQueryBuilder uriquerybuilder = getContainerUriQueryBuilder();
         return BaseRequest.getProperties(uri, i, uriquerybuilder);
     }
 
-    public HttpURLConnection list(URI uri, int i, ListingContext listingcontext, ContainerListingDetails containerlistingdetails)
+    public HttpBaseRequest list(URI uri, int i, ListingContext listingcontext, ContainerListingDetails containerlistingdetails)
         throws URISyntaxException, IOException, IllegalArgumentException, StorageException
     {
         UriQueryBuilder uriquerybuilder = getContainerUriQueryBuilder();
@@ -104,41 +109,41 @@ final class ContainerRequest implements AbstractContainerRequest
         }
         if(containerlistingdetails == ContainerListingDetails.ALL || containerlistingdetails == ContainerListingDetails.METADATA)
             uriquerybuilder.add("include", "metadata");
-        HttpURLConnection httpurlconnection = createURLConnection(uri, i, uriquerybuilder);
-        httpurlconnection.setRequestMethod("GET");
-        return httpurlconnection;
+        HttpBaseRequest request = createURLConnection(uri, i, uriquerybuilder);
+        request.setRequestMethod("GET");
+        return request;
     }
 
-    public HttpURLConnection setAcl(URI uri, int i, BlobContainerPublicAccessType blobcontainerpublicaccesstype)
+    public HttpBaseRequest setAcl(URI uri, int i, BlobContainerPublicAccessType blobcontainerpublicaccesstype)
         throws IOException, URISyntaxException, StorageException
     {
         UriQueryBuilder uriquerybuilder = getContainerUriQueryBuilder();
         uriquerybuilder.add("comp", "acl");
-        HttpURLConnection httpurlconnection = createURLConnection(uri, i, uriquerybuilder);
-        httpurlconnection.setRequestMethod("PUT");
-        httpurlconnection.setDoOutput(true);
+        HttpBaseRequest request = createURLConnection(uri, i, uriquerybuilder);
+        request.setRequestMethod("PUT");
+        request.setDoOutput(true);
         if(blobcontainerpublicaccesstype != BlobContainerPublicAccessType.OFF)
-            httpurlconnection.setRequestProperty("x-ms-blob-public-access", blobcontainerpublicaccesstype.toString().toLowerCase());
-        return httpurlconnection;
+            request.setRequestProperty("x-ms-blob-public-access", blobcontainerpublicaccesstype.toString().toLowerCase());
+        return request;
     }
 
-    public HttpURLConnection setMetadata(URI uri, int i)
+    public HttpBaseRequest setMetadata(URI uri, int i)
         throws IllegalArgumentException, IOException, URISyntaxException, StorageException
     {
         UriQueryBuilder uriquerybuilder = getContainerUriQueryBuilder();
         return BaseRequest.setMetadata(uri, i, uriquerybuilder);
     }
 
-    public void signRequest(HttpURLConnection httpurlconnection, Credentials credentials, Long long1)
+    public void signRequest(HttpBaseRequest request, Credentials credentials, Long long1)
         throws InvalidKeyException, StorageException
     {
-        BaseRequest.signRequestForBlobAndQueue(httpurlconnection, credentials, long1);
+        BaseRequest.signRequestForBlobAndQueue(request, credentials, long1);
     }
 
-    public void signRequestForSharedKeyLite(HttpURLConnection httpurlconnection, Credentials credentials, Long long1)
+    public void signRequestForSharedKeyLite(HttpBaseRequest request, Credentials credentials, Long long1)
         throws InvalidKeyException, StorageException
     {
-        BaseRequest.signRequestForBlobAndQueueSharedKeyLite(httpurlconnection, credentials, long1);
+        BaseRequest.signRequestForBlobAndQueueSharedKeyLite(request, credentials, long1);
     }
 
     public void writeSharedAccessIdentifiersToStream(HashMap hashmap, StringWriter stringwriter)
@@ -182,7 +187,7 @@ final class ContainerRequest implements AbstractContainerRequest
         xmlstreamwriter.writeEndDocument();
     }
 
-    private HttpURLConnection createURLConnection(URI uri, int i, UriQueryBuilder uriquerybuilder)
+    private HttpBaseRequest createURLConnection(URI uri, int i, UriQueryBuilder uriquerybuilder)
         throws IOException, URISyntaxException, IllegalArgumentException, StorageException
     {
         return BaseRequest.createURLConnection(uri, i, uriquerybuilder);

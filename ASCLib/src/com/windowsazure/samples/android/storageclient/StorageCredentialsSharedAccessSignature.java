@@ -2,6 +2,8 @@ package com.windowsazure.samples.android.storageclient;
 
 import java.net.*;
 
+import org.apache.http.client.methods.HttpRequestBase;
+
 public final class StorageCredentialsSharedAccessSignature extends StorageCredentials
 {
 
@@ -50,11 +52,11 @@ public final class StorageCredentialsSharedAccessSignature extends StorageCreden
      return m_Token;
  }
 
- public void signRequest(HttpURLConnection httpurlconnection, long l)
+ public void signRequest(HttpRequestBase request, long l)
  {
  }
 
- public void signRequestLite(HttpURLConnection httpurlconnection, long l)
+ public void signRequestLite(HttpRequestBase request, long l)
  {
  }
 

@@ -4,6 +4,8 @@ import java.net.*;
 import java.security.InvalidKeyException;
 import java.util.HashMap;
 
+import org.apache.http.client.methods.HttpRequestBase;
+
 public abstract class StorageCredentials
 {
 
@@ -31,10 +33,10 @@ public abstract class StorageCredentials
 
     public abstract String getAccountName();
 
-    public abstract void signRequest(HttpURLConnection httpurlconnection, long l)
+    public abstract void signRequest(HttpRequestBase request, long l)
         throws NotImplementedException, InvalidKeyException, StorageException;
 
-    public abstract void signRequestLite(HttpURLConnection httpurlconnection, long l)
+    public abstract void signRequestLite(HttpRequestBase request, long l)
         throws NotImplementedException, StorageException, InvalidKeyException;
 
     public abstract String toString(Boolean boolean1);

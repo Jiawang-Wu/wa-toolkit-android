@@ -2,6 +2,8 @@ package com.windowsazure.samples.android.storageclient;
 
 import java.util.Date;
 
+import org.apache.http.HttpResponse;
+
 public class RequestResult
 {
 
@@ -19,4 +21,5 @@ public class RequestResult
     public String statusMessage;
     public Date stopDate;
     protected volatile int m_CurrentOperationByteCount;
+	public HttpResponse httpResponse;
 }

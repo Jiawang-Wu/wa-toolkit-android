@@ -6,6 +6,10 @@ import java.security.InvalidKeyException;
 import java.text.ParseException;
 import java.util.*;
 
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPut;
+
 import com.windowsazure.samples.android.storageclient.internal.web.HttpStatusCode;
 import com.windowsazure.samples.android.storageclient.internal.xml.DOMAdapter;
 
@@ -73,10 +77,10 @@ public final class CloudBlobContainer
         StorageOperation storageoperation = new StorageOperation() {
             public Void execute(CloudBlobClient cloudBlobClient, CloudBlobContainer cloudBlobContainer) throws Exception
             {
-                httpurlconnection = containerRequest.create(cloudBlobContainer.m_ContainerOperationsUri, cloudBlobClient.getTimeoutInMs());
-                containerRequest.addMetadata(httpurlconnection, cloudBlobContainer.m_Metadata);
-                cloudBlobClient.getCredentials().signRequest(httpurlconnection, 0L);
-                result = ExecutionEngine.processRequest(httpurlconnection);
+                HttpPut request = containerRequest.create(cloudBlobContainer.m_ContainerOperationsUri, cloudBlobClient.getTimeoutInMs());
+                containerRequest.addMetadata(request, cloudBlobContainer.m_Metadata);
+                cloudBlobClient.getCredentials().signRequest(request, 0L);
+                result = ExecutionEngine.processRequest(request);
 
                 if (result.statusCode != HttpStatusCode.OK.getStatus())
                 {
@@ -86,7 +90,7 @@ public final class CloudBlobContainer
                 {
                 	if (containerRequest.isUsingWasServiceDirectly())
                 	{
-                		BlobContainerAttributes blobcontainerattributes = ContainerResponse.getAttributes(httpurlconnection,
+                		BlobContainerAttributes blobcontainerattributes = ContainerResponse.getAttributes(request.getURI(), result,
                     		cloudBlobClient.m_UsePathStyleUris);
 	                    cloudBlobContainer.setMetadata(blobcontainerattributes.metadata);
 	                    cloudBlobContainer.m_Properties = blobcontainerattributes.properties;
@@ -118,9 +122,9 @@ public final class CloudBlobContainer
             public Void execute(CloudBlobClient cloudblobclient, CloudBlobContainer cloudblobcontainer)
                 throws Exception
             {
-                HttpURLConnection httpurlconnection = containerRequest.delete(cloudblobcontainer.m_ContainerOperationsUri, cloudblobclient.getTimeoutInMs());
-                cloudblobclient.getCredentials().signRequest(httpurlconnection, -1L);
-                result = ExecutionEngine.processRequest(httpurlconnection);
+                HttpDelete request = containerRequest.delete(cloudblobcontainer.m_ContainerOperationsUri, cloudblobclient.getTimeoutInMs());
+                cloudblobclient.getCredentials().signRequest(request, -1L);
+                result = ExecutionEngine.processRequest(request);
                 if (HttpStatusCode.fromInt(result.statusCode) != HttpStatusCode.OK)
                 {
                 	throw new StorageInnerException("Couldn't delete a blob container");
@@ -261,13 +265,13 @@ public final class CloudBlobContainer
             public URI execute(CloudBlobClient cloudblobclient, CloudBlobContainer cloudblobcontainer)
                 throws Exception
             {
-                HttpURLConnection httpurlconnection = containerRequest.getUri(cloudblobcontainer.m_ContainerOperationsUri,
+                HttpGet request = containerRequest.getUri(cloudblobcontainer.m_ContainerOperationsUri,
                 		cloudblobclient.getTimeoutInMs());
-                cloudblobclient.getCredentials().signRequest(httpurlconnection, -1L);
-                result = ExecutionEngine.processRequest(httpurlconnection);
+                cloudblobclient.getCredentials().signRequest(request, -1L);
+                result = ExecutionEngine.processRequest(request);
                 if(result.statusCode == HttpStatusCode.OK.getStatus())
                 {
-                    return new GetSASResponseDOMAdapter(Utility.getHttpResponseBody(httpurlconnection)).build();
+                    return new GetSASResponseDOMAdapter(Utility.getHttpResponseBody(result.httpResponse)).build();
                 }
                 else
                 {

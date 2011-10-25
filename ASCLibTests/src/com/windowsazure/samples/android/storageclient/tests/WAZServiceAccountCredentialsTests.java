@@ -11,9 +11,12 @@ import com.windowsazure.samples.android.storageclient.CloudBlobClient;
 import com.windowsazure.samples.android.storageclient.wazservice.WAZServiceAccount;
 import com.windowsazure.samples.android.storageclient.wazservice.WAZServiceUsernameAndPassword;
 
-public class WAZServiceAccountCredentialsTests extends TestCase {
+public abstract class WAZServiceAccountCredentialsTests<T extends WAZServiceAccountProvider> extends TestCase {
+
+	private T accountProvider = SuperClassTypeParameterCreator.create( this, 0 );
+	
 	public void testAuthentificationTokenIsValidAfterLogin() throws Exception {
-		String token = WAZServiceTestingAccount.getAccount()
+		String token = accountProvider.getAccount()
 				.loginToWAZService();
 		Assert.assertTrue(token != "");
 	}
@@ -22,10 +25,10 @@ public class WAZServiceAccountCredentialsTests extends TestCase {
 			throws Exception {
 		final WAZServiceAccount account = new WAZServiceAccount(
 				new WAZServiceUsernameAndPassword("NonExistentUsername",
-						WAZServiceTestingAccount.PROXY_PASSWORD),
-				WAZServiceTestingAccount.getServiceHost());
+						WAZServiceUsernameAndPasswordProvider.PROXY_PASSWORD),
+						accountProvider.getServiceHost());
 
-		this.assertThrows(new ExpectedExceptionRunnable() {
+		this.assertThrows(new RunnableWithExpectedException() {
 			@Override
 			public void run() throws Exception {
 				CloudBlobClient token = account.createCloudBlobClient();
@@ -36,11 +39,11 @@ public class WAZServiceAccountCredentialsTests extends TestCase {
 	public void testLoginWithInvalidPasswordThrowsException() throws Exception {
 		final WAZServiceAccount account = new WAZServiceAccount(
 				new WAZServiceUsernameAndPassword(
-						WAZServiceTestingAccount.PROXY_USERNAME,
+						WAZServiceUsernameAndPasswordProvider.PROXY_USERNAME,
 						"InvalidPassword"),
-				WAZServiceTestingAccount.getServiceHost());
+						accountProvider.getServiceHost());
 
-		this.assertThrows(new ExpectedExceptionRunnable() {
+		this.assertThrows(new RunnableWithExpectedException() {
 			@Override
 			public void run() throws Exception {
 				CloudBlobClient token = account.createCloudBlobClient();
@@ -50,10 +53,10 @@ public class WAZServiceAccountCredentialsTests extends TestCase {
 
 	public void testLoginToInvalidSiteThrowsException() throws Exception {
 		final WAZServiceAccount account = new WAZServiceAccount(
-				WAZServiceTestingAccount.getUsernameAndPassword(), new URI(
+				WAZServiceUsernameAndPasswordProvider.getUsernameAndPassword(), new URI(
 						"https://www.microsoft.com"));
 
-		this.assertThrows(new ExpectedExceptionRunnable() {
+		this.assertThrows(new RunnableWithExpectedException() {
 			@Override
 			public void run() throws Exception {
 				CloudBlobClient token = account.createCloudBlobClient();
@@ -63,10 +66,10 @@ public class WAZServiceAccountCredentialsTests extends TestCase {
 
 	public void testLoginToInexistentSiteThrowsException() throws Exception {
 		final WAZServiceAccount account = new WAZServiceAccount(
-				WAZServiceTestingAccount.getUsernameAndPassword(), new URI(
+				WAZServiceUsernameAndPasswordProvider.getUsernameAndPassword(), new URI(
 						"https://www.site.that.doesnt.exist.com.iDontExist"));
 
-		this.assertThrows(new ExpectedExceptionRunnable() {
+		this.assertThrows(new RunnableWithExpectedException() {
 			@Override
 			public void run() throws Exception {
 				CloudBlobClient token = account.createCloudBlobClient();
@@ -76,7 +79,7 @@ public class WAZServiceAccountCredentialsTests extends TestCase {
 
 	public void testCloudBlobClientCreationUsingWAZServiceIsSuccessful()
 			throws Exception {
-		CloudBlobClient cloudBlobClient = WAZServiceTestingAccount.getAccount()
+		CloudBlobClient cloudBlobClient = accountProvider.getAccount()
 				.createCloudBlobClient();
 	}
 }

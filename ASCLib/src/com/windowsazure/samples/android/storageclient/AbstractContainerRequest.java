@@ -1,24 +1,28 @@
 package com.windowsazure.samples.android.storageclient;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpRequestBase;
+
 public interface AbstractContainerRequest {
 
-	void addMetadata(HttpURLConnection httpurlconnection, HashMap m_Metadata);
+	void addMetadata(HttpRequestBase request, HashMap m_Metadata);
 
-	HttpURLConnection create(URI containerOperationsUri, int timeoutInMs) 
-			throws IOException, URISyntaxException, 
+	HttpPut create(URI containerOperationsUri, int timeoutInMs)
+			throws IOException, URISyntaxException,
 			IllegalArgumentException, StorageException;
 
-	HttpURLConnection getUri(URI containerOperationsUri, int timeoutInMs) throws IOException, URISyntaxException, StorageException;
+	HttpGet getUri(URI containerOperationsUri, int timeoutInMs) throws IOException, URISyntaxException, StorageException;
 
 	boolean isUsingWasServiceDirectly();
 
-	HttpURLConnection delete(URI m_ContainerOperationsUri, int timeoutInMs) throws IOException, URISyntaxException, IllegalArgumentException, StorageException;
-	
+	HttpDelete delete(URI m_ContainerOperationsUri, int timeoutInMs) throws IOException, URISyntaxException, IllegalArgumentException, StorageException;
+
 }
 

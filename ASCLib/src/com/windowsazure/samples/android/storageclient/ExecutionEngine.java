@@ -11,65 +11,73 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.impl.client.DefaultHttpClient;
+
 final class ExecutionEngine
 {
     protected static Object execute(Object obj, Object obj1, StorageOperation storageoperation) throws StorageException, NotImplementedException, UnsupportedEncodingException, IOException
     {
         	storageoperation.initialize();
-			try 
+			try
 			{
 				return storageoperation.execute(obj, obj1);
-			} 
-			catch (Exception e) 
+			}
+			catch (Exception e)
 			{
 				e.printStackTrace();
-				storageoperation.exceptionReference = StorageException.translateException(storageoperation.httpurlconnection, e);
+				storageoperation.exceptionReference = StorageException.translateException(storageoperation.result.httpResponse, e);
 		        throw storageoperation.exceptionReference;
 			}
     }
 
-    protected static void getResponseCode(RequestResult requestresult, HttpURLConnection httpurlconnection)
+    protected static void getResponseCode(RequestResult requestresult, HttpResponse response)
         throws IOException
     {
-        requestresult.statusCode = httpurlconnection.getResponseCode();
-        requestresult.statusMessage = httpurlconnection.getResponseMessage();
+        requestresult.statusCode = response.getStatusLine().getStatusCode();
+        requestresult.statusMessage = response.getStatusLine().getReasonPhrase();
         requestresult.stopDate = new Date();
-        requestresult.serviceRequestID = BaseResponse.getRequestId(httpurlconnection);
-        requestresult.eTag = BaseResponse.getEtag(httpurlconnection);
-        requestresult.date = BaseResponse.getDate(httpurlconnection);
-        requestresult.contentMD5 = BaseResponse.getContentMD5(httpurlconnection);
+        requestresult.serviceRequestID = BaseResponse.getRequestId(response);
+        requestresult.eTag = BaseResponse.getEtag(response);
+        requestresult.date = BaseResponse.getDate(response);
+        requestresult.contentMD5 = BaseResponse.getContentMD5(response);
     }
 
-    protected static RequestResult processRequest(HttpURLConnection httpurlconnection)
+    protected static RequestResult processRequest(HttpRequestBase request)
         throws IOException
     {
+    	HttpClient client = new DefaultHttpClient();
+    	HttpResponse response = client.execute(request);
         RequestResult requestresult = new RequestResult();
         requestresult.startDate = new Date();
-        requestresult.statusCode = httpurlconnection.getResponseCode();
-        requestresult.statusMessage = httpurlconnection.getResponseMessage();
+        requestresult.statusCode = response.getStatusLine().getStatusCode();
+        requestresult.statusMessage = response.getStatusLine().getReasonPhrase();
         requestresult.stopDate = new Date();
-        requestresult.serviceRequestID = BaseResponse.getRequestId(httpurlconnection);
-        requestresult.eTag = BaseResponse.getEtag(httpurlconnection);
-        requestresult.date = BaseResponse.getDate(httpurlconnection);
-        requestresult.contentMD5 = BaseResponse.getContentMD5(httpurlconnection);
+        requestresult.serviceRequestID = BaseResponse.getRequestId(response);
+        requestresult.eTag = BaseResponse.getEtag(response);
+        requestresult.date = BaseResponse.getDate(response);
+        requestresult.contentMD5 = BaseResponse.getContentMD5(response);
+    	requestresult.httpResponse = response;
         return requestresult;
     }
-    
+
     /*
-    protected static InputStream getInputStream(HttpURLConnection httpurlconnection)
+    protected static InputStream getInputStream(HttpBaseRequest request)
         throws IOException
     {
         RequestResult requestresult = new RequestResult();
-        operationcontext.m_CurrentRequestObject = httpurlconnection;
+        operationcontext.m_CurrentRequestObject = request;
         requestresult.startDate = new Date();
         operationcontext.m_RequestResults.add(requestresult);
         try
         {
-            return httpurlconnection.getInputStream();
+            return request.getInputStream();
         }
         catch(IOException ioexception)
         {
-            getResponseCode(requestresult, httpurlconnection, operationcontext);
+            getResponseCode(requestresult, request, operationcontext);
             throw ioexception;
         }
     }

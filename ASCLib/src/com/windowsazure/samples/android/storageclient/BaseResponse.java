@@ -1,55 +1,64 @@
 //REVIEW
 package com.windowsazure.samples.android.storageclient;
 
-import java.net.HttpURLConnection;
 import java.util.*;
+
+import org.apache.http.Header;
+import org.apache.http.HttpResponse;
 
 class BaseResponse
 {
-    public static String getEtag(HttpURLConnection httpurlconnection)
+    public static String getEtag(HttpResponse response)
     {
-        return httpurlconnection.getHeaderField("Etag");
+    	return getHeaderValueOrNullIfNonExistent(response, "Etag");
     }
 
-    public static HashMap getMetadata(HttpURLConnection httpurlconnection)
+    public static HashMap getMetadata(HttpResponse request)
     {
-        return getValuesByHeaderPrefix(httpurlconnection, "x-ms-meta-");
+        return getValuesByHeaderPrefix(request, "x-ms-meta-");
     }
 
-    private static HashMap getValuesByHeaderPrefix(HttpURLConnection httpurlconnection, String s)
+    private static HashMap getValuesByHeaderPrefix(HttpResponse response, String s)
     {
         HashMap hashmap = new HashMap();
-        Map map = httpurlconnection.getHeaderFields();
         int i = s.length();
-        Iterator iterator = map.entrySet().iterator();
-        do
+        for (Header header : response.getAllHeaders())
         {
-            if(!iterator.hasNext())
-                break;
-            java.util.Map.Entry entry = (java.util.Map.Entry)iterator.next();
-            if(entry.getKey() != null && ((String)entry.getKey()).startsWith(s))
+            if(header.getName() != null
+            		&& header.getName().startsWith(s))
             {
-                List list = (List)entry.getValue();
-                hashmap.put(((String)entry.getKey()).substring(i), list.get(0));
+                hashmap.put(header.getName().substring(i), header.getValue());
             }
-        } while(true);
+        }
         return hashmap;
     }
 
-    public static String getContentMD5(HttpURLConnection httpurlconnection)
+    public static String getContentMD5(HttpResponse response)
     {
-        return httpurlconnection.getHeaderField("Content-MD5");
+    	return getHeaderValueOrNullIfNonExistent(response, "Content-MD5");
     }
 
-    public static String getDate(HttpURLConnection httpurlconnection)
+    public static String getDate(HttpResponse response)
     {
-        String s = httpurlconnection.getHeaderField("Date");
-        return s != null ? s : httpurlconnection.getHeaderField("x-ms-date");
+        String s = response.getFirstHeader("Date").getValue();
+        return s != null ? s : response.getFirstHeader("x-ms-date").getValue();
     }
 
-    public static String getRequestId(HttpURLConnection httpurlconnection)
+    public static String getRequestId(HttpResponse response)
     {
-        return httpurlconnection.getHeaderField("x-ms-request-id");
+    	return getHeaderValueOrNullIfNonExistent(response, "x-ms-request-id");
     }
 
+    private static String getHeaderValueOrNullIfNonExistent(HttpResponse response, String headerName)
+    {
+    	Header header = response.getFirstHeader(headerName);
+    	if (header != null)
+    	{
+            return header.getValue();
+    	}
+    	else
+    	{
+    		return null;
+    	}
+    }
 }

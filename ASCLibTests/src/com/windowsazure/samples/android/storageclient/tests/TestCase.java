@@ -5,7 +5,7 @@ import android.test.AndroidTestCase;
 
 public abstract class TestCase extends AndroidTestCase {
 //public abstract class TestCase extends junit.framework.TestCase {
-	 public <T extends Exception> void assertThrows(ExpectedExceptionRunnable runnable, Class<T> exceptionClass) throws Exception
+	 public <T extends Exception> void assertThrows(RunnableWithExpectedException runnable, Class<T> exceptionClass) throws Exception
 	 {
 		 try
 		 {

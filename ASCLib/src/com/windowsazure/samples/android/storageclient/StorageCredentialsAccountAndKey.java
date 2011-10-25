@@ -1,8 +1,9 @@
 package com.windowsazure.samples.android.storageclient;
 
-import java.net.HttpURLConnection;
 import java.net.URI;
 import java.security.InvalidKeyException;
+
+import org.apache.http.client.methods.HttpRequestBase;
 
 public final class StorageCredentialsAccountAndKey extends StorageCredentials
 {
@@ -69,13 +70,13 @@ public final class StorageCredentialsAccountAndKey extends StorageCredentials
     	throw new NotImplementedException();
     }
 
-    public void signRequest(HttpURLConnection httpurlconnection, long l)
+    public void signRequest(HttpRequestBase request, long l)
         throws NotImplementedException, InvalidKeyException, StorageException
     {
     	throw new NotImplementedException();
     }
 
-    public void signRequestLite(HttpURLConnection httpurlconnection, long l)
+    public void signRequestLite(HttpRequestBase request, long l)
         throws NotImplementedException, InvalidKeyException, StorageException
     {
     	throw new NotImplementedException();

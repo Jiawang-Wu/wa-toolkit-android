@@ -1,6 +1,5 @@
 package com.windowsazure.samples.android.storageclient;
 
-import java.net.HttpURLConnection;
 import java.text.*;
 import java.util.Calendar;
 import java.util.Locale;
@@ -12,9 +11,9 @@ final class CanonicalizerFactory
     {
     }
 
-    private static Boolean validateVersionIsSupported(HttpURLConnection httpurlconnection)
+    private static Boolean validateVersionIsSupported(HttpBaseRequest request)
     {
-        String s = Utility.getStandardHeaderValue(httpurlconnection, "x-ms-version");
+        String s = Utility.getStandardHeaderValue(request, "x-ms-version");
         if(s.length() == 0 || s.length() == 0)
             return Boolean.valueOf(true);
         try
@@ -40,17 +39,17 @@ final class CanonicalizerFactory
         return Boolean.valueOf(false);
     }
 
-    protected static Canonicalizer getBlobQueueFullCanonicalizer(HttpURLConnection httpurlconnection)
+    protected static Canonicalizer getBlobQueueFullCanonicalizer(HttpBaseRequest request)
     {
-        if(validateVersionIsSupported(httpurlconnection).booleanValue())
+        if(validateVersionIsSupported(request).booleanValue())
             return BLOB_QUEUE_FULL_V2_INSTANCE;
         else
             throw new UnsupportedOperationException("Storage protocol version prior to 2009-09-19 are not supported.");
     }
 
-    protected static Canonicalizer getBlobQueueLiteCanonicalizer(HttpURLConnection httpurlconnection)
+    protected static Canonicalizer getBlobQueueLiteCanonicalizer(HttpBaseRequest request)
     {
-        if(validateVersionIsSupported(httpurlconnection).booleanValue())
+        if(validateVersionIsSupported(request).booleanValue())
             return BLOB_QUEUE_LITE_INSTANCE;
         else
             throw new UnsupportedOperationException("Versions before 2009-09-19 do not support Shared Key Lite for Blob And Queue.");

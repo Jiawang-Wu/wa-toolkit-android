@@ -4,11 +4,11 @@ import java.util.ArrayList;
 
 import junit.framework.Assert;
 
-public abstract class TestCaseWithManagedCleanUp extends TestCase
+public abstract class TestCaseWithManagedResources extends TestCase
 {
-	ArrayList<Cleaner> cleaners = new ArrayList<Cleaner>();
+	ArrayList<ResourceCleaner> cleaners = new ArrayList<ResourceCleaner>();
 	
-	protected void addCleanUp(Cleaner cleaner)
+	protected void addCleanUp(ResourceCleaner cleaner)
 	{
 		cleaners.add(cleaner);
 	}
@@ -16,11 +16,11 @@ public abstract class TestCaseWithManagedCleanUp extends TestCase
 	protected void tearDown()
 	{
 		ArrayList<Exception> exceptionsWhileCleanningUp = new ArrayList<Exception>(); 
-		for (Cleaner cleanUp : cleaners)
+		for (ResourceCleaner cleanUp : cleaners)
 		{
 			try
 			{
-				cleanUp.run();
+				cleanUp.clean();
 			}
 			catch (Exception exception)
 			{

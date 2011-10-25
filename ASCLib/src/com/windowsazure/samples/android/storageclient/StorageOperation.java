@@ -2,7 +2,9 @@ package com.windowsazure.samples.android.storageclient;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpRequestBase;
 
 abstract class StorageOperation
 {
@@ -13,16 +15,15 @@ abstract class StorageOperation
         result = new RequestResult();
     }
 
-    protected StorageException materializeException(HttpURLConnection httpurlconnection) throws NotImplementedException, UnsupportedEncodingException, IOException
+    protected StorageException materializeException(HttpResponse response) throws NotImplementedException, UnsupportedEncodingException, IOException
     {
         if(exceptionReference != null)
             return exceptionReference;
         else
-            return StorageException.translateException(httpurlconnection, null);
+            return StorageException.translateException(response, null);
     }
 
     protected StorageException exceptionReference;
     protected RequestResult result;
     boolean nonExceptionedRetryableFailure;
-    HttpURLConnection httpurlconnection;
 }

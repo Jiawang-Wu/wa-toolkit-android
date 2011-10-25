@@ -5,28 +5,22 @@ package com.windowsazure.samples.android.storageclient;
 import java.net.*;
 import java.util.Date;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpRequestBase;
+
 final class ContainerResponse extends BaseResponse
 {
-    public static BlobContainerAttributes getAttributes(HttpURLConnection httpurlconnection, boolean flag)
+    public static BlobContainerAttributes getAttributes(URI originalUri, RequestResult result, boolean flag)
             throws StorageException
         {
             BlobContainerAttributes blobcontainerattributes = new BlobContainerAttributes();
-            java.net.URI uri;
-            try
-            {
-                uri = PathUtility.stripURIQueryAndFragment(httpurlconnection.getURL().toURI());
-            }
-            catch(URISyntaxException urisyntaxexception)
-            {
-                StorageException storageexception = Utility.generateNewUnexpectedStorageException(urisyntaxexception);
-                throw storageexception;
-            }
+            java.net.URI uri = PathUtility.stripURIQueryAndFragment(originalUri);
             blobcontainerattributes.uri = uri;
             blobcontainerattributes.name = PathUtility.getContainerNameFromUri(uri, flag);
             BlobContainerProperties blobcontainerproperties = blobcontainerattributes.properties;
-            blobcontainerproperties.eTag = BaseResponse.getEtag(httpurlconnection);
-            blobcontainerproperties.lastModified = new Date(httpurlconnection.getLastModified());
-            blobcontainerattributes.metadata = getMetadata(httpurlconnection);
+            blobcontainerproperties.eTag = BaseResponse.getEtag(result.httpResponse);
+            blobcontainerproperties.lastModified = new Date(result.httpResponse.getFirstHeader("last-modified").getValue());
+            blobcontainerattributes.metadata = getMetadata(result.httpResponse);
             return blobcontainerattributes;
         }
 
@@ -35,9 +29,9 @@ final class ContainerResponse extends BaseResponse
     {
     }
 
-    public static String getAcl(HttpURLConnection httpurlconnection)
+    public static String getAcl(HttpBaseRequest request)
     {
-        return httpurlconnection.getHeaderField("x-ms-blob-public-access");
+        return request.getHeaderField("x-ms-blob-public-access");
     }
 
 */

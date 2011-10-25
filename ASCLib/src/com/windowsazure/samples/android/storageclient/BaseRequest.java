@@ -6,51 +6,51 @@ import java.net.*;
 import java.security.InvalidKeyException;
 import java.util.*;
 
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpRequestBase;
+
 final class BaseRequest
 {
-    public static void addMetadata(HttpURLConnection httpurlconnection, HashMap hashmap)
+    public static void addMetadata(HttpRequestBase request, HashMap hashmap)
     {
         if(hashmap != null)
         {
             java.util.Map.Entry entry;
-            for(Iterator iterator = hashmap.entrySet().iterator(); iterator.hasNext(); addMetadata(httpurlconnection, (String)entry.getKey(), (String)entry.getValue()))
+            for(Iterator iterator = hashmap.entrySet().iterator(); iterator.hasNext();
+            		addMetadata(request, (String)entry.getKey(), (String)entry.getValue()))
                 entry = (java.util.Map.Entry)iterator.next();
 
         }
     }
 
-    public static void addMetadata(HttpURLConnection httpurlconnection, String s, String s1)
+    public static void addMetadata(HttpRequestBase request, String s, String s1)
     {
         Utility.assertNotNullOrEmpty("value", s1);
-        httpurlconnection.setRequestProperty((new StringBuilder()).append("x-ms-meta-").append(s).toString(), s1);
+        request.setHeader((new StringBuilder()).append("x-ms-meta-").append(s).toString(), s1);
     }
 
-    public static HttpURLConnection create(URI uri, int i, UriQueryBuilder uriquerybuilder)
+    public static HttpPut create(URI uri, int i, UriQueryBuilder uriquerybuilder)
             throws IOException, URISyntaxException, IllegalArgumentException, StorageException
         {
             if(uriquerybuilder == null)
                 uriquerybuilder = new UriQueryBuilder();
-            HttpURLConnection httpurlconnection = createURLConnection(uri, i, uriquerybuilder);
-            httpurlconnection.setFixedLengthStreamingMode(0);
-            httpurlconnection.setDoOutput(true);
-            httpurlconnection.setRequestMethod("PUT");
-            return httpurlconnection;
+            HttpPut put = new HttpPut();
+            setURIAndHeaders(put, uri, uriquerybuilder);
+            return put;
         }
 
-    public static HttpURLConnection createURLConnection(URI uri, int i, UriQueryBuilder uriquerybuilder)
+    public static void setURIAndHeaders(HttpRequestBase request, URI uri, UriQueryBuilder uriquerybuilder)
             throws IOException, URISyntaxException, StorageException
         {
             if(uriquerybuilder == null)
+            {
                 uriquerybuilder = new UriQueryBuilder();
-            if(i != 0)
-                uriquerybuilder.add("timeout", String.valueOf(i / 1000));
-            URL url = uriquerybuilder.addToURI(uri).toURL();
-            HttpURLConnection httpurlconnection = (HttpURLConnection)url.openConnection();
-            httpurlconnection.setReadTimeout(i);
-            httpurlconnection.setRequestProperty("x-ms-version", "2009-09-19");
-            httpurlconnection.setRequestProperty("User-Agent", getUserAgent());
-            httpurlconnection.setRequestProperty("Content-Type", "");
-            return httpurlconnection;
+            }
+            request.setURI(uriquerybuilder.addToURI(uri));
+            request.addHeader("x-ms-version", "2009-09-19");
+            request.addHeader("User-Agent", getUserAgent());
+            request.addHeader("Content-Type", "");
         }
 
     private static String getUserAgent()
@@ -64,15 +64,14 @@ final class BaseRequest
 
     private static String m_UserAgent;
 
-    public static HttpURLConnection delete(URI uri, int i, UriQueryBuilder uriquerybuilder)
+    public static HttpDelete delete(URI uri, int i, UriQueryBuilder uriquerybuilder)
             throws IOException, URISyntaxException, StorageException
         {
             if(uriquerybuilder == null)
                 uriquerybuilder = new UriQueryBuilder();
-            HttpURLConnection httpurlconnection = createURLConnection(uri, i, uriquerybuilder);
-            httpurlconnection.setDoOutput(true);
-            httpurlconnection.setRequestMethod("DELETE");
-            return httpurlconnection;
+    		HttpDelete request = new HttpDelete();
+            setURIAndHeaders(request, uri, uriquerybuilder);
+            return request;
         }
 
     /*
@@ -80,16 +79,16 @@ final class BaseRequest
     {
     }
 
-    public static void addLeaseId(HttpURLConnection httpurlconnection, String s)
+    public static void addLeaseId(HttpBaseRequest request, String s)
     {
         if(s != null)
-            addOptionalHeader(httpurlconnection, "x-ms-lease-id", s);
+            addOptionalHeader(request, "x-ms-lease-id", s);
     }
 
-    public static void addOptionalHeader(HttpURLConnection httpurlconnection, String s, String s1)
+    public static void addOptionalHeader(HttpBaseRequest request, String s, String s1)
     {
         if(s1 != null && !s1.equals(""))
-            httpurlconnection.setRequestProperty(s, s1);
+            request.setRequestProperty(s, s1);
     }
 
     public static void addSnapshot(UriQueryBuilder uriquerybuilder, String s)
@@ -99,62 +98,62 @@ final class BaseRequest
             uriquerybuilder.add("snapshot", s);
     }
 
-    public static HttpURLConnection getMetadata(URI uri, int i, UriQueryBuilder uriquerybuilder)
+    public static HttpBaseRequest getMetadata(URI uri, int i, UriQueryBuilder uriquerybuilder)
         throws StorageException, IOException, URISyntaxException
     {
         if(uriquerybuilder == null)
             uriquerybuilder = new UriQueryBuilder();
         uriquerybuilder.add("comp", "metadata");
-        HttpURLConnection httpurlconnection = createURLConnection(uri, i, uriquerybuilder);
-        httpurlconnection.setDoOutput(true);
-        httpurlconnection.setRequestMethod("HEAD");
-        return httpurlconnection;
+        HttpBaseRequest request = createURLConnection(uri, i, uriquerybuilder);
+        request.setDoOutput(true);
+        request.setRequestMethod("HEAD");
+        return request;
     }
 
-    public static HttpURLConnection getProperties(URI uri, int i, UriQueryBuilder uriquerybuilder)
+    public static HttpBaseRequest getProperties(URI uri, int i, UriQueryBuilder uriquerybuilder)
         throws IOException, URISyntaxException, StorageException
     {
         if(uriquerybuilder == null)
             uriquerybuilder = new UriQueryBuilder();
-        HttpURLConnection httpurlconnection = createURLConnection(uri, i, uriquerybuilder);
-        httpurlconnection.setDoOutput(true);
-        httpurlconnection.setRequestMethod("HEAD");
-        return httpurlconnection;
+        HttpBaseRequest request = createURLConnection(uri, i, uriquerybuilder);
+        request.setDoOutput(true);
+        request.setRequestMethod("HEAD");
+        return request;
     }
 
-    public static HttpURLConnection setMetadata(URI uri, int i, UriQueryBuilder uriquerybuilder)
+    public static HttpBaseRequest setMetadata(URI uri, int i, UriQueryBuilder uriquerybuilder)
         throws IOException, URISyntaxException, StorageException
     {
         if(uriquerybuilder == null)
             uriquerybuilder = new UriQueryBuilder();
         uriquerybuilder.add("comp", "metadata");
-        HttpURLConnection httpurlconnection = createURLConnection(uri, i, uriquerybuilder);
-        httpurlconnection.setFixedLengthStreamingMode(0);
-        httpurlconnection.setDoOutput(true);
-        httpurlconnection.setRequestMethod("PUT");
-        return httpurlconnection;
+        HttpBaseRequest request = createURLConnection(uri, i, uriquerybuilder);
+        request.setFixedLengthStreamingMode(0);
+        request.setDoOutput(true);
+        request.setRequestMethod("PUT");
+        return request;
     }
 
-    public static void signRequestForBlobAndQueue(HttpURLConnection httpurlconnection, Credentials credentials, Long long1)
+    public static void signRequestForBlobAndQueue(HttpBaseRequest request, Credentials credentials, Long long1)
         throws InvalidKeyException, StorageException
     {
-        httpurlconnection.setRequestProperty("x-ms-date", Utility.getGMTTime());
-        Canonicalizer canonicalizer = CanonicalizerFactory.getBlobQueueFullCanonicalizer(httpurlconnection);
-        String s = canonicalizer.canonicalize(httpurlconnection, credentials.getAccountName(), long1);
+        request.setRequestProperty("x-ms-date", Utility.getGMTTime());
+        Canonicalizer canonicalizer = CanonicalizerFactory.getBlobQueueFullCanonicalizer(request);
+        String s = canonicalizer.canonicalize(request, credentials.getAccountName(), long1);
         String s1 = StorageKey.computeMacSha256(credentials.getKey(), s);
-        httpurlconnection.setRequestProperty("Authorization", String.format("%s %s:%s", new Object[] {
+        request.setRequestProperty("Authorization", String.format("%s %s:%s", new Object[] {
             "SharedKey", credentials.getAccountName(), s1
         }));
     }
 
-    public static void signRequestForBlobAndQueueSharedKeyLite(HttpURLConnection httpurlconnection, Credentials credentials, Long long1)
+    public static void signRequestForBlobAndQueueSharedKeyLite(HttpBaseRequest request, Credentials credentials, Long long1)
         throws InvalidKeyException, StorageException
     {
-        httpurlconnection.setRequestProperty("x-ms-date", Utility.getGMTTime());
-        Canonicalizer canonicalizer = CanonicalizerFactory.getBlobQueueLiteCanonicalizer(httpurlconnection);
-        String s = canonicalizer.canonicalize(httpurlconnection, credentials.getAccountName(), long1);
+        request.setRequestProperty("x-ms-date", Utility.getGMTTime());
+        Canonicalizer canonicalizer = CanonicalizerFactory.getBlobQueueLiteCanonicalizer(request);
+        String s = canonicalizer.canonicalize(request, credentials.getAccountName(), long1);
         String s1 = StorageKey.computeMacSha256(credentials.getKey(), s);
-        httpurlconnection.setRequestProperty("Authorization", String.format("%s %s:%s", new Object[] {
+        request.setRequestProperty("Authorization", String.format("%s %s:%s", new Object[] {
             "SharedKeyLite", credentials.getAccountName(), s1
         }));
     }
