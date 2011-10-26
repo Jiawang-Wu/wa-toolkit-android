@@ -1,10 +1,12 @@
 package com.windowsazure.samples.android.storageclient.wazservice;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.security.auth.login.LoginException;
 
 import com.windowsazure.samples.android.storageclient.NotImplementedException;
+import com.windowsazure.samples.android.storageclient.PathUtility;
 import com.windowsazure.samples.android.storageclient.StorageCredentials;
 import com.windowsazure.samples.android.storageclient.CloudBlobClient;
 import com.windowsazure.samples.android.storageclient.internal.web.XmlHttp;
@@ -108,8 +110,8 @@ public class WAZServiceAccount {
 		return new WAZServiceAccountCredentials(this.loginToWAZService());
 	}
 
-	private URI getBlobEndpoint() {
-		return this.m_WazServiceBaseUri;
+	private URI getBlobEndpoint() throws URISyntaxException {
+    	return PathUtility.appendPathToUri(this.m_WazServiceBaseUri, SHARED_ACCESS_SIGNATURE_SERVICE_PATH);
 	}
 
 	private static final String LOGIN_PATH = "/AuthenticationService/login";

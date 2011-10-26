@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.windowsazure.samples.sample.R;
+import com.windowsazure.samples.android.storageclient.CloudBlobContainer;
 import com.windowsazure.samples.blob.AzureBlob;
 import com.windowsazure.samples.blob.AzureBlobCollection;
 import com.windowsazure.samples.blob.AzureBlobManager;
@@ -88,12 +89,9 @@ public class ListDisplay extends Activity implements OnItemClickListener
 	        {
 	        	if (this.getTitle().equals("Blob Storage"))
 	        	{
-	        		AzureContainerCollection containers = new AzureBlobManager(ProxySelector.credential).listAllContainers();
-	        		Iterator<AzureContainer> iterator = containers.iterator();
-	          		while (iterator.hasNext())
+	        		for (CloudBlobContainer container : ProxySelector.blobClient.listContainers())
 	        		{
-	        			AzureContainer container = iterator.next();
-	        			items.add(container.getContainerName());
+	        			items.add(container.getName());
 	        		}
 	        	}
 	        	else

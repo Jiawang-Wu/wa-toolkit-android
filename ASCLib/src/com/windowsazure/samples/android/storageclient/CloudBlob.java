@@ -170,7 +170,7 @@ public abstract class CloudBlob
     public String getName()
         throws NotImplementedException, URISyntaxException
     {
-    	throw new NotImplementedException();
+    	return m_Name;
     }
 
     public CloudBlobDirectory getParent()

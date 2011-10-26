@@ -59,6 +59,17 @@ final class ContainerRequest implements AbstractContainerRequest
             return BaseRequest.delete(uri, i, uriquerybuilder);
         }
 
+	@Override
+	public HttpGet list(URI uri, String prefix, ContainerListingDetails containerlistingdetails) throws NotImplementedException {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public HttpPut setAcl(URI m_ContainerOperationsUri,
+			BlobContainerPublicAccessType publicAccess) throws NotImplementedException {
+		throw new NotImplementedException();
+	}
+
     /*
     ContainerRequest()
     {

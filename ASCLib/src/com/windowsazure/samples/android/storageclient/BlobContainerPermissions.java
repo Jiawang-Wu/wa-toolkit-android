@@ -5,14 +5,15 @@ import java.util.HashMap;
 public class BlobContainerPermissions
 {
 
-    public BlobContainerPermissions() throws NotImplementedException
+    public BlobContainerPermissions()
     {
-    	throw new NotImplementedException();
+    	publicAccess = BlobContainerPublicAccessType.OFF;
+    	m_SharedAccessPolicies = new HashMap();
     }
 
-    public HashMap getSharedAccessPolicies() throws NotImplementedException
+    public HashMap getSharedAccessPolicies()
     {
-    	throw new NotImplementedException();
+    	return m_SharedAccessPolicies;
     }
 
     public BlobContainerPublicAccessType publicAccess;

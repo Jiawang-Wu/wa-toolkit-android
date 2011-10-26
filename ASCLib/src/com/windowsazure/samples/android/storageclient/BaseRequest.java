@@ -40,7 +40,7 @@ final class BaseRequest
             return put;
         }
 
-    public static void setURIAndHeaders(HttpRequestBase request, URI uri, UriQueryBuilder uriquerybuilder)
+    public static <T extends HttpRequestBase> T setURIAndHeaders(T request, URI uri, UriQueryBuilder uriquerybuilder)
             throws IOException, URISyntaxException, StorageException
         {
             if(uriquerybuilder == null)
@@ -51,6 +51,7 @@ final class BaseRequest
             request.addHeader("x-ms-version", "2009-09-19");
             request.addHeader("User-Agent", getUserAgent());
             request.addHeader("Content-Type", "");
+            return request;
         }
 
     private static String getUserAgent()

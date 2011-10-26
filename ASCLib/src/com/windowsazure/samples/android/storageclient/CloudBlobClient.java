@@ -4,6 +4,10 @@ import java.io.IOException;
 import java.net.*;
 import java.security.InvalidKeyException;
 
+import org.apache.http.client.methods.HttpGet;
+
+import com.windowsazure.samples.android.storageclient.internal.web.HttpStatusCode;
+
 public final class CloudBlobClient
 {
     public CloudBlobClient(URI endpointUri) throws NotImplementedException, NotImplementedException
@@ -121,24 +125,32 @@ public final class CloudBlobClient
         return m_WriteBlockSizeInBytes;
     }
 
-    public Iterable listContainers() throws NotImplementedException, NotImplementedException
+    public Iterable<CloudBlobContainer> listContainers() throws Exception, NotImplementedException
     {
-    	throw new NotImplementedException();
+        return listContainersWithPrefix(null, ContainerListingDetails.NONE);
     }
 
-    public Iterable listContainers(String s) throws NotImplementedException, NotImplementedException
+    public Iterable<CloudBlobContainer> listContainers(String s) throws Exception, NotImplementedException
     {
-    	throw new NotImplementedException();
+        return listContainersWithPrefix(s, ContainerListingDetails.NONE);
     }
 
-    public Iterable listContainers(String s, ContainerListingDetails containerlistingdetails) throws NotImplementedException, NotImplementedException
+    public Iterable<CloudBlobContainer> listContainers(String s, ContainerListingDetails containerlistingdetails) throws Exception, NotImplementedException
     {
-    	throw new NotImplementedException();
+        return listContainersWithPrefix(s, containerlistingdetails);
     }
 
-    protected Iterable listContainersWithPrefix(String s, ContainerListingDetails containerlistingdetails) throws NotImplementedException, NotImplementedException
+    protected Iterable<CloudBlobContainer> listContainersWithPrefix(String s, ContainerListingDetails containerlistingdetails) throws StorageInnerException, Exception
     {
-    	throw new NotImplementedException();
+        HttpGet request = containerRequest.list(getEndpoint(), s, containerlistingdetails);
+        getCredentials().signRequest(request, -1L);
+        RequestResult result = ExecutionEngine.processRequest(request);
+        if (HttpStatusCode.fromInt(result.statusCode) != HttpStatusCode.OK)
+        {
+        	throw new StorageInnerException("Couldn't list blob's containers");
+        }
+        ListContainersResponse listcontainersresponse = new ListContainersResponse(result.httpResponse.getEntity().getContent());
+        return listcontainersresponse.getContainers(this);
     }
 
     protected void setBaseURI(URI uri) throws NotImplementedException, NotImplementedException
@@ -225,4 +237,5 @@ public final class CloudBlobClient
     private int m_ConcurrentRequestCount;
     private String m_DirectoryDelimiter;
     private int m_TimeoutInMs;
+    private AbstractContainerRequest containerRequest = new ContainerWASServiceRequest();
 }

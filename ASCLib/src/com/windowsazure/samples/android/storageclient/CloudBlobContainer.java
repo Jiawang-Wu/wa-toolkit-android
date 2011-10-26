@@ -1,10 +1,15 @@
 package com.windowsazure.samples.android.storageclient;
 
-import java.io.*;
-import java.net.*;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
-import java.text.ParseException;
-import java.util.*;
+import java.util.EnumSet;
+import java.util.HashMap;
 
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
@@ -37,7 +42,7 @@ public final class CloudBlobContainer
         Utility.assertNotNullOrEmpty("containerName", containerName);
         URI uri = PathUtility.appendPathToUri(cloudBlobClient.getContainerEndpoint(), containerName);
         m_ContainerOperationsUri = uri;
-        m_Name = PathUtility.getContainerNameFromUri(uri, cloudBlobClient.m_UsePathStyleUris);
+        m_Name = containerName;
         parseQueryAndVerify(m_ContainerOperationsUri, cloudBlobClient, cloudBlobClient.m_UsePathStyleUris);
     }
 
@@ -198,12 +203,12 @@ public final class CloudBlobContainer
 
     public HashMap getMetadata() throws NotImplementedException, NotImplementedException
     {
-    	throw new NotImplementedException();
+    	return m_Metadata;
     }
 
     public String getName() throws NotImplementedException, NotImplementedException
     {
-    	throw new NotImplementedException();
+        return m_Name;
     }
 
     public CloudPageBlob getPageBlobReference(String s)
@@ -225,7 +230,7 @@ public final class CloudBlobContainer
 
     public CloudBlobClient getServiceClient() throws NotImplementedException, NotImplementedException
     {
-    	throw new NotImplementedException();
+    	return m_ServiceClient;
     }
 
     private String getSharedAccessCanonicalName() throws NotImplementedException, NotImplementedException
@@ -289,19 +294,27 @@ public final class CloudBlobContainer
         return (URI)ExecutionEngine.execute(m_ServiceClient, this, storageoperation);
     }
 
-    public Iterable listBlobs() throws NotImplementedException, NotImplementedException
+    public Iterable<CloudBlob> listBlobs() throws StorageInnerException, Exception
     {
-    	throw new NotImplementedException();
+    	return this.listBlobs("");
     }
 
-    public Iterable listBlobs(String s) throws NotImplementedException, NotImplementedException
+    public Iterable<CloudBlob> listBlobs(String s) throws StorageInnerException, Exception
     {
-    	throw new NotImplementedException();
+    	return this.listBlobs("", false);
     }
 
-    public Iterable listBlobs(String s, boolean flag, EnumSet enumset) throws NotImplementedException, NotImplementedException
+    public Iterable<CloudBlob> listBlobs(String s, boolean useFlatBlobListing) throws StorageInnerException, Exception
     {
-    	throw new NotImplementedException();
+        HttpGet request = blobRequest.list(this.getServiceClient().getEndpoint(), this, s, useFlatBlobListing);
+        this.getServiceClient().getCredentials().signRequest(request, -1L);
+        RequestResult result = ExecutionEngine.processRequest(request);
+        if (HttpStatusCode.fromInt(result.statusCode) != HttpStatusCode.OK)
+        {
+        	throw new StorageInnerException("Couldn't list container blobs");
+        }
+        ListBlobsResponse listcontainersresponse = new ListBlobsResponse(result.httpResponse.getEntity().getContent());
+        return listcontainersresponse.getBlobs(this.getServiceClient(), this);
     }
 
     public Iterable listContainers() throws NotImplementedException, NotImplementedException
@@ -345,10 +358,29 @@ public final class CloudBlobContainer
     	throw new NotImplementedException();
     }
 
-    public void uploadPermissions(BlobContainerPermissions blobcontainerpermissions)
-        throws NotImplementedException, StorageException
+    public void uploadPermissions(final BlobContainerPermissions permissions)
+        throws NotImplementedException, StorageException, UnsupportedEncodingException, IOException
     {
-    	throw new NotImplementedException();
+        StorageOperation storageoperation = new StorageOperation() {
+            public Void execute(CloudBlobClient cloudBlobClient, CloudBlobContainer cloudBlobContainer) throws Exception
+            {
+                HttpPut request = containerRequest.setAcl(cloudBlobContainer.m_ContainerOperationsUri, permissions.publicAccess);
+                cloudBlobClient.getCredentials().signRequest(request, 0);
+                result = ExecutionEngine.processRequest(request);
+                if (result.statusCode != HttpStatusCode.OK.getStatus())
+                {
+                    throw new StorageInnerException("Couldn't upload permissions to a blob's container");
+                } 
+                return null;
+            }
+
+            public Object execute(Object cloudBlobClient, Object cloudBlobContainer) throws Exception
+            {
+                return execute((CloudBlobClient)cloudBlobClient, (CloudBlobContainer)cloudBlobContainer);
+            }
+        };
+
+        ExecutionEngine.execute(m_ServiceClient, this, storageoperation);
     }
 
     protected HashMap m_Metadata;
@@ -357,4 +389,5 @@ public final class CloudBlobContainer
     URI m_ContainerOperationsUri;
     private CloudBlobClient m_ServiceClient;
     AbstractContainerRequest containerRequest;
+    AbstractBlobRequest blobRequest = new BlobWASServiceRequest();
 }

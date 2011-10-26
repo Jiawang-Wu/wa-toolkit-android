@@ -56,7 +56,25 @@ final class ContainerWASServiceRequest implements AbstractContainerRequest
 	    return BaseRequest.delete(containerOperationsUri, 0, uriquerybuilder);
 	}
 
-	/*
+    public HttpGet list(URI uri, String prefix, ContainerListingDetails containerlistingdetails) throws IOException, URISyntaxException, StorageException
+        {
+    		UriQueryBuilder uriquerybuilder = new UriQueryBuilder();
+    		URI listContainersUri = PathUtility.appendPathToUri(uri, "containers");
+            if(!Utility.isNullOrEmpty(prefix))
+            {
+            	uriquerybuilder.add("containerPrefix", prefix);
+            }
+            return BaseRequest.setURIAndHeaders(new HttpGet(), listContainersUri, uriquerybuilder);
+        }
+
+	@Override
+	public HttpPut setAcl(URI uri,
+			BlobContainerPublicAccessType publicAccess)
+			throws NotImplementedException, IllegalArgumentException, IOException, URISyntaxException, StorageException {
+		return this.create(uri, true, publicAccess != BlobContainerPublicAccessType.OFF);
+	}
+
+    /*
     ContainerRequest()
     {
     }

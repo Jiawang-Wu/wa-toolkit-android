@@ -1,6 +1,6 @@
 package com.windowsazure.samples.android.storageclient;
 
-enum BlobContainerPublicAccessType
+public enum BlobContainerPublicAccessType
 {
 	BLOB,
 	CONTAINER,

@@ -95,6 +95,6 @@ public class WAZServiceAccountCredentials extends StorageCredentials {
 
 	@Override
 	public String containerEndpointPostfix() {
-		return "/SharedAccessSignatureService/container/";
+		return "container/";
 	}
 }

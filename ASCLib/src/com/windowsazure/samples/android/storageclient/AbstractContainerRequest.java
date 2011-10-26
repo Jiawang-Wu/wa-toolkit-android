@@ -1,6 +1,7 @@
 package com.windowsazure.samples.android.storageclient;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
@@ -23,6 +24,10 @@ public interface AbstractContainerRequest {
 	boolean isUsingWasServiceDirectly();
 
 	HttpDelete delete(URI m_ContainerOperationsUri, int timeoutInMs) throws IOException, URISyntaxException, IllegalArgumentException, StorageException;
+
+	HttpGet list(URI uri, String prefix, ContainerListingDetails containerlistingdetails) throws NotImplementedException, IOException, URISyntaxException, StorageException;
+
+	HttpPut setAcl(URI m_ContainerOperationsUri, BlobContainerPublicAccessType publicAccess) throws NotImplementedException, IllegalArgumentException, IOException, URISyntaxException, StorageException;
 
 }
 
