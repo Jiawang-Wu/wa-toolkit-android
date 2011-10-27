@@ -93,12 +93,9 @@ public class DeleteItemDisplay extends Activity implements OnItemClickListener
 	        {
 	        	if (listSubtype == ModifyItemDisplay.MODIFY_ITEM_SUBTYPE_CONTAINER)
 	        	{
-	        		AzureContainerCollection containers = new AzureBlobManager(ProxySelector.credential).listAllContainers();
-	        		Iterator<AzureContainer> iterator = containers.iterator();
-	          		while (iterator.hasNext())
+	        		for (CloudBlobContainer container : ProxySelector.blobClient.listContainers())
 	        		{
-	        			AzureContainer container = iterator.next();
-	        			items.add(container.getContainerName());
+	        			items.add(container.getName());
 	        		}
 	        	}
 	        	else if (listSubtype == ModifyItemDisplay.MODIFY_ITEM_SUBTYPE_BLOB)

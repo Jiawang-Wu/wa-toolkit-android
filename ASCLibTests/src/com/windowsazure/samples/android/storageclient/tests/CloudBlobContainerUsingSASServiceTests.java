@@ -338,7 +338,8 @@ public abstract class CloudBlobContainerUsingSASServiceTests<T extends WAZServic
 		CloudBlobContainer container = new CloudBlobContainer(containerName, cloudBlobClient);
 		this.AssertHaveSameElements(this.getBlobNames(container.listBlobs()),
 				Arrays.asList(new String[]{blobName}));
-	}*/
+	}
+	*/
 	/** Listing blob's SASs - END **/
 
 	private <T> void AssertHaveSameElements(Collection<T> firstCollection, Collection<T> secondCollection) {
