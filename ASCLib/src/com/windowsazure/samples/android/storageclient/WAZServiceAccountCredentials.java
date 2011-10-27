@@ -1,14 +1,14 @@
-package com.windowsazure.samples.android.storageclient.wazservice;
+package com.windowsazure.samples.android.storageclient;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
+import java.util.HashMap;
 
 import org.apache.http.client.methods.HttpRequestBase;
 
-import com.windowsazure.samples.android.storageclient.NotImplementedException;
-import com.windowsazure.samples.android.storageclient.StorageCredentials;
-import com.windowsazure.samples.android.storageclient.StorageException;
 
 public class WAZServiceAccountCredentials extends StorageCredentials {
 
@@ -83,7 +83,7 @@ public class WAZServiceAccountCredentials extends StorageCredentials {
 	protected Boolean canCredentialsSignRequestLite()
 			throws NotImplementedException {
 		// TODO Auto-generated method stub
-		return null;
+		return true;
 	}
 
 	@Override
@@ -96,5 +96,13 @@ public class WAZServiceAccountCredentials extends StorageCredentials {
 	@Override
 	public String containerEndpointPostfix() {
 		return "container/";
+	}
+
+	@Override
+	StorageCredentials credentialsForBlobOf(CloudBlobContainer cloudBlobContainer) throws IllegalArgumentException, UnsupportedEncodingException, NotImplementedException, URISyntaxException, StorageException, IOException {
+		URI uri = cloudBlobContainer.getTransformedAddress();
+		String decoded = uri.toString().replace("&amp;", "&");
+		HashMap<String, String[]> arguments = PathUtility.parseQueryString(decoded);
+		return SharedAccessSignatureHelper.parseQuery(arguments);
 	}
 }

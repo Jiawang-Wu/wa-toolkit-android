@@ -12,6 +12,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -25,7 +26,7 @@ class ListBlobsResponse
     }
 
     public ArrayList<CloudBlob> getBlobs(CloudBlobClient cloudblobclient, CloudBlobContainer cloudblobcontainer)
-        throws StorageException, NotImplementedException, SAXException, IOException, ParserConfigurationException
+        throws StorageException, NotImplementedException, SAXException, IOException, ParserConfigurationException, URISyntaxException, StorageInnerException
     {
         if(!m_IsParsed)
             parseResponse(cloudblobclient, cloudblobcontainer);
@@ -58,7 +59,7 @@ class ListBlobsResponse
     }
 
     public void parseResponse(CloudBlobClient cloudblobclient, CloudBlobContainer cloudblobcontainer)
-        throws StorageException, NotImplementedException, SAXException, IOException, ParserConfigurationException
+        throws StorageException, NotImplementedException, SAXException, IOException, ParserConfigurationException, URISyntaxException, StorageInnerException
     {
     	DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
     	DocumentBuilder builder = factory.newDocumentBuilder();
@@ -67,10 +68,27 @@ class ListBlobsResponse
         NodeList items = root.getElementsByTagName("Blob");
         for (int index = 0; index < items.getLength(); ++index)
         {
-        	String name = items.item(index).getFirstChild().getFirstChild().getNodeValue();
-        	String url = items.item(index).getLastChild().getFirstChild().getNodeValue();
-        	//m_Blobs.add(new CloudBlob(name, cloudblobclient));
-        	throw new NotImplementedException();
+        	Element blobElement = (Element) items.item(index);
+        	Element nameElement = (Element) blobElement.getElementsByTagName("Name").item(0);
+        	String name = nameElement.getFirstChild().getNodeValue(); 
+        	Element urlElement = (Element) blobElement.getElementsByTagName("Url").item(0);
+        	Element propertiesElement = (Element) blobElement.getElementsByTagName("Properties").item(0);
+        	Element blobTypeElement = (Element) blobElement.getElementsByTagName("BlobType").item(0);
+        	String blockTypeString = blobTypeElement.getFirstChild().getNodeValue();
+        	CloudBlob blob;
+			if (blockTypeString.equals("BlockBlob"))
+        	{
+				blob = cloudblobcontainer.getBlockBlobReference(name);
+        	}
+        	else if (blockTypeString.equals("PageBlob"))
+        	{
+				blob = cloudblobcontainer.getPageBlobReference(name);
+        	}
+        	else
+        	{
+        		throw new StorageInnerException("Unknown blob type");
+        	}
+        	m_Blobs.add(blob);
         }
     }
 

@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.windowsazure.samples.sample.R;
+import com.windowsazure.samples.android.storageclient.CloudBlob;
 import com.windowsazure.samples.android.storageclient.CloudBlobContainer;
 import com.windowsazure.samples.blob.AzureBlob;
 import com.windowsazure.samples.blob.AzureBlobCollection;
@@ -96,13 +97,11 @@ public class ListDisplay extends Activity implements OnItemClickListener
 	        	}
 	        	else
 	        	{
-	        		AzureBlobCollection blobs = new AzureBlobManager(ProxySelector.credential).listAllBlobs((String)this.getTitle());
-	        		Iterator<AzureBlob> iterator = blobs.iterator();
-	          		while (iterator.hasNext())
-	        		{
-	        			AzureBlob blob = iterator.next();
-	        			items.add(blob.getBlobName());
-	        		}
+	        		CloudBlobContainer container = ProxySelector.blobClient.getContainerReference((String) this.getTitle());
+	    	        for (CloudBlob blob : container.listBlobs())
+	    	        {
+	    	        	items.add(blob.getName());
+	    	        }
 	        	}
 	        }
 	        else if (listType == StorageTypeSelector.STORAGE_TYPE_QUEUE)

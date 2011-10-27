@@ -42,7 +42,7 @@ public class ProxyLogin extends Activity
 			ProxySelector.credential = AuthenticationTokenFactory.buildProxyToken(host, username, password);
 			ProxySelector.blobClient = new WAZServiceAccount(
 					new WAZServiceUsernameAndPassword(username, password), 
-					new URI("http://" + host + ":10080")).createCloudBlobClient();
+					new URI("https://" + host)).createCloudBlobClient();
 	    	Intent launchStorageTypeSelector = new Intent(this, StorageTypeSelector.class);
 	    	startActivity (launchStorageTypeSelector);
 		}

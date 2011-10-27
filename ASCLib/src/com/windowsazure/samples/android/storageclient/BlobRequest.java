@@ -1,9 +1,12 @@
 package com.windowsazure.samples.android.storageclient;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPut;
 
 final class BlobRequest implements AbstractBlobRequest
 {
@@ -16,6 +19,19 @@ final class BlobRequest implements AbstractBlobRequest
 	public HttpGet list(URI endpoint, CloudBlobContainer container, String s,
 			boolean useFlatBlobListing) throws URISyntaxException,
 			IllegalArgumentException, StorageException, NotImplementedException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public void addMetadata(HttpPut request, HashMap metadata) {
+		BaseRequest.addMetadata(request, metadata);
+	}
+
+	@Override
+	public HttpPut put(URI transformedAddress, int timeoutInMs,
+			BlobProperties m_Properties, BlobType blobType, String leaseID,
+			long l) throws IOException, URISyntaxException, StorageException {
 		// TODO Auto-generated method stub
 		return null;
 	}

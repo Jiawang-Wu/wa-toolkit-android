@@ -23,7 +23,8 @@ public final class CloudBlockBlob extends CloudBlob
     public CloudBlockBlob(URI uri, CloudBlobClient cloudblobclient, CloudBlobContainer cloudblobcontainer)
         throws NotImplementedException, StorageException
     {
-    	throw new NotImplementedException();
+        super(uri, cloudblobclient, cloudblobcontainer);
+        m_Properties.blobType = BlobType.BLOCK_BLOB;
     }
 
     public CloudBlockBlob(URI uri, String s, CloudBlobClient cloudblobclient)
@@ -71,13 +72,21 @@ public final class CloudBlockBlob extends CloudBlob
     public void upload(InputStream inputstream, long l)
         throws NotImplementedException, StorageException, IOException
     {
-    	throw new NotImplementedException();
+        upload(inputstream, l, null);
     }
 
-    public void upload(InputStream inputstream, long l, String s)
+    public void upload(InputStream inputstream, long length, String leaseID)
         throws NotImplementedException, StorageException, IOException
     {
-    	throw new NotImplementedException();
+        if(length < -1L)
+            throw new IllegalArgumentException("Invalid stream length, specify -1 for unkown length stream, or a positive number of bytes");
+        if(inputstream.markSupported() && length < 0L)
+        {
+            inputstream.mark(0x7fffffff);
+        	length = inputstream.skip(0x7fffffff);
+        	inputstream.reset();
+        }
+        uploadFullBlob(inputstream, length, leaseID);
     }
 
     public void uploadBlock(String s, String s1, InputStream inputstream, long l)

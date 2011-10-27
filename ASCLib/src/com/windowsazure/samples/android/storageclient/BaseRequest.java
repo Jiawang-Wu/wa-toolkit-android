@@ -75,21 +75,21 @@ final class BaseRequest
             return request;
         }
 
-    /*
-    BaseRequest()
+    public static void addOptionalHeader(HttpRequestBase request, String s, String s1)
     {
+        if(s1 != null && !s1.equals(""))
+            request.addHeader(s, s1);
     }
 
-    public static void addLeaseId(HttpBaseRequest request, String s)
+    public static void addLeaseId(HttpRequestBase request, String s)
     {
         if(s != null)
             addOptionalHeader(request, "x-ms-lease-id", s);
     }
 
-    public static void addOptionalHeader(HttpBaseRequest request, String s, String s1)
+    /*
+    BaseRequest()
     {
-        if(s1 != null && !s1.equals(""))
-            request.setRequestProperty(s, s1);
     }
 
     public static void addSnapshot(UriQueryBuilder uriquerybuilder, String s)
@@ -99,43 +99,43 @@ final class BaseRequest
             uriquerybuilder.add("snapshot", s);
     }
 
-    public static HttpBaseRequest getMetadata(URI uri, int i, UriQueryBuilder uriquerybuilder)
+    public static HttpRequestBase getMetadata(URI uri, int i, UriQueryBuilder uriquerybuilder)
         throws StorageException, IOException, URISyntaxException
     {
         if(uriquerybuilder == null)
             uriquerybuilder = new UriQueryBuilder();
         uriquerybuilder.add("comp", "metadata");
-        HttpBaseRequest request = createURLConnection(uri, i, uriquerybuilder);
+        HttpRequestBase request = createURLConnection(uri, i, uriquerybuilder);
         request.setDoOutput(true);
         request.setRequestMethod("HEAD");
         return request;
     }
 
-    public static HttpBaseRequest getProperties(URI uri, int i, UriQueryBuilder uriquerybuilder)
+    public static HttpRequestBase getProperties(URI uri, int i, UriQueryBuilder uriquerybuilder)
         throws IOException, URISyntaxException, StorageException
     {
         if(uriquerybuilder == null)
             uriquerybuilder = new UriQueryBuilder();
-        HttpBaseRequest request = createURLConnection(uri, i, uriquerybuilder);
+        HttpRequestBase request = createURLConnection(uri, i, uriquerybuilder);
         request.setDoOutput(true);
         request.setRequestMethod("HEAD");
         return request;
     }
 
-    public static HttpBaseRequest setMetadata(URI uri, int i, UriQueryBuilder uriquerybuilder)
+    public static HttpRequestBase setMetadata(URI uri, int i, UriQueryBuilder uriquerybuilder)
         throws IOException, URISyntaxException, StorageException
     {
         if(uriquerybuilder == null)
             uriquerybuilder = new UriQueryBuilder();
         uriquerybuilder.add("comp", "metadata");
-        HttpBaseRequest request = createURLConnection(uri, i, uriquerybuilder);
+        HttpRequestBase request = createURLConnection(uri, i, uriquerybuilder);
         request.setFixedLengthStreamingMode(0);
         request.setDoOutput(true);
         request.setRequestMethod("PUT");
         return request;
     }
 
-    public static void signRequestForBlobAndQueue(HttpBaseRequest request, Credentials credentials, Long long1)
+    public static void signRequestForBlobAndQueue(HttpRequestBase request, Credentials credentials, Long long1)
         throws InvalidKeyException, StorageException
     {
         request.setRequestProperty("x-ms-date", Utility.getGMTTime());
@@ -147,7 +147,7 @@ final class BaseRequest
         }));
     }
 
-    public static void signRequestForBlobAndQueueSharedKeyLite(HttpBaseRequest request, Credentials credentials, Long long1)
+    public static void signRequestForBlobAndQueueSharedKeyLite(HttpRequestBase request, Credentials credentials, Long long1)
         throws InvalidKeyException, StorageException
     {
         request.setRequestProperty("x-ms-date", Utility.getGMTTime());

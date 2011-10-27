@@ -5,9 +5,8 @@ import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.util.*;
 
-public final class CloudStorageAccount
+public final class CloudStorageAccount implements CloudClientAccount
 {
-
     public static CloudStorageAccount getDevelopmentStorageAccount() throws NotImplementedException, NotImplementedException
     {
     	throw new NotImplementedException();

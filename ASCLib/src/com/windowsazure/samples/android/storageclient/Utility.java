@@ -10,6 +10,7 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
@@ -38,6 +39,51 @@ public class Utility {
 		return !isNullOrEmpty(s1) && s1.startsWith(accountName);
 	}
 
+    protected static String safeRelativize(URI uri, URI uri1)
+            throws URISyntaxException
+        {
+            if(!uri.getHost().equals(uri1.getHost()) || !uri.getScheme().equals(uri1.getScheme()))
+                return uri1.toString();
+            String s = uri.getPath();
+            String s1 = uri1.getPath();
+            int i = 1;
+            int j = 0;
+            int k = 0;
+            for(; j < s.length(); j++)
+            {
+                if(j >= s1.length())
+                {
+                    if(s.charAt(j) == '/')
+                        k++;
+                    continue;
+                }
+                if(s.charAt(j) != s1.charAt(j))
+                    break;
+                if(s.charAt(j) == '/')
+                    i = j + 1;
+            }
+
+            if(j == s1.length())
+                return (new URI(null, null, null, uri1.getQuery(), uri1.getFragment())).toString();
+            s1 = s1.substring(i);
+            StringBuilder stringbuilder = new StringBuilder();
+            for(; k > 0; k--)
+                stringbuilder.append("../");
+
+            if(!isNullOrEmpty(s1))
+                stringbuilder.append(s1);
+            if(!isNullOrEmpty(uri1.getQuery()))
+            {
+                stringbuilder.append("?");
+                stringbuilder.append(uri1.getQuery());
+            }
+            if(!isNullOrEmpty(uri1.getFragment()))
+            {
+                stringbuilder.append("#");
+                stringbuilder.append(uri1.getRawFragment());
+            }
+            return stringbuilder.toString();
+        }
     protected static String getUTCTimeOrEmpty(Date date)
     {
         if(date == null)

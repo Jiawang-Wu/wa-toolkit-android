@@ -17,6 +17,20 @@ public class PathUtility {
             return addToQuery(uri, parseQueryString(s));
         }
 
+    protected static String getBlobNameFromURI(URI uri, boolean flag)
+            throws URISyntaxException
+        {
+            return Utility.safeRelativize(new URI(getContainerURI(uri, flag).toString().concat("/")), uri);
+        }
+
+    public static URI getContainerURI(URI uri, boolean flag)
+            throws URISyntaxException
+        {
+            String s = getContainerNameFromUri(uri, flag);
+            URI uri1 = appendPathToUri(new URI(getServiceClientBaseAddress(uri, flag)), s);
+            return uri1;
+        }
+
     public static URI addToQuery(URI uri, HashMap hashmap)
             throws URISyntaxException, StorageException
         {
@@ -128,8 +142,8 @@ public class PathUtility {
 		}
 	}
 
-	public static HashMap parseQueryString(String s) throws StorageException {
-		HashMap hashmap = new HashMap();
+	public static HashMap<String, String[]> parseQueryString(String s) throws StorageException {
+		HashMap<String, String[]> hashmap = new HashMap<String, String[]>();
 		if (Utility.isNullOrEmpty(s))
 			return hashmap;
 		int i = s.indexOf("?");

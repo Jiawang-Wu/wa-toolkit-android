@@ -1,11 +1,14 @@
 package com.windowsazure.samples.android.storageclient.tests;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import junit.framework.Assert;
 import android.test.AndroidTestCase;
 
 public abstract class TestCase extends AndroidTestCase {
 //public abstract class TestCase extends junit.framework.TestCase {
-	 public <T extends Exception> void assertThrows(RunnableWithExpectedException runnable, Class<T> exceptionClass) throws Exception
+	protected <T extends Exception> void assertThrows(RunnableWithExpectedException runnable, Class<T> exceptionClass) throws Exception
 	 {
 		 try
 		 {
@@ -24,4 +27,17 @@ public abstract class TestCase extends AndroidTestCase {
 		       }
 		 }
 	 }
+		protected <T> void AssertHaveSameElements(Collection<T> firstCollection, Collection<T> secondCollection) {
+			Assert.assertEquals(firstCollection.size(), secondCollection.size());
+			Assert.assertFalse(firstCollection.retainAll(secondCollection));
+			Assert.assertFalse(secondCollection.retainAll(firstCollection));
+		}
+		protected <T> ArrayList<T> toList(Iterable<T> iterable) {
+		ArrayList<T> list = new ArrayList<T>();
+		for (T element : iterable)
+		{
+			list.add(element);
+		}
+		return list;
+	}
 }

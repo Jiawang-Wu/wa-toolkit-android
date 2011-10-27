@@ -1,6 +1,7 @@
 package com.windowsazure.samples.android.storageclient;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.*;
 import java.security.InvalidKeyException;
 
@@ -59,7 +60,8 @@ public final class CloudBlobClient
     public CloudBlobContainer getContainerReference(String s)
         throws NotImplementedException, URISyntaxException, StorageException
     {
-    	throw new NotImplementedException();
+        Utility.assertNotNullOrEmpty("containerAddress", s);
+        return new CloudBlobContainer(s, this);
     }
 
     public StorageCredentials getCredentials()
@@ -238,4 +240,18 @@ public final class CloudBlobClient
     private String m_DirectoryDelimiter;
     private int m_TimeoutInMs;
     private AbstractContainerRequest containerRequest = new ContainerWASServiceRequest();
+	CloudBlobClient clientForBlobOf(CloudBlobContainer cloudBlobContainer) throws UnsupportedEncodingException, StorageException, NotImplementedException, IOException, URISyntaxException
+	{
+		StorageCredentials credentials = this.getCredentials().credentialsForBlobOf(cloudBlobContainer);
+		if (credentials == this.getCredentials())
+		{
+			return this;
+		}
+		else
+		{
+			URI containerUri = cloudBlobContainer.getUri();
+			URI uri = new URI(containerUri.getScheme() + "://" + containerUri.getAuthority());
+			return new CloudBlobClient(uri, credentials);
+		}
+	}
 }

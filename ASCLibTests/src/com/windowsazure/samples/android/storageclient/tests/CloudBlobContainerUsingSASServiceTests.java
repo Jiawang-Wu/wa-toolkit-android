@@ -34,7 +34,7 @@ import com.windowsazure.samples.android.storageclient.NotImplementedException;
 import com.windowsazure.samples.android.storageclient.StorageException;
 import com.windowsazure.samples.android.storageclient.StorageInnerException;
 
-public abstract class CloudBlobContainerUsingSASServiceTests<T extends WAZServiceAccountProvider> extends TestCaseWithManagedResources {
+public abstract class CloudBlobContainerUsingSASServiceTests<T extends WAZServiceAccountProvider> extends CloudBlobClientBasedTest<T> {
 	
 	/** Invalid attempts to create containers - START **/
 	public void testCreateContainerWithInvalidNameThrowsException()
@@ -300,7 +300,8 @@ public abstract class CloudBlobContainerUsingSASServiceTests<T extends WAZServic
 		URI uri = container.getUri();
 		Assert.assertTrue(uri.getAuthority().endsWith(".blob.core.windows.net"));
 		Assert.assertEquals(uri.getPath(), "/testcontainerurihasproperpattern");
-		String query = uri.getQuery();
+		/*
+		 String query = uri.getQuery();
 		String[] arguments = query.split("&");
 		ArrayList<String> argumentNames = new ArrayList<String>();
 		for (String argument : arguments)
@@ -311,6 +312,7 @@ public abstract class CloudBlobContainerUsingSASServiceTests<T extends WAZServic
 		Assert.assertTrue(argumentNames.contains("amp;sr"));
 		Assert.assertTrue(argumentNames.contains("amp;sp"));
 		Assert.assertTrue(argumentNames.contains("amp;sig"));
+		*/
 	}
 	/** Getting container SAS - END **/
 
@@ -342,74 +344,11 @@ public abstract class CloudBlobContainerUsingSASServiceTests<T extends WAZServic
 	*/
 	/** Listing blob's SASs - END **/
 
-	private <T> void AssertHaveSameElements(Collection<T> firstCollection, Collection<T> secondCollection) {
-		Assert.assertEquals(firstCollection.size(), secondCollection.size());
-		Assert.assertFalse(firstCollection.retainAll(secondCollection));
-		Assert.assertFalse(secondCollection.retainAll(firstCollection));
-	}
 
-		private ArrayList<String> getContainerNames(Iterable<CloudBlobContainer> containers) throws NotImplementedException 
-		{
-			ArrayList<String> names = new ArrayList<String>();
-			for(CloudBlobContainer container : containers)
-			{
-				names.add(container.getName());
-			}
-			return names;
-		}
-
-		private ArrayList<String> getBlobNames(Iterable<CloudBlob> blobs) throws NotImplementedException, URISyntaxException 
-		{
-			ArrayList<String> names = new ArrayList<String>();
-			for(CloudBlob blob : blobs)
-			{
-				names.add(blob.getName());
-			}
-			return names;
-		}
-
-		private <T> ArrayList<T> toList(Iterable<T> iterable) {
-		ArrayList<T> list = new ArrayList<T>();
-		for (T element : iterable)
-		{
-			list.add(element);
-		}
-		return list;
-	}
-
-	private CloudBlobContainer createContainer(String containerName) throws StorageException, NotImplementedException, URISyntaxException, UnsupportedEncodingException, IOException {
-		final CloudBlobContainer container = new CloudBlobContainer(containerName, cloudBlobClient);
-		container.create();
-		this.addCleanUp(new ResourceCleaner()
-		{
-			public void clean() throws NotImplementedException, StorageException, UnsupportedEncodingException, IOException
-			{
-				try
-				{
-					container.delete();
-				} catch (Exception e) {
-				}
-			}
-		});
-		return container; 
-	}
-
-	public void setUp()
+protected void setUp()
 	{
+		super.setUp();
 		thisTest = this;
-		try {
-			T accountProvider = SuperClassTypeParameterCreator.create(this, 0);
-			cloudBlobClient = accountProvider.getCloudBlobClient();
-			otherCloudBlobClient = accountProvider.getCloudBlobClientWithDifferentAccount();
-		} catch (Exception e) {
-			e.printStackTrace();
-			Assert.fail();
-		}
 	}
-
-	private CloudBlobClient cloudBlobClient;
-
-	private CloudBlobClient otherCloudBlobClient;
-	
 	private CloudBlobContainerUsingSASServiceTests<T> thisTest;
 }

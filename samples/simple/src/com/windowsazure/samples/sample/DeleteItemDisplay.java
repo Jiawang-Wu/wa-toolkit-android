@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.windowsazure.samples.sample.R;
+import com.windowsazure.samples.android.storageclient.CloudBlob;
 import com.windowsazure.samples.android.storageclient.CloudBlobContainer;
 import com.windowsazure.samples.android.storageclient.CloudStorageAccount;
 import com.windowsazure.samples.blob.AzureBlob;
@@ -100,13 +101,13 @@ public class DeleteItemDisplay extends Activity implements OnItemClickListener
 	        	}
 	        	else if (listSubtype == ModifyItemDisplay.MODIFY_ITEM_SUBTYPE_BLOB)
 	        	{
-	        		AzureBlobCollection blobs = new AzureBlobManager(ProxySelector.credential).listAllBlobs(blobName);
-	        		Iterator<AzureBlob> iterator = blobs.iterator();
-	          		while (iterator.hasNext())
-	        		{
-	        			AzureBlob blob = iterator.next();
-	        			items.add(blob.getBlobName());
-	        		}
+	        		String[] parts = blobName.split("/");
+	        		CloudBlobContainer container = ProxySelector.blobClient.getContainerReference(parts[0]);
+	        		String properBlobName = blobName.substring(parts[0].length() + 1);
+	    	    	for (CloudBlob blob : container.listBlobs(properBlobName))
+	    	    	{
+	    	    		items.add(blob.getName());
+	    	    	}
 	        	}
 	        }
 	        else if (listType == StorageTypeSelector.STORAGE_TYPE_QUEUE)

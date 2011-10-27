@@ -2,7 +2,6 @@ package com.windowsazure.samples.sample;
 
 import com.windowsazure.samples.android.storageclient.CloudBlobClient;
 import com.windowsazure.samples.android.storageclient.StorageCredentials;
-import com.windowsazure.samples.android.storageclient.wazservice.WAZServiceAccountCredentials;
 import com.windowsazure.samples.authentication.AuthenticationToken;
 import com.windowsazure.samples.authentication.AuthenticationTokenFactory;
 import com.windowsazure.samples.sample.R;

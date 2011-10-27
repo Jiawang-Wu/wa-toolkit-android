@@ -1,5 +1,7 @@
 package com.windowsazure.samples.android.storageclient;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.*;
 import java.security.InvalidKeyException;
 import java.util.HashMap;
@@ -53,4 +55,6 @@ public abstract class StorageCredentials
     protected abstract Boolean doCredentialsNeedTransformUri() throws NotImplementedException;
 
 	public abstract String containerEndpointPostfix();
+
+	abstract StorageCredentials credentialsForBlobOf(CloudBlobContainer cloudBlobContainer) throws IllegalArgumentException, UnsupportedEncodingException, NotImplementedException, URISyntaxException, StorageException, IOException;
 }

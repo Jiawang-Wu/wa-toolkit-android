@@ -5,19 +5,29 @@ import java.util.Date;
 public final class BlobProperties
 {
 
-    public BlobProperties() throws NotImplementedException
+    public BlobProperties()
     {
-    	throw new NotImplementedException();
+        blobType = BlobType.UNSPECIFIED;
+        leaseStatus = LeaseStatus.UNLOCKED;
     }
 
-    public BlobProperties(BlobProperties blobproperties) throws NotImplementedException
+    public BlobProperties(BlobProperties blobproperties)
     {
-    	throw new NotImplementedException();
+        blobType = BlobType.UNSPECIFIED;
+        leaseStatus = LeaseStatus.UNLOCKED;
+        blobType = blobproperties.blobType;
+        contentEncoding = blobproperties.contentEncoding;
+        contentLanguage = blobproperties.contentLanguage;
+        contentType = blobproperties.contentType;
+        eTag = blobproperties.eTag;
+        leaseStatus = blobproperties.leaseStatus;
+        length = blobproperties.length;
+        lastModified = blobproperties.lastModified;
     }
 
-    public BlobType getBlobType() throws NotImplementedException
+    public BlobType getBlobType()
     {
-    	throw new NotImplementedException();
+        return blobType;
     }
 
     protected BlobType blobType;

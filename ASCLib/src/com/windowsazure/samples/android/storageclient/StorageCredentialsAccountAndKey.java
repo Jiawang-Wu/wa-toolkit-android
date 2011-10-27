@@ -98,4 +98,9 @@ public final class StorageCredentialsAccountAndKey extends StorageCredentials
 	public String containerEndpointPostfix() {
 		return "";
 	}
+
+	@Override
+	StorageCredentials credentialsForBlobOf(CloudBlobContainer cloudBlobContainer) {
+		return this;
+	}
 }

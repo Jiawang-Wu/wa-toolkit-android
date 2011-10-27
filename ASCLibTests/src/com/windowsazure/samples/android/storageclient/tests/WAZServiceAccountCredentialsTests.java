@@ -15,12 +15,6 @@ public abstract class WAZServiceAccountCredentialsTests<T extends WAZServiceAcco
 
 	private T accountProvider = SuperClassTypeParameterCreator.create( this, 0 );
 	
-	public void testAuthentificationTokenIsValidAfterLogin() throws Exception {
-		String token = accountProvider.getAccount()
-				.loginToWAZService();
-		Assert.assertTrue(token != "");
-	}
-
 	public void testLoginWithNonExistantUsernameThrowsException()
 			throws Exception {
 		final WAZServiceAccount account = new WAZServiceAccount(

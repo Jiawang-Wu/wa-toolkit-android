@@ -5,17 +5,19 @@ import java.net.URISyntaxException;
 
 import javax.security.auth.login.LoginException;
 
+import com.windowsazure.samples.android.storageclient.CloudClientAccount;
 import com.windowsazure.samples.android.storageclient.NotImplementedException;
 import com.windowsazure.samples.android.storageclient.PathUtility;
 import com.windowsazure.samples.android.storageclient.StorageCredentials;
 import com.windowsazure.samples.android.storageclient.CloudBlobClient;
+import com.windowsazure.samples.android.storageclient.WAZServiceAccountCredentials;
 import com.windowsazure.samples.android.storageclient.internal.web.XmlHttp;
 import com.windowsazure.samples.android.storageclient.internal.web.XmlHttpResult;
 import com.windowsazure.samples.android.storageclient.internal.xml.DOMAdapter;
 import com.windowsazure.samples.android.storageclient.internal.xml.DOMBuilder;
 import com.windowsazure.samples.android.storageclient.internal.xml.XmlNode;
 
-public class WAZServiceAccount {
+public class WAZServiceAccount implements CloudClientAccount {
 
 	private WAZServiceUsernameAndPassword m_WazServiceData;
 	private URI m_WazServiceBaseUri;

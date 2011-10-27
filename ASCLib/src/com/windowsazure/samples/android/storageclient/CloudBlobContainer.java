@@ -184,9 +184,11 @@ public final class CloudBlobContainer
     }
 
     public CloudBlockBlob getBlockBlobReference(String s)
-        throws NotImplementedException, URISyntaxException, StorageException
+        throws NotImplementedException, URISyntaxException, StorageException, UnsupportedEncodingException, IOException
     {
-    	throw new NotImplementedException();
+        Utility.assertNotNullOrEmpty("blobAddressUri", s);
+        URI uri = PathUtility.appendPathToUri(this.getUri(), s);
+        return new CloudBlockBlob(uri, m_ServiceClient.clientForBlobOf(this), this);
     }
 
     public CloudBlockBlob getBlockBlobReference(String s, String s1)
@@ -239,14 +241,40 @@ public final class CloudBlobContainer
     }
 
     protected URI getTransformedAddress()
-        throws NotImplementedException, IllegalArgumentException, URISyntaxException, StorageException
+        throws NotImplementedException, IllegalArgumentException, URISyntaxException, StorageException, UnsupportedEncodingException, IOException
     {
-    	throw new NotImplementedException();
+    	if (!containerRequest.isUsingWasServiceDirectly())
+    	{
+    		return this.getUriWithSas();
+    	}
+    	
+    	URI uri = this.getUri();
+        if(m_ServiceClient.getCredentials().doCredentialsNeedTransformUri().booleanValue())
+        {
+            if(uri.isAbsolute())
+            {
+                return m_ServiceClient.getCredentials().transformUri(uri);
+            } 
+            else
+            {
+                StorageException storageexception = Utility.generateNewUnexpectedStorageException(null);
+                storageexception.extendedErrorInformation.errorMessage = "Blob Object relative URIs not supported.";
+                throw storageexception;
+            }
+        } 
+        else
+        {
+            return uri;
+        }
     }
 
-    public URI getUri() throws StorageException, NotImplementedException, UnsupportedEncodingException, IOException
+    private URI getUriWithSas() throws StorageException, NotImplementedException, UnsupportedEncodingException, IOException, IllegalArgumentException, URISyntaxException
     {
-   	
+    	if (containerRequest.isUsingWasServiceDirectly())
+    	{
+    		return this.getTransformedAddress();
+    	}
+
     	class GetSASResponseDOMAdapter extends DOMAdapter<URI> {
     		
     		public GetSASResponseDOMAdapter(String xmlString) {
@@ -259,12 +287,7 @@ public final class CloudBlobContainer
     			return new URI(getRootNode().getInnerText());
     		}
     	}
-    	
-    	if (containerRequest.isUsingWasServiceDirectly())
-    	{
-    		return this.m_ContainerOperationsUri;
-    	}
-    	
+   	
         StorageOperation storageoperation = new StorageOperation()
         {
             public URI execute(CloudBlobClient cloudblobclient, CloudBlobContainer cloudblobcontainer)
@@ -292,6 +315,18 @@ public final class CloudBlobContainer
         };
         
         return (URI)ExecutionEngine.execute(m_ServiceClient, this, storageoperation);
+    }
+    
+    public URI getUri() throws StorageException, NotImplementedException, UnsupportedEncodingException, IOException, IllegalArgumentException, URISyntaxException
+    {
+    	if (containerRequest.isUsingWasServiceDirectly())
+    	{
+    		return this.m_ContainerOperationsUri;
+    	}
+    	else
+    	{
+    		return PathUtility.stripURIQueryAndFragment(this.getTransformedAddress());
+    	}
     }
 
     public Iterable<CloudBlob> listBlobs() throws StorageInnerException, Exception
