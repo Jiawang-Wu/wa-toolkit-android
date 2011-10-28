@@ -22,9 +22,20 @@ public abstract class StorageCredentials
     }
 
     protected static StorageCredentials tryParseCredentials(HashMap hashmap)
-        throws NotImplementedException, InvalidKeyException
+        throws InvalidKeyException, IllegalArgumentException, NotImplementedException
     {
-    	throw new NotImplementedException();
+        String s = hashmap.get("AccountName") == null ? null : (String)hashmap.get("AccountName");
+        String s1 = hashmap.get("AccountKey") == null ? null : (String)hashmap.get("AccountKey");
+        String s2 = hashmap.get("SharedAccessSignature") == null ? null : (String)hashmap.get("SharedAccessSignature");
+        if(s != null && s1 != null && s2 == null)
+            if(Base64.validateIsBase64String(s1).booleanValue())
+                return new StorageCredentialsAccountAndKey(s, s1);
+            else
+                throw new InvalidKeyException("Storage Key is not a valid base64 encoded string.");
+        if(s == null && s1 == null && s2 != null)
+            return new StorageCredentialsSharedAccessSignature(s2);
+        else
+            return null;
     }
 
     public abstract String computeHmac256(String s)
@@ -36,7 +47,7 @@ public abstract class StorageCredentials
     public abstract String getAccountName();
 
     public abstract void signRequest(HttpRequestBase request, long l)
-        throws NotImplementedException, InvalidKeyException, StorageException;
+        throws NotImplementedException, InvalidKeyException, StorageException, MalformedURLException;
 
     public abstract void signRequestLite(HttpRequestBase request, long l)
         throws NotImplementedException, StorageException, InvalidKeyException;

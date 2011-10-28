@@ -10,13 +10,13 @@ import org.apache.http.client.methods.HttpRequestBase;
 
 final class ContainerResponse extends BaseResponse
 {
-    public static BlobContainerAttributes getAttributes(URI originalUri, RequestResult result, boolean flag)
+    public static BlobContainerAttributes getAttributes(URI originalUri, RequestResult result)
             throws StorageException
         {
             BlobContainerAttributes blobcontainerattributes = new BlobContainerAttributes();
             java.net.URI uri = PathUtility.stripURIQueryAndFragment(originalUri);
             blobcontainerattributes.uri = uri;
-            blobcontainerattributes.name = PathUtility.getContainerNameFromUri(uri, flag);
+            blobcontainerattributes.name = PathUtility.getContainerNameFromUri(uri);
             BlobContainerProperties blobcontainerproperties = blobcontainerattributes.properties;
             blobcontainerproperties.eTag = BaseResponse.getEtag(result.httpResponse);
             blobcontainerproperties.lastModified = new Date(result.httpResponse.getFirstHeader("last-modified").getValue());

@@ -34,7 +34,7 @@ public abstract class CloudBlob
         Utility.assertNotNull("serviceClient", serviceClient);
         m_ServiceClient = serviceClient;
         m_Uri = blobAbsoluteUri;
-        parseURIQueryStringAndVerify(blobAbsoluteUri, serviceClient, serviceClient.m_UsePathStyleUris);
+        parseURIQueryStringAndVerify(blobAbsoluteUri, serviceClient);
     }
 
     public CloudBlob(URI uri, CloudBlobClient cloudblobclient, CloudBlobContainer cloudblobcontainer)
@@ -184,7 +184,7 @@ public abstract class CloudBlob
         throws NotImplementedException, URISyntaxException
     {
         if(Utility.isNullOrEmpty(m_Name))
-            m_Name = PathUtility.getBlobNameFromURI(getUri(), m_ServiceClient.m_UsePathStyleUris);
+            m_Name = PathUtility.getBlobNameFromURI(getUri());
         return m_Name;
     }
 
@@ -207,7 +207,19 @@ public abstract class CloudBlob
 
     public CloudBlobClient getServiceClient() throws NotImplementedException, NotImplementedException
     {
-    	throw new NotImplementedException();
+    	if (m_Container != null)
+    	{
+    		return m_Container.getServiceClient();
+    	}
+    	else
+    	{
+    		return m_ServiceClient;
+    	}
+    }
+
+    public StorageCredentials getCredentials()
+    {
+    	return m_ServiceClient.getCredentials();
     }
 
     public String getSnapshotID() throws NotImplementedException, NotImplementedException
@@ -252,7 +264,7 @@ public abstract class CloudBlob
     	throw new NotImplementedException();
     }
 
-    private void parseURIQueryStringAndVerify(URI resourceUri, CloudBlobClient serviceClient, boolean usePathStyleUris)
+    private void parseURIQueryStringAndVerify(URI resourceUri, CloudBlobClient serviceClient)
         throws NotImplementedException, StorageException
     {
         Utility.assertNotNull("resourceUri", resourceUri);
@@ -275,17 +287,17 @@ public abstract class CloudBlob
         {
             return;
         }
-        Boolean boolean1 = Boolean.valueOf(serviceClient != null ? Utility.areCredentialsEqual(credentialsSAS, serviceClient.getCredentials()) : false);
-        if(serviceClient == null || !boolean1.booleanValue())
+        boolean useServiceClientCredentials = serviceClient != null ? Utility.areCredentialsEqual(credentialsSAS, serviceClient.getCredentials()) : false;
+        if(serviceClient == null || !useServiceClientCredentials)
             try
             {
-                m_ServiceClient = new CloudBlobClient(new URI(PathUtility.getServiceClientBaseAddress(getUri(), usePathStyleUris)), credentialsSAS);
+                m_ServiceClient = new CloudBlobClient(new URI(PathUtility.getServiceClientBaseAddress(getUri())), credentialsSAS);
             }
             catch(URISyntaxException urisyntaxexception)
             {
                 throw Utility.generateNewUnexpectedStorageException(urisyntaxexception);
             }
-        if(serviceClient != null && !boolean1.booleanValue())
+        if(serviceClient != null && !useServiceClientCredentials)
         {
             m_ServiceClient.setPageBlobStreamWriteSizeInBytes(serviceClient.getPageBlobStreamWriteSizeInBytes());
             m_ServiceClient.setSingleBlobPutThresholdInBytes(serviceClient.getSingleBlobPutThresholdInBytes());

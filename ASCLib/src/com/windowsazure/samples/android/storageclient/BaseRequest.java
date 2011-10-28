@@ -87,6 +87,16 @@ final class BaseRequest
             addOptionalHeader(request, "x-ms-lease-id", s);
     }
 
+    public static void signRequestForBlobAndQueue(HttpRequestBase request, Credentials credentials, Long contentLength)
+            throws InvalidKeyException, StorageException, MalformedURLException
+        {
+            request.setHeader("x-ms-date", Utility.getGMTTime());
+            Canonicalizer canonicalizer = CanonicalizerFactory.getBlobQueueFullCanonicalizer(request);
+            String s = canonicalizer.canonicalize(request, credentials.getAccountName(), contentLength);
+            String s1 = StorageKey.computeMacSha256(credentials.getKey(), s);
+            request.setHeader("Authorization", String.format("%s %s:%s", "SharedKey", credentials.getAccountName(), s1));
+        }
+
     /*
     BaseRequest()
     {
@@ -133,18 +143,6 @@ final class BaseRequest
         request.setDoOutput(true);
         request.setRequestMethod("PUT");
         return request;
-    }
-
-    public static void signRequestForBlobAndQueue(HttpRequestBase request, Credentials credentials, Long long1)
-        throws InvalidKeyException, StorageException
-    {
-        request.setRequestProperty("x-ms-date", Utility.getGMTTime());
-        Canonicalizer canonicalizer = CanonicalizerFactory.getBlobQueueFullCanonicalizer(request);
-        String s = canonicalizer.canonicalize(request, credentials.getAccountName(), long1);
-        String s1 = StorageKey.computeMacSha256(credentials.getKey(), s);
-        request.setRequestProperty("Authorization", String.format("%s %s:%s", new Object[] {
-            "SharedKey", credentials.getAccountName(), s1
-        }));
     }
 
     public static void signRequestForBlobAndQueueSharedKeyLite(HttpRequestBase request, Credentials credentials, Long long1)

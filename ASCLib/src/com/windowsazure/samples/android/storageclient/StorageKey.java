@@ -12,53 +12,98 @@ public final class StorageKey
 {
 
     public static synchronized String computeMacSha256(StorageKey storagekey, String s)
-        throws NotImplementedException, InvalidKeyException, IllegalArgumentException
+        throws InvalidKeyException, IllegalArgumentException
     {
-    	throw new NotImplementedException();
+        if(storagekey.m_Hmacsha256 == null)
+            storagekey.initHmacSha256();
+        byte abyte0[] = null;
+        try
+        {
+            abyte0 = s.getBytes("UTF8");
+        }
+        catch(UnsupportedEncodingException unsupportedencodingexception)
+        {
+            throw new IllegalArgumentException(unsupportedencodingexception);
+        }
+        return Base64.encode(storagekey.m_Hmacsha256.doFinal(abyte0));
     }
 
     public static synchronized String computeMacSha512(StorageKey storagekey, String s)
-        throws NotImplementedException, IllegalArgumentException, InvalidKeyException
+        throws IllegalArgumentException, InvalidKeyException
     {
-    	throw new NotImplementedException();
+        if(storagekey.m_Hmacsha512 == null)
+            storagekey.initHmacSha512();
+        byte abyte0[] = null;
+        try
+        {
+            abyte0 = s.getBytes("UTF8");
+        }
+        catch(UnsupportedEncodingException unsupportedencodingexception)
+        {
+            throw new IllegalArgumentException(unsupportedencodingexception);
+        }
+        return Base64.encode(storagekey.m_Hmacsha512.doFinal(abyte0));
     }
 
-    public StorageKey(byte abyte0[]) throws NotImplementedException
+    public StorageKey(byte abyte0[])
     {
-    	throw new NotImplementedException();
+        setKey(abyte0);
     }
 
-    public String getBase64EncodedKey() throws NotImplementedException
+    public String getBase64EncodedKey()
     {
-    	throw new NotImplementedException();
+        return Base64.encode(m_Key);
     }
 
-    public byte[] getKey() throws NotImplementedException
+    public byte[] getKey()
     {
-    	throw new NotImplementedException();
+        byte abyte0[] = (byte[])m_Key.clone();
+        return abyte0;
     }
 
-    public void setKey(byte abyte0[]) throws NotImplementedException
+    public void setKey(byte abyte0[])
     {
-    	throw new NotImplementedException();
+        m_Key = abyte0;
+        m_Hmacsha256 = null;
+        m_Hmacsha512 = null;
+        m_Key256 = null;
+        m_Key512 = null;
     }
 
     public void setKey(String s)
-        throws NotImplementedException, IOException
+        throws IOException
     {
-    	throw new NotImplementedException();
+        m_Key = Base64.decode(s);
     }
 
     private void initHmacSha256()
-        throws NotImplementedException, InvalidKeyException
+        throws InvalidKeyException
     {
-    	throw new NotImplementedException();
+        m_Key256 = new SecretKeySpec(m_Key, "HmacSHA256");
+        try
+        {
+            m_Hmacsha256 = Mac.getInstance("HmacSHA256");
+        }
+        catch(NoSuchAlgorithmException nosuchalgorithmexception)
+        {
+            throw new IllegalArgumentException();
+        }
+        m_Hmacsha256.init(m_Key256);
     }
 
     private void initHmacSha512()
-        throws NotImplementedException, InvalidKeyException
+        throws InvalidKeyException
     {
-    	throw new NotImplementedException();
+        m_Key512 = new SecretKeySpec(m_Key, "HmacSHA512");
+        try
+        {
+            m_Hmacsha512 = Mac.getInstance("HmacSHA512");
+        }
+        catch(NoSuchAlgorithmException nosuchalgorithmexception)
+        {
+            throw new IllegalArgumentException();
+        }
+        m_Hmacsha512.init(m_Key512);
     }
 
     private Mac m_Hmacsha256;

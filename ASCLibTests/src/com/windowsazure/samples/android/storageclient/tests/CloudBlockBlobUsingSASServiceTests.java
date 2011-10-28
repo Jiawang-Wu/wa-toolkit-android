@@ -13,11 +13,11 @@ import com.windowsazure.samples.android.storageclient.StorageException;
 import com.windowsazure.samples.android.storageclient.StorageInnerException;
 
 public abstract class CloudBlockBlobUsingSASServiceTests
-	<T extends WAZServiceAccountProvider> extends CloudBlobClientBasedTest<T> 
+	<T extends CloudClientAccountProvider> extends CloudBlobClientBasedTest<T> 
 {
 	public void testCreateBlobInPrivateContainer() throws StorageInnerException, Exception
 	{
-		CloudBlobContainer container = this.createContainer("testcreatedblobislisted");
+		CloudBlobContainer container = this.createContainer("testcreateblobinprivatecontainer");
 		String blobName = "someblob";
 		CloudBlockBlob blob = container.getBlockBlobReference(blobName);
 		ByteArrayInputStream contentsStream = new ByteArrayInputStream("".getBytes()); 

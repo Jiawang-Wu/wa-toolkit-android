@@ -1,27 +1,36 @@
 package com.windowsazure.samples.android.storageclient;
 
-
 public final class Credentials
 {
 
-    public Credentials(String s, byte abyte0[]) throws NotImplementedException, NotImplementedException
+    public Credentials(String s, byte abyte0[])
     {
-    	throw new NotImplementedException();
+        if(s == null || s.length() == 0)
+            throw new IllegalArgumentException("Invalid accountName");
+        if(abyte0 == null)
+        {
+            throw new IllegalArgumentException("Invalid key");
+        } else
+        {
+            m_AccountName = s;
+            m_Key = new StorageKey(abyte0);
+            return;
+        }
     }
 
-    public Credentials(String s, String s1) throws NotImplementedException, NotImplementedException
+    public Credentials(String s, String s1)
     {
-    	throw new NotImplementedException();
+        this(s, Base64.decode(s1));
     }
 
-    public String exportBase64EncodedKey() throws NotImplementedException, NotImplementedException
+    public String exportBase64EncodedKey()
     {
-    	throw new NotImplementedException();
+        return getKey().getBase64EncodedKey();
     }
 
-    public byte[] exportKey() throws NotImplementedException, NotImplementedException
+    public byte[] exportKey()
     {
-    	throw new NotImplementedException();
+        return getKey().getKey();
     }
 
     public String getAccountName()
@@ -29,14 +38,14 @@ public final class Credentials
         return m_AccountName;
     }
 
-    public StorageKey getKey() throws NotImplementedException, NotImplementedException
+    public StorageKey getKey()
     {
-    	throw new NotImplementedException();
+        return m_Key;
     }
 
-    protected void setAccountName(String s) throws NotImplementedException, NotImplementedException
+    protected void setAccountName(String s)
     {
-    	throw new NotImplementedException();
+        m_AccountName = s;
     }
 
     private String m_AccountName;

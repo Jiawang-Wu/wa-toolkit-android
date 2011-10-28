@@ -2,9 +2,12 @@ package com.windowsazure.samples.android.storageclient;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
+
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -15,6 +18,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
+import android.net.Uri;
 
 class ListBlobsResponse
 {
@@ -61,6 +66,9 @@ class ListBlobsResponse
     public void parseResponse(CloudBlobClient cloudblobclient, CloudBlobContainer cloudblobcontainer)
         throws StorageException, NotImplementedException, SAXException, IOException, ParserConfigurationException, URISyntaxException, StorageInnerException
     {
+    	URI containerUri = cloudblobcontainer.getUri();
+    	URI endpoint = new URI(containerUri.getScheme() + "://" + containerUri.getAuthority());
+
     	DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
     	DocumentBuilder builder = factory.newDocumentBuilder();
     	Document dom = builder.parse(m_StreamRef);
@@ -70,15 +78,31 @@ class ListBlobsResponse
         {
         	Element blobElement = (Element) items.item(index);
         	Element nameElement = (Element) blobElement.getElementsByTagName("Name").item(0);
-        	String name = nameElement.getFirstChild().getNodeValue(); 
+        	String name = nameElement.getTextContent(); 
         	Element urlElement = (Element) blobElement.getElementsByTagName("Url").item(0);
+        	String urlString = urlElement.getTextContent();
+        	HashMap<String, String[]> arguments = PathUtility.parseQueryString(urlString);
+        	CloudBlobClient client;
+        	try
+        	{
+        		StorageCredentials credentials = SharedAccessSignatureHelper.parseQuery(arguments);
+            	client = new CloudBlobClient(endpoint, credentials);
+        	}
+        	catch (IllegalArgumentException exception)
+        	{
+            	client = cloudblobclient;
+        	}
+        	
         	Element propertiesElement = (Element) blobElement.getElementsByTagName("Properties").item(0);
         	Element blobTypeElement = (Element) blobElement.getElementsByTagName("BlobType").item(0);
         	String blockTypeString = blobTypeElement.getFirstChild().getNodeValue();
+
         	CloudBlob blob;
+        	
+            URI blobUri = PathUtility.stripURIQueryAndFragment(new URI(urlString));
 			if (blockTypeString.equals("BlockBlob"))
         	{
-				blob = cloudblobcontainer.getBlockBlobReference(name);
+				blob = new CloudBlockBlob(blobUri, client, cloudblobcontainer);
         	}
         	else if (blockTypeString.equals("PageBlob"))
         	{

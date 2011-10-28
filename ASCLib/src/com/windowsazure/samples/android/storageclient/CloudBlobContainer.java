@@ -43,10 +43,10 @@ public final class CloudBlobContainer
         URI uri = PathUtility.appendPathToUri(cloudBlobClient.getContainerEndpoint(), containerName);
         m_ContainerOperationsUri = uri;
         m_Name = containerName;
-        parseQueryAndVerify(m_ContainerOperationsUri, cloudBlobClient, cloudBlobClient.m_UsePathStyleUris);
+        parseQueryAndVerify(m_ContainerOperationsUri, cloudBlobClient);
     }
 
-    private void parseQueryAndVerify(URI completeUri, CloudBlobClient cloudBlobClient, boolean usePathStyleUris)
+    private void parseQueryAndVerify(URI completeUri, CloudBlobClient cloudBlobClient)
             throws URISyntaxException, StorageException
         {
             Utility.assertNotNull("completeUri", completeUri);
@@ -64,7 +64,7 @@ public final class CloudBlobContainer
                 return;
             Boolean boolean1 = Boolean.valueOf(cloudBlobClient != null ? Utility.areCredentialsEqual(storagecredentialssharedaccesssignature, cloudBlobClient.getCredentials()) : false);
             if(cloudBlobClient == null || !boolean1.booleanValue())
-                m_ServiceClient = new CloudBlobClient(new URI(PathUtility.getServiceClientBaseAddress(m_ContainerOperationsUri, usePathStyleUris)), storagecredentialssharedaccesssignature);
+                m_ServiceClient = new CloudBlobClient(new URI(PathUtility.getServiceClientBaseAddress(m_ContainerOperationsUri)), storagecredentialssharedaccesssignature);
             if(cloudBlobClient != null && !boolean1.booleanValue())
             {
                 m_ServiceClient.setPageBlobStreamWriteSizeInBytes(cloudBlobClient.getPageBlobStreamWriteSizeInBytes());
@@ -95,8 +95,7 @@ public final class CloudBlobContainer
                 {
                 	if (containerRequest.isUsingWasServiceDirectly())
                 	{
-                		BlobContainerAttributes blobcontainerattributes = ContainerResponse.getAttributes(request.getURI(), result,
-                    		cloudBlobClient.m_UsePathStyleUris);
+                		BlobContainerAttributes blobcontainerattributes = ContainerResponse.getAttributes(request.getURI(), result);
 	                    cloudBlobContainer.setMetadata(blobcontainerattributes.metadata);
 	                    cloudBlobContainer.m_Properties = blobcontainerattributes.properties;
 	                    cloudBlobContainer.m_Name = blobcontainerattributes.name;
@@ -336,7 +335,7 @@ public final class CloudBlobContainer
 
     public Iterable<CloudBlob> listBlobs(String s) throws StorageInnerException, Exception
     {
-    	return this.listBlobs("", false);
+    	return this.listBlobs(s, false);
     }
 
     public Iterable<CloudBlob> listBlobs(String s, boolean useFlatBlobListing) throws StorageInnerException, Exception

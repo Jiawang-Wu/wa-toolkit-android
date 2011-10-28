@@ -1,6 +1,11 @@
 package com.windowsazure.samples.android.storageclient;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 
 import org.apache.http.client.methods.HttpRequestBase;
@@ -10,44 +15,50 @@ public final class StorageCredentialsAccountAndKey extends StorageCredentials
 
     public StorageCredentialsAccountAndKey(String s, byte abyte0[]) throws NotImplementedException
     {
-    	throw new NotImplementedException();
+        m_Credentials = new Credentials(s, abyte0);
     }
 
-    public StorageCredentialsAccountAndKey(String s, String s1) throws NotImplementedException
+    public StorageCredentialsAccountAndKey(String s, String s1) throws IllegalArgumentException, NotImplementedException
     {
-    	throw new NotImplementedException();
+        this(s, Base64.decode(s1));
     }
 
-    protected Boolean canCredentialsComputeHmac() throws NotImplementedException
+    protected Boolean canCredentialsComputeHmac()
     {
-    	throw new NotImplementedException();
+        return true;
     }
 
-    protected Boolean canCredentialsSignRequest() throws NotImplementedException
+    protected Boolean canCredentialsSignRequest()
     {
-    	throw new NotImplementedException();
+        return true;
     }
 
-    protected Boolean canCredentialsSignRequestLite() throws NotImplementedException
+    protected Boolean canCredentialsSignRequestLite()
     {
-    	throw new NotImplementedException();
+        return true;
     }
 
-    public String computeHmac256(String s)
-        throws NotImplementedException, InvalidKeyException
+    public String computeHmac256(String text)
+        throws InvalidKeyException, IllegalArgumentException
     {
-    	throw new NotImplementedException();
+        return StorageKey.computeMacSha256(m_Credentials.getKey(), text);
     }
 
-    public String computeHmac512(String s)
-        throws NotImplementedException, InvalidKeyException
+    public String computeHmac512(String text)
+        throws InvalidKeyException, IllegalArgumentException
     {
-    	throw new NotImplementedException();
+        return StorageKey.computeMacSha512(m_Credentials.getKey(), text);
     }
 
-    protected Boolean doCredentialsNeedTransformUri() throws NotImplementedException
+    public void signRequest(HttpRequestBase request, long contentLength)
+    		throws InvalidKeyException, StorageException, MalformedURLException
     {
-    	throw new NotImplementedException();
+    	BaseRequest.signRequestForBlobAndQueue(request, m_Credentials, contentLength);
+    }
+    
+    protected Boolean doCredentialsNeedTransformUri()
+    {
+        return false;
     }
 
     public String getAccountName()
@@ -57,39 +68,36 @@ public final class StorageCredentialsAccountAndKey extends StorageCredentials
 
     protected String getBase64EncodedKey() throws NotImplementedException
     {
-    	throw new NotImplementedException();
+        return m_Credentials.getKey().getBase64EncodedKey();
     }
 
-    public Credentials getCredentials() throws NotImplementedException
+    public Credentials getCredentials()
     {
-    	throw new NotImplementedException();
+        return m_Credentials;
     }
 
-    public void setCredentials(Credentials credentials) throws NotImplementedException
+    public void setCredentials(Credentials credentials)
     {
-    	throw new NotImplementedException();
-    }
-
-    public void signRequest(HttpRequestBase request, long l)
-        throws NotImplementedException, InvalidKeyException, StorageException
-    {
-    	throw new NotImplementedException();
+        m_Credentials = credentials;
     }
 
     public void signRequestLite(HttpRequestBase request, long l)
-        throws NotImplementedException, InvalidKeyException, StorageException
+        throws StorageException, InvalidKeyException, NotImplementedException
     {
-    	throw new NotImplementedException();
+        //BaseRequest.signRequestForBlobAndQueueSharedKeyLite(httpurlconnection, m_Credentials, Long.valueOf(l));
+        	throw new NotImplementedException();
     }
 
     public String toString(Boolean boolean1)
     {
-    	return null;
+        return String.format("%s=%s;%s=%s", new Object[] {
+            "AccountName", getAccountName(), "AccountKey", boolean1.booleanValue() ? m_Credentials.getKey().getBase64EncodedKey() : "[key hidden]"
+        });
     }
 
-    public URI transformUri(URI uri) throws NotImplementedException
+    public URI transformUri(URI uri)
     {
-    	throw new NotImplementedException();
+        return uri;
     }
 
     private Credentials m_Credentials;
@@ -100,7 +108,11 @@ public final class StorageCredentialsAccountAndKey extends StorageCredentials
 	}
 
 	@Override
-	StorageCredentials credentialsForBlobOf(CloudBlobContainer cloudBlobContainer) {
+	StorageCredentials credentialsForBlobOf(
+			CloudBlobContainer cloudBlobContainer)
+			throws IllegalArgumentException, UnsupportedEncodingException,
+			NotImplementedException, URISyntaxException, StorageException,
+			IOException {
 		return this;
 	}
 }

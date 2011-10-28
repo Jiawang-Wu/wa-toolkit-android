@@ -1,5 +1,6 @@
 package com.windowsazure.samples.android.storageclient.tests;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.ParameterizedType;
@@ -30,7 +31,9 @@ import com.windowsazure.samples.android.storageclient.BlobContainerPublicAccessT
 import com.windowsazure.samples.android.storageclient.CloudBlob;
 import com.windowsazure.samples.android.storageclient.CloudBlobClient;
 import com.windowsazure.samples.android.storageclient.CloudBlobContainer;
+import com.windowsazure.samples.android.storageclient.CloudBlockBlob;
 import com.windowsazure.samples.android.storageclient.NotImplementedException;
+import com.windowsazure.samples.android.storageclient.StorageCredentialsSharedAccessSignature;
 import com.windowsazure.samples.android.storageclient.StorageException;
 import com.windowsazure.samples.android.storageclient.StorageInnerException;
 
@@ -253,7 +256,7 @@ public abstract class CloudBlobContainerUsingSASServiceTests<T extends WAZServic
 		helper.delete("14");
 	}
 
-	public void testListingByPrefixes() throws Exception
+	public void testListingContainersByPrefixes() throws Exception
 	{
 		this.createContainer("abc-0");
 		this.createContainer("abc-1");
@@ -300,19 +303,6 @@ public abstract class CloudBlobContainerUsingSASServiceTests<T extends WAZServic
 		URI uri = container.getUri();
 		Assert.assertTrue(uri.getAuthority().endsWith(".blob.core.windows.net"));
 		Assert.assertEquals(uri.getPath(), "/testcontainerurihasproperpattern");
-		/*
-		 String query = uri.getQuery();
-		String[] arguments = query.split("&");
-		ArrayList<String> argumentNames = new ArrayList<String>();
-		for (String argument : arguments)
-		{
-			argumentNames.add(argument.split("=")[0]);
-		}
-		Assert.assertTrue(argumentNames.contains("se"));
-		Assert.assertTrue(argumentNames.contains("amp;sr"));
-		Assert.assertTrue(argumentNames.contains("amp;sp"));
-		Assert.assertTrue(argumentNames.contains("amp;sig"));
-		*/
 	}
 	/** Getting container SAS - END **/
 
@@ -332,16 +322,115 @@ public abstract class CloudBlobContainerUsingSASServiceTests<T extends WAZServic
 	}
 
 	/** Listing blob's SASs - START **/
-	/*
-	public void testListBlobs()
+	public void testCreatedBlobsAreListed()
 			throws Exception {
-		String containerName = "testgetblobsas";
-		String blobName = "testgetblobsas";
-		CloudBlobContainer container = new CloudBlobContainer(containerName, cloudBlobClient);
+		String blob1Name = "blob1";
+		String blob2Name = "blob2";
+		CloudBlobContainer container = this.createContainer("testcreatedblobsarelisted");
+
+		this.createEmptyBlob(container, blob1Name);
 		this.AssertHaveSameElements(this.getBlobNames(container.listBlobs()),
-				Arrays.asList(new String[]{blobName}));
+				Arrays.asList(new String[]{ blob1Name }));
+
+		this.createEmptyBlob(container, blob2Name);
+		this.AssertHaveSameElements(this.getBlobNames(container.listBlobs()),
+				Arrays.asList(new String[]{ blob1Name, blob2Name }));
 	}
-	*/
+	
+	public void testListedBlobsInPrivateContainerHaveSASCredentials()
+			throws Exception {
+		CloudBlobContainer container = this.createContainer("testlistedblobshavesascredentials");
+		this.createEmptyBlob(container, "blob1");
+		this.createEmptyBlob(container, "blob2");
+
+		ArrayList<CloudBlob> blobs = this.toList(container.listBlobs());
+		Assert.assertEquals(2, blobs.size());
+		for (CloudBlob blob : blobs)
+		{
+			Assert.assertTrue(blob.getCredentials() instanceof StorageCredentialsSharedAccessSignature);
+		}
+	}
+
+	void createEmptyBlob(CloudBlobContainer container, String blobName) throws UnsupportedEncodingException, NotImplementedException, URISyntaxException, StorageException, IOException
+	{
+		CloudBlockBlob blob = container.getBlockBlobReference(blobName);
+		blob.upload(new ByteArrayInputStream("".getBytes()), 0);
+	}
+	
+	public void testCreatedBlobsAreListedProperlyByPrefixesUsingFlatListing()
+			throws Exception {
+		CloudBlobContainer container = this.createContainer("testcreatedblobsarelistedproperlybyprefixes");
+		this.createEmptyBlob(container, "abc/def/jkl");
+		this.createEmptyBlob(container, "abc/0");
+		this.createEmptyBlob(container, "abc/1");
+		this.createEmptyBlob(container, "abc/2");
+		this.createEmptyBlob(container, "ab/3");
+		this.createEmptyBlob(container, "a/4");
+		this.createEmptyBlob(container, "def/5");
+		this.createEmptyBlob(container, "def/6");
+
+		Assert.assertFalse(cloudBlobClient.listContainers("nothing").iterator().hasNext());
+		ArrayList<CloudBlob> blobs = this.toList(container.listBlobs("abc", true));
+		this.AssertHaveSameElements(this.getBlobNames(blobs),
+				Arrays.asList(new String[]{"abc/0", "abc/1", "abc/2", "abc/def/jkl"}));
+		this.AssertHaveSameElements(this.getBlobNames(container.listBlobs("abc/", true)),
+				Arrays.asList(new String[]{"abc/0", "abc/1", "abc/2", "abc/def/jkl"}));
+		this.AssertHaveSameElements(this.getBlobNames(container.listBlobs("abc/0", true)),
+				Arrays.asList(new String[]{"abc/0"}));
+		this.AssertHaveSameElements(this.getBlobNames(container.listBlobs("ab", true)),
+				Arrays.asList(new String[]{"ab/3", "abc/0", "abc/1", "abc/2", "abc/def/jkl"}));
+		this.AssertHaveSameElements(this.getBlobNames(container.listBlobs("ab/", true)),
+				Arrays.asList(new String[]{"ab/3"}));
+		this.AssertHaveSameElements(this.getBlobNames(container.listBlobs("a", true)),
+				Arrays.asList(new String[]{"ab/3", "abc/0", "abc/1", "abc/2", "a/4", "abc/def/jkl"}));
+		this.AssertHaveSameElements(this.getBlobNames(container.listBlobs("d", true)),
+				Arrays.asList(new String[]{"def/5", "def/6"}));
+		this.AssertHaveSameElements(this.getBlobNames(container.listBlobs("def/55", true)),
+				Arrays.asList(new String[]{}));
+		this.AssertHaveSameElements(this.getBlobNames(container.listBlobs("blah", true)),
+				Arrays.asList(new String[]{}));
+		this.AssertHaveSameElements(this.getBlobNames(container.listBlobs("", true)),
+				Arrays.asList(new String[]{"ab/3", "abc/0", "abc/1", "abc/2", "a/4", "def/5", "def/6", "abc/def/jkl"}));
+	}
+	
+	/** The SAS service doesn't support listing prefixes for the time being **/
+	public void testCreatedBlobsAreListedProperlyByPrefixesNotUsingFlatListing()
+			throws Exception {
+		CloudBlobContainer container = this.createContainer("testcreatedblobsarelistedproperlybyprefixesusingflatlisting");
+		this.createEmptyBlob(container, "abc/def/jkl");
+		this.createEmptyBlob(container, "abc/0");
+		this.createEmptyBlob(container, "abc/1");
+		this.createEmptyBlob(container, "abc/2");
+		this.createEmptyBlob(container, "ab/3");
+		this.createEmptyBlob(container, "a/4");
+		this.createEmptyBlob(container, "def/5");
+		this.createEmptyBlob(container, "def/6");
+		this.createEmptyBlob(container, "ghi");
+
+		Assert.assertFalse(cloudBlobClient.listContainers("nothing").iterator().hasNext());
+		this.AssertHaveSameElements(this.getBlobNames(container.listBlobs("abc", false)),
+				Arrays.asList(new String[]{}));
+		this.AssertHaveSameElements(this.getBlobNames(container.listBlobs("abc/", false)),
+				Arrays.asList(new String[]{"abc/0", "abc/1", "abc/2"}));
+		this.AssertHaveSameElements(this.getBlobNames(container.listBlobs("abc/0", false)),
+				Arrays.asList(new String[]{"abc/0"}));
+		this.AssertHaveSameElements(this.getBlobNames(container.listBlobs("ab", false)),
+				Arrays.asList(new String[]{}));
+		this.AssertHaveSameElements(this.getBlobNames(container.listBlobs("ab/", false)),
+				Arrays.asList(new String[]{"ab/3"}));
+		this.AssertHaveSameElements(this.getBlobNames(container.listBlobs("a", false)),
+				Arrays.asList(new String[]{}));
+		this.AssertHaveSameElements(this.getBlobNames(container.listBlobs("d", false)),
+				Arrays.asList(new String[]{}));
+		this.AssertHaveSameElements(this.getBlobNames(container.listBlobs("def/", false)),
+				Arrays.asList(new String[]{"def/5", "def/6"}));
+		this.AssertHaveSameElements(this.getBlobNames(container.listBlobs("def/55", false)),
+				Arrays.asList(new String[]{}));
+		this.AssertHaveSameElements(this.getBlobNames(container.listBlobs("blah", false)),
+				Arrays.asList(new String[]{}));
+		this.AssertHaveSameElements(this.getBlobNames(container.listBlobs("", false)),
+				Arrays.asList(new String[]{"ghi"}));
+	}
 	/** Listing blob's SASs - END **/
 
 

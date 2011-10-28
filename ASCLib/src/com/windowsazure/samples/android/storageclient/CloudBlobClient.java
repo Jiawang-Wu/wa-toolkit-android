@@ -35,7 +35,6 @@ public final class CloudBlobClient
             throw new IllegalArgumentException(String.format("Address '%s' is not an absolute address. Relative addresses are not permitted in here.", endpointUri));
         } 
 
-        m_UsePathStyleUris = Utility.determinePathStyleFromUri(endpointUri, storageCredentials.getAccountName());
         m_Endpoint = endpointUri;
         m_Credentials = storageCredentials;
     }
@@ -235,7 +234,6 @@ public final class CloudBlobClient
     private int m_WriteBlockSizeInBytes;
     private int m_PageBlobStreamWriteSizeInBytes;
     private int m_StreamMinimumReadSizeInBytes;
-    protected boolean m_UsePathStyleUris;
     private int m_ConcurrentRequestCount;
     private String m_DirectoryDelimiter;
     private int m_TimeoutInMs;

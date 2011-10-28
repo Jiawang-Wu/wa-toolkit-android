@@ -3,29 +3,28 @@
 package com.windowsazure.samples.android.storageclient;
 
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 
+import org.apache.http.Header;
+import org.apache.http.client.methods.HttpRequestBase;
+
 abstract class Canonicalizer
 {
-/*
     Canonicalizer()
     {
     }
 
-    private static void addCanonicalizedHeaders(HttpBaseRequest request, StringBuilder stringbuilder)
+    private static void addCanonicalizedHeaders(HttpRequestBase request, StringBuilder stringbuilder)
     {
-        Map map = request.getRequestProperties();
-        ArrayList arraylist = new ArrayList();
-        Iterator iterator = map.keySet().iterator();
-        do
+        Header[] map = request.getAllHeaders();
+        ArrayList<String> arraylist = new ArrayList<String>();
+        for (Header header : map)
         {
-            if(!iterator.hasNext())
-                break;
-            String s = (String)iterator.next();
-            if(s.toLowerCase(Locale.US).startsWith("x-ms-"))
-                arraylist.add(s.toLowerCase(Locale.US));
-        } while(true);
+            if(header.getName().toLowerCase(Locale.US).startsWith("x-ms-"))
+                arraylist.add(header.getName().toLowerCase(Locale.US));
+        }
         Collections.sort(arraylist);
         StringBuilder stringbuilder1;
         for(Iterator iterator1 = arraylist.iterator(); iterator1.hasNext(); appendCanonicalizedElement(stringbuilder, stringbuilder1.toString()))
@@ -95,22 +94,18 @@ abstract class Canonicalizer
         return stringbuilder1.toString();
     }
 
-    private static ArrayList getHeaderValues(Map map, String s)
+    private static ArrayList getHeaderValues(Header[] map, String s)
     {
         ArrayList arraylist = new ArrayList();
-        List list = null;
-        Iterator iterator = map.entrySet().iterator();
-        do
+        List<String> list = new ArrayList<String>();
+        for (Header entry : map)
         {
-            if(!iterator.hasNext())
-                break;
-            java.util.Map.Entry entry = (java.util.Map.Entry)iterator.next();
-            if(!((String)entry.getKey()).toLowerCase(Locale.US).equals(s))
-                continue;
-            list = (List)entry.getValue();
-            break;
-        } while(true);
-        if(list != null)
+            if(((String)entry.getName()).toLowerCase(Locale.US).equals(s))
+            {
+                list.add(entry.getValue());
+            }
+        }
+        if(list.size() != 0)
         {
             String s1;
             for(Iterator iterator1 = list.iterator(); iterator1.hasNext(); arraylist.add(Utility.trimStart(s1)))
@@ -120,10 +115,10 @@ abstract class Canonicalizer
         return arraylist;
     }
 
-    protected static String canonicalizeHttpRequest(URL url, String s, String s1, String s2, long l, String s3, HttpBaseRequest request)
+    protected static String canonicalizeHttpRequest(URL url, String s, String s1, String s2, long l, String s3, HttpRequestBase request)
         throws StorageException
     {
-        StringBuilder stringbuilder = new StringBuilder(request.getRequestMethod());
+        StringBuilder stringbuilder = new StringBuilder(request.getMethod());
         appendCanonicalizedElement(stringbuilder, Utility.getStandardHeaderValue(request, "Content-Encoding"));
         appendCanonicalizedElement(stringbuilder, Utility.getStandardHeaderValue(request, "Content-Language"));
         appendCanonicalizedElement(stringbuilder, l != -1L ? String.valueOf(l) : "");
@@ -132,8 +127,8 @@ abstract class Canonicalizer
         String s4 = Utility.getStandardHeaderValue(request, "x-ms-date");
         appendCanonicalizedElement(stringbuilder, s4.equals("") ? s3 : "");
         String s5 = "";
-        if(request.getIfModifiedSince() > 0L)
-            s5 = Utility.getGMTTime(new Date(request.getIfModifiedSince()));
+        if(Utility.getIfModifiedSince(request) > 0L)
+            s5 = Utility.getGMTTime(new Date(Utility.getIfModifiedSince(request)));
         appendCanonicalizedElement(stringbuilder, s5);
         appendCanonicalizedElement(stringbuilder, Utility.getStandardHeaderValue(request, "If-Match"));
         appendCanonicalizedElement(stringbuilder, Utility.getStandardHeaderValue(request, "If-None-Match"));
@@ -144,10 +139,10 @@ abstract class Canonicalizer
         return stringbuilder.toString();
     }
 
-    protected static String canonicalizeHttpRequestLite(URL url, String s, String s1, String s2, long l, String s3, HttpBaseRequest request)
+    protected static String canonicalizeHttpRequestLite(URL url, String s, String s1, String s2, long l, String s3, HttpRequestBase request)
         throws StorageException
     {
-        StringBuilder stringbuilder = new StringBuilder(request.getRequestMethod());
+        StringBuilder stringbuilder = new StringBuilder(request.getMethod());
         String s4 = Utility.getStandardHeaderValue(request, "Content-MD5");
         appendCanonicalizedElement(stringbuilder, s4);
         appendCanonicalizedElement(stringbuilder, s2);
@@ -158,6 +153,6 @@ abstract class Canonicalizer
         return stringbuilder.toString();
     }
 
-    protected abstract String canonicalize(HttpBaseRequest request, String s, Long long1)
-        throws StorageException;
-*/}
+    protected abstract String canonicalize(HttpRequestBase request, String s, Long contentLength)
+        throws StorageException, MalformedURLException;
+}

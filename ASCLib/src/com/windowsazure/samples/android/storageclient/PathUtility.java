@@ -17,17 +17,17 @@ public class PathUtility {
             return addToQuery(uri, parseQueryString(s));
         }
 
-    protected static String getBlobNameFromURI(URI uri, boolean flag)
+    protected static String getBlobNameFromURI(URI uri)
             throws URISyntaxException
         {
-            return Utility.safeRelativize(new URI(getContainerURI(uri, flag).toString().concat("/")), uri);
+            return Utility.safeRelativize(new URI(getContainerURI(uri).toString().concat("/")), uri);
         }
 
-    public static URI getContainerURI(URI uri, boolean flag)
+    public static URI getContainerURI(URI uri)
             throws URISyntaxException
         {
-            String s = getContainerNameFromUri(uri, flag);
-            URI uri1 = appendPathToUri(new URI(getServiceClientBaseAddress(uri, flag)), s);
+            String s = getContainerNameFromUri(uri);
+            URI uri1 = appendPathToUri(new URI(getServiceClientBaseAddress(uri)), s);
             return uri1;
         }
 
@@ -103,9 +103,9 @@ public class PathUtility {
 				baseUri.getFragment());
 	}
 
-	public static String getServiceClientBaseAddress(URI uri, boolean flag)
+	public static String getServiceClientBaseAddress(URI uri)
 			throws URISyntaxException {
-		if (flag) {
+		if (false) {
 			String as[] = uri.getRawPath().split("/");
 			if (as.length < 2) {
 				String s = String
@@ -126,19 +126,19 @@ public class PathUtility {
 		}
 	}
 
-	public static String getContainerNameFromUri(URI uri, boolean flag)
+	public static String getContainerNameFromUri(URI uri)
 			throws IllegalArgumentException {
 		Utility.assertNotNull("resourceAddress", uri);
-		String as[] = uri.getRawPath().split("/");
-		byte byte0 = ((byte) (flag ? 3 : 2));
-		if (as.length < byte0) {
+		String pathParts[] = uri.getRawPath().split("/");
+		byte properContainerPathPartsCount = 2;
+		if (pathParts.length < properContainerPathPartsCount) {
 			String s = String.format(
 					"Invalid blob address '%s', missing container information",
 					new Object[] { uri });
 			throw new IllegalArgumentException(s);
 		} else {
-			String s1 = flag ? as[2] : as[1];
-			return Utility.trimEnd(s1, '/');
+			String containerFolder = pathParts[1];
+			return Utility.trimEnd(containerFolder, '/');
 		}
 	}
 

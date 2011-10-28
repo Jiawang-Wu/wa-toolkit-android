@@ -13,7 +13,7 @@ import com.windowsazure.samples.android.storageclient.CloudBlobContainer;
 import com.windowsazure.samples.android.storageclient.NotImplementedException;
 import com.windowsazure.samples.android.storageclient.StorageException;
 
-public abstract class CloudBlobClientBasedTest<T extends WAZServiceAccountProvider> extends TestCaseWithManagedResources { 
+public abstract class CloudBlobClientBasedTest<T extends CloudClientAccountProvider> extends TestCaseWithManagedResources { 
 	protected void setUp()
 	{
 		try {

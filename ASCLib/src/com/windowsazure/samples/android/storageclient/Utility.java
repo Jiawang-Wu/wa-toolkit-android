@@ -9,35 +9,48 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpRequestBase;
 
 public class Utility {
-	protected static boolean determinePathStyleFromUri(URI endpointUri,
-			String accountName) {
-		if (accountName == null) {
-			return !isNullOrEmpty(endpointUri.getPath());
-		}
+    protected static String getGMTTime()
+    {
+        SimpleDateFormat simpledateformat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", LOCALE_US);
+        simpledateformat.setTimeZone(GMT_ZONE);
+        return simpledateformat.format(new Date());
+    }
 
-		String s1 = endpointUri.getPath();
-		if (!isNullOrEmpty(s1) && s1.startsWith("/")) {
-			s1 = s1.substring(1);
-		}
+    protected static String getGMTTime(Date date)
+    {
+        SimpleDateFormat simpledateformat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", LOCALE_US);
+        simpledateformat.setTimeZone(GMT_ZONE);
+        return simpledateformat.format(date);
+    }
 
-		if (isNullOrEmpty(s1) || endpointUri.getHost().startsWith(accountName)) {
-			return false;
-		}
+    protected static String trimStart(String s)
+    {
+        int i;
+        for(i = 0; i < s.length() && s.charAt(i) == ' '; i++);
+        return s.substring(i);
+    }
 
-		return !isNullOrEmpty(s1) && s1.startsWith(accountName);
-	}
+    protected static String getStandardHeaderValue(HttpRequestBase request, String propertyName)
+    {
+    	Header header = request.getFirstHeader(propertyName);
+        return header != null ? header.getValue() : "";
+    }
 
     protected static String safeRelativize(URI uri, URI uri1)
             throws URISyntaxException
@@ -248,7 +261,25 @@ public class Utility {
 	 * simpledateformat.format(new Date()); }
 	 */
 
-	public static String getHttpResponseBody(HttpResponse response) throws UnsupportedEncodingException, IOException {
+    protected static HashMap parseAccountString(String s)
+            throws IllegalArgumentException
+        {
+            String as[] = s.split(";");
+            HashMap hashmap = new HashMap();
+            for(int i = 0; i < as.length; i++)
+            {
+                int j = as[i].indexOf("=");
+                if(j < 1)
+                    throw new IllegalArgumentException("Invalid Connection String");
+                String s1 = as[i].substring(0, j);
+                String s2 = as[i].substring(j + 1);
+                hashmap.put(s1, s2);
+            }
+
+            return hashmap;
+        }
+
+    public static String getHttpResponseBody(HttpResponse response) throws UnsupportedEncodingException, IOException {
 		 Reader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
 		 char[] buffer = new char[(int) response.getEntity().getContentLength()];
 		 reader.read(buffer);
@@ -265,5 +296,12 @@ public class Utility {
 			 writer.write(buffer, 0, bytesRead);
 		 }
 		 return writer.toString();
+	}
+    protected static final TimeZone GMT_ZONE = TimeZone.getTimeZone("GMT");
+    protected static final Locale LOCALE_US = Locale.US;
+	public static long getIfModifiedSince(HttpRequestBase request)
+	{
+		//return request.getFirstHeader("Last-Modified").getValue();
+		return 0;
 	}
 }
