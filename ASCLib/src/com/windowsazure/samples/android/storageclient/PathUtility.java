@@ -152,7 +152,7 @@ public class PathUtility {
 		String as[] = s.contains("&") ? s.split("&") : s.split(";");
 		for (int j = 0; j < as.length; j++) {
 			int k = as[j].indexOf("=");
-			if (k < 0 || k == as[j].length() - 1)
+			if (k < 0)
 				continue;
 			String s1 = as[j].substring(0, k);
 			String s2 = as[j].substring(k + 1);
@@ -161,12 +161,9 @@ public class PathUtility {
 			String as1[] = (String[]) hashmap.get(s1);
 			if (as1 == null) {
 				as1 = (new String[] { s2 });
-				if (!s2.equals(""))
-					hashmap.put(s1, as1);
+				hashmap.put(s1, as1);
 				continue;
 			}
-			if (s2.equals(""))
-				continue;
 			String as2[] = new String[as1.length + 1];
 			for (int l = 0; l < as1.length; l++)
 				as2[l] = as1[l];

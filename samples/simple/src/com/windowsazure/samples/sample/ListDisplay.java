@@ -98,10 +98,10 @@ public class ListDisplay extends Activity implements OnItemClickListener
 	        	else
 	        	{
 	        		CloudBlobContainer container = ProxySelector.blobClient.getContainerReference((String) this.getTitle());
-	    	        for (CloudBlob blob : container.listBlobs())
-	    	        {
-	    	        	items.add(blob.getName());
-	    	        }
+	        		for (CloudBlob blob : container.listBlobs())
+	        		{
+	        			items.add(blob.getName());
+	        		}
 	        	}
 	        }
 	        else if (listType == StorageTypeSelector.STORAGE_TYPE_QUEUE)

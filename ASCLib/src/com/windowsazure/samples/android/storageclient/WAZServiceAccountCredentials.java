@@ -105,4 +105,14 @@ public class WAZServiceAccountCredentials extends StorageCredentials {
 		HashMap<String, String[]> arguments = PathUtility.parseQueryString(decoded);
 		return SharedAccessSignatureHelper.parseQuery(arguments);
 	}
+
+	@Override
+	AbstractContainerRequest getContainerRequest() {
+		return new ContainerWASServiceRequest();
+	}
+	
+	@Override
+	AbstractBlobRequest getBlobRequest() {
+		return new BlobWASServiceRequest();
+	}
 }

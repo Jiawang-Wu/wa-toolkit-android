@@ -56,18 +56,35 @@ final class ContainerRequest implements AbstractContainerRequest
             throws IOException, URISyntaxException, IllegalArgumentException, StorageException
         {
             UriQueryBuilder uriquerybuilder = getContainerUriQueryBuilder();
-            return BaseRequest.delete(uri, i, uriquerybuilder);
+            return BaseRequest.delete(uri, uriquerybuilder);
         }
 
 	@Override
-	public HttpGet list(URI uri, String prefix, ContainerListingDetails containerlistingdetails) throws NotImplementedException {
-		throw new NotImplementedException();
+	public HttpGet list(URI uri, String prefix, ContainerListingDetails containerlistingdetails) throws NotImplementedException, IOException, URISyntaxException, StorageException {
+        UriQueryBuilder uriquerybuilder = getContainerUriQueryBuilder();
+        uriquerybuilder.add("comp", "list");
+        if(!Utility.isNullOrEmpty(prefix))
+        {
+        	uriquerybuilder.add("prefix", prefix);
+        }
+        if(containerlistingdetails == ContainerListingDetails.ALL || containerlistingdetails == ContainerListingDetails.METADATA)
+        {
+            uriquerybuilder.add("include", "metadata");
+        }
+        return BaseRequest.setURIAndHeaders(new HttpGet(), uri, uriquerybuilder);
 	}
 
 	@Override
 	public HttpPut setAcl(URI m_ContainerOperationsUri,
-			BlobContainerPublicAccessType publicAccess) throws NotImplementedException {
-		throw new NotImplementedException();
+			BlobContainerPublicAccessType publicAccess) throws NotImplementedException, IOException, URISyntaxException, StorageException {
+        UriQueryBuilder uriquerybuilder = getContainerUriQueryBuilder();
+        uriquerybuilder.add("comp", "acl");
+        HttpPut request = BaseRequest.setURIAndHeaders(new HttpPut(), m_ContainerOperationsUri, uriquerybuilder);
+        if(publicAccess != BlobContainerPublicAccessType.OFF)
+        {
+            request.setHeader("x-ms-blob-public-access", publicAccess.toString().toLowerCase());
+        }
+        return request;
 	}
 
     /*
@@ -102,40 +119,6 @@ final class ContainerRequest implements AbstractContainerRequest
     {
         UriQueryBuilder uriquerybuilder = getContainerUriQueryBuilder();
         return BaseRequest.getProperties(uri, i, uriquerybuilder);
-    }
-
-    public HttpBaseRequest list(URI uri, int i, ListingContext listingcontext, ContainerListingDetails containerlistingdetails)
-        throws URISyntaxException, IOException, IllegalArgumentException, StorageException
-    {
-        UriQueryBuilder uriquerybuilder = getContainerUriQueryBuilder();
-        uriquerybuilder.add("comp", "list");
-        if(listingcontext != null)
-        {
-            if(!Utility.isNullOrEmpty(listingcontext.prefix))
-                uriquerybuilder.add("prefix", listingcontext.prefix);
-            if(!Utility.isNullOrEmpty(listingcontext.marker))
-                uriquerybuilder.add("marker", listingcontext.marker);
-            if(listingcontext.maxResults != null && listingcontext.maxResults.intValue() > 0)
-                uriquerybuilder.add("maxresults", listingcontext.maxResults.toString());
-        }
-        if(containerlistingdetails == ContainerListingDetails.ALL || containerlistingdetails == ContainerListingDetails.METADATA)
-            uriquerybuilder.add("include", "metadata");
-        HttpBaseRequest request = createURLConnection(uri, i, uriquerybuilder);
-        request.setRequestMethod("GET");
-        return request;
-    }
-
-    public HttpBaseRequest setAcl(URI uri, int i, BlobContainerPublicAccessType blobcontainerpublicaccesstype)
-        throws IOException, URISyntaxException, StorageException
-    {
-        UriQueryBuilder uriquerybuilder = getContainerUriQueryBuilder();
-        uriquerybuilder.add("comp", "acl");
-        HttpBaseRequest request = createURLConnection(uri, i, uriquerybuilder);
-        request.setRequestMethod("PUT");
-        request.setDoOutput(true);
-        if(blobcontainerpublicaccesstype != BlobContainerPublicAccessType.OFF)
-            request.setRequestProperty("x-ms-blob-public-access", blobcontainerpublicaccesstype.toString().toLowerCase());
-        return request;
     }
 
     public HttpBaseRequest setMetadata(URI uri, int i)

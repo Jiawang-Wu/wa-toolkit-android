@@ -5,6 +5,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
 
@@ -18,9 +19,22 @@ final class BlobRequest implements AbstractBlobRequest
 	@Override
 	public HttpGet list(URI endpoint, CloudBlobContainer container, String s,
 			boolean useFlatBlobListing) throws URISyntaxException,
-			IllegalArgumentException, StorageException, NotImplementedException {
-		// TODO Auto-generated method stub
-		return null;
+			IllegalArgumentException, StorageException, NotImplementedException, IOException {
+
+		URI listBlobsUri = PathUtility.appendPathToUri(endpoint, container.getName());
+		UriQueryBuilder uriquerybuilder = new ContainerRequest().getContainerUriQueryBuilder();
+        uriquerybuilder.add("comp", "list");
+
+        if(s != null)
+        {
+        	uriquerybuilder.add("prefix", s);
+        }
+        if (!useFlatBlobListing)
+        {
+        	uriquerybuilder.add("delimiter", "/");
+        }
+        uriquerybuilder.add("include", "metadata");
+        return BaseRequest.setURIAndHeaders(new HttpGet(), listBlobsUri, uriquerybuilder);
 	}
 	
 	@Override
@@ -31,11 +45,19 @@ final class BlobRequest implements AbstractBlobRequest
 	@Override
 	public HttpPut put(URI transformedAddress, int timeoutInMs,
 			BlobProperties m_Properties, BlobType blobType, String leaseID,
-			long l) throws IOException, URISyntaxException, StorageException {
-		// TODO Auto-generated method stub
+			long l) throws IOException, URISyntaxException, StorageException 
+			{
 		return null;
 	}
-
+	
+    public static HttpDelete delete(URI uri)
+            throws IOException, URISyntaxException, IllegalArgumentException, StorageException
+        {
+            UriQueryBuilder uriquerybuilder = new UriQueryBuilder();
+            return BaseRequest.delete(uri, uriquerybuilder);
+        }
+}
+    
 /*    public static void addMetadata(HttpURLConnection httpurlconnection, HashMap hashmap, OperationContext operationcontext)
     {
         BaseRequest.addMetadata(httpurlconnection, hashmap, operationcontext);
@@ -82,33 +104,6 @@ final class BlobRequest implements AbstractBlobRequest
             break;
         }
         BaseRequest.addLeaseId(httpurlconnection, s3);
-        return httpurlconnection;
-    }
-
-    public static HttpURLConnection delete(URI uri, int i, String s, DeleteSnapshotsOption deletesnapshotsoption, String s1, BlobRequestOptions blobrequestoptions, OperationContext operationcontext)
-        throws IOException, URISyntaxException, IllegalArgumentException, StorageException
-    {
-        if(s != null && deletesnapshotsoption != DeleteSnapshotsOption.NONE)
-            throw new IllegalArgumentException(String.format("The option '%s' must be 'None' to delete a specific snapshot specified by '%s'", new Object[] {
-                "deleteSnapshotsOption", "snapshot"
-            }));
-        UriQueryBuilder uriquerybuilder = new UriQueryBuilder();
-        BaseRequest.addSnapshot(uriquerybuilder, s);
-        HttpURLConnection httpurlconnection = BaseRequest.delete(uri, i, uriquerybuilder, operationcontext);
-        BaseRequest.addLeaseId(httpurlconnection, s1);
-        if(blobrequestoptions != null)
-            blobrequestoptions.requestAccessCondition.applyConditionToRequest(httpurlconnection);
-        switch(deletesnapshotsoption)
-        {
-        // TO DO TODO
-        case INCLUDE_SNAPSHOTS: // '\002'
-            httpurlconnection.setRequestProperty("x-ms-delete-snapshots", "include");
-            break;
-
-        case DELETE_SNAPSHOTS_ONLY: // '\003'
-            httpurlconnection.setRequestProperty("x-ms-delete-snapshots", "only");
-            break;
-        }
         return httpurlconnection;
     }
 
@@ -189,57 +184,6 @@ final class BlobRequest implements AbstractBlobRequest
         httpurlconnection.setFixedLengthStreamingMode(0);
         BaseRequest.addLeaseId(httpurlconnection, s);
         httpurlconnection.setRequestProperty("x-ms-lease-action", leaseaction.toString());
-        return httpurlconnection;
-    }
-
-    public static HttpURLConnection list(URI uri, int i, BlobListingContext bloblistingcontext, BlobRequestOptions blobrequestoptions, OperationContext operationcontext)
-        throws URISyntaxException, IOException, IllegalArgumentException, StorageException
-    {
-        UriQueryBuilder uriquerybuilder = ContainerRequest.getContainerUriQueryBuilder();
-        uriquerybuilder.add("comp", "list");
-        if(bloblistingcontext != null)
-        {
-            if(!Utility.isNullOrEmpty(bloblistingcontext.prefix))
-                uriquerybuilder.add("prefix", bloblistingcontext.prefix);
-            if(!Utility.isNullOrEmpty(bloblistingcontext.delimiter))
-                uriquerybuilder.add("delimiter", bloblistingcontext.delimiter);
-            if(!Utility.isNullOrEmpty(bloblistingcontext.marker))
-                uriquerybuilder.add("marker", bloblistingcontext.marker);
-            if(bloblistingcontext.maxResults != null && bloblistingcontext.maxResults.intValue() > 0)
-                uriquerybuilder.add("maxresults", bloblistingcontext.maxResults.toString());
-            if(bloblistingcontext.listingDetails.size() > 0)
-            {
-                StringBuilder stringbuilder = new StringBuilder();
-                boolean flag = false;
-                if(bloblistingcontext.listingDetails.contains(BlobListingDetails.SNAPSHOTS))
-                {
-                    if(!flag)
-                        flag = true;
-                    else
-                        stringbuilder.append(",");
-                    stringbuilder.append("snapshots");
-                }
-                if(bloblistingcontext.listingDetails.contains(BlobListingDetails.UNCOMMITTED_BLOBS))
-                {
-                    if(!flag)
-                        flag = true;
-                    else
-                        stringbuilder.append(",");
-                    stringbuilder.append("uncommittedblobs");
-                }
-                if(bloblistingcontext.listingDetails.contains(BlobListingDetails.METADATA))
-                {
-                    if(!flag)
-                        flag = true;
-                    else
-                        stringbuilder.append(",");
-                    stringbuilder.append("metadata");
-                }
-                uriquerybuilder.add("include", stringbuilder.toString());
-            }
-        }
-        HttpURLConnection httpurlconnection = createURLConnection(uri, i, uriquerybuilder, blobrequestoptions, operationcontext);
-        httpurlconnection.setRequestMethod("GET");
         return httpurlconnection;
     }
 
@@ -406,4 +350,4 @@ final class BlobRequest implements AbstractBlobRequest
             blobrequestoptions.requestAccessCondition.applyConditionToRequest(httpurlconnection);
         return httpurlconnection;
     }
-*/}
+*/    

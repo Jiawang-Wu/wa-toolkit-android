@@ -12,8 +12,7 @@ import com.windowsazure.samples.android.storageclient.NotImplementedException;
 import com.windowsazure.samples.android.storageclient.StorageException;
 import com.windowsazure.samples.android.storageclient.StorageInnerException;
 
-public abstract class CloudBlockBlobUsingSASServiceTests
-	<T extends CloudClientAccountProvider> extends CloudBlobClientBasedTest<T> 
+public abstract class CloudBlockBlobTests<T extends CloudClientAccountProvider> extends CloudBlobClientBasedTest<T> 
 {
 	public void testCreateBlobInPrivateContainer() throws StorageInnerException, Exception
 	{

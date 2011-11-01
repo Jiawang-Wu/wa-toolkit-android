@@ -65,14 +65,12 @@ final class BaseRequest
 
     private static String m_UserAgent;
 
-    public static HttpDelete delete(URI uri, int i, UriQueryBuilder uriquerybuilder)
+    public static HttpDelete delete(URI uri, UriQueryBuilder uriquerybuilder)
             throws IOException, URISyntaxException, StorageException
         {
             if(uriquerybuilder == null)
                 uriquerybuilder = new UriQueryBuilder();
-    		HttpDelete request = new HttpDelete();
-            setURIAndHeaders(request, uri, uriquerybuilder);
-            return request;
+            return setURIAndHeaders(new HttpDelete(), uri, uriquerybuilder);
         }
 
     public static void addOptionalHeader(HttpRequestBase request, String s, String s1)

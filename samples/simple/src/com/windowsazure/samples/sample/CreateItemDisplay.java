@@ -5,6 +5,7 @@ import java.util.Date;
 
 import com.windowsazure.samples.sample.R;
 import com.windowsazure.samples.android.storageclient.CloudBlobContainer;
+import com.windowsazure.samples.android.storageclient.CloudBlockBlob;
 import com.windowsazure.samples.blob.AzureBlobManager;
 import com.windowsazure.samples.blob.ContainerAccess;
 import com.windowsazure.samples.blob.data.BitmapBlobData;
@@ -89,8 +90,7 @@ public class CreateItemDisplay extends Activity
 	        }
 	        if (listType == StorageTypeSelector.STORAGE_TYPE_BLOB)
 	        {
-	        	AzureBlobManager blobWriter = new AzureBlobManager(ProxySelector.credential);
-        		new CloudBlobContainer(itemName.getText().toString(), ProxySelector.blobClient).create();
+	        	ProxySelector.blobClient.getContainerReference(itemName.getText().toString()).create();
 	        }
 	        if (listType == StorageTypeSelector.STORAGE_TYPE_QUEUE)
 	        {
@@ -116,13 +116,9 @@ public class CreateItemDisplay extends Activity
     	{
 	        try
 	        {
-	        	AzureBlobManager blobWriter = new AzureBlobManager(ProxySelector.credential);
 				InputStream blobDataStream = getResources().openRawResource(getResources().getIdentifier("windows_azure", "drawable", "com.windowsazure.samples.sample"));
-				byte[] blobDataBytes = new byte[blobDataStream.available()];
-				blobDataStream.read(blobDataBytes, 0, blobDataStream.available());
-				Bitmap bitmap = BitmapFactory.decodeByteArray(blobDataBytes, 0, blobDataBytes.length);
-				BitmapBlobData blobData = new BitmapBlobData(bitmap);
-				blobWriter.putBlockBlob(container, itemName.getText().toString(), null, null, blobData, null);
+				CloudBlockBlob blob = ProxySelector.blobClient.getContainerReference(container).getBlockBlobReference(itemName.getText().toString());
+				blob.upload(blobDataStream, blobDataStream.available());
 	        }
 	        catch (Exception e)
 	        {

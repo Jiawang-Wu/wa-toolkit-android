@@ -20,4 +20,8 @@ public abstract class WAZServiceAccountProvider extends CloudClientAccountProvid
 	{
 		return new WAZServiceAccount(WAZServiceUsernameAndPasswordProvider.getDifferentUsernameAndPassword(), getServiceHost());
 	}
+
+	public CloudBlobClient getCloudBlobClientWithDifferentAccount() throws URISyntaxException, Exception {
+		return getDifferentAccount().createCloudBlobClient();
+	}
 }

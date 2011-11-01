@@ -101,10 +101,9 @@ public class DeleteItemDisplay extends Activity implements OnItemClickListener
 	        	}
 	        	else if (listSubtype == ModifyItemDisplay.MODIFY_ITEM_SUBTYPE_BLOB)
 	        	{
-	        		String[] parts = blobName.split("/");
-	        		CloudBlobContainer container = ProxySelector.blobClient.getContainerReference(parts[0]);
-	        		String properBlobName = blobName.substring(parts[0].length() + 1);
-	    	    	for (CloudBlob blob : container.listBlobs(properBlobName))
+	        		// blobName is actually the container name
+	        		CloudBlobContainer container = ProxySelector.blobClient.getContainerReference(blobName);
+	    	    	for (CloudBlob blob : container.listBlobs())
 	    	    	{
 	    	    		items.add(blob.getName());
 	    	    	}
@@ -145,14 +144,14 @@ public class DeleteItemDisplay extends Activity implements OnItemClickListener
 	        }
 	        else if (listType == StorageTypeSelector.STORAGE_TYPE_BLOB)
 	        {
-	        	AzureBlobManager blobWriter = new AzureBlobManager(ProxySelector.credential);
 	        	if (listSubtype == ModifyItemDisplay.MODIFY_ITEM_SUBTYPE_CONTAINER)
 	        	{
-	        		new CloudBlobContainer(items.get(selectedRow), ProxySelector.blobClient).delete();
+		        	ProxySelector.blobClient.getContainerReference(items.get(selectedRow)).delete();
 	        	}
 	        	else if (listSubtype == ModifyItemDisplay.MODIFY_ITEM_SUBTYPE_BLOB)
 	        	{
-		        	blobWriter.deleteBlob(blobName, items.get(selectedRow), null, null);
+		        	ProxySelector.blobClient.getContainerReference(blobName)
+		        		.getBlockBlobReference(items.get(selectedRow)).delete();
 	        	}
 	        }
 	        else if (listType == StorageTypeSelector.STORAGE_TYPE_QUEUE)

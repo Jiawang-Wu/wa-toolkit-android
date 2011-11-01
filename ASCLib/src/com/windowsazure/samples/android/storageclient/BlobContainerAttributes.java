@@ -8,6 +8,8 @@ final class BlobContainerAttributes
 
     protected BlobContainerAttributes()
     {
+    	metadata = new HashMap();
+    	properties = new BlobContainerProperties();
     }
 
     protected HashMap metadata;

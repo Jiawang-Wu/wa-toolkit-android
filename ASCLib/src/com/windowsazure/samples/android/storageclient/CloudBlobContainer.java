@@ -32,7 +32,8 @@ public final class CloudBlobContainer
         m_Metadata = new HashMap();
         m_Properties = new BlobContainerProperties();
         m_ServiceClient = cloudBlobClient;
-        containerRequest = new ContainerWASServiceRequest();
+        containerRequest = cloudBlobClient.getCredentials().getContainerRequest();
+        blobRequest = cloudBlobClient.getCredentials().getBlobRequest();
     }
 
     public CloudBlobContainer(String containerName, CloudBlobClient cloudBlobClient)
@@ -87,7 +88,8 @@ public final class CloudBlobContainer
                 cloudBlobClient.getCredentials().signRequest(request, 0L);
                 result = ExecutionEngine.processRequest(request);
 
-                if (result.statusCode != HttpStatusCode.OK.getStatus())
+                if (result.statusCode != HttpStatusCode.OK.getStatus()
+                		&& result.statusCode != HttpStatusCode.Created.getStatus())
                 {
                     throw new StorageInnerException("Couldn't create a blob container");
                 } 
@@ -129,7 +131,8 @@ public final class CloudBlobContainer
                 HttpDelete request = containerRequest.delete(cloudblobcontainer.m_ContainerOperationsUri, cloudblobclient.getTimeoutInMs());
                 cloudblobclient.getCredentials().signRequest(request, -1L);
                 result = ExecutionEngine.processRequest(request);
-                if (HttpStatusCode.fromInt(result.statusCode) != HttpStatusCode.OK)
+                if (HttpStatusCode.fromInt(result.statusCode) != HttpStatusCode.OK
+                		&& HttpStatusCode.fromInt(result.statusCode) != HttpStatusCode.Accepted)
                 {
                 	throw new StorageInnerException("Couldn't delete a blob container");
                 }
@@ -330,7 +333,7 @@ public final class CloudBlobContainer
 
     public Iterable<CloudBlob> listBlobs() throws StorageInnerException, Exception
     {
-    	return this.listBlobs("");
+    	return this.listBlobs(null);
     }
 
     public Iterable<CloudBlob> listBlobs(String s) throws StorageInnerException, Exception
@@ -368,7 +371,7 @@ public final class CloudBlobContainer
 
     public void setMetadata(HashMap hashmap) throws NotImplementedException, NotImplementedException
     {
-    	throw new NotImplementedException();
+        m_Metadata = hashmap;
     }
 
     protected void setName(String s) throws NotImplementedException, NotImplementedException
@@ -423,5 +426,5 @@ public final class CloudBlobContainer
     URI m_ContainerOperationsUri;
     private CloudBlobClient m_ServiceClient;
     AbstractContainerRequest containerRequest;
-    AbstractBlobRequest blobRequest = new BlobWASServiceRequest();
+    AbstractBlobRequest blobRequest;
 }

@@ -53,7 +53,7 @@ final class ContainerWASServiceRequest implements AbstractContainerRequest
 			IllegalArgumentException, StorageException
 	{
 		UriQueryBuilder uriquerybuilder = new UriQueryBuilder();
-	    return BaseRequest.delete(containerOperationsUri, 0, uriquerybuilder);
+	    return BaseRequest.delete(containerOperationsUri, uriquerybuilder);
 	}
 
     public HttpGet list(URI uri, String prefix, ContainerListingDetails containerlistingdetails) throws IOException, URISyntaxException, StorageException

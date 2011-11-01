@@ -115,4 +115,14 @@ public final class StorageCredentialsAccountAndKey extends StorageCredentials
 			IOException {
 		return this;
 	}
+
+	@Override
+	AbstractContainerRequest getContainerRequest() {
+		return new ContainerRequest();
+	}
+
+	@Override
+	AbstractBlobRequest getBlobRequest() {
+		return new BlobRequest();
+	}
 }

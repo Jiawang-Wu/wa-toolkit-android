@@ -71,4 +71,14 @@ public final class StorageCredentialsSharedAccessSignature extends
 			CloudBlobContainer cloudBlobContainer) {
 		return this;
 	}
+
+	@Override
+	AbstractContainerRequest getContainerRequest() {
+		return new ContainerRequest();
+	}
+
+	@Override
+	AbstractBlobRequest getBlobRequest() {
+		return new BlobRequest();
+	}
 }

@@ -127,8 +127,11 @@ abstract class Canonicalizer
         String s4 = Utility.getStandardHeaderValue(request, "x-ms-date");
         appendCanonicalizedElement(stringbuilder, s4.equals("") ? s3 : "");
         String s5 = "";
-        if(Utility.getIfModifiedSince(request) > 0L)
-            s5 = Utility.getGMTTime(new Date(Utility.getIfModifiedSince(request)));
+        String ifModifiedSince = Utility.getIfModifiedSince(request);
+        if(ifModifiedSince != null && ifModifiedSince.length() != 0)
+        {
+            s5 = Utility.getGMTTime(new Date(ifModifiedSince));
+        }
         appendCanonicalizedElement(stringbuilder, s5);
         appendCanonicalizedElement(stringbuilder, Utility.getStandardHeaderValue(request, "If-Match"));
         appendCanonicalizedElement(stringbuilder, Utility.getStandardHeaderValue(request, "If-None-Match"));
@@ -136,7 +139,8 @@ abstract class Canonicalizer
         appendCanonicalizedElement(stringbuilder, Utility.getStandardHeaderValue(request, "Range"));
         addCanonicalizedHeaders(request, stringbuilder);
         appendCanonicalizedElement(stringbuilder, getCanonicalizedResource(url, s));
-        return stringbuilder.toString();
+        String result = stringbuilder.toString();
+        return result;
     }
 
     protected static String canonicalizeHttpRequestLite(URL url, String s, String s1, String s2, long l, String s3, HttpRequestBase request)

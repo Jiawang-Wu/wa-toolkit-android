@@ -6,6 +6,7 @@ import java.security.*;
 import java.util.*;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.InputStreamEntity;
 
@@ -93,9 +94,29 @@ public abstract class CloudBlob
     }
 
     public void delete()
-        throws NotImplementedException, StorageException
+        throws NotImplementedException, StorageException, UnsupportedEncodingException, IOException
     {
-    	throw new NotImplementedException();
+        StorageOperation storageoperation = new StorageOperation() {
+            public Void execute(CloudBlobClient cloudblobclient, CloudBlob cloudblob)
+                throws Exception
+            {
+                HttpDelete request = BlobRequest.delete(cloudblob.getTransformedAddress());
+                cloudblobclient.getCredentials().signRequest(request, -1L);
+                result = ExecutionEngine.processRequest(request);
+                if(result.statusCode != HttpStatusCode.Accepted.getStatus())
+                {
+                    throw new StorageInnerException("Couldn't delete a blob");
+                }
+                return null;
+            }
+
+            public Object execute(Object obj, Object obj1)
+                throws Exception
+            {
+                return execute((CloudBlobClient)obj, (CloudBlob)obj1);
+            }
+        };
+        ExecutionEngine.execute(m_ServiceClient, this, storageoperation);
     }
 
     public void delete(final String s)
@@ -172,7 +193,12 @@ public abstract class CloudBlob
     public CloudBlobContainer getContainer()
         throws NotImplementedException, StorageException, URISyntaxException
     {
-    	throw new NotImplementedException();
+        if(m_Container == null)
+        {
+            String name = PathUtility.getContainerNameFromUri(getUri());
+            m_Container = new CloudBlobContainer(name, this.getServiceClient());
+        }
+        return m_Container;
     }
 
     public HashMap getMetadata() throws NotImplementedException, NotImplementedException

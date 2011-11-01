@@ -29,7 +29,12 @@ public class Utility {
     {
         SimpleDateFormat simpledateformat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", LOCALE_US);
         simpledateformat.setTimeZone(GMT_ZONE);
-        return simpledateformat.format(new Date());
+        String result = simpledateformat.format(new Date());
+        if (result.endsWith("GMT+00:00"))
+        {
+        	result = result.replace("GMT+00:00", "GMT");
+        }
+        return result;
     }
 
     protected static String getGMTTime(Date date)
@@ -299,9 +304,8 @@ public class Utility {
 	}
     protected static final TimeZone GMT_ZONE = TimeZone.getTimeZone("GMT");
     protected static final Locale LOCALE_US = Locale.US;
-	public static long getIfModifiedSince(HttpRequestBase request)
+	public static String getIfModifiedSince(HttpRequestBase request)
 	{
-		//return request.getFirstHeader("Last-Modified").getValue();
-		return 0;
+		return getStandardHeaderValue(request, "If-Modified-Since");
 	}
 }

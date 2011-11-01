@@ -11,14 +11,10 @@ import com.windowsazure.samples.android.storageclient.wazservice.WAZServiceAccou
 public abstract class CloudClientAccountProvider {
 
 	public abstract CloudClientAccount getAccount() throws URISyntaxException, NotImplementedException;
-
+	
 	public abstract CloudClientAccount getDifferentAccount() throws URISyntaxException, NotImplementedException;
 
 	public CloudBlobClient getCloudBlobClient() throws URISyntaxException, Exception {
 		return getAccount().createCloudBlobClient();
-	}
-
-	public CloudBlobClient getCloudBlobClientWithDifferentAccount() throws URISyntaxException, Exception {
-		return getDifferentAccount().createCloudBlobClient();
 	}
 }

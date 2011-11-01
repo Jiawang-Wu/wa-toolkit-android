@@ -37,6 +37,7 @@ public final class CloudBlobClient
 
         m_Endpoint = endpointUri;
         m_Credentials = storageCredentials;
+        containerRequest = storageCredentials.getContainerRequest();
     }
 
     public CloudBlockBlob getBlockBlobReference(String s)
@@ -45,7 +46,7 @@ public final class CloudBlobClient
     	throw new NotImplementedException();
     }
 
-    public CloudBlockBlob getBlockBlobReference(String s, String s1)
+    public CloudBlockBlob getBlockBlobReference(String blobAddressUri, String s1)
         throws NotImplementedException, StorageException, URISyntaxException
     {
     	throw new NotImplementedException();
@@ -237,7 +238,7 @@ public final class CloudBlobClient
     private int m_ConcurrentRequestCount;
     private String m_DirectoryDelimiter;
     private int m_TimeoutInMs;
-    private AbstractContainerRequest containerRequest = new ContainerWASServiceRequest();
+    private AbstractContainerRequest containerRequest;
 	CloudBlobClient clientForBlobOf(CloudBlobContainer cloudBlobContainer) throws UnsupportedEncodingException, StorageException, NotImplementedException, IOException, URISyntaxException
 	{
 		StorageCredentials credentials = this.getCredentials().credentialsForBlobOf(cloudBlobContainer);

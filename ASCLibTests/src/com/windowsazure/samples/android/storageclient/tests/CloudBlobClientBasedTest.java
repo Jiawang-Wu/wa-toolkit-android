@@ -1,5 +1,6 @@
 package com.windowsazure.samples.android.storageclient.tests;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
@@ -10,6 +11,7 @@ import junit.framework.Assert;
 import com.windowsazure.samples.android.storageclient.CloudBlob;
 import com.windowsazure.samples.android.storageclient.CloudBlobClient;
 import com.windowsazure.samples.android.storageclient.CloudBlobContainer;
+import com.windowsazure.samples.android.storageclient.CloudBlockBlob;
 import com.windowsazure.samples.android.storageclient.NotImplementedException;
 import com.windowsazure.samples.android.storageclient.StorageException;
 
@@ -20,7 +22,6 @@ public abstract class CloudBlobClientBasedTest<T extends CloudClientAccountProvi
 			super.setUp();
 			T accountProvider = SuperClassTypeParameterCreator.create(this, 0);
 			cloudBlobClient = accountProvider.getCloudBlobClient();
-			otherCloudBlobClient = accountProvider.getCloudBlobClientWithDifferentAccount();
 		} catch (Exception e) {
 			e.printStackTrace();
 			Assert.fail();
@@ -44,6 +45,12 @@ public abstract class CloudBlobClientBasedTest<T extends CloudClientAccountProvi
 		return container; 
 	}
 
+	protected void createEmptyBlob(CloudBlobContainer container, String blobName) throws UnsupportedEncodingException, NotImplementedException, URISyntaxException, StorageException, IOException
+	{
+		CloudBlockBlob blob = container.getBlockBlobReference(blobName);
+		blob.upload(new ByteArrayInputStream("".getBytes()), 0);
+	}
+	
 	protected ArrayList<String> getContainerNames(Iterable<CloudBlobContainer> containers) throws NotImplementedException 
 	{
 		ArrayList<String> names = new ArrayList<String>();
@@ -65,7 +72,4 @@ public abstract class CloudBlobClientBasedTest<T extends CloudClientAccountProvi
 	}
 
 	protected CloudBlobClient cloudBlobClient;
-
-	protected CloudBlobClient otherCloudBlobClient;
-
 }

@@ -68,4 +68,8 @@ public abstract class StorageCredentials
 	public abstract String containerEndpointPostfix();
 
 	abstract StorageCredentials credentialsForBlobOf(CloudBlobContainer cloudBlobContainer) throws IllegalArgumentException, UnsupportedEncodingException, NotImplementedException, URISyntaxException, StorageException, IOException;
+
+	abstract AbstractContainerRequest getContainerRequest();
+
+	abstract AbstractBlobRequest getBlobRequest();
 }

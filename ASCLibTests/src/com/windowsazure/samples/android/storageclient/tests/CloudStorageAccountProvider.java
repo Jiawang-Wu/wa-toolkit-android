@@ -9,8 +9,8 @@ import com.windowsazure.samples.android.storageclient.StorageCredentialsAccountA
 
 public class CloudStorageAccountProvider extends CloudClientAccountProvider {
 
-	private static final String Account = "wazmobilesdk";
-	private static final String Key = "0X2emKMok0j/OS+EpkEUdXTMzaB3rTyK2xrjhIn7za8l8o6BGo8YAiUHFnCdiQNgszBOZAOUVXVyT06Fuwt88g==";
+	private static final String Account = "Account";
+	private static final String Key = "Key";
 
 	@Override
 	public CloudClientAccount getAccount() throws URISyntaxException, NotImplementedException {
