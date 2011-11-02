@@ -5,6 +5,7 @@ import java.util.*;
 
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
+import org.apache.http.message.AbstractHttpMessage;
 
 class BaseResponse
 {
@@ -13,12 +14,12 @@ class BaseResponse
     	return getHeaderValueOrNullIfNonExistent(response, "Etag");
     }
 
-    public static HashMap getMetadata(HttpResponse request)
+    public static HashMap getMetadata(AbstractHttpMessage request)
     {
         return getValuesByHeaderPrefix(request, "x-ms-meta-");
     }
 
-    private static HashMap getValuesByHeaderPrefix(HttpResponse response, String s)
+    private static HashMap getValuesByHeaderPrefix(AbstractHttpMessage response, String s)
     {
         HashMap hashmap = new HashMap();
         int i = s.length();

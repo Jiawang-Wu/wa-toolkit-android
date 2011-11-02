@@ -19,6 +19,6 @@ final class BlobQueueLiteCanonicalizer extends Canonicalizer
         if(long1.longValue() < -1L)
             throw new InvalidParameterException("ContentLength must be set to -1 or positive Long value");
         else
-            return canonicalizeHttpRequestLite(httpurlconnection.getURI().toURL(), s, httpurlconnection.getMethod(), Utility.getStandardHeaderValue(httpurlconnection, "Content-Type"), long1.longValue(), null, httpurlconnection);
+            return canonicalizeHttpRequestLite(httpurlconnection.getURI().toURL(), s, httpurlconnection.getMethod(), Utility.getFirstHeaderValueOrEmpty(httpurlconnection, "Content-Type"), long1.longValue(), null, httpurlconnection);
     }
 }

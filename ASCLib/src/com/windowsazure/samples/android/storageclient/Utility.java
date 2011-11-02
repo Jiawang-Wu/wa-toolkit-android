@@ -23,6 +23,7 @@ import java.util.TimeZone;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.message.AbstractHttpMessage;
 
 public class Utility {
     protected static String getGMTTime()
@@ -51,7 +52,7 @@ public class Utility {
         return s.substring(i);
     }
 
-    protected static String getStandardHeaderValue(HttpRequestBase request, String propertyName)
+    protected static String getFirstHeaderValueOrEmpty(AbstractHttpMessage request, String propertyName)
     {
     	Header header = request.getFirstHeader(propertyName);
         return header != null ? header.getValue() : "";
@@ -303,9 +304,11 @@ public class Utility {
 		 return writer.toString();
 	}
     protected static final TimeZone GMT_ZONE = TimeZone.getTimeZone("GMT");
+    protected static final TimeZone UTC_ZONE = TimeZone.getTimeZone("UTC");
+    
     protected static final Locale LOCALE_US = Locale.US;
 	public static String getIfModifiedSince(HttpRequestBase request)
 	{
-		return getStandardHeaderValue(request, "If-Modified-Since");
+		return getFirstHeaderValueOrEmpty(request, "If-Modified-Since");
 	}
 }

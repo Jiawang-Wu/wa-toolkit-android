@@ -26,6 +26,7 @@ public class ProxySelector extends Activity
 
 	public static String ACCOUNT = "account";
 	public static String ACCESS_KEY = "accesskey";
+
 	public static AuthenticationToken credential;
 	public static CloudBlobClient blobClient;
 

@@ -45,10 +45,11 @@ public abstract class CloudBlobClientBasedTest<T extends CloudClientAccountProvi
 		return container; 
 	}
 
-	protected void createEmptyBlob(CloudBlobContainer container, String blobName) throws UnsupportedEncodingException, NotImplementedException, URISyntaxException, StorageException, IOException
+	protected CloudBlob createEmptyBlob(CloudBlobContainer container, String blobName) throws UnsupportedEncodingException, NotImplementedException, URISyntaxException, StorageException, IOException
 	{
 		CloudBlockBlob blob = container.getBlockBlobReference(blobName);
 		blob.upload(new ByteArrayInputStream("".getBytes()), 0);
+		return blob;
 	}
 	
 	protected ArrayList<String> getContainerNames(Iterable<CloudBlobContainer> containers) throws NotImplementedException 

@@ -16,7 +16,7 @@ final class CanonicalizerFactory
 
     private static Boolean validateVersionIsSupported(HttpRequestBase request)
     {
-        String s = Utility.getStandardHeaderValue(request, "x-ms-version");
+        String s = Utility.getFirstHeaderValueOrEmpty(request, "x-ms-version");
         if(s.length() == 0 || s.length() == 0)
             return Boolean.valueOf(true);
         try

@@ -79,13 +79,21 @@ public final class CloudBlockBlob extends CloudBlob
         throws NotImplementedException, StorageException, IOException
     {
         if(length < -1L)
-            throw new IllegalArgumentException("Invalid stream length, specify -1 for unkown length stream, or a positive number of bytes");
-        if(inputstream.markSupported() && length < 0L)
         {
-            inputstream.mark(0x7fffffff);
-        	length = inputstream.skip(0x7fffffff);
-        	inputstream.reset();
+            throw new IllegalArgumentException("Invalid stream length, specify -1 for unkown length stream, or a positive number of bytes");
         }
+        else if (length < 0L)
+        {
+        	if (!inputstream.markSupported())
+        	{
+        		inputstream = new BufferedInputStream(inputstream);
+        	}
+        	
+	        inputstream.mark(Integer.MAX_VALUE);
+	        length = inputstream.skip(Integer.MAX_VALUE);
+	        inputstream.reset();
+        }
+        
         uploadFullBlob(inputstream, length, leaseID);
     }
 

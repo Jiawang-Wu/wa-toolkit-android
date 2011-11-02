@@ -7,6 +7,7 @@ import java.util.Date;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.message.AbstractHttpMessage;
 
 final class ContainerResponse extends BaseResponse
 {
@@ -20,7 +21,7 @@ final class ContainerResponse extends BaseResponse
             BlobContainerProperties blobcontainerproperties = blobcontainerattributes.properties;
             blobcontainerproperties.eTag = BaseResponse.getEtag(result.httpResponse);
             blobcontainerproperties.lastModified = new Date(result.httpResponse.getFirstHeader("last-modified").getValue());
-            blobcontainerattributes.metadata = getMetadata(result.httpResponse);
+            blobcontainerattributes.metadata = getMetadata((AbstractHttpMessage) result.httpResponse);
             return blobcontainerattributes;
         }
 

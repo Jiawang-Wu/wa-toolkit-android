@@ -7,8 +7,10 @@ import java.util.*;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.InputStreamEntity;
+import org.apache.http.message.AbstractHttpMessage;
 
 import com.windowsazure.samples.android.storageclient.internal.web.HttpStatusCode;
 
@@ -137,11 +139,42 @@ public abstract class CloudBlob
     	throw new NotImplementedException();
     }
 
-    public void download(OutputStream outputstream)
+    public void download(final OutputStream outputstream)
         throws NotImplementedException, StorageException, IOException
     {
-    	throw new NotImplementedException();
-    }
+        StorageOperation storageoperation = new StorageOperation() {
+            public Void execute(CloudBlobClient cloudblobclient, CloudBlob cloudblob)
+                throws Exception
+            {
+                HttpGet request = BlobRequest.get(cloudblob.getTransformedAddress());
+                cloudblobclient.getCredentials().signRequest(request, -1L);
+                RequestResult result = ExecutionEngine.processRequest(request);
+                BlobAttributes attributes = BlobResponse.getAttributes((AbstractHttpMessage) result.httpResponse, cloudblob.getUri(), null);
+                m_Properties = attributes.properties;
+                result.httpResponse.getEntity().writeTo(outputstream);
+                /*
+                result = operationcontext1.getLastResult();
+                String s = Utility.getStandardHeaderValue(result.httpResponse, "Content-MD5");
+                String s1 = httpurlconnection.getHeaderField("Content-Length");
+                long l = Long.parseLong(s1);
+                ExecutionEngine.getResponseCode(result, httpurlconnection, operationcontext1);
+                */
+                if(result.statusCode != 200)
+                {
+                    throw new StorageInnerException("Couldn't download a blob");
+                }
+                return null;
+            }
+
+            public Object execute(Object obj, Object obj1)
+                throws Exception
+            {
+                return execute((CloudBlobClient)obj, (CloudBlob)obj1);
+            }
+
+        };
+        ExecutionEngine.execute(m_ServiceClient, this, storageoperation);
+}
 
     public void downloadAttributes()
         throws NotImplementedException, StorageException
@@ -222,7 +255,7 @@ public abstract class CloudBlob
 
     public BlobProperties getProperties() throws NotImplementedException, NotImplementedException
     {
-    	throw new NotImplementedException();
+        return m_Properties;
     }
 
     public URI getQualifiedUri()
@@ -392,8 +425,8 @@ public abstract class CloudBlob
                 public Void execute(CloudBlobClient cloudblobclient, CloudBlob cloudblob)
                     throws Exception
                 {
-                    HttpPut request = blobRequest.put(cloudblob.getTransformedAddress(), cloudblobclient.getTimeoutInMs(), cloudblob.m_Properties, cloudblob.m_Properties.blobType, leaseID, 0L);
-                    blobRequest.addMetadata(request, cloudblob.m_Metadata);
+                    HttpPut request = BlobRequest.put(cloudblob.getTransformedAddress(), cloudblobclient.getTimeoutInMs(), cloudblob.m_Properties, cloudblob.m_Properties.blobType, leaseID, 0L);
+                    BlobRequest.addMetadata(request, cloudblob.m_Metadata);
                     cloudblobclient.getCredentials().signRequest(request, length);
                     InputStreamEntity entity = new InputStreamEntity(inputstream, length);
                     request.setEntity(entity);

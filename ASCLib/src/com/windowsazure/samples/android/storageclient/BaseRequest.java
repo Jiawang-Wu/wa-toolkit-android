@@ -50,7 +50,7 @@ final class BaseRequest
             request.setURI(uriquerybuilder.addToURI(uri));
             request.addHeader("x-ms-version", "2009-09-19");
             request.addHeader("User-Agent", getUserAgent());
-            request.addHeader("Content-Type", "");
+            //request.addHeader("Content-Type", "");
             return request;
         }
 

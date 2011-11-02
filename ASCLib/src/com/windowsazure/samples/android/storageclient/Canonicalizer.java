@@ -119,12 +119,12 @@ abstract class Canonicalizer
         throws StorageException
     {
         StringBuilder stringbuilder = new StringBuilder(request.getMethod());
-        appendCanonicalizedElement(stringbuilder, Utility.getStandardHeaderValue(request, "Content-Encoding"));
-        appendCanonicalizedElement(stringbuilder, Utility.getStandardHeaderValue(request, "Content-Language"));
+        appendCanonicalizedElement(stringbuilder, Utility.getFirstHeaderValueOrEmpty(request, "Content-Encoding"));
+        appendCanonicalizedElement(stringbuilder, Utility.getFirstHeaderValueOrEmpty(request, "Content-Language"));
         appendCanonicalizedElement(stringbuilder, l != -1L ? String.valueOf(l) : "");
-        appendCanonicalizedElement(stringbuilder, Utility.getStandardHeaderValue(request, "Content-MD5"));
+        appendCanonicalizedElement(stringbuilder, Utility.getFirstHeaderValueOrEmpty(request, "Content-MD5"));
         appendCanonicalizedElement(stringbuilder, s2 == null ? "" : s2);
-        String s4 = Utility.getStandardHeaderValue(request, "x-ms-date");
+        String s4 = Utility.getFirstHeaderValueOrEmpty(request, "x-ms-date");
         appendCanonicalizedElement(stringbuilder, s4.equals("") ? s3 : "");
         String s5 = "";
         String ifModifiedSince = Utility.getIfModifiedSince(request);
@@ -133,10 +133,10 @@ abstract class Canonicalizer
             s5 = Utility.getGMTTime(new Date(ifModifiedSince));
         }
         appendCanonicalizedElement(stringbuilder, s5);
-        appendCanonicalizedElement(stringbuilder, Utility.getStandardHeaderValue(request, "If-Match"));
-        appendCanonicalizedElement(stringbuilder, Utility.getStandardHeaderValue(request, "If-None-Match"));
-        appendCanonicalizedElement(stringbuilder, Utility.getStandardHeaderValue(request, "If-Unmodified-Since"));
-        appendCanonicalizedElement(stringbuilder, Utility.getStandardHeaderValue(request, "Range"));
+        appendCanonicalizedElement(stringbuilder, Utility.getFirstHeaderValueOrEmpty(request, "If-Match"));
+        appendCanonicalizedElement(stringbuilder, Utility.getFirstHeaderValueOrEmpty(request, "If-None-Match"));
+        appendCanonicalizedElement(stringbuilder, Utility.getFirstHeaderValueOrEmpty(request, "If-Unmodified-Since"));
+        appendCanonicalizedElement(stringbuilder, Utility.getFirstHeaderValueOrEmpty(request, "Range"));
         addCanonicalizedHeaders(request, stringbuilder);
         appendCanonicalizedElement(stringbuilder, getCanonicalizedResource(url, s));
         String result = stringbuilder.toString();
@@ -147,10 +147,10 @@ abstract class Canonicalizer
         throws StorageException
     {
         StringBuilder stringbuilder = new StringBuilder(request.getMethod());
-        String s4 = Utility.getStandardHeaderValue(request, "Content-MD5");
+        String s4 = Utility.getFirstHeaderValueOrEmpty(request, "Content-MD5");
         appendCanonicalizedElement(stringbuilder, s4);
         appendCanonicalizedElement(stringbuilder, s2);
-        String s5 = Utility.getStandardHeaderValue(request, "x-ms-date");
+        String s5 = Utility.getFirstHeaderValueOrEmpty(request, "x-ms-date");
         appendCanonicalizedElement(stringbuilder, s5.equals("") ? s3 : "");
         addCanonicalizedHeaders(request, stringbuilder);
         appendCanonicalizedElement(stringbuilder, getCanonicalizedResource(url, s));

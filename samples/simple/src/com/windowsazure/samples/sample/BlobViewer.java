@@ -1,5 +1,9 @@
 package com.windowsazure.samples.sample;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+
+import com.windowsazure.samples.android.storageclient.CloudBlockBlob;
 import com.windowsazure.samples.blob.AzureBlob;
 import com.windowsazure.samples.blob.AzureBlobManager;
 import com.windowsazure.samples.blob.data.BitmapBlobData;
@@ -7,6 +11,7 @@ import com.windowsazure.samples.sample.R;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.widget.ImageView;
 
@@ -32,8 +37,11 @@ public class BlobViewer extends Activity
 		ImageView imageView = (ImageView)findViewById(R.id.BlobImageView);
 		try
 		{
-    		AzureBlob blob = new AzureBlobManager(ProxySelector.credential).getBlob(containerName, blobName, null, null, null, null);
-	        Bitmap bitmap = BitmapBlobData.fromBlob(blob).getBitmap();
+			CloudBlockBlob blob = ProxySelector.blobClient.getContainerReference(containerName).getBlockBlobReference(blobName);
+			ByteArrayOutputStream contentStream = new ByteArrayOutputStream();
+			blob.download(contentStream);
+			byte[] content = contentStream.toByteArray();
+			Bitmap bitmap = BitmapFactory.decodeByteArray(content, 0, content.length);
 	        imageView.setImageBitmap(bitmap);
 		}
         catch (Exception e)

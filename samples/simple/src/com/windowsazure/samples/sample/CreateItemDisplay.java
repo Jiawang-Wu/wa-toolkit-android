@@ -118,6 +118,7 @@ public class CreateItemDisplay extends Activity
 	        {
 				InputStream blobDataStream = getResources().openRawResource(getResources().getIdentifier("windows_azure", "drawable", "com.windowsazure.samples.sample"));
 				CloudBlockBlob blob = ProxySelector.blobClient.getContainerReference(container).getBlockBlobReference(itemName.getText().toString());
+				blob.getProperties().contentType = "image/jpeg";
 				blob.upload(blobDataStream, blobDataStream.available());
 	        }
 	        catch (Exception e)
