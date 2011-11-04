@@ -14,10 +14,12 @@ import com.windowsazure.samples.android.storageclient.CloudBlobContainer;
 import com.windowsazure.samples.android.storageclient.CloudBlockBlob;
 import com.windowsazure.samples.android.storageclient.NotImplementedException;
 import com.windowsazure.samples.android.storageclient.StorageException;
+import com.windowsazure.samples.android.storageclient.StorageInnerException;
 
-public abstract class CloudBlobClientBasedTest<T extends CloudClientAccountProvider> extends TestCaseWithManagedResources { 
-	protected void setUp()
-	{
+public abstract class CloudBlobClientBasedTest<T extends CloudClientAccountProvider>
+		extends TestCaseWithManagedResources {
+	@Override
+	protected void setUp() {
 		try {
 			super.setUp();
 			T accountProvider = SuperClassTypeParameterCreator.create(this, 0);
@@ -28,45 +30,60 @@ public abstract class CloudBlobClientBasedTest<T extends CloudClientAccountProvi
 		}
 	}
 
-	protected CloudBlobContainer createContainer(String containerName) throws StorageException, NotImplementedException, URISyntaxException, UnsupportedEncodingException, IOException {
-		final CloudBlobContainer container = new CloudBlobContainer(containerName, cloudBlobClient);
+	protected CloudBlobContainer createContainer(String containerName)
+			throws StorageException, NotImplementedException,
+			URISyntaxException, UnsupportedEncodingException, IOException {
+		final CloudBlobContainer container = new CloudBlobContainer(
+				containerName, cloudBlobClient);
 		container.create();
-		this.addCleanUp(new ResourceCleaner()
-		{
-			public void clean() throws NotImplementedException, StorageException, UnsupportedEncodingException, IOException
-			{
-				try
-				{
+		this.addResourceCleaner(container, cleanerFor(container));
+		return container;
+	}
+
+	protected void deleteContainer(CloudBlobContainer container)
+			throws StorageException, NotImplementedException,
+			URISyntaxException, UnsupportedEncodingException, IOException,
+			StorageInnerException {
+		container.delete();
+		this.removeResourceCleaner(container);
+	}
+
+	protected ResourceCleaner cleanerFor(final CloudBlobContainer container) {
+		return new ResourceCleaner() {
+			@Override
+			public void clean() throws NotImplementedException,
+					StorageException, UnsupportedEncodingException, IOException {
+				try {
 					container.delete();
 				} catch (Exception e) {
 				}
 			}
-		});
-		return container; 
+		};
 	}
 
-	protected CloudBlob createEmptyBlob(CloudBlobContainer container, String blobName) throws UnsupportedEncodingException, NotImplementedException, URISyntaxException, StorageException, IOException
-	{
+	protected CloudBlob createEmptyBlob(CloudBlobContainer container,
+			String blobName) throws UnsupportedEncodingException,
+			NotImplementedException, URISyntaxException, StorageException,
+			IOException {
 		CloudBlockBlob blob = container.getBlockBlobReference(blobName);
 		blob.upload(new ByteArrayInputStream("".getBytes()), 0);
 		return blob;
 	}
-	
-	protected ArrayList<String> getContainerNames(Iterable<CloudBlobContainer> containers) throws NotImplementedException 
-	{
+
+	protected ArrayList<String> getContainerNames(
+			Iterable<CloudBlobContainer> containers)
+			throws NotImplementedException {
 		ArrayList<String> names = new ArrayList<String>();
-		for(CloudBlobContainer container : containers)
-		{
+		for (CloudBlobContainer container : containers) {
 			names.add(container.getName());
 		}
 		return names;
 	}
 
-	protected ArrayList<String> getBlobNames(Iterable<CloudBlob> blobs) throws NotImplementedException, URISyntaxException 
-	{
+	protected ArrayList<String> getBlobNames(Iterable<CloudBlob> blobs)
+			throws NotImplementedException, URISyntaxException {
 		ArrayList<String> names = new ArrayList<String>();
-		for(CloudBlob blob : blobs)
-		{
+		for (CloudBlob blob : blobs) {
 			names.add(blob.getName());
 		}
 		return names;

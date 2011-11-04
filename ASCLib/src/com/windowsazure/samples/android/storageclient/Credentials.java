@@ -1,53 +1,43 @@
 package com.windowsazure.samples.android.storageclient;
 
-public final class Credentials
-{
+public final class Credentials {
 
-    public Credentials(String s, byte abyte0[])
-    {
-        if(s == null || s.length() == 0)
-            throw new IllegalArgumentException("Invalid accountName");
-        if(abyte0 == null)
-        {
-            throw new IllegalArgumentException("Invalid key");
-        } else
-        {
-            m_AccountName = s;
-            m_Key = new StorageKey(abyte0);
-            return;
-        }
-    }
+	private String m_AccountName;
 
-    public Credentials(String s, String s1)
-    {
-        this(s, Base64.decode(s1));
-    }
+	private StorageKey m_Key;
 
-    public String exportBase64EncodedKey()
-    {
-        return getKey().getBase64EncodedKey();
-    }
+	public Credentials(String s, byte abyte0[]) {
+		if (s == null || s.length() == 0)
+			throw new IllegalArgumentException("Invalid accountName");
+		if (abyte0 == null) {
+			throw new IllegalArgumentException("Invalid key");
+		} else {
+			m_AccountName = s;
+			m_Key = new StorageKey(abyte0);
+			return;
+		}
+	}
 
-    public byte[] exportKey()
-    {
-        return getKey().getKey();
-    }
+	public Credentials(String s, String s1) {
+		this(s, Base64.decode(s1));
+	}
 
-    public String getAccountName()
-    {
-        return m_AccountName;
-    }
+	public String exportBase64EncodedKey() {
+		return getKey().getBase64EncodedKey();
+	}
 
-    public StorageKey getKey()
-    {
-        return m_Key;
-    }
+	public byte[] exportKey() {
+		return getKey().getKey();
+	}
 
-    protected void setAccountName(String s)
-    {
-        m_AccountName = s;
-    }
+	public String getAccountName() {
+		return m_AccountName;
+	}
 
-    private String m_AccountName;
-    private StorageKey m_Key;
+	public StorageKey getKey() {
+		return m_Key;
+	}
+	protected void setAccountName(String s) {
+		m_AccountName = s;
+	}
 }

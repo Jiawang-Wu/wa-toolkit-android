@@ -1,6 +1,5 @@
 package com.windowsazure.samples.android.storageclient.tests;
 
-import android.test.suitebuilder.TestSuiteBuilder;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -8,10 +7,10 @@ public class FastRunTests {
 
 	public static Test suite() {
 		TestSuite suite = new TestSuite(FastRunTests.class.getName());
-		//$JUnit-BEGIN$
+		// $JUnit-BEGIN$
 		suite.addTestSuite(CloudBlobContainerUsingAccountAndKeyTests.class);
 		suite.addTestSuite(CloudBlockBlobUsingAccountAndKeyTests.class);
-		//$JUnit-END$
+		// $JUnit-END$
 		return suite;
 	}
 

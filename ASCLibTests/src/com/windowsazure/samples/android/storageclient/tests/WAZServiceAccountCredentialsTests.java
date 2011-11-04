@@ -5,22 +5,21 @@ import java.net.UnknownHostException;
 
 import javax.security.auth.login.LoginException;
 
-import junit.framework.Assert;
-
 import com.windowsazure.samples.android.storageclient.CloudBlobClient;
 import com.windowsazure.samples.android.storageclient.wazservice.WAZServiceAccount;
 import com.windowsazure.samples.android.storageclient.wazservice.WAZServiceUsernameAndPassword;
 
-public abstract class WAZServiceAccountCredentialsTests<T extends WAZServiceAccountProvider> extends TestCase {
+public abstract class WAZServiceAccountCredentialsTests<T extends WAZServiceAccountProvider>
+		extends TestCase {
 
-	private T accountProvider = SuperClassTypeParameterCreator.create( this, 0 );
-	
+	private T accountProvider = SuperClassTypeParameterCreator.create(this, 0);
+
 	public void testLoginWithNonExistantUsernameThrowsException()
 			throws Exception {
 		final WAZServiceAccount account = new WAZServiceAccount(
 				new WAZServiceUsernameAndPassword("NonExistentUsername",
 						WAZServiceUsernameAndPasswordProvider.PROXY_PASSWORD),
-						accountProvider.getServiceHost());
+				accountProvider.getServiceHost());
 
 		this.assertThrows(new RunnableWithExpectedException() {
 			@Override
@@ -34,8 +33,7 @@ public abstract class WAZServiceAccountCredentialsTests<T extends WAZServiceAcco
 		final WAZServiceAccount account = new WAZServiceAccount(
 				new WAZServiceUsernameAndPassword(
 						WAZServiceUsernameAndPasswordProvider.PROXY_USERNAME,
-						"InvalidPassword"),
-						accountProvider.getServiceHost());
+						"InvalidPassword"), accountProvider.getServiceHost());
 
 		this.assertThrows(new RunnableWithExpectedException() {
 			@Override
@@ -47,8 +45,8 @@ public abstract class WAZServiceAccountCredentialsTests<T extends WAZServiceAcco
 
 	public void testLoginToInvalidSiteThrowsException() throws Exception {
 		final WAZServiceAccount account = new WAZServiceAccount(
-				WAZServiceUsernameAndPasswordProvider.getUsernameAndPassword(), new URI(
-						"https://www.microsoft.com"));
+				WAZServiceUsernameAndPasswordProvider.getUsernameAndPassword(),
+				new URI("https://www.microsoft.com"));
 
 		this.assertThrows(new RunnableWithExpectedException() {
 			@Override
@@ -60,8 +58,8 @@ public abstract class WAZServiceAccountCredentialsTests<T extends WAZServiceAcco
 
 	public void testLoginToInexistentSiteThrowsException() throws Exception {
 		final WAZServiceAccount account = new WAZServiceAccount(
-				WAZServiceUsernameAndPasswordProvider.getUsernameAndPassword(), new URI(
-						"https://www.site.that.doesnt.exist.com.iDontExist"));
+				WAZServiceUsernameAndPasswordProvider.getUsernameAndPassword(),
+				new URI("https://www.site.that.doesnt.exist.com.iDontExist"));
 
 		this.assertThrows(new RunnableWithExpectedException() {
 			@Override

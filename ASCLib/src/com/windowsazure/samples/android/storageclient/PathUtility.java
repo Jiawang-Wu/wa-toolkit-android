@@ -6,60 +6,33 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 public class PathUtility {
+	public static URI addToQuery(URI uri, HashMap hashmap)
+			throws URISyntaxException, StorageException {
+		UriQueryBuilder uriquerybuilder = new UriQueryBuilder();
+		for (Iterator iterator = hashmap.entrySet().iterator(); iterator
+				.hasNext();) {
+			java.util.Map.Entry entry = (java.util.Map.Entry) iterator.next();
+			String as[] = (String[]) entry.getValue();
+			int i = as.length;
+			int j = 0;
+			while (j < i) {
+				String s = as[j];
+				uriquerybuilder.add((String) entry.getKey(), s);
+				j++;
+			}
+		}
+
+		return uriquerybuilder.addToURI(uri);
+	}
+
+	public static URI addToQuery(URI uri, String s) throws URISyntaxException,
+			StorageException {
+		return addToQuery(uri, parseQueryString(s));
+	}
+
 	public static URI appendPathToUri(URI uri, String path)
 			throws URISyntaxException {
 		return appendPathToUri(uri, path, "/");
-	}
-
-    public static URI addToQuery(URI uri, String s)
-            throws URISyntaxException, StorageException
-        {
-            return addToQuery(uri, parseQueryString(s));
-        }
-
-    protected static String getBlobNameFromURI(URI uri)
-            throws URISyntaxException
-        {
-            return Utility.safeRelativize(new URI(getContainerURI(uri).toString().concat("/")), uri);
-        }
-
-    public static URI getContainerURI(URI uri)
-            throws URISyntaxException
-        {
-            String s = getContainerNameFromUri(uri);
-            URI uri1 = appendPathToUri(new URI(getServiceClientBaseAddress(uri)), s);
-            return uri1;
-        }
-
-    public static URI addToQuery(URI uri, HashMap hashmap)
-            throws URISyntaxException, StorageException
-        {
-            UriQueryBuilder uriquerybuilder = new UriQueryBuilder();
-            for(Iterator iterator = hashmap.entrySet().iterator(); iterator.hasNext();)
-            {
-                java.util.Map.Entry entry = (java.util.Map.Entry)iterator.next();
-                String as[] = (String[])entry.getValue();
-                int i = as.length;
-                int j = 0;
-                while(j < i) 
-                {
-                    String s = as[j];
-                    uriquerybuilder.add((String)entry.getKey(), s);
-                    j++;
-                }
-            }
-
-            return uriquerybuilder.addToURI(uri);
-        }
-
-    public static URI stripURIQueryAndFragment(URI uri) throws StorageException {
-		try {
-			return new URI(uri.getScheme(), uri.getAuthority(), uri.getPath(),
-					null, null);
-		} catch (URISyntaxException urisyntaxexception) {
-			throw Utility
-					.generateNewUnexpectedStorageException(urisyntaxexception);
-		}
 	}
 
 	public static URI appendPathToUri(URI baseUri, String path,
@@ -103,6 +76,34 @@ public class PathUtility {
 				baseUri.getFragment());
 	}
 
+	protected static String getBlobNameFromURI(URI uri)
+			throws URISyntaxException {
+		return Utility.safeRelativize(new URI(getContainerURI(uri).toString()
+				.concat("/")), uri);
+	}
+
+	public static String getContainerNameFromUri(URI uri)
+			throws IllegalArgumentException {
+		Utility.assertNotNull("resourceAddress", uri);
+		String pathParts[] = uri.getRawPath().split("/");
+		byte properContainerPathPartsCount = 2;
+		if (pathParts.length < properContainerPathPartsCount) {
+			String s = String.format(
+					"Invalid blob address '%s', missing container information",
+					new Object[] { uri });
+			throw new IllegalArgumentException(s);
+		} else {
+			String containerFolder = pathParts[1];
+			return Utility.trimEnd(containerFolder, '/');
+		}
+	}
+
+	public static URI getContainerURI(URI uri) throws URISyntaxException {
+		String s = getContainerNameFromUri(uri);
+		URI uri1 = appendPathToUri(new URI(getServiceClientBaseAddress(uri)), s);
+		return uri1;
+	}
+
 	public static String getServiceClientBaseAddress(URI uri)
 			throws URISyntaxException {
 		if (false) {
@@ -126,23 +127,8 @@ public class PathUtility {
 		}
 	}
 
-	public static String getContainerNameFromUri(URI uri)
-			throws IllegalArgumentException {
-		Utility.assertNotNull("resourceAddress", uri);
-		String pathParts[] = uri.getRawPath().split("/");
-		byte properContainerPathPartsCount = 2;
-		if (pathParts.length < properContainerPathPartsCount) {
-			String s = String.format(
-					"Invalid blob address '%s', missing container information",
-					new Object[] { uri });
-			throw new IllegalArgumentException(s);
-		} else {
-			String containerFolder = pathParts[1];
-			return Utility.trimEnd(containerFolder, '/');
-		}
-	}
-
-	public static HashMap<String, String[]> parseQueryString(String s) throws StorageException {
+	public static HashMap<String, String[]> parseQueryString(String s)
+			throws StorageException {
 		HashMap<String, String[]> hashmap = new HashMap<String, String[]>();
 		if (Utility.isNullOrEmpty(s))
 			return hashmap;
@@ -158,7 +144,7 @@ public class PathUtility {
 			String s2 = as[j].substring(k + 1);
 			s1 = Utility.safeDecode(s1);
 			s2 = Utility.safeDecode(s2);
-			String as1[] = (String[]) hashmap.get(s1);
+			String as1[] = hashmap.get(s1);
 			if (as1 == null) {
 				as1 = (new String[] { s2 });
 				hashmap.put(s1, as1);
@@ -172,5 +158,15 @@ public class PathUtility {
 		}
 
 		return hashmap;
+	}
+
+	public static URI stripURIQueryAndFragment(URI uri) throws StorageException {
+		try {
+			return new URI(uri.getScheme(), uri.getAuthority(), uri.getPath(),
+					null, null);
+		} catch (URISyntaxException urisyntaxexception) {
+			throw Utility
+					.generateNewUnexpectedStorageException(urisyntaxexception);
+		}
 	}
 }

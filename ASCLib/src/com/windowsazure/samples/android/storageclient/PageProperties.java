@@ -1,13 +1,11 @@
 package com.windowsazure.samples.android.storageclient;
 
-final class PageProperties
-{
+final class PageProperties {
 
-    public PageProperties() throws NotImplementedException
-    {
-    	throw new NotImplementedException();
-    }
+	public PageRange range;
 
-    public PageRange range;
-    public PageOperationType pageOperation;
+	public PageOperationType pageOperation;
+	public PageProperties() throws NotImplementedException {
+		throw new NotImplementedException();
+	}
 }

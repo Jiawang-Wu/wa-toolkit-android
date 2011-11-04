@@ -3,12 +3,11 @@ package com.windowsazure.samples.android.storageclient.tests;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import com.windowsazure.samples.android.storageclient.wazservice.WAZServiceAccount;
-
 public class WAZServiceHttpsAccountProvider extends WAZServiceAccountProvider {
 
 	public static final String PROXY_HOST_STRING = "https://wazmobiletoolkit.cloudapp.net";
-	//public static final String PROXY_HOST_STRING = "https://192.168.129.44";
+
+	// public static final String PROXY_HOST_STRING = "https://192.168.129.44";
 
 	@Override
 	public URI getServiceHost() throws URISyntaxException {

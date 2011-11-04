@@ -9,17 +9,19 @@ import com.windowsazure.samples.android.storageclient.StorageCredentialsAccountA
 
 public class CloudStorageAccountProvider extends CloudClientAccountProvider {
 
-	private static final String Account = "Account";
-	private static final String Key = "Key";
+	private static final String ACCOUNT = "Account";
+	private static final String ACCESS_KEY = "Key";
 
 	@Override
-	public CloudClientAccount getAccount() throws URISyntaxException, NotImplementedException {
-		return new CloudStorageAccount(new StorageCredentialsAccountAndKey(Account, Key));
+	public CloudClientAccount getAccount() throws URISyntaxException,
+			NotImplementedException {
+		return new CloudStorageAccount(new StorageCredentialsAccountAndKey(
+				ACCOUNT, ACCESS_KEY));
 	}
 
 	@Override
-	public CloudClientAccount getDifferentAccount() throws URISyntaxException, NotImplementedException 
-	{
+	public CloudClientAccount getDifferentAccount() throws URISyntaxException,
+			NotImplementedException {
 		return this.getAccount();
 	}
 

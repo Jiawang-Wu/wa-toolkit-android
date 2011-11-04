@@ -1,34 +1,32 @@
 package com.windowsazure.samples.android.storageclient.tests;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import junit.framework.Assert;
 
-public abstract class TestCaseWithManagedResources extends TestCase
-{
-	ArrayList<ResourceCleaner> cleaners = new ArrayList<ResourceCleaner>();
-	
-	protected void addCleanUp(ResourceCleaner cleaner)
-	{
-		cleaners.add(cleaner);
+public abstract class TestCaseWithManagedResources extends TestCase {
+	HashMap<Object, ResourceCleaner> resourceToCleanerMapping = new HashMap<Object, ResourceCleaner>();
+
+	protected void addResourceCleaner(Object resource, ResourceCleaner cleaner) {
+		resourceToCleanerMapping.put(resource, cleaner);
 	}
-	
-	protected void tearDown()
-	{
-		ArrayList<Exception> exceptionsWhileCleanningUp = new ArrayList<Exception>(); 
-		for (ResourceCleaner cleanUp : cleaners)
-		{
-			try
-			{
+
+	protected void removeResourceCleaner(Object resource) {
+		resourceToCleanerMapping.remove(resource);
+	}
+
+	@Override
+	protected void tearDown() {
+		ArrayList<Exception> exceptionsWhileCleanningUp = new ArrayList<Exception>();
+		for (ResourceCleaner cleanUp : resourceToCleanerMapping.values()) {
+			try {
 				cleanUp.clean();
-			}
-			catch (Exception exception)
-			{
+			} catch (Exception exception) {
 				exceptionsWhileCleanningUp.add(exception);
 			}
 		}
-		if (!exceptionsWhileCleanningUp.isEmpty())
-		{
+		if (!exceptionsWhileCleanningUp.isEmpty()) {
 			Assert.fail("Exceptions while cleanning up the tests");
 		}
 	}

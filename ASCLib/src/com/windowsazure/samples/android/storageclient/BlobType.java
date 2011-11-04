@@ -3,12 +3,6 @@ package com.windowsazure.samples.android.storageclient;
 enum BlobType {
 	UNSPECIFIED("Unspecified"), BLOCK_BLOB("BlockBlob"), PAGE_BLOB("PageBlob");
 
-	private final String value;
-
-	BlobType(String value) {
-		this.value = value;
-	}
-
 	public static BlobType fromValue(String value) {
 		if (value != null) {
 			for (BlobType blobType : values()) {
@@ -21,12 +15,18 @@ enum BlobType {
 		throw new IllegalArgumentException("Invalid BlobType: " + value);
 	}
 
-	public String toValue() {
-		return value;
-	}
-
 	public static BlobType getDefault() {
 		return UNSPECIFIED;
+	}
+
+	private final String value;
+
+	BlobType(String value) {
+		this.value = value;
+	}
+
+	public String toValue() {
+		return value;
 	}
 
 }

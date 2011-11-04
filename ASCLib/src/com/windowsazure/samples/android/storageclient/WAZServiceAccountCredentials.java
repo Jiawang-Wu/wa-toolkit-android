@@ -9,60 +9,12 @@ import java.util.HashMap;
 
 import org.apache.http.client.methods.HttpRequestBase;
 
-
 public class WAZServiceAccountCredentials extends StorageCredentials {
 
 	private String m_AuthorizationToken;
 
 	public WAZServiceAccountCredentials(String authorizationToken) {
 		this.m_AuthorizationToken = authorizationToken;
-	}
-
-	@Override
-	public String computeHmac256(String s) throws NotImplementedException,
-			InvalidKeyException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String computeHmac512(String s) throws NotImplementedException,
-			InvalidKeyException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getAccountName() {
-		return null;
-	}
-
-	@Override
-	public void signRequest(HttpRequestBase request, long l)
-			throws NotImplementedException, InvalidKeyException,
-			StorageException {
-        request.addHeader("AuthToken", m_AuthorizationToken);
-	}
-
-	@Override
-	public void signRequestLite(HttpRequestBase request, long l)
-			throws NotImplementedException, StorageException,
-			InvalidKeyException {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public String toString(Boolean boolean1) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public URI transformUri(URI uri) throws NotImplementedException,
-			URISyntaxException, StorageException {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override
@@ -87,8 +39,15 @@ public class WAZServiceAccountCredentials extends StorageCredentials {
 	}
 
 	@Override
-	protected Boolean doCredentialsNeedTransformUri()
-			throws NotImplementedException {
+	public String computeHmac256(String s) throws NotImplementedException,
+			InvalidKeyException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String computeHmac512(String s) throws NotImplementedException,
+			InvalidKeyException {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -99,20 +58,65 @@ public class WAZServiceAccountCredentials extends StorageCredentials {
 	}
 
 	@Override
-	StorageCredentials credentialsForBlobOf(CloudBlobContainer cloudBlobContainer) throws IllegalArgumentException, UnsupportedEncodingException, NotImplementedException, URISyntaxException, StorageException, IOException {
+	StorageCredentials credentialsForBlobOf(
+			CloudBlobContainer cloudBlobContainer)
+			throws IllegalArgumentException, UnsupportedEncodingException,
+			NotImplementedException, URISyntaxException, StorageException,
+			IOException {
 		URI uri = cloudBlobContainer.getTransformedAddress();
 		String decoded = uri.toString().replace("&amp;", "&");
-		HashMap<String, String[]> arguments = PathUtility.parseQueryString(decoded);
+		HashMap<String, String[]> arguments = PathUtility
+				.parseQueryString(decoded);
 		return SharedAccessSignatureHelper.parseQuery(arguments);
+	}
+
+	@Override
+	protected Boolean doCredentialsNeedTransformUri()
+			throws NotImplementedException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getAccountName() {
+		return null;
+	}
+
+	@Override
+	AbstractBlobRequest getBlobRequest() {
+		return new BlobWASServiceRequest();
 	}
 
 	@Override
 	AbstractContainerRequest getContainerRequest() {
 		return new ContainerWASServiceRequest();
 	}
-	
+
 	@Override
-	AbstractBlobRequest getBlobRequest() {
-		return new BlobWASServiceRequest();
+	public void signRequest(HttpRequestBase request, long l)
+			throws NotImplementedException, InvalidKeyException,
+			StorageException {
+		request.addHeader("AuthToken", m_AuthorizationToken);
+	}
+
+	@Override
+	public void signRequestLite(HttpRequestBase request, long l)
+			throws NotImplementedException, StorageException,
+			InvalidKeyException {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public String toString(Boolean boolean1) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public URI transformUri(URI uri) throws NotImplementedException,
+			URISyntaxException, StorageException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

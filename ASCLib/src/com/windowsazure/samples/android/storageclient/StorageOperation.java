@@ -4,26 +4,25 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpRequestBase;
 
-abstract class StorageOperation
-{
-    public abstract Object execute(Object firstArgument, Object secondArgument) throws Exception;
+abstract class StorageOperation {
+	protected StorageException exceptionReference;
 
-    protected void initialize()
-    {
-        result = new RequestResult();
-    }
+	protected RequestResult result;
 
-    protected StorageException materializeException(HttpResponse response) throws NotImplementedException, UnsupportedEncodingException, IOException
-    {
-        if(exceptionReference != null)
-            return exceptionReference;
-        else
-            return StorageException.translateException(response, null);
-    }
+	boolean nonExceptionedRetryableFailure;
 
-    protected StorageException exceptionReference;
-    protected RequestResult result;
-    boolean nonExceptionedRetryableFailure;
+	public abstract Object execute(Object firstArgument, Object secondArgument)
+			throws Exception;
+	protected void initialize() {
+		result = new RequestResult();
+	}
+	protected StorageException materializeException(HttpResponse response)
+			throws NotImplementedException, UnsupportedEncodingException,
+			IOException {
+		if (exceptionReference != null)
+			return exceptionReference;
+		else
+			return StorageException.translateException(response, null);
+	}
 }
