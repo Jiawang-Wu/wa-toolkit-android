@@ -87,23 +87,23 @@ final class Base64 {
 		return stringbuilder.toString();
 	}
 
-	public static Boolean validateIsBase64String(String s) {
+	public static boolean validateIsBase64String(String s) {
 		if (s == null || s.length() % 4 != 0)
-			return Boolean.valueOf(false);
+			return false;
 		for (int i = 0; i < s.length(); i++) {
 			byte byte0 = (byte) s.charAt(i);
 			if (m_Decode64[byte0] == -2) {
 				if (i < s.length() - 2)
-					return Boolean.valueOf(false);
+					return false;
 				if (i == s.length() - 2
 						&& m_Decode64[(byte) s.charAt(i + 1)] != -2)
-					return Boolean.valueOf(false);
+					return false;
 			}
 			if (byte0 < 0 || m_Decode64[byte0] == -1)
-				return Boolean.valueOf(false);
+				return false;
 		}
 
-		return Boolean.valueOf(true);
+		return true;
 	}
 	Base64() {
 	}

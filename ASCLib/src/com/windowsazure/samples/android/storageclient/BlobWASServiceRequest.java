@@ -13,14 +13,14 @@ public class BlobWASServiceRequest implements AbstractBlobRequest {
 			String prefix, boolean useFlatBlobListing)
 			throws URISyntaxException, IllegalArgumentException,
 			StorageException, NotImplementedException, IOException {
-		UriQueryBuilder uriquerybuilder = new UriQueryBuilder();
+		UriQueryBuilder uriQueryBuilder = new UriQueryBuilder();
 		URI listBlobsUri = PathUtility.appendPathToUri(endpoint, "blob");
-		uriquerybuilder.add("containerName", container.getName());
-		uriquerybuilder.add("useFlatBlobListing", "" + useFlatBlobListing);
+		uriQueryBuilder.add("containerName", container.getName());
+		uriQueryBuilder.add("useFlatBlobListing", "" + useFlatBlobListing);
 		if (!Utility.isNullOrEmpty(prefix)) {
-			uriquerybuilder.add("blobPrefix", prefix);
+			uriQueryBuilder.add("blobPrefix", prefix);
 		}
 		return BaseRequest.setURIAndHeaders(new HttpGet(), listBlobsUri,
-				uriquerybuilder);
+				uriQueryBuilder);
 	}
 }

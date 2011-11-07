@@ -49,7 +49,7 @@ final class BlobOutputStream extends OutputStream {
 	private ExecutorService m_ThreadExecutor;
 	private CompletionService m_CompletionService;
 	String m_LeaseID;
-	protected BlobOutputStream(CloudBlob cloudblob, String s)
+	protected BlobOutputStream(CloudBlob cloudBlob, String s)
 			throws StorageException, NotImplementedException {
 		m_StreamType = BlobType.UNSPECIFIED;
 		m_LastErrorLock = new Object();
@@ -58,7 +58,7 @@ final class BlobOutputStream extends OutputStream {
 		m_LastNonZeroBufferedByte = -1L;
 		m_InternalWriteThreshold = -1;
 		m_LeaseID = s;
-		m_ParentBlobRef = cloudblob;
+		m_ParentBlobRef = cloudBlob;
 		m_ParentBlobRef.assertCorrectBlobType();
 		m_OutBuffer = new ByteArrayOutputStream();
 		m_StreamFaulted = false;

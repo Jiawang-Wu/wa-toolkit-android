@@ -10,19 +10,19 @@ final class BlobResponse extends BaseResponse {
 
 	public static BlobAttributes getAttributes(AbstractHttpMessage response,
 			URI blobUri, String snapshotID) {
-		BlobAttributes blobattributes = new BlobAttributes();
-		BlobProperties blobproperties = blobattributes.properties;
-		blobproperties.cacheControl = Utility.getFirstHeaderValueOrEmpty(
+		BlobAttributes blobAttributes = new BlobAttributes();
+		BlobProperties blobProperties = blobAttributes.properties;
+		blobProperties.cacheControl = Utility.getFirstHeaderValueOrEmpty(
 				response, "Cache-Control");
-		blobproperties.contentEncoding = Utility.getFirstHeaderValueOrEmpty(
+		blobProperties.contentEncoding = Utility.getFirstHeaderValueOrEmpty(
 				response, "Content-Encoding");
-		blobproperties.contentLanguage = Utility.getFirstHeaderValueOrEmpty(
+		blobProperties.contentLanguage = Utility.getFirstHeaderValueOrEmpty(
 				response, "Content-Language");
-		blobproperties.contentMD5 = Utility.getFirstHeaderValueOrEmpty(
+		blobProperties.contentMD5 = Utility.getFirstHeaderValueOrEmpty(
 				response, "Content-MD5");
-		blobproperties.contentType = Utility.getFirstHeaderValueOrEmpty(
+		blobProperties.contentType = Utility.getFirstHeaderValueOrEmpty(
 				response, "Content-Type");
-		blobproperties.eTag = Utility.getFirstHeaderValueOrEmpty(response,
+		blobProperties.eTag = Utility.getFirstHeaderValueOrEmpty(response,
 				"ETag");
 
 		String lastModifiedString = Utility.getFirstHeaderValueOrEmpty(
@@ -31,35 +31,35 @@ final class BlobResponse extends BaseResponse {
 			Calendar calendar = Calendar.getInstance(Utility.LOCALE_US);
 			calendar.setTimeZone(Utility.UTC_ZONE);
 			calendar.setTime(new Date());
-			blobproperties.lastModified = calendar.getTime();
+			blobProperties.lastModified = calendar.getTime();
 		}
 
-		String s1 = Utility.getFirstHeaderValueOrEmpty(response,
+		String blobTypeString = Utility.getFirstHeaderValueOrEmpty(response,
 				"x-ms-blob-type");
-		if (s1.length() != 0) {
-			blobproperties.blobType = BlobType.fromValue(s1);
+		if (blobTypeString.length() != 0) {
+			blobProperties.blobType = BlobType.fromValue(blobTypeString);
 		}
-		String s2 = Utility.getFirstHeaderValueOrEmpty(response,
+		String leaseStatusString = Utility.getFirstHeaderValueOrEmpty(response,
 				"x-ms-lease-status");
-		if (!Utility.isNullOrEmpty(s2))
-			blobproperties.leaseStatus = LeaseStatus.fromValue(s2);
-		String s3 = Utility.getFirstHeaderValueOrEmpty(response, "Cache-Range");
-		String s4 = Utility.getFirstHeaderValueOrEmpty(response,
+		if (!Utility.isNullOrEmpty(leaseStatusString))
+			blobProperties.leaseStatus = LeaseStatus.fromValue(leaseStatusString);
+		String cacheRangeString = Utility.getFirstHeaderValueOrEmpty(response, "Cache-Range");
+		String blobContentLengthString = Utility.getFirstHeaderValueOrEmpty(response,
 				"x-ms-blob-content-length");
-		if (!Utility.isNullOrEmpty(s3))
-			blobproperties.length = Long.parseLong(s3);
-		else if (!Utility.isNullOrEmpty(s4)) {
-			blobproperties.length = Long.parseLong(s4);
+		if (!Utility.isNullOrEmpty(cacheRangeString))
+			blobProperties.length = Long.parseLong(cacheRangeString);
+		else if (!Utility.isNullOrEmpty(blobContentLengthString)) {
+			blobProperties.length = Long.parseLong(blobContentLengthString);
 		} else {
-			String s5 = Utility.getFirstHeaderValueOrEmpty(response,
+			String contentLengthString = Utility.getFirstHeaderValueOrEmpty(response,
 					"Content-Length");
-			if (!Utility.isNullOrEmpty(s5))
-				blobproperties.length = Long.parseLong(s5);
+			if (!Utility.isNullOrEmpty(contentLengthString))
+				blobProperties.length = Long.parseLong(contentLengthString);
 		}
-		blobattributes.uri = blobUri;
-		blobattributes.snapshotID = snapshotID;
-		blobattributes.metadata = getMetadata(response);
-		return blobattributes;
+		blobAttributes.uri = blobUri;
+		blobAttributes.snapshotID = snapshotID;
+		blobAttributes.metadata = getMetadata(response);
+		return blobAttributes;
 	}
 
 	public static String getLeaseID(AbstractHttpMessage response) {

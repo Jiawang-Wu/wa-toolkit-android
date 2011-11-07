@@ -16,158 +16,158 @@ import org.apache.http.client.methods.HttpRequestBase;
 
 abstract class Canonicalizer {
 	private static void addCanonicalizedHeaders(HttpRequestBase request,
-			StringBuilder stringbuilder) {
-		Header[] map = request.getAllHeaders();
-		ArrayList<String> arraylist = new ArrayList<String>();
-		for (Header header : map) {
+			StringBuilder stringBuilder) {
+		Header[] headers = request.getAllHeaders();
+		ArrayList<String> xMsHeaderNames = new ArrayList<String>();
+		for (Header header : headers) {
 			if (header.getName().toLowerCase(Locale.US).startsWith("x-ms-"))
-				arraylist.add(header.getName().toLowerCase(Locale.US));
+				xMsHeaderNames.add(header.getName().toLowerCase(Locale.US));
 		}
-		Collections.sort(arraylist);
-		StringBuilder stringbuilder1;
-		for (Iterator iterator1 = arraylist.iterator(); iterator1.hasNext(); appendCanonicalizedElement(
-				stringbuilder, stringbuilder1.toString())) {
-			String s1 = (String) iterator1.next();
-			stringbuilder1 = new StringBuilder(s1);
-			String s2 = ":";
-			ArrayList arraylist1 = getHeaderValues(map, s1);
-			for (Iterator iterator2 = arraylist1.iterator(); iterator2
+		Collections.sort(xMsHeaderNames);
+		StringBuilder singleElementStringBuilder;
+		for (Iterator headerNameIterator = xMsHeaderNames.iterator(); headerNameIterator.hasNext(); appendCanonicalizedElement(
+				stringBuilder, singleElementStringBuilder.toString())) {
+			String headerName = (String) headerNameIterator.next();
+			singleElementStringBuilder = new StringBuilder(headerName);
+			String separator = ":";
+			ArrayList headerValues = getHeaderValues(headers, headerName);
+			for (Iterator headerValueIterator = headerValues.iterator(); headerValueIterator
 					.hasNext();) {
-				String s3 = (String) iterator2.next();
-				String s4 = s3.replace("\r\n", "");
-				stringbuilder1.append(s2);
-				stringbuilder1.append(s4);
-				s2 = ",";
+				String headerValue = (String) headerValueIterator.next();
+				String headerValueWithoutNewLines = headerValue.replace("\r\n", "");
+				singleElementStringBuilder.append(separator);
+				singleElementStringBuilder.append(headerValueWithoutNewLines);
+				separator = ",";
 			}
 
 		}
 
 	}
 
-	private static void appendCanonicalizedElement(StringBuilder stringbuilder,
-			String s) {
-		stringbuilder.append("\n");
-		stringbuilder.append(s);
+	private static void appendCanonicalizedElement(StringBuilder stringBuilder,
+			String canonicalizedElementString) {
+		stringBuilder.append("\n");
+		stringBuilder.append(canonicalizedElementString);
 	}
 
-	protected static String canonicalizeHttpRequest(URL url, String s,
-			String s1, String s2, long l, String s3, HttpRequestBase request)
+	protected static String canonicalizeHttpRequest(URL url, String accountName,
+			String httpMethodName, String contentTypeString, long contentLength, String defaultDate, HttpRequestBase request)
 			throws StorageException {
-		StringBuilder stringbuilder = new StringBuilder(request.getMethod());
-		appendCanonicalizedElement(stringbuilder,
+		StringBuilder stringBuilder = new StringBuilder(request.getMethod());
+		appendCanonicalizedElement(stringBuilder,
 				Utility.getFirstHeaderValueOrEmpty(request, "Content-Encoding"));
-		appendCanonicalizedElement(stringbuilder,
+		appendCanonicalizedElement(stringBuilder,
 				Utility.getFirstHeaderValueOrEmpty(request, "Content-Language"));
-		appendCanonicalizedElement(stringbuilder, l != -1L ? String.valueOf(l)
+		appendCanonicalizedElement(stringBuilder, contentLength != -1L ? String.valueOf(contentLength)
 				: "");
-		appendCanonicalizedElement(stringbuilder,
+		appendCanonicalizedElement(stringBuilder,
 				Utility.getFirstHeaderValueOrEmpty(request, "Content-MD5"));
-		appendCanonicalizedElement(stringbuilder, s2 == null ? "" : s2);
-		String s4 = Utility.getFirstHeaderValueOrEmpty(request, "x-ms-date");
-		appendCanonicalizedElement(stringbuilder, s4.equals("") ? s3 : "");
-		String s5 = "";
+		appendCanonicalizedElement(stringBuilder, contentTypeString == null ? "" : contentTypeString);
+		String xMsDateString = Utility.getFirstHeaderValueOrEmpty(request, "x-ms-date");
+		appendCanonicalizedElement(stringBuilder, xMsDateString.equals("") ? defaultDate : "");
+		String ifModifiedSinceString = "";
 		String ifModifiedSince = Utility.getIfModifiedSince(request);
 		if (ifModifiedSince != null && ifModifiedSince.length() != 0) {
-			s5 = Utility.getGMTTime(new Date(ifModifiedSince));
+			ifModifiedSinceString = Utility.getGMTTime(new Date(ifModifiedSince));
 		}
-		appendCanonicalizedElement(stringbuilder, s5);
-		appendCanonicalizedElement(stringbuilder,
+		appendCanonicalizedElement(stringBuilder, ifModifiedSinceString);
+		appendCanonicalizedElement(stringBuilder,
 				Utility.getFirstHeaderValueOrEmpty(request, "If-Match"));
-		appendCanonicalizedElement(stringbuilder,
+		appendCanonicalizedElement(stringBuilder,
 				Utility.getFirstHeaderValueOrEmpty(request, "If-None-Match"));
-		appendCanonicalizedElement(stringbuilder,
+		appendCanonicalizedElement(stringBuilder,
 				Utility.getFirstHeaderValueOrEmpty(request,
 						"If-Unmodified-Since"));
-		appendCanonicalizedElement(stringbuilder,
+		appendCanonicalizedElement(stringBuilder,
 				Utility.getFirstHeaderValueOrEmpty(request, "Range"));
-		addCanonicalizedHeaders(request, stringbuilder);
-		appendCanonicalizedElement(stringbuilder,
-				getCanonicalizedResource(url, s));
-		String result = stringbuilder.toString();
+		addCanonicalizedHeaders(request, stringBuilder);
+		appendCanonicalizedElement(stringBuilder,
+				getCanonicalizedResource(url, accountName));
+		String result = stringBuilder.toString();
 		return result;
 	}
 
-	protected static String canonicalizeHttpRequestLite(URL url, String s,
-			String s1, String s2, long l, String s3, HttpRequestBase request)
+	protected static String canonicalizeHttpRequestLite(URL url, String accountName,
+			String httpMethodName, String contentTypeString, long contentLength, String defaultDate, HttpRequestBase request)
 			throws StorageException {
 		StringBuilder stringbuilder = new StringBuilder(request.getMethod());
 		String s4 = Utility.getFirstHeaderValueOrEmpty(request, "Content-MD5");
 		appendCanonicalizedElement(stringbuilder, s4);
-		appendCanonicalizedElement(stringbuilder, s2);
+		appendCanonicalizedElement(stringbuilder, contentTypeString);
 		String s5 = Utility.getFirstHeaderValueOrEmpty(request, "x-ms-date");
-		appendCanonicalizedElement(stringbuilder, s5.equals("") ? s3 : "");
+		appendCanonicalizedElement(stringbuilder, s5.equals("") ? defaultDate : "");
 		addCanonicalizedHeaders(request, stringbuilder);
 		appendCanonicalizedElement(stringbuilder,
-				getCanonicalizedResource(url, s));
+				getCanonicalizedResource(url, accountName));
 		return stringbuilder.toString();
 	}
 
-	private static String getCanonicalizedResource(URL url, String s)
+	private static String getCanonicalizedResource(URL url, String accountName)
 			throws StorageException {
-		StringBuilder stringbuilder = new StringBuilder("/");
-		stringbuilder.append(s);
-		stringbuilder.append(url.getPath());
-		StringBuilder stringbuilder1 = new StringBuilder(
-				stringbuilder.toString());
-		HashMap hashmap = PathUtility.parseQueryString(url.getQuery());
-		HashMap hashmap1 = new HashMap();
-		java.util.Map.Entry entry;
-		StringBuilder stringbuilder2;
-		for (Iterator iterator = hashmap.entrySet().iterator(); iterator
-				.hasNext(); hashmap1.put(
-				entry.getKey() != null ? ((Object) (((String) entry.getKey())
-						.toLowerCase(Locale.US))) : null, stringbuilder2
+		StringBuilder accountNameStringBuilder = new StringBuilder("/");
+		accountNameStringBuilder.append(accountName);
+		accountNameStringBuilder.append(url.getPath());
+		StringBuilder stringBuilder = new StringBuilder(
+				accountNameStringBuilder.toString());
+		HashMap queryArguments = PathUtility.parseQueryString(url.getQuery());
+		HashMap queryArgumentsToCanonicalize = new HashMap();
+		java.util.Map.Entry queryArgumentEntry;
+		StringBuilder queryArgumentStringBuilder;
+		for (Iterator queryArgumentIterator = queryArguments.entrySet().iterator(); queryArgumentIterator
+				.hasNext(); queryArgumentsToCanonicalize.put(
+				queryArgumentEntry.getKey() != null ? ((Object) (((String) queryArgumentEntry.getKey())
+						.toLowerCase(Locale.US))) : null, queryArgumentStringBuilder
 						.toString())) {
-			entry = (java.util.Map.Entry) iterator.next();
-			List list = Arrays.asList((Object[]) entry.getValue());
+			queryArgumentEntry = (java.util.Map.Entry) queryArgumentIterator.next();
+			List list = Arrays.asList((Object[]) queryArgumentEntry.getValue());
 			Collections.sort(list);
-			stringbuilder2 = new StringBuilder();
+			queryArgumentStringBuilder = new StringBuilder();
 			String s2;
-			for (Iterator iterator2 = list.iterator(); iterator2.hasNext(); stringbuilder2
+			for (Iterator iterator2 = list.iterator(); iterator2.hasNext(); queryArgumentStringBuilder
 					.append(s2)) {
 				s2 = (String) iterator2.next();
-				if (stringbuilder2.length() > 0)
-					stringbuilder2.append(",");
+				if (queryArgumentStringBuilder.length() > 0)
+					queryArgumentStringBuilder.append(",");
 			}
 
 		}
 
-		ArrayList arraylist = new ArrayList(hashmap1.keySet());
-		Collections.sort(arraylist);
+		ArrayList canonicalizedQueryArguments = new ArrayList(queryArgumentsToCanonicalize.keySet());
+		Collections.sort(canonicalizedQueryArguments);
 		StringBuilder stringbuilder3;
-		for (Iterator iterator1 = arraylist.iterator(); iterator1.hasNext(); appendCanonicalizedElement(
-				stringbuilder1, stringbuilder3.toString())) {
+		for (Iterator iterator1 = canonicalizedQueryArguments.iterator(); iterator1.hasNext(); appendCanonicalizedElement(
+				stringBuilder, stringbuilder3.toString())) {
 			String s1 = (String) iterator1.next();
 			stringbuilder3 = new StringBuilder();
 			stringbuilder3.append(s1);
 			stringbuilder3.append(":");
-			stringbuilder3.append((String) hashmap1.get(s1));
+			stringbuilder3.append((String) queryArgumentsToCanonicalize.get(s1));
 		}
 
-		return stringbuilder1.toString();
+		return stringBuilder.toString();
 	}
 
-	private static ArrayList getHeaderValues(Header[] map, String s) {
-		ArrayList arraylist = new ArrayList();
-		List<String> list = new ArrayList<String>();
-		for (Header entry : map) {
-			if (entry.getName().toLowerCase(Locale.US).equals(s)) {
-				list.add(entry.getValue());
+	private static ArrayList getHeaderValues(Header[] headers, String name) {
+		ArrayList trimmedValues = new ArrayList();
+		List<String> values = new ArrayList<String>();
+		for (Header entry : headers) {
+			if (entry.getName().toLowerCase(Locale.US).equals(name)) {
+				values.add(entry.getValue());
 			}
 		}
-		if (list.size() != 0) {
+		if (values.size() != 0) {
 			String s1;
-			for (Iterator iterator1 = list.iterator(); iterator1.hasNext(); arraylist
+			for (Iterator iterator1 = values.iterator(); iterator1.hasNext(); trimmedValues
 					.add(Utility.trimStart(s1)))
 				s1 = (String) iterator1.next();
 
 		}
-		return arraylist;
+		return trimmedValues;
 	}
 
 	Canonicalizer() {
 	}
 
-	protected abstract String canonicalize(HttpRequestBase request, String s,
+	protected abstract String canonicalize(HttpRequestBase request, String accountName,
 			Long contentLength) throws StorageException, MalformedURLException;
 }

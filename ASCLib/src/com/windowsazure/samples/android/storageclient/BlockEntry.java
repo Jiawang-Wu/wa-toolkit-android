@@ -6,9 +6,9 @@ public class BlockEntry {
 
 	public long size;
 	public BlockSearchMode searchMode;
-	public BlockEntry(String s, BlockSearchMode blocksearchmode) {
+	public BlockEntry(String encodedBlockId, BlockSearchMode blockSearchMode) {
 		searchMode = BlockSearchMode.LATEST;
-		id = s;
-		searchMode = blocksearchmode;
+		id = encodedBlockId;
+		searchMode = blockSearchMode;
 	}
 }

@@ -16,7 +16,7 @@ public final class CloudBlobDirectory implements IListBlobItem {
 
 	private String m_Prefix;
 
-	protected CloudBlobDirectory(String s, CloudBlobClient cloudblobclient)
+	protected CloudBlobDirectory(String s, CloudBlobClient serviceClient)
 			throws NotImplementedException, URISyntaxException,
 			StorageException {
 		throw new NotImplementedException();

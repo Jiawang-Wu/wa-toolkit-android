@@ -30,66 +30,61 @@ public final class CloudBlobClient {
 
 	private AbstractContainerRequest containerRequest;
 
-	public CloudBlobClient(URI endpointUri) throws NotImplementedException,
+	public CloudBlobClient(URI baseUri) throws NotImplementedException,
 			NotImplementedException {
 		throw new NotImplementedException();
 	}
 
-	public CloudBlobClient(URI endpointUri,
+	public CloudBlobClient(URI baseUri,
 			StorageCredentials storageCredentials) {
-		Utility.assertNotNull("baseUri", endpointUri);
+		Utility.assertNotNull("baseUri", baseUri);
 		Utility.assertNotNull("storagecredentials", storageCredentials);
 		m_SingleBlobPutThresholdInBytes = 0x2000000;
 		m_WriteBlockSizeInBytes = 0x400000;
 		m_PageBlobStreamWriteSizeInBytes = 0x400000;
 		m_StreamMinimumReadSizeInBytes = 0x400000;
-		m_ConcurrentRequestCount = 1;
 		m_DirectoryDelimiter = "/";
 		m_TimeoutInMs = 0x15f90;
 		m_DirectoryDelimiter = "/";
 		m_StreamMinimumReadSizeInBytes = 0x400000;
 
-		if (!endpointUri.isAbsolute()) {
+		if (!baseUri.isAbsolute()) {
 			throw new IllegalArgumentException(
 					String.format(
 							"Address '%s' is not an absolute address. Relative addresses are not permitted in here.",
-							endpointUri));
+							baseUri));
 		}
 
-		m_Endpoint = endpointUri;
+		m_Endpoint = baseUri;
 		m_Credentials = storageCredentials;
 		containerRequest = storageCredentials.getContainerRequest();
 	}
 
-	CloudBlobClient clientForBlobOf(CloudBlobContainer cloudBlobContainer)
+	CloudBlobClient clientForBlobOf(CloudBlobContainer container)
 			throws UnsupportedEncodingException, StorageException,
 			NotImplementedException, IOException, URISyntaxException {
 		StorageCredentials credentials = this.getCredentials()
-				.credentialsForBlobOf(cloudBlobContainer);
+				.credentialsForBlobOf(container);
 		if (credentials == this.getCredentials()) {
 			return this;
 		} else {
-			URI containerUri = cloudBlobContainer.getUri();
-			URI uri = new URI(containerUri.getScheme() + "://"
+			URI containerUri = container.getUri();
+			URI baseUri = new URI(containerUri.getScheme() + "://"
 					+ containerUri.getAuthority());
-			return new CloudBlobClient(uri, credentials);
+			return new CloudBlobClient(baseUri, credentials);
 		}
 	}
 
-	public CloudBlockBlob getBlockBlobReference(String s)
+	public CloudBlockBlob getBlockBlobReference(String blobName)
 			throws NotImplementedException, URISyntaxException,
 			StorageException {
 		throw new NotImplementedException();
 	}
 
-	public CloudBlockBlob getBlockBlobReference(String blobAddressUri, String s1)
+	public CloudBlockBlob getBlockBlobReference(String blobName, String snapshotId)
 			throws NotImplementedException, StorageException,
 			URISyntaxException {
 		throw new NotImplementedException();
-	}
-
-	public int getConcurrentRequestCount() {
-		return m_ConcurrentRequestCount;
 	}
 
 	public URI getContainerEndpoint() throws URISyntaxException {
@@ -97,11 +92,11 @@ public final class CloudBlobClient {
 				.getCredentials().containerEndpointPostfix());
 	}
 
-	public CloudBlobContainer getContainerReference(String s)
+	public CloudBlobContainer getContainerReference(String containerName)
 			throws NotImplementedException, URISyntaxException,
 			StorageException {
-		Utility.assertNotNullOrEmpty("containerAddress", s);
-		return new CloudBlobContainer(s, this);
+		Utility.assertNotNullOrEmpty("containerAddress", containerName);
+		return new CloudBlobContainer(containerName, this);
 	}
 
 	public StorageCredentials getCredentials() {
@@ -112,7 +107,7 @@ public final class CloudBlobClient {
 		return m_DirectoryDelimiter;
 	}
 
-	public CloudBlobDirectory getDirectoryReference(String s)
+	public CloudBlobDirectory getDirectoryReference(String directoryName)
 			throws NotImplementedException, URISyntaxException,
 			StorageException {
 		throw new NotImplementedException();
@@ -122,13 +117,13 @@ public final class CloudBlobClient {
 		return m_Endpoint;
 	}
 
-	public CloudPageBlob getPageBlobReference(String s)
+	public CloudPageBlob getPageBlobReference(String blobName)
 			throws NotImplementedException, URISyntaxException,
 			StorageException {
 		throw new NotImplementedException();
 	}
 
-	public CloudPageBlob getPageBlobReference(String s, String s1)
+	public CloudPageBlob getPageBlobReference(String blobName, String snapshotId)
 			throws NotImplementedException, URISyntaxException,
 			StorageException {
 		throw new NotImplementedException();
@@ -159,77 +154,74 @@ public final class CloudBlobClient {
 		return listContainersWithPrefix(null, ContainerListingDetails.NONE);
 	}
 
-	public Iterable<CloudBlobContainer> listContainers(String s)
+	public Iterable<CloudBlobContainer> listContainers(String prefix)
 			throws Exception, NotImplementedException {
-		return listContainersWithPrefix(s, ContainerListingDetails.NONE);
+		return listContainersWithPrefix(prefix, ContainerListingDetails.NONE);
 	}
 
-	public Iterable<CloudBlobContainer> listContainers(String s,
-			ContainerListingDetails containerlistingdetails) throws Exception,
+	public Iterable<CloudBlobContainer> listContainers(String prefix,
+			ContainerListingDetails listingDetails) throws Exception,
 			NotImplementedException {
-		return listContainersWithPrefix(s, containerlistingdetails);
+		return listContainersWithPrefix(prefix, listingDetails);
 	}
-	protected Iterable<CloudBlobContainer> listContainersWithPrefix(String s,
-			ContainerListingDetails containerlistingdetails)
+	protected Iterable<CloudBlobContainer> listContainersWithPrefix(String prefix,
+			ContainerListingDetails listingDetails)
 			throws StorageInnerException, Exception {
-		HttpGet request = containerRequest.list(getEndpoint(), s,
-				containerlistingdetails);
+		HttpGet request = containerRequest.list(getEndpoint(), prefix,
+				listingDetails);
 		getCredentials().signRequest(request, -1L);
 		RequestResult result = ExecutionEngine.processRequest(request);
 		if (HttpStatusCode.fromInt(result.statusCode) != HttpStatusCode.OK) {
 			throw new StorageInnerException("Couldn't list blob's containers");
 		}
-		ListContainersResponse listcontainersresponse = new ListContainersResponse(
+		ListContainersResponse response = new ListContainersResponse(
 				result.httpResponse.getEntity().getContent());
-		return listcontainersresponse.getContainers(this);
+		return response.getContainers(this);
 	}
-	protected void setBaseURI(URI uri) throws NotImplementedException,
+	protected void setBaseURI(URI baseUri) throws NotImplementedException,
 			NotImplementedException {
 		throw new NotImplementedException();
 	}
-	public void setConcurrentRequestCount(int i) {
-		m_ConcurrentRequestCount = i;
+	protected void setCredentials(StorageCredentials storageCredentials) {
+		m_Credentials = storageCredentials;
 	}
-	protected void setCredentials(StorageCredentials storagecredentials) {
-		m_Credentials = storagecredentials;
+	public void setDirectoryDelimiter(String directoryDelimiter) {
+		m_DirectoryDelimiter = directoryDelimiter;
 	}
-	public void setDirectoryDelimiter(String s) {
-		m_DirectoryDelimiter = s;
-	}
-	public void setPageBlobStreamWriteSizeInBytes(int i) {
-		if (i > 0x400000 || i < 512 || i % 512 != 0) {
+	public void setPageBlobStreamWriteSizeInBytes(int writeSizeInBytes) {
+		if (writeSizeInBytes > 0x400000 || writeSizeInBytes < 512 || writeSizeInBytes % 512 != 0) {
 			throw new IllegalArgumentException("PageBlobStreamWriteSizeInBytes");
 		} else {
-			m_PageBlobStreamWriteSizeInBytes = i;
+			m_PageBlobStreamWriteSizeInBytes = writeSizeInBytes;
 		}
 	}
-	public void setSingleBlobPutThresholdInBytes(int i)
+	public void setSingleBlobPutThresholdInBytes(int putThresholdInBytes)
 			throws IllegalArgumentException {
-		if (i > 0x4000000 || i < 0x100000) {
+		if (putThresholdInBytes > 0x4000000 || putThresholdInBytes < 0x100000) {
 			throw new IllegalArgumentException(
 					"SingleBlobUploadThresholdInBytes");
 		} else {
-			m_SingleBlobPutThresholdInBytes = i;
+			m_SingleBlobPutThresholdInBytes = putThresholdInBytes;
 			return;
 		}
 	}
-	public void setStreamMinimumReadSizeInBytes(int i) {
-		if (i > 0x4000000 || i < 512) {
+	public void setStreamMinimumReadSizeInBytes(int minimumReadSize) {
+		if (minimumReadSize > 0x4000000 || minimumReadSize < 512) {
 			throw new IllegalArgumentException("MinimumReadSize");
 		} else {
-			m_StreamMinimumReadSizeInBytes = i;
+			m_StreamMinimumReadSizeInBytes = minimumReadSize;
 			return;
 		}
 	}
-	public void setTimeoutInMs(int i) {
-		m_TimeoutInMs = i;
+	public void setTimeoutInMs(int timeoutInMs) {
+		m_TimeoutInMs = timeoutInMs;
 	}
 
-	public void setWriteBlockSizeInBytes(int i) throws IllegalArgumentException {
-		if (i > 0x400000 || i < 0x100000) {
+	public void setWriteBlockSizeInBytes(int blockSizeInBytes) throws IllegalArgumentException {
+		if (blockSizeInBytes > 0x400000 || blockSizeInBytes < 0x100000) {
 			throw new IllegalArgumentException("WriteBlockSizeInBytes");
 		} else {
-			m_WriteBlockSizeInBytes = i;
+			m_WriteBlockSizeInBytes = blockSizeInBytes;
 			return;
 		}
 	}

@@ -46,7 +46,7 @@ public final class Property<T> {
 			ByteBuffer buffer = ByteBuffer.wrap(bytes);
 			return new Property<ByteBuffer>(name, buffer);
 		case EdmBoolean:
-			Boolean booleanValue = Boolean.parseBoolean(representation);
+			boolean booleanValue = Boolean.parseBoolean(representation);
 			return new Property<Boolean>(name, booleanValue);
 		case EdmDateTime:
 			Date date = Util.xmlStringToDate(representation);
@@ -74,7 +74,7 @@ public final class Property<T> {
 		return new Property<ByteBuffer>(name, buffer);
 	}
 	
-	public static Property<Boolean> newProperty(String name, Boolean booleanValue) {
+	public static Property<Boolean> newProperty(String name, boolean booleanValue) {
 		return new Property<Boolean>(name, booleanValue);
 	}
 	

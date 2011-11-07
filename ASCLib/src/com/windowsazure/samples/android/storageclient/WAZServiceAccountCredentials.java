@@ -18,24 +18,24 @@ public class WAZServiceAccountCredentials extends StorageCredentials {
 	}
 
 	@Override
-	protected Boolean canCredentialsComputeHmac()
+	protected boolean canCredentialsComputeHmac()
 			throws NotImplementedException {
 		// TODO Auto-generated method stub
-		return null;
+		return false;
 	}
 
 	@Override
-	protected Boolean canCredentialsSignRequest()
+	protected boolean canCredentialsSignRequest()
 			throws NotImplementedException {
 		// TODO Auto-generated method stub
-		return null;
+		return false;
 	}
 
 	@Override
-	protected Boolean canCredentialsSignRequestLite()
+	protected boolean canCredentialsSignRequestLite()
 			throws NotImplementedException {
 		// TODO Auto-generated method stub
-		return true;
+		return false;
 	}
 
 	@Override
@@ -71,10 +71,10 @@ public class WAZServiceAccountCredentials extends StorageCredentials {
 	}
 
 	@Override
-	protected Boolean doCredentialsNeedTransformUri()
+	protected boolean doCredentialsNeedTransformUri()
 			throws NotImplementedException {
 		// TODO Auto-generated method stub
-		return null;
+		return false;
 	}
 
 	@Override
@@ -108,7 +108,7 @@ public class WAZServiceAccountCredentials extends StorageCredentials {
 	}
 
 	@Override
-	public String toString(Boolean boolean1) {
+	public String toString(boolean boolean1) {
 		// TODO Auto-generated method stub
 		return null;
 	}

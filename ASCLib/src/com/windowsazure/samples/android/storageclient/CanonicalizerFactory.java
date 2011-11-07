@@ -13,8 +13,8 @@ final class CanonicalizerFactory {
 	private static final BlobQueueLiteCanonicalizer BLOB_QUEUE_LITE_INSTANCE = new BlobQueueLiteCanonicalizer();
 
 	protected static Canonicalizer getBlobQueueFullCanonicalizer(
-			HttpRequestBase httpurlconnection) {
-		if (validateVersionIsSupported(httpurlconnection).booleanValue())
+			HttpRequestBase request) {
+		if (validateVersionIsSupported(request))
 			return BLOB_QUEUE_FULL_V2_INSTANCE;
 		else
 			throw new UnsupportedOperationException(
@@ -22,37 +22,37 @@ final class CanonicalizerFactory {
 	}
 
 	protected static Canonicalizer getBlobQueueLiteCanonicalizer(
-			HttpRequestBase httpurlconnection) {
-		if (validateVersionIsSupported(httpurlconnection).booleanValue())
+			HttpRequestBase request) {
+		if (validateVersionIsSupported(request))
 			return BLOB_QUEUE_LITE_INSTANCE;
 		else
 			throw new UnsupportedOperationException(
 					"Versions before 2009-09-19 do not support Shared Key Lite for Blob And Queue.");
 	}
 
-	private static Boolean validateVersionIsSupported(HttpRequestBase request) {
-		String s = Utility.getFirstHeaderValueOrEmpty(request, "x-ms-version");
-		if (s.length() == 0 || s.length() == 0)
-			return Boolean.valueOf(true);
+	private static boolean validateVersionIsSupported(HttpRequestBase request) {
+		String xMsVersionString = Utility.getFirstHeaderValueOrEmpty(request, "x-ms-version");
+		if (xMsVersionString.length() == 0 || xMsVersionString.length() == 0)
+			return true;
 		try {
-			Calendar calendar = Calendar.getInstance(Utility.LOCALE_US);
-			calendar.set(2009, 8, 19, 0, 0, 0);
-			calendar.set(14, 0);
-			SimpleDateFormat simpledateformat = new SimpleDateFormat(
+			Calendar date2009819US = Calendar.getInstance(Utility.LOCALE_US);
+			date2009819US.set(2009, 8, 19, 0, 0, 0);
+			date2009819US.set(14, 0);
+			SimpleDateFormat yyyyMmDdFormat = new SimpleDateFormat(
 					"yyyy-MM-dd");
-			java.util.Date date = simpledateformat.parse(s);
-			Calendar calendar1 = Calendar.getInstance(Utility.LOCALE_US);
-			calendar1.setTime(date);
-			calendar1.set(11, 0);
-			calendar1.set(12, 0);
-			calendar1.set(13, 0);
-			calendar1.set(14, 1);
-			if (calendar1.compareTo(calendar) >= 0)
-				return Boolean.valueOf(true);
+			java.util.Date xMsVersionDate = yyyyMmDdFormat.parse(xMsVersionString);
+			Calendar xmsVersionDateCalendar = Calendar.getInstance(Utility.LOCALE_US);
+			xmsVersionDateCalendar.setTime(xMsVersionDate);
+			xmsVersionDateCalendar.set(11, 0);
+			xmsVersionDateCalendar.set(12, 0);
+			xmsVersionDateCalendar.set(13, 0);
+			xmsVersionDateCalendar.set(14, 1);
+			if (xmsVersionDateCalendar.compareTo(date2009819US) >= 0)
+				return true;
 		} catch (ParseException parseexception) {
-			return Boolean.valueOf(false);
+			return false;
 		}
-		return Boolean.valueOf(false);
+		return false;
 	}
 	CanonicalizerFactory() {
 	}

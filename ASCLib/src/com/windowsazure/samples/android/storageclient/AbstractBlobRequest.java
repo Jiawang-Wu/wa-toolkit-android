@@ -8,7 +8,7 @@ import org.apache.http.client.methods.HttpGet;
 
 public interface AbstractBlobRequest {
 
-	HttpGet list(URI endpoint, CloudBlobContainer container, String s,
+	HttpGet list(URI endpoint, CloudBlobContainer container, String prefix,
 			boolean useFlatBlobListing) throws URISyntaxException,
 			IllegalArgumentException, StorageException,
 			NotImplementedException, IOException;

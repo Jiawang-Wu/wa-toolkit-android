@@ -41,9 +41,9 @@ public class Utility {
 			return false;
 		if (storagecredentials instanceof StorageCredentialsAccountAndKey)
 			return ((StorageCredentialsAccountAndKey) storagecredentials)
-					.toString(Boolean.valueOf(true))
+					.toString(true)
 					.equals(((StorageCredentialsAccountAndKey) storagecredentials1)
-							.toString(Boolean.valueOf(true)));
+							.toString(true));
 		if (storagecredentials instanceof StorageCredentialsSharedAccessSignature)
 			return ((StorageCredentialsSharedAccessSignature) storagecredentials)
 					.getToken()

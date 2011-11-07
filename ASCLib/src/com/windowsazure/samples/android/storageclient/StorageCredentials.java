@@ -22,7 +22,7 @@ public abstract class StorageCredentials {
 		String s2 = hashmap.get("SharedAccessSignature") == null ? null
 				: (String) hashmap.get("SharedAccessSignature");
 		if (s != null && s1 != null && s2 == null)
-			if (Base64.validateIsBase64String(s1).booleanValue())
+			if (Base64.validateIsBase64String(s1))
 				return new StorageCredentialsAccountAndKey(s, s1);
 			else
 				throw new InvalidKeyException(
@@ -42,13 +42,13 @@ public abstract class StorageCredentials {
 	public StorageCredentials() {
 	}
 
-	protected abstract Boolean canCredentialsComputeHmac()
+	protected abstract boolean canCredentialsComputeHmac()
 			throws NotImplementedException;
 
-	protected abstract Boolean canCredentialsSignRequest()
+	protected abstract boolean canCredentialsSignRequest()
 			throws NotImplementedException;
 
-	protected abstract Boolean canCredentialsSignRequestLite()
+	protected abstract boolean canCredentialsSignRequestLite()
 			throws NotImplementedException;
 
 	public abstract String computeHmac256(String s) throws InvalidKeyException,
@@ -65,7 +65,7 @@ public abstract class StorageCredentials {
 			NotImplementedException, URISyntaxException, StorageException,
 			IOException;
 
-	protected abstract Boolean doCredentialsNeedTransformUri()
+	protected abstract boolean doCredentialsNeedTransformUri()
 			throws NotImplementedException;
 
 	public abstract String getAccountName();
@@ -82,7 +82,7 @@ public abstract class StorageCredentials {
 			throws NotImplementedException, StorageException,
 			InvalidKeyException;
 
-	public abstract String toString(Boolean boolean1);
+	public abstract String toString(boolean boolean1);
 
 	public abstract URI transformUri(URI uri) throws NotImplementedException,
 			URISyntaxException, StorageException;

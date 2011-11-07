@@ -15,17 +15,17 @@ public final class StorageCredentialsSharedAccessSignature extends
 	}
 
 	@Override
-	protected Boolean canCredentialsComputeHmac() {
+	protected boolean canCredentialsComputeHmac() {
 		return false;
 	}
 
 	@Override
-	protected Boolean canCredentialsSignRequest() {
+	protected boolean canCredentialsSignRequest() {
 		return false;
 	}
 
 	@Override
-	protected Boolean canCredentialsSignRequestLite() {
+	protected boolean canCredentialsSignRequestLite() {
 		return false;
 	}
 
@@ -51,7 +51,7 @@ public final class StorageCredentialsSharedAccessSignature extends
 	}
 
 	@Override
-	protected Boolean doCredentialsNeedTransformUri() {
+	protected boolean doCredentialsNeedTransformUri() {
 		return true;
 	}
 
@@ -83,9 +83,9 @@ public final class StorageCredentialsSharedAccessSignature extends
 	}
 
 	@Override
-	public String toString(Boolean boolean1) {
+	public String toString(boolean boolean1) {
 		return String.format("%s=%s", new Object[] { "SharedAccessSignature",
-				boolean1.booleanValue() ? m_Token : "[signature hidden]" });
+				boolean1 ? m_Token : "[signature hidden]" });
 	}
 
 	@Override

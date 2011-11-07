@@ -16,64 +16,64 @@ import org.apache.http.client.methods.HttpRequestBase;
 final class BaseRequest {
 	private static String m_UserAgent;
 
-	public static void addLeaseId(HttpRequestBase request, String s) {
-		if (s != null)
-			addOptionalHeader(request, "x-ms-lease-id", s);
+	public static void addLeaseId(HttpRequestBase request, String leaseId) {
+		if (leaseId != null)
+			addOptionalHeader(request, "x-ms-lease-id", leaseId);
 	}
 
-	public static void addMetadata(HttpRequestBase request, HashMap hashmap) {
-		if (hashmap != null) {
-			java.util.Map.Entry entry;
-			for (Iterator iterator = hashmap.entrySet().iterator(); iterator
-					.hasNext(); addMetadata(request, (String) entry.getKey(),
-					(String) entry.getValue()))
-				entry = (java.util.Map.Entry) iterator.next();
+	public static void addMetadata(HttpRequestBase request, HashMap metadata) {
+		if (metadata != null) {
+			java.util.Map.Entry metadataEntry;
+			for (Iterator iterator = metadata.entrySet().iterator(); iterator
+					.hasNext(); addMetadata(request, (String) metadataEntry.getKey(),
+					(String) metadataEntry.getValue()))
+				metadataEntry = (java.util.Map.Entry) iterator.next();
 
 		}
 	}
 
-	public static void addMetadata(HttpRequestBase request, String s, String s1) {
-		Utility.assertNotNullOrEmpty("value", s1);
-		request.setHeader((new StringBuilder()).append("x-ms-meta-").append(s)
-				.toString(), s1);
+	public static void addMetadata(HttpRequestBase request, String name, String value) {
+		Utility.assertNotNullOrEmpty("value", value);
+		request.setHeader((new StringBuilder()).append("x-ms-meta-").append(name)
+				.toString(), value);
 	}
 
-	public static void addOptionalHeader(HttpRequestBase request, String s,
-			String s1) {
-		if (s1 != null && !s1.equals(""))
-			request.addHeader(s, s1);
+	public static void addOptionalHeader(HttpRequestBase request, String name,
+			String value) {
+		if (value != null && !value.equals(""))
+			request.addHeader(name, value);
 	}
 
-	public static void addSnapshot(UriQueryBuilder uriquerybuilder,
+	public static void addSnapshot(UriQueryBuilder uriQueryBuilder,
 			String snapshotId) throws StorageException {
 		if (snapshotId != null) {
-			uriquerybuilder.add("snapshot", snapshotId);
+			uriQueryBuilder.add("snapshot", snapshotId);
 		}
 	}
 
-	public static HttpPut create(URI uri, UriQueryBuilder uriquerybuilder)
+	public static HttpPut create(URI endpoint, UriQueryBuilder uriQueryBuilder)
 			throws IOException, URISyntaxException, IllegalArgumentException,
 			StorageException {
-		if (uriquerybuilder == null)
-			uriquerybuilder = new UriQueryBuilder();
-		HttpPut put = new HttpPut();
-		setURIAndHeaders(put, uri, uriquerybuilder);
-		return put;
+		if (uriQueryBuilder == null)
+			uriQueryBuilder = new UriQueryBuilder();
+		HttpPut request = new HttpPut();
+		setURIAndHeaders(request, endpoint, uriQueryBuilder);
+		return request;
 	}
 
-	public static HttpDelete delete(URI uri, UriQueryBuilder uriquerybuilder)
+	public static HttpDelete delete(URI endpoint, UriQueryBuilder uriQueryBuilder)
 			throws IOException, URISyntaxException, StorageException {
-		if (uriquerybuilder == null)
-			uriquerybuilder = new UriQueryBuilder();
-		return setURIAndHeaders(new HttpDelete(), uri, uriquerybuilder);
+		if (uriQueryBuilder == null)
+			uriQueryBuilder = new UriQueryBuilder();
+		return setURIAndHeaders(new HttpDelete(), endpoint, uriQueryBuilder);
 	}
 
-	public static HttpHead getProperties(URI uri,
-			UriQueryBuilder uriquerybuilder) throws IOException,
+	public static HttpHead getProperties(URI endpoint,
+			UriQueryBuilder uriQueryBuilder) throws IOException,
 			URISyntaxException, StorageException {
-		if (uriquerybuilder == null)
-			uriquerybuilder = new UriQueryBuilder();
-		return setURIAndHeaders(new HttpHead(), uri, uriquerybuilder);
+		if (uriQueryBuilder == null)
+			uriQueryBuilder = new UriQueryBuilder();
+		return setURIAndHeaders(new HttpHead(), endpoint, uriQueryBuilder);
 	}
 
 	private static String getUserAgent() {
@@ -88,21 +88,21 @@ final class BaseRequest {
 		return m_UserAgent;
 	}
 
-	public static HttpPut setMetadata(URI uri, UriQueryBuilder uriquerybuilder)
+	public static HttpPut setMetadata(URI endpoint, UriQueryBuilder uriQueryBuilder)
 			throws IOException, URISyntaxException, StorageException {
-		if (uriquerybuilder == null)
-			uriquerybuilder = new UriQueryBuilder();
-		uriquerybuilder.add("comp", "metadata");
-		return setURIAndHeaders(new HttpPut(), uri, uriquerybuilder);
+		if (uriQueryBuilder == null)
+			uriQueryBuilder = new UriQueryBuilder();
+		uriQueryBuilder.add("comp", "metadata");
+		return setURIAndHeaders(new HttpPut(), endpoint, uriQueryBuilder);
 	}
 
 	public static <T extends HttpRequestBase> T setURIAndHeaders(T request,
-			URI uri, UriQueryBuilder uriquerybuilder) throws IOException,
+			URI endpoint, UriQueryBuilder uriQueryBuilder) throws IOException,
 			URISyntaxException, StorageException {
-		if (uriquerybuilder == null) {
-			uriquerybuilder = new UriQueryBuilder();
+		if (uriQueryBuilder == null) {
+			uriQueryBuilder = new UriQueryBuilder();
 		}
-		request.setURI(uriquerybuilder.addToURI(uri));
+		request.setURI(uriQueryBuilder.addToURI(endpoint));
 		request.addHeader("x-ms-version", "2009-09-19");
 		request.addHeader("User-Agent", getUserAgent());
 		// request.addHeader("Content-Type", "");
@@ -115,12 +115,12 @@ final class BaseRequest {
 		request.setHeader("x-ms-date", Utility.getGMTTime());
 		Canonicalizer canonicalizer = CanonicalizerFactory
 				.getBlobQueueFullCanonicalizer(request);
-		String s = canonicalizer.canonicalize(request,
+		String canonicalizedRequest = canonicalizer.canonicalize(request,
 				credentials.getAccountName(), contentLength);
-		String s1 = StorageKey.computeMacSha256(credentials.getKey(), s);
+		String signature = StorageKey.computeMacSha256(credentials.getKey(), canonicalizedRequest);
 		request.setHeader(
 				"Authorization",
 				String.format("%s %s:%s", "SharedKey",
-						credentials.getAccountName(), s1));
+						credentials.getAccountName(), signature));
 	}
 }

@@ -17,18 +17,18 @@ final class BlobRequest implements AbstractBlobRequest {
 		BaseRequest.addMetadata(request, metadata);
 	}
 
-	public static HttpDelete delete(URI uri) throws IOException,
+	public static HttpDelete delete(URI endpoint) throws IOException,
 			URISyntaxException, IllegalArgumentException, StorageException {
 		UriQueryBuilder uriquerybuilder = new UriQueryBuilder();
-		return BaseRequest.delete(uri, uriquerybuilder);
+		return BaseRequest.delete(endpoint, uriquerybuilder);
 	}
 
-	public static String formatBlockListAsXML(Iterable<BlockEntry> blockList)
+	public static String formatBlockListAsXML(Iterable<BlockEntry> blockEntriesList)
 			throws StorageException {
 		StringWriter stringwriter = new StringWriter();
 		stringwriter.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
 		stringwriter.append("<BlockList>\n");
-		for (BlockEntry blockEntry : blockList) {
+		for (BlockEntry blockEntry : blockEntriesList) {
 			String elementName = blockEntry.searchMode.toValue();
 			stringwriter.append(String.format("  <%s>", elementName));
 			stringwriter.append(blockEntry.id);
@@ -38,25 +38,25 @@ final class BlobRequest implements AbstractBlobRequest {
 		return stringwriter.toString();
 	}
 
-	public static HttpGet get(URI uri) throws IOException, URISyntaxException,
+	public static HttpGet get(URI endpoint) throws IOException, URISyntaxException,
 			IllegalArgumentException, StorageException {
 		UriQueryBuilder uriquerybuilder = new UriQueryBuilder();
 		return BaseRequest
-				.setURIAndHeaders(new HttpGet(), uri, uriquerybuilder);
+				.setURIAndHeaders(new HttpGet(), endpoint, uriquerybuilder);
 	}
 
-	public static HttpHead getProperties(URI uri, String snapshotId,
+	public static HttpHead getProperties(URI endpoint, String snapshotId,
 			String leaseId) throws IllegalArgumentException, StorageException,
 			IOException, URISyntaxException {
 		UriQueryBuilder uriquerybuilder = new UriQueryBuilder();
 		BaseRequest.addSnapshot(uriquerybuilder, snapshotId);
-		HttpHead request = BaseRequest.getProperties(uri, uriquerybuilder);
+		HttpHead request = BaseRequest.getProperties(endpoint, uriquerybuilder);
 		BaseRequest.addLeaseId(request, leaseId);
 		return request;
 	}
 
-	public static HttpPut put(URI uri, BlobProperties blobproperties,
-			BlobType blobType, String leaseID, long length) throws IOException,
+	public static HttpPut put(URI endpoint, BlobProperties blobProperties,
+			BlobType blobType, String leaseID, long contentLength) throws IOException,
 			URISyntaxException, StorageException {
 
 		if (blobType == BlobType.UNSPECIFIED) {
@@ -64,23 +64,23 @@ final class BlobRequest implements AbstractBlobRequest {
 					"The blob type cannot be undefined.");
 		}
 		HttpPut request = BaseRequest
-				.setURIAndHeaders(new HttpPut(), uri, null);
+				.setURIAndHeaders(new HttpPut(), endpoint, null);
 		BaseRequest.addOptionalHeader(request, "Cache-Control",
-				blobproperties.cacheControl);
+				blobProperties.cacheControl);
 		BaseRequest.addOptionalHeader(request, "Content-Type",
-				blobproperties.contentType);
+				blobProperties.contentType);
 		BaseRequest.addOptionalHeader(request, "Content-MD5",
-				blobproperties.contentMD5);
+				blobProperties.contentMD5);
 		BaseRequest.addOptionalHeader(request, "Content-Language",
-				blobproperties.contentLanguage);
+				blobProperties.contentLanguage);
 		BaseRequest.addOptionalHeader(request, "Content-Encoding",
-				blobproperties.contentEncoding);
+				blobProperties.contentEncoding);
 		if (blobType == BlobType.PAGE_BLOB) {
 			request.addHeader("Content-Length", "0");
 			request.addHeader("x-ms-blob-type", "PageBlob");
 			request.addHeader("x-ms-blob-content-length",
-					String.valueOf(length));
-			blobproperties.length = length;
+					String.valueOf(contentLength));
+			blobProperties.length = contentLength;
 		} else {
 			request.addHeader("x-ms-blob-type", "BlockBlob");
 		}
@@ -88,44 +88,44 @@ final class BlobRequest implements AbstractBlobRequest {
 		return request;
 	}
 
-	public static HttpPut putBlock(URI uri, String blockId, String leaseId)
+	public static HttpPut putBlock(URI endpoint, String encodedBlockId, String leaseId)
 			throws IOException, URISyntaxException, IllegalArgumentException,
 			StorageException {
-		UriQueryBuilder uriquerybuilder = new UriQueryBuilder();
-		uriquerybuilder.add("comp", "block");
-		uriquerybuilder.add("blockid", blockId);
-		HttpPut request = BaseRequest.setURIAndHeaders(new HttpPut(), uri,
-				uriquerybuilder);
+		UriQueryBuilder uriQueryBuilder = new UriQueryBuilder();
+		uriQueryBuilder.add("comp", "block");
+		uriQueryBuilder.add("blockid", encodedBlockId);
+		HttpPut request = BaseRequest.setURIAndHeaders(new HttpPut(), endpoint,
+				uriQueryBuilder);
 		BaseRequest.addLeaseId(request, leaseId);
 		return request;
 	}
 
-	public static HttpPut putBlockList(URI uri, BlobProperties blobproperties,
-			String s) throws IllegalArgumentException, IOException,
+	public static HttpPut putBlockList(URI endpoint, BlobProperties blobProperties,
+			String leaseId) throws IllegalArgumentException, IOException,
 			URISyntaxException, StorageException {
-		UriQueryBuilder uriquerybuilder = new UriQueryBuilder();
-		uriquerybuilder.add("comp", "blocklist");
-		HttpPut request = BaseRequest.setURIAndHeaders(new HttpPut(), uri,
-				uriquerybuilder);
-		BaseRequest.addLeaseId(request, s);
+		UriQueryBuilder uriQueryBuilder = new UriQueryBuilder();
+		uriQueryBuilder.add("comp", "blocklist");
+		HttpPut request = BaseRequest.setURIAndHeaders(new HttpPut(), endpoint,
+				uriQueryBuilder);
+		BaseRequest.addLeaseId(request, leaseId);
 		BaseRequest.addOptionalHeader(request, "x-ms-blob-cache-control",
-				blobproperties.cacheControl);
+				blobProperties.cacheControl);
 		BaseRequest.addOptionalHeader(request, "x-ms-blob-content-encoding",
-				blobproperties.contentEncoding);
+				blobProperties.contentEncoding);
 		BaseRequest.addOptionalHeader(request, "x-ms-blob-content-language",
-				blobproperties.contentLanguage);
+				blobProperties.contentLanguage);
 		BaseRequest.addOptionalHeader(request, "x-ms-blob-content-md5",
-				blobproperties.contentMD5);
+				blobProperties.contentMD5);
 		BaseRequest.addOptionalHeader(request, "x-ms-blob-content-type",
-				blobproperties.contentType);
+				blobProperties.contentType);
 		return request;
 	}
 
-	public static HttpPut setMetadata(URI uri, String s)
+	public static HttpPut setMetadata(URI endpoint, String leaseId)
 			throws IllegalArgumentException, IOException, URISyntaxException,
 			StorageException {
-		HttpPut request = BaseRequest.setMetadata(uri, null);
-		BaseRequest.addLeaseId(request, s);
+		HttpPut request = BaseRequest.setMetadata(endpoint, null);
+		BaseRequest.addLeaseId(request, leaseId);
 		return request;
 	}
 
@@ -133,7 +133,7 @@ final class BlobRequest implements AbstractBlobRequest {
 	}
 
 	@Override
-	public HttpGet list(URI endpoint, CloudBlobContainer container, String s,
+	public HttpGet list(URI endpoint, CloudBlobContainer container, String prefix,
 			boolean useFlatBlobListing) throws URISyntaxException,
 			IllegalArgumentException, StorageException,
 			NotImplementedException, IOException {
@@ -141,19 +141,19 @@ final class BlobRequest implements AbstractBlobRequest {
 		URI listBlobsUri = PathUtility.appendPathToUri(endpoint,
 				container.getName());
 		new ContainerRequest();
-		UriQueryBuilder uriquerybuilder = ContainerRequest
+		UriQueryBuilder uriQueryBuilder = ContainerRequest
 				.getContainerUriQueryBuilder();
-		uriquerybuilder.add("comp", "list");
+		uriQueryBuilder.add("comp", "list");
 
-		if (s != null) {
-			uriquerybuilder.add("prefix", s);
+		if (prefix != null) {
+			uriQueryBuilder.add("prefix", prefix);
 		}
 		if (!useFlatBlobListing) {
-			uriquerybuilder.add("delimiter", "/");
+			uriQueryBuilder.add("delimiter", "/");
 		}
-		uriquerybuilder.add("include", "metadata");
+		uriQueryBuilder.add("include", "metadata");
 		return BaseRequest.setURIAndHeaders(new HttpGet(), listBlobsUri,
-				uriquerybuilder);
+				uriQueryBuilder);
 	}
 
 }

@@ -16,24 +16,24 @@ import android.util.Base64;
 
 public final class CloudBlockBlob extends CloudBlob {
 
-	public CloudBlockBlob(CloudBlockBlob cloudblockblob)
+	public CloudBlockBlob(CloudBlockBlob blob)
 			throws NotImplementedException, StorageException {
 		throw new NotImplementedException();
 	}
 
-	public CloudBlockBlob(URI uri, CloudBlobClient cloudblobclient)
+	public CloudBlockBlob(URI blobUri, CloudBlobClient serviceClient)
 			throws NotImplementedException, StorageException {
 		throw new NotImplementedException();
 	}
 
-	public CloudBlockBlob(URI uri, CloudBlobClient cloudblobclient,
+	public CloudBlockBlob(URI blobUri, CloudBlobClient serviceClient,
 			CloudBlobContainer cloudblobcontainer)
 			throws NotImplementedException, StorageException {
-		super(uri, cloudblobclient, cloudblobcontainer);
+		super(blobUri, serviceClient, cloudblobcontainer);
 		m_Properties.blobType = BlobType.BLOCK_BLOB;
 	}
 
-	public CloudBlockBlob(URI uri, String s, CloudBlobClient cloudblobclient)
+	public CloudBlockBlob(URI blobUri, String snapshotId, CloudBlobClient serviceClient)
 			throws NotImplementedException, StorageException {
 		throw new NotImplementedException();
 	}
@@ -46,13 +46,13 @@ public final class CloudBlockBlob extends CloudBlob {
 		}
 	}
 
-	public void commitBlockList(Iterable<BlockEntry> iterable)
+	public void commitBlockList(Iterable<BlockEntry> blockEntriesList)
 			throws NotImplementedException, StorageException,
 			UnsupportedEncodingException, IOException {
-		commitBlockList(iterable, null);
+		commitBlockList(blockEntriesList, null);
 	}
 
-	public void commitBlockList(final Iterable<BlockEntry> blockEntries,
+	public void commitBlockList(final Iterable<BlockEntry> blockEntriesList,
 			final String leaseID) throws NotImplementedException,
 			StorageException, UnsupportedEncodingException, IOException {
 		StorageOperation storageoperation = new StorageOperation() {
@@ -64,7 +64,7 @@ public final class CloudBlockBlob extends CloudBlob {
 				BlobRequest.addMetadata(request, cloudblob.m_Metadata);
 
 				String formattedBlocksList = BlobRequest
-						.formatBlockListAsXML(blockEntries);
+						.formatBlockListAsXML(blockEntriesList);
 				request.setEntity(new ByteArrayEntity(formattedBlocksList
 						.getBytes()));
 
@@ -76,14 +76,14 @@ public final class CloudBlockBlob extends CloudBlob {
 							"Couldn't commit a blocks list");
 				}
 
-				BlobAttributes blobattributes = BlobResponse.getAttributes(
+				BlobAttributes attributes = BlobResponse.getAttributes(
 						(AbstractHttpMessage) result.httpResponse,
 						cloudblob.getUri(), null);
-				cloudblob.m_Properties.eTag = blobattributes.properties.eTag == null ? cloudblob.m_Properties.eTag
-						: blobattributes.properties.eTag;
-				cloudblob.m_Properties.lastModified = blobattributes.properties.lastModified;
-				if (blobattributes.properties.length != 0L)
-					cloudblob.m_Properties.length = blobattributes.properties.length;
+				cloudblob.m_Properties.eTag = attributes.properties.eTag == null ? cloudblob.m_Properties.eTag
+						: attributes.properties.eTag;
+				cloudblob.m_Properties.lastModified = attributes.properties.lastModified;
+				if (attributes.properties.length != 0L)
+					cloudblob.m_Properties.length = attributes.properties.length;
 				return null;
 			}
 
@@ -101,14 +101,14 @@ public final class CloudBlockBlob extends CloudBlob {
 		throw new NotImplementedException();
 	}
 
-	public ArrayList downloadBlockList(BlockListingFilter blocklistingfilter)
+	public ArrayList downloadBlockList(BlockListingFilter listingFilter)
 			throws NotImplementedException, StorageException {
 		throw new NotImplementedException();
 	}
 
-	private boolean isBase64URLSafeString(String string) {
+	private boolean isBase64URLSafeString(String base64UrlString) {
 		try {
-			Base64.decode(string, Base64.URL_SAFE | Base64.NO_WRAP
+			Base64.decode(base64UrlString, Base64.URL_SAFE | Base64.NO_WRAP
 					| Base64.NO_PADDING);
 			return true;
 		} catch (IllegalArgumentException exception) {
@@ -121,7 +121,7 @@ public final class CloudBlockBlob extends CloudBlob {
 		throw new NotImplementedException();
 	}
 
-	public BlobOutputStream openOutputStream(String s)
+	public BlobOutputStream openOutputStream(String snapshotId)
 			throws NotImplementedException, StorageException {
 		throw new NotImplementedException();
 	}
@@ -134,9 +134,9 @@ public final class CloudBlockBlob extends CloudBlob {
 	}
 
 	@Override
-	public void upload(InputStream inputstream, long l)
+	public void upload(InputStream inputstream, long length)
 			throws NotImplementedException, StorageException, IOException {
-		upload(inputstream, l, null);
+		upload(inputstream, length, null);
 	}
 
 	@Override
@@ -154,7 +154,7 @@ public final class CloudBlockBlob extends CloudBlob {
 	}
 
 	public void uploadBlock(String blockId, String leaseID,
-			InputStream inputstream, long length)
+			InputStream inputStream, long length)
 			throws NotImplementedException, StorageException, IOException {
 		if (Utility.isNullOrEmpty(blockId)
 				|| !this.isBase64URLSafeString(blockId)) {
@@ -162,8 +162,8 @@ public final class CloudBlockBlob extends CloudBlob {
 					"Invalid blockID, BlockID must be a valid Base64 String.");
 		}
 		if (length == -1L) {
-			inputstream = this.adaptedToSupportMarking(inputstream);
-			length = this.totalLengthOf(inputstream);
+			inputStream = this.adaptedToSupportMarking(inputStream);
+			length = this.totalLengthOf(inputStream);
 		}
 
 		if (length < -1L) {
@@ -174,20 +174,20 @@ public final class CloudBlockBlob extends CloudBlob {
 					"Invalid stream length, length must be less than or equal to 4 MB in size.");
 		}
 
-		uploadBlockInternal(blockId, leaseID, inputstream, length);
+		uploadBlockInternal(blockId, leaseID, inputStream, length);
 	}
 
 	private void uploadBlockInternal(final String blockId,
-			final String leaseID, final InputStream inputstream,
+			final String leaseID, final InputStream inputStream,
 			final long length) throws NotImplementedException,
 			StorageException, IOException {
-		StorageOperation storageoperation = new StorageOperation() {
-			public Void execute(CloudBlobClient cloudblobclient,
-					CloudBlob cloudblob) throws Exception {
+		StorageOperation storageOperation = new StorageOperation() {
+			public Void execute(CloudBlobClient serviceClient,
+					CloudBlob blob) throws Exception {
 				HttpPut request = BlobRequest.putBlock(
-						cloudblob.getTransformedAddress(), blockId, leaseID);
-				cloudblobclient.getCredentials().signRequest(request, length);
-				InputStreamEntity entity = new InputStreamEntity(inputstream,
+						blob.getTransformedAddress(), blockId, leaseID);
+				serviceClient.getCredentials().signRequest(request, length);
+				InputStreamEntity entity = new InputStreamEntity(inputStream,
 						length);
 				request.setEntity(entity);
 				result = ExecutionEngine.processRequest(request);
@@ -204,6 +204,6 @@ public final class CloudBlockBlob extends CloudBlob {
 			}
 
 		};
-		ExecutionEngine.execute(m_ServiceClient, this, storageoperation);
+		ExecutionEngine.execute(m_ServiceClient, this, storageOperation);
 	}
 }

@@ -203,16 +203,16 @@ public final class CloudStorageAccount implements CloudClientAccount {
 	}
 	public CloudStorageAccount(
 			StorageCredentialsAccountAndKey storagecredentialsaccountandkey,
-			Boolean boolean1) throws URISyntaxException {
+			boolean boolean1) throws URISyntaxException {
 		this((storagecredentialsaccountandkey), new URI(
-				getDefaultBlobEndpoint(boolean1.booleanValue() ? "https"
+				getDefaultBlobEndpoint(boolean1 ? "https"
 						: "http",
 						storagecredentialsaccountandkey.getAccountName())),
 				new URI(getDefaultQueueEndpoint(
-						boolean1.booleanValue() ? "https" : "http",
+						boolean1 ? "https" : "http",
 						storagecredentialsaccountandkey.getAccountName())),
 				new URI(getDefaultTableEndpoint(
-						boolean1.booleanValue() ? "https" : "http",
+						boolean1 ? "https" : "http",
 						storagecredentialsaccountandkey.getAccountName())));
 	}
 	@Override
@@ -257,9 +257,9 @@ public final class CloudStorageAccount implements CloudClientAccount {
 	}
 	@Override
 	public String toString() {
-		return toString(Boolean.valueOf(false));
+		return toString(false);
 	}
-	public String toString(Boolean boolean1) {
+	public String toString(boolean boolean1) {
 		if (m_Credentials != null
 				&& Utility.isNullOrEmpty(m_Credentials.getAccountName()))
 			return m_Credentials.toString(boolean1);
@@ -270,7 +270,7 @@ public final class CloudStorageAccount implements CloudClientAccount {
 		else if (m_Credentials != null
 				&& "devstoreaccount1".equals(m_Credentials.getAccountName())
 				&& m_Credentials
-						.toString(Boolean.valueOf(true))
+						.toString(true)
 						.equals("AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==")
 				&& m_BlobEndpoint != null
 				&& getBlobEndpoint().getHost().equals(

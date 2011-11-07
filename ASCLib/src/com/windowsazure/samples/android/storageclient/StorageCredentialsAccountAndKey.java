@@ -24,17 +24,17 @@ public final class StorageCredentialsAccountAndKey extends StorageCredentials {
 	}
 
 	@Override
-	protected Boolean canCredentialsComputeHmac() {
+	protected boolean canCredentialsComputeHmac() {
 		return true;
 	}
 
 	@Override
-	protected Boolean canCredentialsSignRequest() {
+	protected boolean canCredentialsSignRequest() {
 		return true;
 	}
 
 	@Override
-	protected Boolean canCredentialsSignRequestLite() {
+	protected boolean canCredentialsSignRequestLite() {
 		return true;
 	}
 
@@ -65,7 +65,7 @@ public final class StorageCredentialsAccountAndKey extends StorageCredentials {
 	}
 
 	@Override
-	protected Boolean doCredentialsNeedTransformUri() {
+	protected boolean doCredentialsNeedTransformUri() {
 		return false;
 	}
 
@@ -113,12 +113,12 @@ public final class StorageCredentialsAccountAndKey extends StorageCredentials {
 	}
 
 	@Override
-	public String toString(Boolean boolean1) {
+	public String toString(boolean boolean1) {
 		return String.format("%s=%s;%s=%s", new Object[] {
 				"AccountName",
 				getAccountName(),
 				"AccountKey",
-				boolean1.booleanValue() ? m_Credentials.getKey()
+				boolean1 ? m_Credentials.getKey()
 						.getBase64EncodedKey() : "[key hidden]" });
 	}
 

@@ -37,20 +37,20 @@ final class BlobInputStream extends InputStream {
 
 	private int m_BufferSize;
 
-	protected BlobInputStream(CloudBlob cloudblob) throws StorageException,
+	protected BlobInputStream(CloudBlob cloudBlob) throws StorageException,
 			NotImplementedException, UnsupportedEncodingException, IOException {
 		m_StreamLength = -1L;
-		m_ParentBlobRef = cloudblob;
+		m_ParentBlobRef = cloudBlob;
 		m_ParentBlobRef.assertCorrectBlobType();
 		m_StreamFaulted = false;
 		m_CurrentAbsoluteReadPosition = 0L;
-		m_ReadSize = cloudblob.m_ServiceClient
+		m_ReadSize = cloudBlob.m_ServiceClient
 				.getStreamMinimumReadSizeInBytes();
-		cloudblob.downloadAttributes();
-		HttpGet httpurlconnection = new HttpGet();
-		m_StreamLength = cloudblob.getProperties().length;
+		cloudBlob.downloadAttributes();
+		HttpGet request = new HttpGet();
+		m_StreamLength = cloudBlob.getProperties().length;
 		if (m_ParentBlobRef.getProperties().blobType == BlobType.PAGE_BLOB)
-			m_PageBlobRanges = ((CloudPageBlob) cloudblob).downloadPageRanges();
+			m_PageBlobRanges = ((CloudPageBlob) cloudBlob).downloadPageRanges();
 		else if (m_ParentBlobRef.getProperties().blobType == BlobType.BLOCK_BLOB)
 			throw new IllegalArgumentException(
 					"The UseSparsePageBlob option is not applicable of Block Blob streams.");

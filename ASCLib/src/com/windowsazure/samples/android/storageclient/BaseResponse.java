@@ -12,8 +12,8 @@ class BaseResponse {
 	}
 
 	public static String getDate(HttpResponse response) {
-		String s = response.getFirstHeader("Date").getValue();
-		return s != null ? s : response.getFirstHeader("x-ms-date").getValue();
+		String headerOrNull = response.getFirstHeader("Date").getValue();
+		return headerOrNull != null ? headerOrNull : response.getFirstHeader("x-ms-date").getValue();
 	}
 
 	public static String getEtag(HttpResponse response) {
@@ -22,9 +22,9 @@ class BaseResponse {
 
 	private static String getHeaderValueOrNullIfNonExistent(
 			HttpResponse response, String headerName) {
-		Header header = response.getFirstHeader(headerName);
-		if (header != null) {
-			return header.getValue();
+		Header headerOrNull = response.getFirstHeader(headerName);
+		if (headerOrNull != null) {
+			return headerOrNull.getValue();
 		} else {
 			return null;
 		}
@@ -39,14 +39,14 @@ class BaseResponse {
 	}
 
 	private static HashMap getValuesByHeaderPrefix(
-			AbstractHttpMessage response, String s) {
-		HashMap hashmap = new HashMap();
-		int i = s.length();
+			AbstractHttpMessage response, String prefix) {
+		HashMap headersByPrefix = new HashMap();
+		int prefixLength = prefix.length();
 		for (Header header : response.getAllHeaders()) {
-			if (header.getName() != null && header.getName().startsWith(s)) {
-				hashmap.put(header.getName().substring(i), header.getValue());
+			if (header.getName() != null && header.getName().startsWith(prefix)) {
+				headersByPrefix.put(header.getName().substring(prefixLength), header.getValue());
 			}
 		}
-		return hashmap;
+		return headersByPrefix;
 	}
 }

@@ -86,7 +86,7 @@ final class UriQueryBuilder {
 	@Override
 	public String toString() {
 		StringBuilder stringbuilder = new StringBuilder();
-		Boolean boolean1 = Boolean.valueOf(true);
+		boolean boolean1 = true;
 		Iterator iterator = m_Parameters.keySet().iterator();
 		do {
 			if (!iterator.hasNext())
@@ -97,8 +97,8 @@ final class UriQueryBuilder {
 						.iterator();
 				while (iterator1.hasNext()) {
 					String s1 = (String) iterator1.next();
-					if (boolean1.booleanValue())
-						boolean1 = Boolean.valueOf(false);
+					if (boolean1)
+						boolean1 = false;
 					else
 						stringbuilder.append("&");
 					stringbuilder.append(String.format("%s=%s", new Object[] {

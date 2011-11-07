@@ -10,25 +10,25 @@ import org.apache.http.client.methods.HttpPut;
 
 public interface AbstractContainerRequest {
 
-	HttpPut create(URI containerOperationsUri, boolean createIfNotExist)
+	HttpPut create(URI endpoint, boolean createIfNotExist)
 			throws IOException, URISyntaxException, IllegalArgumentException,
 			StorageException;
 
-	HttpDelete delete(URI m_ContainerOperationsUri, int timeoutInMs)
+	HttpDelete delete(URI endpoint, int timeoutInMs)
 			throws IOException, URISyntaxException, IllegalArgumentException,
 			StorageException;
 
-	HttpGet getUri(URI containerOperationsUri, int timeoutInMs)
+	HttpGet getUri(URI endpoint, int timeoutInMs)
 			throws IOException, URISyntaxException, StorageException;
 
 	boolean isUsingWasServiceDirectly();
 
-	HttpGet list(URI uri, String prefix,
-			ContainerListingDetails containerlistingdetails)
+	HttpGet list(URI endpoint, String prefix,
+			ContainerListingDetails listingDetails)
 			throws NotImplementedException, IOException, URISyntaxException,
 			StorageException;
 
-	HttpPut setAcl(URI m_ContainerOperationsUri,
+	HttpPut setAcl(URI endpoint,
 			BlobContainerPublicAccessType publicAccess)
 			throws NotImplementedException, IllegalArgumentException,
 			IOException, URISyntaxException, StorageException;

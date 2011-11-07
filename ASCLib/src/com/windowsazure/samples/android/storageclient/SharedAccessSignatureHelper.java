@@ -8,29 +8,29 @@ import java.util.Map.Entry;
 final class SharedAccessSignatureHelper {
 
 	protected static UriQueryBuilder generateSharedAccessSignature(
-			SharedAccessPolicy sharedaccesspolicy, String signedIdentifier,
-			String signedresource, String signature)
+			SharedAccessPolicy policy, String signedIdentifier,
+			String signedResource, String signature)
 			throws IllegalArgumentException, StorageException {
-		Utility.assertNotNullOrEmpty("resourceType", signedresource);
+		Utility.assertNotNullOrEmpty("resourceType", signedResource);
 		Utility.assertNotNull("signature", signature);
 		UriQueryBuilder uriquerybuilder = new UriQueryBuilder();
-		if (sharedaccesspolicy != null) {
+		if (policy != null) {
 			String signedpermissions = SharedAccessPolicy
-					.permissionsToString(sharedaccesspolicy.permissions);
+					.permissionsToString(policy.permissions);
 			if (Utility.isNullOrEmpty(signedpermissions))
 				signedpermissions = null;
 			String signedstart = Utility
-					.getUTCTimeOrEmpty(sharedaccesspolicy.sharedAccessStartTime);
+					.getUTCTimeOrEmpty(policy.sharedAccessStartTime);
 			if (!Utility.isNullOrEmpty(signedstart))
 				uriquerybuilder.add("st", signedstart);
 			String signedexpiry = Utility
-					.getUTCTimeOrEmpty(sharedaccesspolicy.sharedAccessExpiryTime);
+					.getUTCTimeOrEmpty(policy.sharedAccessExpiryTime);
 			if (!Utility.isNullOrEmpty(signedexpiry))
 				uriquerybuilder.add("se", signedexpiry);
 			if (!Utility.isNullOrEmpty(signedpermissions))
 				uriquerybuilder.add("sp", signedpermissions);
 		}
-		uriquerybuilder.add("sr", signedresource);
+		uriquerybuilder.add("sr", signedResource);
 		if (!Utility.isNullOrEmpty(signedIdentifier))
 			uriquerybuilder.add("si", signedIdentifier);
 		if (!Utility.isNullOrEmpty(signature))
@@ -39,34 +39,34 @@ final class SharedAccessSignatureHelper {
 	}
 
 	protected static String generateSharedAccessSignatureHash(
-			SharedAccessPolicy sharedaccesspolicy, String s, String s1,
-			CloudBlobClient cloudblobclient) throws InvalidKeyException,
+			SharedAccessPolicy policy, String signedIdentifier, String saCanonicalName,
+			CloudBlobClient serviceClient) throws InvalidKeyException,
 			StorageException, NotImplementedException {
-		Utility.assertNotNullOrEmpty("resourceName", s1);
-		Utility.assertNotNull("client", cloudblobclient);
+		Utility.assertNotNullOrEmpty("resourceName", saCanonicalName);
+		Utility.assertNotNull("client", serviceClient);
 		String s2 = null;
-		if (sharedaccesspolicy == null) {
-			Utility.assertNotNullOrEmpty("groupPolicyIdentifier", s);
+		if (policy == null) {
+			Utility.assertNotNullOrEmpty("groupPolicyIdentifier", signedIdentifier);
 			s2 = String.format("%s\n%s\n%s\n%s\n%s", new Object[] { "", "", "",
-					s1, s });
+					saCanonicalName, signedIdentifier });
 		} else {
-			if (sharedaccesspolicy.sharedAccessExpiryTime == null)
+			if (policy.sharedAccessExpiryTime == null)
 				throw new IllegalArgumentException(
 						"Policy Expiry time is mandatory and cannot be null");
-			if (sharedaccesspolicy.permissions == null)
+			if (policy.permissions == null)
 				throw new IllegalArgumentException(
 						"Policy permissions are mandatory and cannot be null");
 			s2 = String
 					.format("%s\n%s\n%s\n%s\n%s",
 							new Object[] {
 									SharedAccessPolicy
-											.permissionsToString(sharedaccesspolicy.permissions),
-									Utility.getUTCTimeOrEmpty(sharedaccesspolicy.sharedAccessStartTime),
-									Utility.getUTCTimeOrEmpty(sharedaccesspolicy.sharedAccessExpiryTime),
-									s1, s != null ? s : "" });
+											.permissionsToString(policy.permissions),
+									Utility.getUTCTimeOrEmpty(policy.sharedAccessStartTime),
+									Utility.getUTCTimeOrEmpty(policy.sharedAccessExpiryTime),
+									saCanonicalName, signedIdentifier != null ? signedIdentifier : "" });
 		}
 		s2 = Utility.safeDecode(s2);
-		String s3 = cloudblobclient.getCredentials().computeHmac256(s2);
+		String s3 = serviceClient.getCredentials().computeHmac256(s2);
 		return s3;
 	}
 
