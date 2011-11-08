@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>Android Storage Client Library Tests</name>
+	<name>Windows Azure Storage for Android Tests</name>
 	<comment></comment>
 	<projects>
 		<project>Android Storage Client Library</project>
@@ -31,11 +31,4 @@
 		<nature>com.android.ide.eclipse.adt.AndroidNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>Android Storage Client Library_src</name>
-			<type>2</type>
-			<locationURI>_android_Android_Storage_Client_Library_f355dabc/src</locationURI>
-		</link>
-	</linkedResources>
 </projectDescription>
