@@ -41,38 +41,38 @@ public final class CloudStorageAccount implements CloudClientAccount {
 
 	private static final String USE_DEVELOPMENT_STORAGE_NAME = "UseDevelopmentStorage";
 
-	private static String getDefaultBlobEndpoint(HashMap hashmap) {
-		String s = hashmap.get("DefaultEndpointsProtocol") == null ? "http"
-				: (String) hashmap.get("DefaultEndpointsProtocol");
-		String s1 = hashmap.get("AccountName") == null ? null
-				: (String) hashmap.get("AccountName");
-		return getDefaultBlobEndpoint(s, s1);
+	private static String getDefaultBlobEndpoint(HashMap configuration) {
+		String defaultEndpointsProtocol = configuration.get("DefaultEndpointsProtocol") == null ? "http"
+				: (String) configuration.get("DefaultEndpointsProtocol");
+		String accountName = configuration.get("AccountName") == null ? null
+				: (String) configuration.get("AccountName");
+		return getDefaultBlobEndpoint(defaultEndpointsProtocol, accountName);
 	}
 
-	private static String getDefaultBlobEndpoint(String s, String s1) {
-		return String.format("%s://%s.%s", new Object[] { s, s1,
+	private static String getDefaultBlobEndpoint(String scheme, String accountName) {
+		return String.format("%s://%s.%s", new Object[] { scheme, accountName,
 				"blob.core.windows.net" });
 	}
 
-	private static String getDefaultQueueEndpoint(HashMap hashmap) {
-		String s = hashmap.get("DefaultEndpointsProtocol") == null ? "http"
-				: (String) hashmap.get("DefaultEndpointsProtocol");
-		String s1 = hashmap.get("AccountName") == null ? null
-				: (String) hashmap.get("AccountName");
-		return getDefaultQueueEndpoint(s, s1);
+	private static String getDefaultQueueEndpoint(HashMap configuration) {
+		String defaultEndpointsProtocol = configuration.get("DefaultEndpointsProtocol") == null ? "http"
+				: (String) configuration.get("DefaultEndpointsProtocol");
+		String accountName = configuration.get("AccountName") == null ? null
+				: (String) configuration.get("AccountName");
+		return getDefaultQueueEndpoint(defaultEndpointsProtocol, accountName);
 	}
 
-	private static String getDefaultQueueEndpoint(String s, String s1) {
-		return String.format("%s://%s.%s", new Object[] { s, s1,
+	private static String getDefaultQueueEndpoint(String scheme, String accountName) {
+		return String.format("%s://%s.%s", new Object[] { scheme, accountName,
 				"queue.core.windows.net" });
 	}
 
-	private static String getDefaultTableEndpoint(HashMap hashmap) {
-		String s = hashmap.get("DefaultEndpointsProtocol") == null ? "http"
-				: (String) hashmap.get("DefaultEndpointsProtocol");
-		String s1 = hashmap.get("AccountName") == null ? null
-				: (String) hashmap.get("AccountName");
-		return getDefaultTableEndpoint(s, s1);
+	private static String getDefaultTableEndpoint(HashMap configuration) {
+		String defaultEndpointsProtocol = configuration.get("DefaultEndpointsProtocol") == null ? "http"
+				: (String) configuration.get("DefaultEndpointsProtocol");
+		String accountName = configuration.get("AccountName") == null ? null
+				: (String) configuration.get("AccountName");
+		return getDefaultTableEndpoint(defaultEndpointsProtocol, accountName);
 	}
 
 	private static String getDefaultTableEndpoint(String s, String s1) {
@@ -96,24 +96,24 @@ public final class CloudStorageAccount implements CloudClientAccount {
 		if (uri == null) {
 			return getDevelopmentStorageAccount();
 		} else {
-			String s = uri.getScheme().concat("://");
-			s = s.concat(uri.getHost());
+			String schemeWithSeparator = uri.getScheme().concat("://");
+			schemeWithSeparator = schemeWithSeparator.concat(uri.getHost());
 			return new CloudStorageAccount(
 					new StorageCredentialsAccountAndKey(
 							"devstoreaccount1",
 							"Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw=="),
-					new URI(s.concat(":10000/devstoreaccount1")), new URI(s
-							.concat(":10001/devstoreaccount1")), new URI(s
+					new URI(schemeWithSeparator.concat(":10000/devstoreaccount1")), new URI(schemeWithSeparator
+							.concat(":10001/devstoreaccount1")), new URI(schemeWithSeparator
 							.concat(":10002/devstoreaccount1")));
 		}
 	}
-	public static CloudStorageAccount parse(String s)
+	public static CloudStorageAccount parse(String configurationString)
 			throws URISyntaxException, InvalidKeyException,
 			IllegalArgumentException, NotImplementedException {
-		if (s == null || s.length() == 0)
+		if (configurationString == null || configurationString.length() == 0)
 			throw new IllegalArgumentException("Invalid Connection String");
-		HashMap hashmap = Utility.parseAccountString(s);
-		for (Iterator iterator = hashmap.entrySet().iterator(); iterator
+		HashMap accountString = Utility.parseAccountString(configurationString);
+		for (Iterator iterator = accountString.entrySet().iterator(); iterator
 				.hasNext();) {
 			java.util.Map.Entry entry = (java.util.Map.Entry) iterator.next();
 			if (entry.getValue() == null
@@ -121,62 +121,62 @@ public final class CloudStorageAccount implements CloudClientAccount {
 				throw new IllegalArgumentException("Invalid Connection String");
 		}
 
-		CloudStorageAccount cloudstorageaccount = tryConfigureDevStore(hashmap);
-		if (cloudstorageaccount != null)
-			return cloudstorageaccount;
-		cloudstorageaccount = tryConfigureServiceAccount(hashmap);
-		if (cloudstorageaccount != null)
-			return cloudstorageaccount;
+		CloudStorageAccount account = tryConfigureDevStore(accountString);
+		if (account != null)
+			return account;
+		account = tryConfigureServiceAccount(accountString);
+		if (account != null)
+			return account;
 		else
 			throw new IllegalArgumentException("Invalid Connection String");
 	}
-	private static CloudStorageAccount tryConfigureDevStore(HashMap hashmap)
+	private static CloudStorageAccount tryConfigureDevStore(HashMap configuration)
 			throws URISyntaxException, IllegalArgumentException,
 			NotImplementedException {
-		if (hashmap.containsKey("UseDevelopmentStorage")) {
-			String s = (String) hashmap.get("UseDevelopmentStorage");
+		if (configuration.containsKey("UseDevelopmentStorage")) {
+			String s = (String) configuration.get("UseDevelopmentStorage");
 			URI uri = null;
 			if (!Boolean.parseBoolean(s))
 				return null;
-			if (hashmap.containsKey("DevelopmentStorageProxyUri"))
+			if (configuration.containsKey("DevelopmentStorageProxyUri"))
 				uri = new URI(
-						(String) hashmap.get("DevelopmentStorageProxyUri"));
+						(String) configuration.get("DevelopmentStorageProxyUri"));
 			return getDevelopmentStorageAccount(uri);
 		} else {
 			return null;
 		}
 	}
 	private static CloudStorageAccount tryConfigureServiceAccount(
-			HashMap hashmap) throws URISyntaxException, InvalidKeyException,
+			HashMap configuration) throws URISyntaxException, InvalidKeyException,
 			IllegalArgumentException, NotImplementedException {
-		String s = hashmap.get("DefaultEndpointsProtocol") == null ? null
-				: ((String) hashmap.get("DefaultEndpointsProtocol"))
+		String defaultEndpointsProtocol = configuration.get("DefaultEndpointsProtocol") == null ? null
+				: ((String) configuration.get("DefaultEndpointsProtocol"))
 						.toLowerCase();
-		if (s != null && !s.equals("http") && !s.equals("https"))
+		if (defaultEndpointsProtocol != null && !defaultEndpointsProtocol.equals("http") && !defaultEndpointsProtocol.equals("https"))
 			return null;
-		StorageCredentials storagecredentials = StorageCredentials
-				.tryParseCredentials(hashmap);
-		URI uri = hashmap.containsKey("BlobEndpoint") ? new URI(
-				(String) hashmap.get("BlobEndpoint")) : null;
-		URI uri1 = hashmap.containsKey("QueueEndpoint") ? new URI(
-				(String) hashmap.get("QueueEndpoint")) : null;
-		URI uri2 = hashmap.containsKey("TableEndpoint") ? new URI(
-				(String) hashmap.get("TableEndpoint")) : null;
-		if (storagecredentials != null) {
-			if (s != null && hashmap.containsKey("AccountName")
-					&& hashmap.containsKey("AccountKey"))
-				return new CloudStorageAccount(storagecredentials,
-						uri != null ? uri : new URI(
-								getDefaultBlobEndpoint(hashmap)),
-						uri1 != null ? uri1 : new URI(
-								getDefaultQueueEndpoint(hashmap)),
-						uri2 != null ? uri2 : new URI(
-								getDefaultTableEndpoint(hashmap)));
-			if (hashmap.containsKey("BlobEndpoint")
-					|| hashmap.containsKey("QueueEndpoint")
-					|| hashmap.containsKey("TableEndpoint"))
-				return new CloudStorageAccount(storagecredentials, uri, uri1,
-						uri2);
+		StorageCredentials credentials = StorageCredentials
+				.tryParseCredentials(configuration);
+		URI blobEndpoint = configuration.containsKey("BlobEndpoint") ? new URI(
+				(String) configuration.get("BlobEndpoint")) : null;
+		URI queueEndpoint = configuration.containsKey("QueueEndpoint") ? new URI(
+				(String) configuration.get("QueueEndpoint")) : null;
+		URI tableEndpoint = configuration.containsKey("TableEndpoint") ? new URI(
+				(String) configuration.get("TableEndpoint")) : null;
+		if (credentials != null) {
+			if (defaultEndpointsProtocol != null && configuration.containsKey("AccountName")
+					&& configuration.containsKey("AccountKey"))
+				return new CloudStorageAccount(credentials,
+						blobEndpoint != null ? blobEndpoint : new URI(
+								getDefaultBlobEndpoint(configuration)),
+						queueEndpoint != null ? queueEndpoint : new URI(
+								getDefaultQueueEndpoint(configuration)),
+						tableEndpoint != null ? tableEndpoint : new URI(
+								getDefaultTableEndpoint(configuration)));
+			if (configuration.containsKey("BlobEndpoint")
+					|| configuration.containsKey("QueueEndpoint")
+					|| configuration.containsKey("TableEndpoint"))
+				return new CloudStorageAccount(credentials, blobEndpoint, queueEndpoint,
+						tableEndpoint);
 		}
 		return null;
 	}
@@ -202,18 +202,18 @@ public final class CloudStorageAccount implements CloudClientAccount {
 		m_TableEndpoint = uri2;
 	}
 	public CloudStorageAccount(
-			StorageCredentialsAccountAndKey storagecredentialsaccountandkey,
-			boolean boolean1) throws URISyntaxException {
-		this((storagecredentialsaccountandkey), new URI(
-				getDefaultBlobEndpoint(boolean1 ? "https"
+			StorageCredentialsAccountAndKey accountAndKey,
+			boolean useHttps) throws URISyntaxException {
+		this((accountAndKey), new URI(
+				getDefaultBlobEndpoint(useHttps ? "https"
 						: "http",
-						storagecredentialsaccountandkey.getAccountName())),
+						accountAndKey.getAccountName())),
 				new URI(getDefaultQueueEndpoint(
-						boolean1 ? "https" : "http",
-						storagecredentialsaccountandkey.getAccountName())),
+						useHttps ? "https" : "http",
+						accountAndKey.getAccountName())),
 				new URI(getDefaultTableEndpoint(
-						boolean1 ? "https" : "http",
-						storagecredentialsaccountandkey.getAccountName())));
+						useHttps ? "https" : "http",
+						accountAndKey.getAccountName())));
 	}
 	@Override
 	public CloudBlobClient createCloudBlobClient()
@@ -259,13 +259,13 @@ public final class CloudStorageAccount implements CloudClientAccount {
 	public String toString() {
 		return toString(false);
 	}
-	public String toString(boolean boolean1) {
+	public String toString(boolean showSignature) {
 		if (m_Credentials != null
 				&& Utility.isNullOrEmpty(m_Credentials.getAccountName()))
-			return m_Credentials.toString(boolean1);
-		ArrayList arraylist = new ArrayList();
+			return m_Credentials.toString(showSignature);
+		ArrayList configurationList = new ArrayList();
 		if (this == m_devStoreAccount)
-			arraylist.add(String.format("%s=true",
+			configurationList.add(String.format("%s=true",
 					new Object[] { "UseDevelopmentStorage" }));
 		else if (m_Credentials != null
 				&& "devstoreaccount1".equals(m_Credentials.getAccountName())
@@ -281,9 +281,9 @@ public final class CloudStorageAccount implements CloudClientAccount {
 						getQueueEndpoint().getScheme())
 				&& getQueueEndpoint().getScheme().equals(
 						getTableEndpoint().getScheme())) {
-			arraylist.add(String.format("%s=true",
+			configurationList.add(String.format("%s=true",
 					new Object[] { "UseDevelopmentStorage" }));
-			arraylist.add(String.format("%s=%s://%s",
+			configurationList.add(String.format("%s=%s://%s",
 					new Object[] { "DevelopmentStorageProxyUri",
 							getBlobEndpoint().getScheme(),
 							getBlobEndpoint().getHost() }));
@@ -297,33 +297,33 @@ public final class CloudStorageAccount implements CloudClientAccount {
 						getQueueEndpoint().getScheme())
 				&& getQueueEndpoint().getScheme().equals(
 						getTableEndpoint().getScheme())) {
-			arraylist.add(String
+			configurationList.add(String
 					.format("%s=%s", new Object[] { "DefaultEndpointsProtocol",
 							getBlobEndpoint().getScheme() }));
 			if (getCredentials() != null)
-				arraylist.add(getCredentials().toString(boolean1));
+				configurationList.add(getCredentials().toString(showSignature));
 		} else {
 			if (getBlobEndpoint() != null)
-				arraylist.add(String.format("%s=%s", new Object[] {
+				configurationList.add(String.format("%s=%s", new Object[] {
 						"BlobEndpoint", getBlobEndpoint() }));
 			if (getQueueEndpoint() != null)
-				arraylist.add(String.format("%s=%s", new Object[] {
+				configurationList.add(String.format("%s=%s", new Object[] {
 						"QueueEndpoint", getQueueEndpoint() }));
 			if (getTableEndpoint() != null)
-				arraylist.add(String.format("%s=%s", new Object[] {
+				configurationList.add(String.format("%s=%s", new Object[] {
 						"TableEndpoint", getTableEndpoint() }));
 			if (getCredentials() != null)
-				arraylist.add(getCredentials().toString(boolean1));
+				configurationList.add(getCredentials().toString(showSignature));
 		}
-		StringBuilder stringbuilder = new StringBuilder();
-		for (Iterator iterator = arraylist.iterator(); iterator.hasNext(); stringbuilder
+		StringBuilder stringBuilder = new StringBuilder();
+		for (Iterator iterator = configurationList.iterator(); iterator.hasNext(); stringBuilder
 				.append(';')) {
-			String s = (String) iterator.next();
-			stringbuilder.append(s);
+			String configurationLine = (String) iterator.next();
+			stringBuilder.append(configurationLine);
 		}
 
-		if (arraylist.size() > 0)
-			stringbuilder.deleteCharAt(stringbuilder.length() - 1);
-		return stringbuilder.toString();
+		if (configurationList.size() > 0)
+			stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+		return stringBuilder.toString();
 	}
 }

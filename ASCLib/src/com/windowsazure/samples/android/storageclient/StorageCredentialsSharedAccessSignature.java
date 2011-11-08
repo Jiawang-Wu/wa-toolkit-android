@@ -83,9 +83,9 @@ public final class StorageCredentialsSharedAccessSignature extends
 	}
 
 	@Override
-	public String toString(boolean boolean1) {
+	public String toString(boolean showSignature) {
 		return String.format("%s=%s", new Object[] { "SharedAccessSignature",
-				boolean1 ? m_Token : "[signature hidden]" });
+				showSignature ? m_Token : "[signature hidden]" });
 	}
 
 	@Override

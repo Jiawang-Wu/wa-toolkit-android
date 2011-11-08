@@ -7,43 +7,43 @@ import java.util.ArrayList;
 
 public final class CloudPageBlob extends CloudBlob {
 
-	public CloudPageBlob(CloudPageBlob cloudpageblob)
+	public CloudPageBlob(CloudPageBlob serviceClient)
 			throws NotImplementedException, StorageException {
 		throw new NotImplementedException();
 	}
 
-	public CloudPageBlob(URI uri, CloudBlobClient cloudblobclient)
+	public CloudPageBlob(URI uri, CloudBlobClient serviceClient)
 			throws NotImplementedException, StorageException {
 		throw new NotImplementedException();
 	}
 
-	public CloudPageBlob(URI uri, CloudBlobClient cloudblobclient,
+	public CloudPageBlob(URI uri, CloudBlobClient serviceClient,
 			CloudBlobContainer cloudblobcontainer)
 			throws NotImplementedException, StorageException {
 		throw new NotImplementedException();
 	}
 
-	public CloudPageBlob(URI uri, String s, CloudBlobClient cloudblobclient)
+	public CloudPageBlob(URI uri, String snapshotId, CloudBlobClient serviceClient)
 			throws NotImplementedException, StorageException {
 		throw new NotImplementedException();
 	}
 
-	public void clearPages(long l, long l1) throws NotImplementedException,
+	public void clearPages(long startOffset, long length) throws NotImplementedException,
 			StorageException, IOException {
 		throw new NotImplementedException();
 	}
 
-	public void clearPages(long l, long l1, String s)
+	public void clearPages(long startOffset, long length, String s)
 			throws NotImplementedException, StorageException, IOException {
 		throw new NotImplementedException();
 	}
 
-	public void create(long l) throws NotImplementedException,
+	public void create(long length) throws NotImplementedException,
 			StorageException, IllegalArgumentException {
 		throw new NotImplementedException();
 	}
 
-	public void create(long l, final String leaseID)
+	public void create(long length, final String leaseID)
 			throws NotImplementedException, StorageException,
 			IllegalArgumentException {
 		throw new NotImplementedException();
@@ -54,44 +54,42 @@ public final class CloudPageBlob extends CloudBlob {
 		throw new NotImplementedException();
 	}
 
-	public BlobOutputStream openOutputStream(long l)
+	public BlobOutputStream openOutputStream(long length)
 			throws NotImplementedException, StorageException {
 		throw new NotImplementedException();
 	}
 
-	public BlobOutputStream openOutputStream(long l, String s)
+	public BlobOutputStream openOutputStream(long length, String leaseID)
 			throws NotImplementedException, StorageException {
 		throw new NotImplementedException();
 	}
 
 	private void putPagesInternal(final PageProperties pageProperties,
-			byte abyte0[], final long length, final String leaseID,
-			final String md5) throws NotImplementedException, StorageException {
+			byte buffer[], final long length, final String leaseID) throws NotImplementedException, StorageException {
 		throw new NotImplementedException();
 	}
 
 	@Override
-	public void upload(InputStream inputstream, long l)
+	public void upload(InputStream inputStream, long length)
 			throws NotImplementedException, StorageException, IOException {
 		throw new NotImplementedException();
 	}
 
 	@Override
-	public void upload(InputStream inputstream, long l, String s)
+	public void upload(InputStream inputStream, long length, String s)
 			throws NotImplementedException, StorageException, IOException {
 		throw new NotImplementedException();
 	}
 
-	public void uploadPages(InputStream inputstream, long l, long l1)
+	public void uploadPages(InputStream inputstream, long startOffset, long length)
 			throws NotImplementedException, StorageException, IOException,
 			IllegalArgumentException {
 		throw new NotImplementedException();
 	}
 
-	public void uploadPages(InputStream inputstream, long l, long l1, String s)
+	public void uploadPages(InputStream inputstream, long startOffset, long length, String s)
 			throws NotImplementedException, StorageException, IOException,
 			IllegalArgumentException {
 		throw new NotImplementedException();
-
 	}
 }

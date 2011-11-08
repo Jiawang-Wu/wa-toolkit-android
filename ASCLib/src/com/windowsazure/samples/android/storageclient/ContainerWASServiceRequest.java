@@ -11,39 +11,39 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 
 final class ContainerWASServiceRequest implements AbstractContainerRequest {
-	public void addMetadata(HttpRequestBase request, HashMap hashmap) {
-		BaseRequest.addMetadata(request, hashmap);
+	public void addMetadata(HttpRequestBase request, HashMap metadata) {
+		BaseRequest.addMetadata(request, metadata);
 	}
 
 	@Override
-	public HttpPut create(URI uri, boolean createIfNotExist)
+	public HttpPut create(URI endpoint, boolean createIfNotExist)
 			throws IOException, URISyntaxException, IllegalArgumentException,
 			StorageException {
-		return create(uri, false, false);
+		return create(endpoint, false, false);
 	}
 
-	public HttpPut create(URI uri, boolean createIfNotExists, boolean isPublic)
+	public HttpPut create(URI endpoint, boolean createIfNotExists, boolean isPublic)
 			throws IOException, URISyntaxException, IllegalArgumentException,
 			StorageException {
 		UriQueryBuilder uriquerybuilder = new UriQueryBuilder();
 		uriquerybuilder.add("createIfNotExists", "" + createIfNotExists);
 		uriquerybuilder.add("isPublic", "" + isPublic);
-		return BaseRequest.create(uri, uriquerybuilder);
+		return BaseRequest.create(endpoint, uriquerybuilder);
 	}
 
 	@Override
-	public HttpDelete delete(URI containerOperationsUri, int timeoutInMs)
+	public HttpDelete delete(URI endpoint)
 			throws IOException, URISyntaxException, IllegalArgumentException,
 			StorageException {
 		UriQueryBuilder uriquerybuilder = new UriQueryBuilder();
-		return BaseRequest.delete(containerOperationsUri, uriquerybuilder);
+		return BaseRequest.delete(endpoint, uriquerybuilder);
 	}
 
 	@Override
-	public HttpGet getUri(URI containerOperationsUri, int timeoutInMs)
+	public HttpGet getUri(URI endpoint)
 			throws IOException, URISyntaxException, StorageException {
 		HttpGet request = new HttpGet();
-		BaseRequest.setURIAndHeaders(request, containerOperationsUri,
+		BaseRequest.setURIAndHeaders(request, endpoint,
 				new UriQueryBuilder());
 		return request;
 	}
@@ -54,11 +54,11 @@ final class ContainerWASServiceRequest implements AbstractContainerRequest {
 	}
 
 	@Override
-	public HttpGet list(URI uri, String prefix,
+	public HttpGet list(URI endpoint, String prefix,
 			ContainerListingDetails containerlistingdetails)
 			throws IOException, URISyntaxException, StorageException {
 		UriQueryBuilder uriquerybuilder = new UriQueryBuilder();
-		URI listContainersUri = PathUtility.appendPathToUri(uri, "containers");
+		URI listContainersUri = PathUtility.appendPathToUri(endpoint, "containers");
 		if (!Utility.isNullOrEmpty(prefix)) {
 			uriquerybuilder.add("containerPrefix", prefix);
 		}

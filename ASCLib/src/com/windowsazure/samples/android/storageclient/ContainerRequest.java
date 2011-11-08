@@ -12,52 +12,52 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 
 final class ContainerRequest implements AbstractContainerRequest {
-	public static void addMetadata(HttpRequestBase request, HashMap hashmap) {
-		BaseRequest.addMetadata(request, hashmap);
+	public static void addMetadata(HttpRequestBase request, HashMap metadata) {
+		BaseRequest.addMetadata(request, metadata);
 	}
 
 	protected static UriQueryBuilder getContainerUriQueryBuilder()
 			throws StorageException {
-		UriQueryBuilder uriquerybuilder = new UriQueryBuilder();
+		UriQueryBuilder uriQueryBuilder = new UriQueryBuilder();
 		try {
-			uriquerybuilder.add("restype", "container");
+			uriQueryBuilder.add("restype", "container");
 		} catch (IllegalArgumentException illegalargumentexception) {
 			throw Utility
 					.generateNewUnexpectedStorageException(illegalargumentexception);
 		}
-		return uriquerybuilder;
+		return uriQueryBuilder;
 	}
 
-	public static HttpHead getProperties(URI uri)
+	public static HttpHead getProperties(URI endpoint)
 			throws IllegalArgumentException, IOException, URISyntaxException,
 			StorageException {
-		UriQueryBuilder uriquerybuilder = getContainerUriQueryBuilder();
-		return BaseRequest.getProperties(uri, uriquerybuilder);
+		UriQueryBuilder uriQueryBuilder = getContainerUriQueryBuilder();
+		return BaseRequest.getProperties(endpoint, uriQueryBuilder);
 	}
 
-	public static HttpPut setMetadata(URI uri) throws IllegalArgumentException,
+	public static HttpPut setMetadata(URI endpoint) throws IllegalArgumentException,
 			IOException, URISyntaxException, StorageException {
-		UriQueryBuilder uriquerybuilder = getContainerUriQueryBuilder();
-		return BaseRequest.setMetadata(uri, uriquerybuilder);
+		UriQueryBuilder uriQueryBuilder = getContainerUriQueryBuilder();
+		return BaseRequest.setMetadata(endpoint, uriQueryBuilder);
 	}
 
 	@Override
-	public HttpPut create(URI uri, boolean createIfNotExist)
+	public HttpPut create(URI endpoint, boolean createIfNotExist)
 			throws IOException, URISyntaxException, IllegalArgumentException,
 			StorageException {
-		UriQueryBuilder uriquerybuilder = getContainerUriQueryBuilder();
-		return BaseRequest.create(uri, uriquerybuilder);
+		UriQueryBuilder uriQueryBuilder = getContainerUriQueryBuilder();
+		return BaseRequest.create(endpoint, uriQueryBuilder);
 	}
 
 	@Override
-	public HttpDelete delete(URI uri, int i) throws IOException,
+	public HttpDelete delete(URI endpoint) throws IOException,
 			URISyntaxException, IllegalArgumentException, StorageException {
-		UriQueryBuilder uriquerybuilder = getContainerUriQueryBuilder();
-		return BaseRequest.delete(uri, uriquerybuilder);
+		UriQueryBuilder uriQueryBuilder = getContainerUriQueryBuilder();
+		return BaseRequest.delete(endpoint, uriQueryBuilder);
 	}
 
 	@Override
-	public HttpGet getUri(URI containerOperationsUri, int timeoutInMs)
+	public HttpGet getUri(URI endpoint)
 			throws IOException, URISyntaxException, StorageException {
 		return null;
 	}
@@ -68,32 +68,32 @@ final class ContainerRequest implements AbstractContainerRequest {
 	}
 
 	@Override
-	public HttpGet list(URI uri, String prefix,
-			ContainerListingDetails containerlistingdetails)
+	public HttpGet list(URI endpoint, String prefix,
+			ContainerListingDetails listingDetails)
 			throws NotImplementedException, IOException, URISyntaxException,
 			StorageException {
-		UriQueryBuilder uriquerybuilder = getContainerUriQueryBuilder();
-		uriquerybuilder.add("comp", "list");
+		UriQueryBuilder uriQueryBuilder = getContainerUriQueryBuilder();
+		uriQueryBuilder.add("comp", "list");
 		if (!Utility.isNullOrEmpty(prefix)) {
-			uriquerybuilder.add("prefix", prefix);
+			uriQueryBuilder.add("prefix", prefix);
 		}
-		if (containerlistingdetails == ContainerListingDetails.ALL
-				|| containerlistingdetails == ContainerListingDetails.METADATA) {
-			uriquerybuilder.add("include", "metadata");
+		if (listingDetails == ContainerListingDetails.ALL
+				|| listingDetails == ContainerListingDetails.METADATA) {
+			uriQueryBuilder.add("include", "metadata");
 		}
 		return BaseRequest
-				.setURIAndHeaders(new HttpGet(), uri, uriquerybuilder);
+				.setURIAndHeaders(new HttpGet(), endpoint, uriQueryBuilder);
 	}
 
 	@Override
-	public HttpPut setAcl(URI m_ContainerOperationsUri,
+	public HttpPut setAcl(URI endpoint,
 			BlobContainerPublicAccessType publicAccess)
 			throws NotImplementedException, IOException, URISyntaxException,
 			StorageException {
-		UriQueryBuilder uriquerybuilder = getContainerUriQueryBuilder();
-		uriquerybuilder.add("comp", "acl");
+		UriQueryBuilder uriQueryBuilder = getContainerUriQueryBuilder();
+		uriQueryBuilder.add("comp", "acl");
 		HttpPut request = BaseRequest.setURIAndHeaders(new HttpPut(),
-				m_ContainerOperationsUri, uriquerybuilder);
+				endpoint, uriQueryBuilder);
 		if (publicAccess != BlobContainerPublicAccessType.OFF) {
 			request.setHeader("x-ms-blob-public-access", publicAccess
 					.toString().toLowerCase());

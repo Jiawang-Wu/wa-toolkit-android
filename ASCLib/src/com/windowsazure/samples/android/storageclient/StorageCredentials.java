@@ -82,7 +82,7 @@ public abstract class StorageCredentials {
 			throws NotImplementedException, StorageException,
 			InvalidKeyException;
 
-	public abstract String toString(boolean boolean1);
+	public abstract String toString(boolean showSignature);
 
 	public abstract URI transformUri(URI uri) throws NotImplementedException,
 			URISyntaxException, StorageException;

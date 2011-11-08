@@ -122,8 +122,7 @@ public final class CloudBlobContainer {
 			public Void execute(CloudBlobClient serviceClient,
 					CloudBlobContainer container) throws Exception {
 				HttpDelete request = m_ContainerRequest.delete(
-						container.m_ContainerOperationsUri,
-						serviceClient.getTimeoutInMs());
+						container.m_ContainerOperationsUri);
 				serviceClient.getCredentials().signRequest(request, -1L);
 				result = ExecutionEngine.processRequest(request);
 				if (HttpStatusCode.fromInt(result.statusCode) != HttpStatusCode.OK
@@ -367,8 +366,7 @@ public final class CloudBlobContainer {
 			public URI execute(CloudBlobClient serviceClient,
 					CloudBlobContainer container) throws Exception {
 				HttpGet request = m_ContainerRequest.getUri(
-						container.m_ContainerOperationsUri,
-						serviceClient.getTimeoutInMs());
+						container.m_ContainerOperationsUri);
 				serviceClient.getCredentials().signRequest(request, -1L);
 				result = ExecutionEngine.processRequest(request);
 				if (result.statusCode == HttpStatusCode.OK.getStatus()) {

@@ -140,17 +140,17 @@ public final class CloudBlockBlob extends CloudBlob {
 	}
 
 	@Override
-	public void upload(InputStream inputstream, long length, String leaseID)
+	public void upload(InputStream inputStream, long length, String leaseID)
 			throws NotImplementedException, StorageException, IOException {
 		if (length < -1L) {
 			throw new IllegalArgumentException(
 					"Invalid stream length, specify -1 for unkown length stream, or a positive number of bytes");
 		} else if (length < 0L) {
-			inputstream = this.adaptedToSupportMarking(inputstream);
-			length = this.totalLengthOf(inputstream);
+			inputStream = this.adaptedToSupportMarking(inputStream);
+			length = this.totalLengthOf(inputStream);
 		}
 
-		uploadFullBlob(inputstream, length, leaseID);
+		uploadFullBlob(inputStream, length, leaseID);
 	}
 
 	public void uploadBlock(String blockId, String leaseID,

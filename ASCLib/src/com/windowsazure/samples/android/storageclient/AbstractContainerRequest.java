@@ -14,11 +14,11 @@ public interface AbstractContainerRequest {
 			throws IOException, URISyntaxException, IllegalArgumentException,
 			StorageException;
 
-	HttpDelete delete(URI endpoint, int timeoutInMs)
+	HttpDelete delete(URI endpoint)
 			throws IOException, URISyntaxException, IllegalArgumentException,
 			StorageException;
 
-	HttpGet getUri(URI endpoint, int timeoutInMs)
+	HttpGet getUri(URI endpoint)
 			throws IOException, URISyntaxException, StorageException;
 
 	boolean isUsingWasServiceDirectly();

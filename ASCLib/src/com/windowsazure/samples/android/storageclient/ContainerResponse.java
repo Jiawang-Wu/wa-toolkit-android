@@ -6,18 +6,18 @@ import java.util.Date;
 import org.apache.http.message.AbstractHttpMessage;
 
 final class ContainerResponse extends BaseResponse {
-	public static BlobContainerAttributes getAttributes(URI originalUri,
+	public static BlobContainerAttributes getAttributes(URI transformedContainerUri,
 			RequestResult result) throws StorageException {
-		BlobContainerAttributes blobcontainerattributes = new BlobContainerAttributes();
-		java.net.URI uri = PathUtility.stripURIQueryAndFragment(originalUri);
-		blobcontainerattributes.uri = uri;
-		blobcontainerattributes.name = PathUtility.getContainerNameFromUri(uri);
-		BlobContainerProperties blobcontainerproperties = blobcontainerattributes.properties;
-		blobcontainerproperties.eTag = BaseResponse
+		BlobContainerAttributes attributes = new BlobContainerAttributes();
+		java.net.URI containerUri = PathUtility.stripURIQueryAndFragment(transformedContainerUri);
+		attributes.uri = containerUri;
+		attributes.name = PathUtility.getContainerNameFromUri(containerUri);
+		BlobContainerProperties properties = attributes.properties;
+		properties.eTag = BaseResponse
 				.getEtag(result.httpResponse);
-		blobcontainerproperties.lastModified = new Date(result.httpResponse
+		properties.lastModified = new Date(result.httpResponse
 				.getFirstHeader("last-modified").getValue());
-		blobcontainerattributes.metadata = getMetadata((AbstractHttpMessage) result.httpResponse);
-		return blobcontainerattributes;
+		attributes.metadata = getMetadata((AbstractHttpMessage) result.httpResponse);
+		return attributes;
 	}
 }
