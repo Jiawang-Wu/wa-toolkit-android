@@ -36,7 +36,7 @@ public abstract class CloudBlobContainerUsingSASServiceTests<T extends WAZServic
 	}
 
 	public void testCreateExistingContainerReturnsAlwaysTrue() throws Exception {
-		/** The sas service always returns OK/200 **/
+		/** The SAS service always returns OK/200 **/
 		final CloudBlobContainer container = new CloudBlobContainer(
 				"testcreateexistingcontainerreturnsfalse", cloudBlobClient);
 		this.addResourceCleaner(container, cleanerFor(container));

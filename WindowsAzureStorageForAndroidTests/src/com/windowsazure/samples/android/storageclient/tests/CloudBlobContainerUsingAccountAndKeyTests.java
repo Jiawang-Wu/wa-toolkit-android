@@ -8,6 +8,7 @@ import java.util.HashMap;
 
 import junit.framework.Assert;
 
+import com.windowsazure.samples.android.storageclient.BlobContainerPermissions;
 import com.windowsazure.samples.android.storageclient.BlobContainerProperties;
 import com.windowsazure.samples.android.storageclient.BlobContainerPublicAccessType;
 import com.windowsazure.samples.android.storageclient.CloudBlobContainer;
@@ -50,16 +51,30 @@ public class CloudBlobContainerUsingAccountAndKeyTests extends
 		Assert.assertTrue(container.exists());
 	}
 
-	/*
 	public void testChangingContainerPermssions() throws Exception
 	{
 		final CloudBlobContainer container = this.createContainer("testchangingcontainerpermssions");
 		final CloudBlobContainer sameContainer = new CloudBlobContainer("testchangingcontainerpermssions", cloudBlobClient);
-		Assert.assertEquals(container.downloadPermissions().publicAccess, BlobContainerPublicAccessType.OFF);
+		BlobContainerPermissions permissions = new BlobContainerPermissions();
 
-		//Assert.assertEquals(container.downloadPermissions().publicAccess, BlobContainerPublicAccessType.OFF);
+		Assert.assertEquals(container.downloadPermissions().publicAccess, BlobContainerPublicAccessType.OFF);
+		Assert.assertEquals(sameContainer.downloadPermissions().publicAccess, BlobContainerPublicAccessType.OFF);
+
+		permissions.publicAccess = BlobContainerPublicAccessType.CONTAINER;
+		container.uploadPermissions(permissions);
+		Assert.assertEquals(container.downloadPermissions().publicAccess, BlobContainerPublicAccessType.CONTAINER);
+		Assert.assertEquals(sameContainer.downloadPermissions().publicAccess, BlobContainerPublicAccessType.CONTAINER);
+
+		permissions.publicAccess = BlobContainerPublicAccessType.BLOB;
+		container.uploadPermissions(permissions);
+		Assert.assertEquals(container.downloadPermissions().publicAccess, BlobContainerPublicAccessType.BLOB);
+		Assert.assertEquals(sameContainer.downloadPermissions().publicAccess, BlobContainerPublicAccessType.BLOB);
+
+		permissions.publicAccess = BlobContainerPublicAccessType.OFF;
+		container.uploadPermissions(permissions);
+		Assert.assertEquals(container.downloadPermissions().publicAccess, BlobContainerPublicAccessType.OFF);
+		Assert.assertEquals(sameContainer.downloadPermissions().publicAccess, BlobContainerPublicAccessType.OFF);
 	}
-	*/
 	
 	public void testUploadingAndDownloadingMetadataWorksAsExpected()
 			throws Exception {

@@ -13,16 +13,37 @@ import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.message.AbstractHttpMessage;
 
 import com.windowsazure.samples.android.storageclient.internal.web.HttpStatusCode;
 import com.windowsazure.samples.android.storageclient.internal.xml.DOMAdapter;
 
 public final class CloudBlobContainer {
 
-	static BlobContainerPermissions getContainerAcl(String s)
-			throws NotImplementedException, IllegalArgumentException {
-		throw new NotImplementedException();
-	}
+    static BlobContainerPermissions getContainerAcl(String aclString)
+            throws IllegalArgumentException
+        {
+            BlobContainerPublicAccessType publicAccessType = BlobContainerPublicAccessType.OFF;
+            if(!Utility.isNullOrEmpty(aclString))
+            {
+                String aclStringAsLowerCase = aclString.toLowerCase();
+                if("container".equals(aclStringAsLowerCase))
+                {
+                    publicAccessType = BlobContainerPublicAccessType.CONTAINER;
+                }
+                else if("blob".equals(aclStringAsLowerCase))
+                {
+                    publicAccessType = BlobContainerPublicAccessType.BLOB;
+                }
+                else
+                {
+                    throw new IllegalArgumentException(String.format("Invalid acl public access type returned '%s'. Expected blob or container.", aclString));
+                }
+            }
+            BlobContainerPermissions permissions = new BlobContainerPermissions();
+            permissions.publicAccess = publicAccessType;
+            return permissions;
+        }
 
 	protected HashMap<String, String> m_Metadata;
 
@@ -186,8 +207,7 @@ public final class CloudBlobContainer {
                 {
 					throw new StorageInnerException("Couldn't download container's permissions");
                 }
-                //String s = ContainerResponse.getAcl(result);
-                String s = "";
+                String s = ContainerResponse.getAcl((AbstractHttpMessage) result.httpResponse);
                 BlobContainerPermissions permissions = CloudBlobContainer.getContainerAcl(s);
                 return permissions;
             }
