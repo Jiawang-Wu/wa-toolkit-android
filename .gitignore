@@ -1,6 +1,7 @@
 .metadata
 .DS_Store
 R.java
+gen
 
 bin
 target
