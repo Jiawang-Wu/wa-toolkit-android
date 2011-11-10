@@ -5,9 +5,8 @@
 	android:versionName="1.0">
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-sdk android:minSdkVersion="8" />
-	<instrumentation android:targetPackage="com.microsoft.cloud.android" android:name="android.test.InstrumentationTestRunner" />
 	<application android:icon="@drawable/icon" android:label="@string/app_name">
 	<uses-library android:name="android.test.runner" />
 	</application>
-	<instrumentation android:name="android.test.InstrumentationTestRunner" android:targetPackage="com.microsoft.cloud.android" android:label="Windows Azure Storage for Android Tests" />
+	<instrumentation android:name="android.test.InstrumentationTestRunner" android:targetPackage="com.windowsazure.samples.android.storageclient.test" android:label="Windows Azure Storage for Android Tests" />
 </manifest>
