@@ -60,7 +60,7 @@ public final class CloudBlobClient {
 
 	CloudBlobClient clientForBlobOf(CloudBlobContainer container)
 			throws UnsupportedEncodingException, StorageException,
-			NotImplementedException, IOException, URISyntaxException {
+			IOException, URISyntaxException {
 		StorageCredentials credentials = this.getCredentials()
 				.credentialsForBlobOf(container);
 		if (credentials == this.getCredentials()) {
@@ -103,12 +103,6 @@ public final class CloudBlobClient {
 
 	public String getDirectoryDelimiter() {
 		return m_DirectoryDelimiter;
-	}
-
-	public CloudBlobDirectory getDirectoryReference(String directoryName)
-			throws NotImplementedException, URISyntaxException,
-			StorageException {
-		throw new NotImplementedException();
 	}
 
 	public URI getEndpoint() {

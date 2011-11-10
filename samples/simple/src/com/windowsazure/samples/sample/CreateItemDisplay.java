@@ -4,19 +4,13 @@ import java.io.InputStream;
 import java.util.Date;
 
 import com.windowsazure.samples.sample.R;
-import com.windowsazure.samples.android.storageclient.CloudBlobContainer;
 import com.windowsazure.samples.android.storageclient.CloudBlockBlob;
-import com.windowsazure.samples.blob.AzureBlobManager;
-import com.windowsazure.samples.blob.ContainerAccess;
-import com.windowsazure.samples.blob.data.BitmapBlobData;
 import com.windowsazure.samples.queue.AzureQueueManager;
 import com.windowsazure.samples.table.AzureTableManager;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;

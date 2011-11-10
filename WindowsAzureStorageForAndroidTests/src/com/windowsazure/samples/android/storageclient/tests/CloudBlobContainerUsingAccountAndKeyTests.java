@@ -53,8 +53,11 @@ public class CloudBlobContainerUsingAccountAndKeyTests extends
 
 	public void testChangingContainerPermssions() throws Exception
 	{
+		/* The Thread.sleep(); are necessary because changing the access
+		   of a container sometimes have a small delay to take effect. */
+
 		final CloudBlobContainer container = this.createContainer("testchangingcontainerpermssions");
-		final CloudBlobContainer sameContainer = new CloudBlobContainer("testchangingcontainerpermssions", cloudBlobClient);
+		final CloudBlobContainer sameContainer = new CloudBlobContainer(container.getName(), cloudBlobClient);
 		BlobContainerPermissions permissions = new BlobContainerPermissions();
 
 		Assert.assertEquals(container.downloadPermissions().publicAccess, BlobContainerPublicAccessType.OFF);
@@ -62,18 +65,21 @@ public class CloudBlobContainerUsingAccountAndKeyTests extends
 
 		permissions.publicAccess = BlobContainerPublicAccessType.CONTAINER;
 		container.uploadPermissions(permissions);
+		Thread.sleep(1000);
 		Assert.assertEquals(container.downloadPermissions().publicAccess, BlobContainerPublicAccessType.CONTAINER);
 		Assert.assertEquals(sameContainer.downloadPermissions().publicAccess, BlobContainerPublicAccessType.CONTAINER);
 
 		permissions.publicAccess = BlobContainerPublicAccessType.BLOB;
 		container.uploadPermissions(permissions);
-		Assert.assertEquals(container.downloadPermissions().publicAccess, BlobContainerPublicAccessType.BLOB);
-		Assert.assertEquals(sameContainer.downloadPermissions().publicAccess, BlobContainerPublicAccessType.BLOB);
+		Thread.sleep(1000);
+		Assert.assertEquals(BlobContainerPublicAccessType.BLOB, container.downloadPermissions().publicAccess);
+		Assert.assertEquals(BlobContainerPublicAccessType.BLOB, sameContainer.downloadPermissions().publicAccess);
 
 		permissions.publicAccess = BlobContainerPublicAccessType.OFF;
 		container.uploadPermissions(permissions);
-		Assert.assertEquals(container.downloadPermissions().publicAccess, BlobContainerPublicAccessType.OFF);
-		Assert.assertEquals(sameContainer.downloadPermissions().publicAccess, BlobContainerPublicAccessType.OFF);
+		Thread.sleep(2000);
+		Assert.assertEquals(BlobContainerPublicAccessType.OFF, container.downloadPermissions().publicAccess);
+		Assert.assertEquals(BlobContainerPublicAccessType.OFF, sameContainer.downloadPermissions().publicAccess);
 	}
 	
 	public void testUploadingAndDownloadingMetadataWorksAsExpected()

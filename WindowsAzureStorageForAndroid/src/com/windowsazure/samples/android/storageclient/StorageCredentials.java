@@ -62,11 +62,10 @@ public abstract class StorageCredentials {
 	abstract StorageCredentials credentialsForBlobOf(
 			CloudBlobContainer cloudBlobContainer)
 			throws IllegalArgumentException, UnsupportedEncodingException,
-			NotImplementedException, URISyntaxException, StorageException,
+			URISyntaxException, StorageException,
 			IOException;
 
-	protected abstract boolean doCredentialsNeedTransformUri()
-			throws NotImplementedException;
+	protected abstract boolean doCredentialsNeedTransformUri();
 
 	public abstract String getAccountName();
 
@@ -84,6 +83,5 @@ public abstract class StorageCredentials {
 
 	public abstract String toString(boolean showSignature);
 
-	public abstract URI transformUri(URI uri) throws NotImplementedException,
-			URISyntaxException, StorageException;
+	public abstract URI transformUri(URI uri) throws URISyntaxException, StorageException;
 }

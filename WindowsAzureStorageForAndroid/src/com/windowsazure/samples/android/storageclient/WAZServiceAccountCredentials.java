@@ -61,7 +61,7 @@ public class WAZServiceAccountCredentials extends StorageCredentials {
 	StorageCredentials credentialsForBlobOf(
 			CloudBlobContainer cloudBlobContainer)
 			throws IllegalArgumentException, UnsupportedEncodingException,
-			NotImplementedException, URISyntaxException, StorageException,
+			URISyntaxException, StorageException,
 			IOException {
 		URI uri = cloudBlobContainer.getTransformedAddress();
 		String decoded = uri.toString().replace("&amp;", "&");
@@ -72,7 +72,7 @@ public class WAZServiceAccountCredentials extends StorageCredentials {
 
 	@Override
 	protected boolean doCredentialsNeedTransformUri()
-			throws NotImplementedException {
+	{
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -114,8 +114,7 @@ public class WAZServiceAccountCredentials extends StorageCredentials {
 	}
 
 	@Override
-	public URI transformUri(URI uri) throws NotImplementedException,
-			URISyntaxException, StorageException {
+	public URI transformUri(URI uri) throws URISyntaxException, StorageException {
 		// TODO Auto-generated method stub
 		return null;
 	}

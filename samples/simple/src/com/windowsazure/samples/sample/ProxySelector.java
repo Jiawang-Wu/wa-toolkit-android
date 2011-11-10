@@ -5,7 +5,6 @@ import java.net.URISyntaxException;
 import com.windowsazure.samples.android.storageclient.CloudBlobClient;
 import com.windowsazure.samples.android.storageclient.CloudStorageAccount;
 import com.windowsazure.samples.android.storageclient.NotImplementedException;
-import com.windowsazure.samples.android.storageclient.StorageCredentials;
 import com.windowsazure.samples.android.storageclient.StorageCredentialsAccountAndKey;
 import com.windowsazure.samples.authentication.AuthenticationToken;
 import com.windowsazure.samples.authentication.AuthenticationTokenFactory;

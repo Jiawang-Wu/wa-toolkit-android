@@ -120,11 +120,11 @@ abstract class Canonicalizer {
 						.toLowerCase(Locale.US) : null, queryArgumentStringBuilder
 						.toString())) {
 			queryArgumentEntry = (Entry<String, String[]>) queryArgumentIterator.next();
-			List list = Arrays.asList((Object[]) queryArgumentEntry.getValue());
+			List<String> list = Arrays.asList(queryArgumentEntry.getValue());
 			Collections.sort(list);
 			queryArgumentStringBuilder = new StringBuilder();
 			String s2;
-			for (Iterator iterator2 = list.iterator(); iterator2.hasNext(); queryArgumentStringBuilder
+			for (Iterator<String> iterator2 = list.iterator(); iterator2.hasNext(); queryArgumentStringBuilder
 					.append(s2)) {
 				s2 = (String) iterator2.next();
 				if (queryArgumentStringBuilder.length() > 0)

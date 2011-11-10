@@ -2,6 +2,7 @@ package com.windowsazure.samples.android.storageclient;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
@@ -23,7 +24,33 @@ final class BlobRequest implements AbstractBlobRequest {
 		return BaseRequest.delete(endpoint, uriquerybuilder);
 	}
 
-	public static String formatBlockListAsXML(Iterable<BlockEntry> blockEntriesList)
+    public static HttpPut copyFrom(URI endpoint, String sourceBlobCanonicalName)
+        throws StorageException, IllegalArgumentException, IOException, URISyntaxException
+    {
+    	HttpPut request = BaseRequest.setURIAndHeaders(new HttpPut(), endpoint, null);
+    	request.setHeader("x-ms-copy-source", sourceBlobCanonicalName);
+        return request;
+    }
+    
+    public static HttpPut setProperties(URI endpoint, BlobProperties properties)
+            throws IllegalArgumentException, IOException, URISyntaxException, StorageException
+        {
+            UriQueryBuilder uriQueryBuilder = new UriQueryBuilder();
+            uriQueryBuilder.add("comp", "properties");
+            HttpPut request= BaseRequest.setURIAndHeaders(new HttpPut(), endpoint, uriQueryBuilder);
+            if (properties.getBlobType() == BlobType.PAGE_BLOB)
+            {
+            	BaseRequest.addOptionalHeader(request, "x-ms-blob-content-length", "" + properties.length);
+            }
+            BaseRequest.addOptionalHeader(request, "x-ms-blob-cache-control", properties.cacheControl);
+            BaseRequest.addOptionalHeader(request, "x-ms-blob-content-type", properties.contentType);
+            BaseRequest.addOptionalHeader(request, "x-ms-blob-content-md5", properties.contentMD5);
+            BaseRequest.addOptionalHeader(request, "x-ms-blob-content-encoding", properties.contentEncoding);
+            BaseRequest.addOptionalHeader(request, "x-ms-blob-content-language", properties.contentLanguage);
+            return request;
+        }
+
+    public static String formatBlockListAsXML(Iterable<BlockEntry> blockEntriesList)
 			throws StorageException {
 		StringWriter stringwriter = new StringWriter();
 		stringwriter.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");

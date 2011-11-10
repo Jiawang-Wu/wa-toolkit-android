@@ -5,18 +5,25 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 import junit.framework.Assert;
 import android.util.Base64;
 
+import com.windowsazure.samples.android.storageclient.BlobContainerPermissions;
+import com.windowsazure.samples.android.storageclient.BlobContainerPublicAccessType;
+import com.windowsazure.samples.android.storageclient.BlobProperties;
+import com.windowsazure.samples.android.storageclient.BlobType;
 import com.windowsazure.samples.android.storageclient.BlockEntry;
 import com.windowsazure.samples.android.storageclient.BlockSearchMode;
 import com.windowsazure.samples.android.storageclient.CloudBlob;
 import com.windowsazure.samples.android.storageclient.CloudBlobContainer;
 import com.windowsazure.samples.android.storageclient.CloudBlockBlob;
+import com.windowsazure.samples.android.storageclient.LeaseStatus;
 import com.windowsazure.samples.android.storageclient.NotImplementedException;
 import com.windowsazure.samples.android.storageclient.StorageException;
 import com.windowsazure.samples.android.storageclient.StorageInnerException;
@@ -51,6 +58,87 @@ public abstract class CloudBlockBlobTests<T extends CloudClientAccountProvider>
 		blob.download(downloadedContentsStream);
 
 		Assert.assertEquals(sampleContent, downloadedContentsStream.toString());
+	}
+
+	public void testCopiedBlobIsIdenticalToSourceBlob() throws StorageInnerException, Exception {
+		CloudBlobContainer container = this.createContainer("testcopiedblobisidenticaltosourceblob1");
+		CloudBlockBlob sourceBlob = container.getBlockBlobReference("sourceBlob");
+		String sampleContent = "SampleContent";
+
+		ByteArrayInputStream contentsStream = new ByteArrayInputStream(sampleContent.getBytes());
+		sourceBlob.upload(contentsStream, sampleContent.length());
+		
+		String key = "sampleKey";
+		String value = "sampleValue";
+		sourceBlob.getMetadata().put(key, value);
+		sourceBlob.uploadMetadata();
+
+		String contentEncoding = "someEncoding";
+		String contentLanguage = "english";
+		String contentType = "customType";
+
+		BlobProperties blobProperties = sourceBlob.getProperties();
+		
+		blobProperties.contentType = contentType;
+		blobProperties.contentEncoding = contentEncoding;
+		blobProperties.contentLanguage = contentLanguage;
+		
+		sourceBlob.uploadProperties();
+
+		CloudBlockBlob copiedBlob = container.getBlockBlobReference("copiedBlob");
+		copiedBlob.copyFromBlob(sourceBlob);
+
+		// Test that has same content
+		ByteArrayOutputStream downloadedContentsStream = new ByteArrayOutputStream();
+		copiedBlob.download(downloadedContentsStream);
+		Assert.assertEquals(sampleContent, downloadedContentsStream.toString());
+		
+		// Test that has same metadata
+		Assert.assertTrue(copiedBlob.getMetadata().containsKey(key));
+		Assert.assertEquals(value, copiedBlob.getMetadata().get(key));
+
+		// Test that has same properties
+		Assert.assertEquals(contentEncoding, copiedBlob.getProperties().contentEncoding);
+		Assert.assertEquals(contentLanguage, copiedBlob.getProperties().contentLanguage);
+		Assert.assertEquals(contentType, copiedBlob.getProperties().contentType);
+	}
+
+	public void testSettingAndGettingBlobProperties() throws StorageInnerException, Exception {
+		CloudBlobContainer container = this.createContainer("testsettingandgettingblobproperties");
+		CloudBlob blob = this.createEmptyBlob(container, "someblob");
+		CloudBlob sameBlob = container.getBlockBlobReference(blob.getName());
+		
+		sameBlob.downloadAttributes();
+		BlobProperties sameBlobProperties = sameBlob.getProperties();
+
+		Assert.assertEquals(BlobType.BLOCK_BLOB, sameBlobProperties.getBlobType());
+		Assert.assertEquals(null, sameBlobProperties.cacheControl);
+		Assert.assertEquals("", sameBlobProperties.contentEncoding);
+		Assert.assertEquals("", sameBlobProperties.contentLanguage);
+		Assert.assertEquals(null, sameBlobProperties.contentMD5);
+		Assert.assertEquals("application/octet-stream", sameBlobProperties.contentType);
+		Assert.assertNotNull(sameBlobProperties.eTag);
+		long secondsAlive = Calendar.getInstance(Locale.US).getTimeInMillis() - sameBlobProperties.lastModified.getTime();
+		Assert.assertTrue(secondsAlive <= 10 * 1000); // It was created at most 10 seconds ago
+		Assert.assertEquals(LeaseStatus.UNLOCKED, sameBlobProperties.leaseStatus);
+		Assert.assertEquals(0, sameBlobProperties.length);
+
+	
+		String contentEncoding = "someEncoding";
+		String contentLanguage = "english";
+		String contentType = "customType";
+
+		BlobProperties blobProperties = blob.getProperties();
+		
+		blobProperties.contentType = contentType;
+		blobProperties.contentEncoding = contentEncoding;
+		blobProperties.contentLanguage = contentLanguage;
+		blob.uploadProperties();
+		
+		sameBlob.downloadAttributes();
+		Assert.assertEquals(contentType, sameBlobProperties.contentType);
+		Assert.assertEquals(contentEncoding, sameBlobProperties.contentEncoding);
+		Assert.assertEquals(contentLanguage, sameBlobProperties.contentLanguage);
 	}
 
 	public void testReadPropertiesOfCreatedBlob() throws StorageInnerException,

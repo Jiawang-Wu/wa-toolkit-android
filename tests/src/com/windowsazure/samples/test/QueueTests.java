@@ -104,7 +104,7 @@ public class QueueTests extends AndroidTestCase {
 			String messageId = message.getMessageId();
 			String popReceipt = message.getPopReceipt();
 			
-			EntityBase entity = getWriter().deleteMessage(queueName, messageId, popReceipt);
+			/* EntityBase entity = */ getWriter().deleteMessage(queueName, messageId, popReceipt);
 			
 			// Some this check returns HttpStatusCode.Forbidden even though the message was deleted 
 			// Assert.assertEquals(HttpStatusCode.NoContent, entity.getHttpStatusCode());

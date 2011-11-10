@@ -28,7 +28,7 @@ public final class CloudBlockBlob extends CloudBlob {
 
 	public CloudBlockBlob(URI blobUri, CloudBlobClient serviceClient,
 			CloudBlobContainer cloudblobcontainer)
-			throws NotImplementedException, StorageException {
+			throws StorageException {
 		super(blobUri, serviceClient, cloudblobcontainer);
 		m_Properties.blobType = BlobType.BLOCK_BLOB;
 	}

@@ -9,8 +9,8 @@ public class MiddleRunTests {
 		TestSuite suite = new TestSuite(MiddleRunTests.class.getName());
 		// $JUnit-BEGIN$
 		suite.addTestSuite(CloudBlobContainerUsingAccountAndKeyTests.class);
-		suite.addTestSuite(CloudBlobContainerUsingSASServiceByHttpsTests.class);
 		suite.addTestSuite(CloudBlockBlobUsingAccountAndKeyTests.class);
+		suite.addTestSuite(CloudBlobContainerUsingSASServiceByHttpsTests.class);
 		suite.addTestSuite(CloudBlockBlobUsingSASServiceByHttpsTests.class);
 		suite.addTestSuite(WAZServiceAccountCredentialsUsingHttpsTests.class);
 		// $JUnit-END$

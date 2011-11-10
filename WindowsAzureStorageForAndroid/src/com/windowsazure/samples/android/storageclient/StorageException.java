@@ -11,8 +11,7 @@ public final class StorageException extends Exception {
 	public static final long serialVersionUID = 0x6ea4e362e7d2d5f0L;
 
 	protected static StorageExtendedErrorInformation getErrorDetailsFromRequest(
-			HttpResponse response) throws NotImplementedException,
-			UnsupportedEncodingException, IOException {
+			HttpResponse response) throws UnsupportedEncodingException, IOException {
 		if (response == null)
 			return null;
 		HttpEntity responseEntity = response.getEntity();
@@ -32,8 +31,7 @@ public final class StorageException extends Exception {
 	}
 
 	public static StorageException translateException(HttpResponse response,
-			Exception exception) throws NotImplementedException,
-			UnsupportedEncodingException, IOException {
+			Exception exception) throws UnsupportedEncodingException, IOException {
 		if (response == null)
 			return new StorageException(
 					"Client error",

@@ -17,7 +17,6 @@ import com.windowsazure.samples.android.storageclient.StorageCredentials;
 import com.windowsazure.samples.android.storageclient.CloudBlobClient;
 import com.windowsazure.samples.android.storageclient.Utility;
 import com.windowsazure.samples.android.storageclient.WAZServiceAccountCredentials;
-import com.windowsazure.samples.android.storageclient.internal.web.XmlHttpResult;
 import com.windowsazure.samples.android.storageclient.internal.xml.DOMAdapter;
 import com.windowsazure.samples.android.storageclient.internal.xml.DOMBuilder;
 import com.windowsazure.samples.android.storageclient.internal.xml.XmlNode;

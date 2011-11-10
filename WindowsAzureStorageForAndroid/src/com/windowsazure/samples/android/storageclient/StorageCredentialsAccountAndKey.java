@@ -59,7 +59,7 @@ public final class StorageCredentialsAccountAndKey extends StorageCredentials {
 	StorageCredentials credentialsForBlobOf(
 			CloudBlobContainer cloudBlobContainer)
 			throws IllegalArgumentException, UnsupportedEncodingException,
-			NotImplementedException, URISyntaxException, StorageException,
+			URISyntaxException, StorageException,
 			IOException {
 		return this;
 	}

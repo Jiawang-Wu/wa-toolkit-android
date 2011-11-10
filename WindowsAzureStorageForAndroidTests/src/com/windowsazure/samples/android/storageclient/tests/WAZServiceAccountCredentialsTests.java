@@ -64,7 +64,7 @@ public abstract class WAZServiceAccountCredentialsTests<T extends WAZServiceAcco
 		this.assertThrows(new RunnableWithExpectedException() {
 			@Override
 			public void run() throws Exception {
-				CloudBlobClient token = account.createCloudBlobClient();
+				account.createCloudBlobClient();
 			}
 		}, UnknownHostException.class);
 	}

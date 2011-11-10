@@ -9,9 +9,5 @@ public interface IListBlobItem {
 			throws NotImplementedException, URISyntaxException,
 			StorageException;
 
-	public abstract CloudBlobDirectory getParent()
-			throws NotImplementedException, URISyntaxException,
-			StorageException;
-
 	public abstract URI getUri() throws NotImplementedException;
 }

@@ -7,6 +7,7 @@ import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.http.client.methods.HttpDelete;
@@ -24,11 +25,11 @@ final class BaseRequest {
 
 	public static void addMetadata(HttpRequestBase request, HashMap<String, String> metadata) {
 		if (metadata != null) {
-			java.util.Map.Entry metadataEntry;
+			Map.Entry<String, String> metadataEntry;
 			for (Iterator<Entry<String, String>> iterator = metadata.entrySet().iterator(); iterator
 					.hasNext(); addMetadata(request, (String) metadataEntry.getKey(),
-					(String) metadataEntry.getValue()))
-				metadataEntry = (java.util.Map.Entry) iterator.next();
+					metadataEntry.getValue()))
+				metadataEntry = iterator.next();
 
 		}
 	}

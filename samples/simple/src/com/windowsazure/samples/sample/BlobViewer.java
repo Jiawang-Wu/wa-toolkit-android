@@ -1,12 +1,8 @@
 package com.windowsazure.samples.sample;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 import com.windowsazure.samples.android.storageclient.CloudBlockBlob;
-import com.windowsazure.samples.blob.AzureBlob;
-import com.windowsazure.samples.blob.AzureBlobManager;
-import com.windowsazure.samples.blob.data.BitmapBlobData;
 import com.windowsazure.samples.sample.R;
 
 import android.app.Activity;

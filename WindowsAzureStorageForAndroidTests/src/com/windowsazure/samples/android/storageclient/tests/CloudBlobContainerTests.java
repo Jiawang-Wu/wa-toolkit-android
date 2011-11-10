@@ -6,14 +6,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 
 import junit.framework.Assert;
 
 import com.windowsazure.samples.android.storageclient.BlobContainerPermissions;
-import com.windowsazure.samples.android.storageclient.BlobContainerProperties;
 import com.windowsazure.samples.android.storageclient.BlobContainerPublicAccessType;
 import com.windowsazure.samples.android.storageclient.CloudBlob;
 import com.windowsazure.samples.android.storageclient.CloudBlobContainer;

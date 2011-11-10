@@ -1,22 +1,16 @@
 package com.windowsazure.samples.android.storageclient.tests;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
 
 import junit.framework.Assert;
 
 import com.windowsazure.samples.android.storageclient.BlobContainerPermissions;
-import com.windowsazure.samples.android.storageclient.BlobContainerProperties;
 import com.windowsazure.samples.android.storageclient.BlobContainerPublicAccessType;
 import com.windowsazure.samples.android.storageclient.CloudBlob;
 import com.windowsazure.samples.android.storageclient.CloudBlobClient;
 import com.windowsazure.samples.android.storageclient.CloudBlobContainer;
-import com.windowsazure.samples.android.storageclient.NotImplementedException;
 import com.windowsazure.samples.android.storageclient.StorageCredentialsSharedAccessSignature;
 import com.windowsazure.samples.android.storageclient.StorageException;
 
@@ -88,11 +82,9 @@ public abstract class CloudBlobContainerUsingSASServiceTests<T extends WAZServic
 
 	public void testCreateContainerCreatedByOtherAccountThrowsException()
 			throws Exception {
-		String containerName = "testcreatecontainercreatedbyotheraccountthrowsexception";
-		final CloudBlobContainer container = this
-				.createContainer(containerName);
+		final CloudBlobContainer container = this.createContainer("testcreatecontainercreatedbyotheraccountthrowsexception");
 		final CloudBlobContainer sameContainer = new CloudBlobContainer(
-				containerName, otherCloudBlobClient);
+				container.getName(), otherCloudBlobClient);
 		this.assertThrows(new RunnableWithExpectedException() {
 			@Override
 			public void run() throws Exception {

@@ -22,7 +22,7 @@ final class StorageErrorResponse {
 	}
 
 	public StorageErrorResponse(InputStream errorStream)
-			throws NotImplementedException, UnsupportedEncodingException,
+			throws UnsupportedEncodingException,
 			IOException {
 		Utility.assertNotNull("errorStream", errorStream);
 		m_StreamRef = errorStream;
@@ -30,11 +30,10 @@ final class StorageErrorResponse {
 		this.parseResponse();
 	}
 	public StorageExtendedErrorInformation getExtendedErrorInformation()
-			throws NotImplementedException {
+	{
 		return m_ErrorInfo;
 	}
-	private void parseResponse() throws NotImplementedException,
-			UnsupportedEncodingException, IOException {
+	private void parseResponse() throws UnsupportedEncodingException, IOException {
 		try {
 			DocumentBuilderFactory factory = DocumentBuilderFactory
 					.newInstance();

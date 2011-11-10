@@ -1,6 +1,6 @@
 package com.windowsazure.samples.android.storageclient;
 
-enum LeaseStatus {
+public enum LeaseStatus {
 	LOCKED("locked"), UNLOCKED("unlocked"), UNSPECIFIED("unspecified");
 
 	public static LeaseStatus fromValue(String value) {

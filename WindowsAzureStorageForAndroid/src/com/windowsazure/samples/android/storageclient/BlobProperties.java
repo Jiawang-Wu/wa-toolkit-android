@@ -21,19 +21,24 @@ public final class BlobProperties {
 		blobType = BlobType.UNSPECIFIED;
 		leaseStatus = LeaseStatus.UNLOCKED;
 	}
-	public BlobProperties(BlobProperties blobProperties) {
-		blobType = BlobType.UNSPECIFIED;
-		leaseStatus = LeaseStatus.UNLOCKED;
-		blobType = blobProperties.blobType;
-		contentEncoding = blobProperties.contentEncoding;
-		contentLanguage = blobProperties.contentLanguage;
-		contentType = blobProperties.contentType;
-		eTag = blobProperties.eTag;
-		leaseStatus = blobProperties.leaseStatus;
-		length = blobProperties.length;
-		lastModified = blobProperties.lastModified;
+	
+	public BlobProperties(BlobProperties properties) {
+		this.copyFrom(properties);
 	}
 	public BlobType getBlobType() {
 		return blobType;
+	}
+
+	void copyFrom(BlobProperties properties) {
+		blobType = BlobType.UNSPECIFIED;
+		leaseStatus = LeaseStatus.UNLOCKED;
+		blobType = properties.blobType;
+		contentEncoding = properties.contentEncoding;
+		contentLanguage = properties.contentLanguage;
+		contentType = properties.contentType;
+		eTag = properties.eTag;
+		leaseStatus = properties.leaseStatus;
+		length = properties.length;
+		lastModified = properties.lastModified;
 	}
 }

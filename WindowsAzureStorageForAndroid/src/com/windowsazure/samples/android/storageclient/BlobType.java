@@ -1,6 +1,6 @@
 package com.windowsazure.samples.android.storageclient;
 
-enum BlobType {
+public enum BlobType {
 	UNSPECIFIED("Unspecified"), BLOCK_BLOB("BlockBlob"), PAGE_BLOB("PageBlob");
 
 	public static BlobType fromValue(String value) {

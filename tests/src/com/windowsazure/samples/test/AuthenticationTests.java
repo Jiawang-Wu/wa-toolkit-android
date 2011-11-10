@@ -1,6 +1,4 @@
 package com.windowsazure.samples.test;
-import java.net.URI;
-
 import junit.framework.Assert;
 import android.test.AndroidTestCase;
 

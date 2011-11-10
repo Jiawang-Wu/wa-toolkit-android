@@ -12,7 +12,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 final class ExecutionEngine {
 	protected static Object execute(Object obj, Object obj1,
 			StorageOperation storageoperation) throws StorageException,
-			NotImplementedException, UnsupportedEncodingException, IOException {
+			UnsupportedEncodingException, IOException {
 		storageoperation.initialize();
 		try {
 			return storageoperation.execute(obj, obj1);

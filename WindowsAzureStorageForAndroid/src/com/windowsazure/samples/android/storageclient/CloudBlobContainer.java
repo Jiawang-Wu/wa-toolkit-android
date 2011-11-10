@@ -2,13 +2,10 @@ package com.windowsazure.samples.android.storageclient;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.util.HashMap;
-import java.util.Iterator;
-
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
@@ -80,14 +77,12 @@ public final class CloudBlobContainer {
 		parseQueryAndVerify(m_ContainerOperationsUri, serviceClient);
 	}
 
-	public void create() throws StorageException, NotImplementedException,
-			UnsupportedEncodingException, IOException {
+	public void create() throws StorageException, UnsupportedEncodingException, IOException {
 		this.create(false);
 	}
 
 	public boolean create(final boolean createIfNotExist)
-			throws StorageException, NotImplementedException,
-			UnsupportedEncodingException, IOException {
+			throws StorageException, UnsupportedEncodingException, IOException {
 		StorageOperation storageOperation = new StorageOperation() {
 			public boolean execute(CloudBlobClient serviceClient,
 					CloudBlobContainer container) throws Exception {
@@ -132,12 +127,11 @@ public final class CloudBlobContainer {
 				storageOperation);
 	}
 
-	public boolean createIfNotExist() throws NotImplementedException,
-			StorageException, UnsupportedEncodingException, IOException {
+	public boolean createIfNotExist() throws StorageException, UnsupportedEncodingException, IOException {
 		return this.create(true);
 	}
 
-	public void delete() throws NotImplementedException, StorageException,
+	public void delete() throws StorageException,
 			UnsupportedEncodingException, IOException, StorageInnerException {
 		StorageOperation storageOperation = new StorageOperation() {
 			public Void execute(CloudBlobClient serviceClient,
@@ -163,8 +157,7 @@ public final class CloudBlobContainer {
 		ExecutionEngine.execute(m_ServiceClient, this, storageOperation);
 	}
 
-	public void downloadAttributes() throws NotImplementedException,
-			StorageException, UnsupportedEncodingException, IOException {
+	public void downloadAttributes() throws StorageException, UnsupportedEncodingException, IOException {
 		StorageOperation storageOperation = new StorageOperation() {
 
 			public Void execute(CloudBlobClient serviceClient,
@@ -195,7 +188,7 @@ public final class CloudBlobContainer {
 	}
 
 	public BlobContainerPermissions downloadPermissions()
-			throws NotImplementedException, StorageException, UnsupportedEncodingException, IOException {
+			throws StorageException, UnsupportedEncodingException, IOException {
         StorageOperation storageoperation = new StorageOperation() {
             public BlobContainerPermissions execute(CloudBlobClient serviceClient, CloudBlobContainer container)
                 throws Exception
@@ -222,7 +215,7 @@ public final class CloudBlobContainer {
         return (BlobContainerPermissions)ExecutionEngine.execute(m_ServiceClient, this, storageoperation);
 	}
 
-	public boolean exists() throws NotImplementedException, StorageException,
+	public boolean exists() throws StorageException,
 			UnsupportedEncodingException, IOException {
 		StorageOperation storageOperation = new StorageOperation() {
 			public boolean execute(CloudBlobClient serviceClient,
@@ -286,7 +279,7 @@ public final class CloudBlobContainer {
 	}
 
 	public CloudBlockBlob getBlockBlobReference(String blobName)
-			throws NotImplementedException, URISyntaxException,
+			throws URISyntaxException,
 			StorageException, UnsupportedEncodingException, IOException {
 		Utility.assertNotNullOrEmpty("blobAddressUri", blobName);
 		URI blobUri = PathUtility.appendPathToUri(this.getUri(), blobName);
@@ -300,19 +293,13 @@ public final class CloudBlobContainer {
 		throw new NotImplementedException();
 	}
 
-	public CloudBlobDirectory getDirectoryReference(String directoryName)
-			throws NotImplementedException, URISyntaxException,
-			StorageException {
-		throw new NotImplementedException();
-	}
-
-	public HashMap<String, String> getMetadata() throws NotImplementedException,
-			NotImplementedException {
+	public HashMap<String, String> getMetadata() 
+	{
 		return m_Metadata;
 	}
 
-	public String getName() throws NotImplementedException,
-			NotImplementedException {
+	public String getName()
+	{
 		return m_Name;
 	}
 
@@ -329,12 +316,11 @@ public final class CloudBlobContainer {
 	}
 
 	public BlobContainerProperties getProperties()
-			throws NotImplementedException, NotImplementedException {
+	{
         return m_Properties;
 	}
 
-	public CloudBlobClient getServiceClient() throws NotImplementedException,
-			NotImplementedException {
+	public CloudBlobClient getServiceClient(){
 		return m_ServiceClient;
 	}
 
@@ -343,8 +329,7 @@ public final class CloudBlobContainer {
 		throw new NotImplementedException();
 	}
 
-	protected URI getTransformedAddress() throws NotImplementedException,
-			IllegalArgumentException, URISyntaxException, StorageException,
+	protected URI getTransformedAddress() throws IllegalArgumentException, URISyntaxException, StorageException,
 			UnsupportedEncodingException, IOException {
 		if (!m_ContainerRequest.isUsingWasServiceDirectly()) {
 			return this.getUriWithSas();
@@ -365,8 +350,7 @@ public final class CloudBlobContainer {
 		}
 	}
 
-	public URI getUri() throws StorageException, NotImplementedException,
-			UnsupportedEncodingException, IOException,
+	public URI getUri() throws StorageException, UnsupportedEncodingException, IOException,
 			IllegalArgumentException, URISyntaxException {
 		if (m_ContainerRequest.isUsingWasServiceDirectly()) {
 			return this.m_ContainerOperationsUri;
@@ -377,7 +361,7 @@ public final class CloudBlobContainer {
 	}
 
 	private URI getUriWithSas() throws StorageException,
-			NotImplementedException, UnsupportedEncodingException, IOException,
+			UnsupportedEncodingException, IOException,
 			IllegalArgumentException, URISyntaxException {
 		if (m_ContainerRequest.isUsingWasServiceDirectly()) {
 			return this.getTransformedAddress();
@@ -501,24 +485,23 @@ public final class CloudBlobContainer {
 			m_ServiceClient.setTimeoutInMs(serviceClient.getTimeoutInMs());
 		}
 	}
-	public void setMetadata(HashMap<String, String> metadata) throws NotImplementedException,
-			NotImplementedException {
+	public void setMetadata(HashMap<String, String> metadata)
+	{
 		m_Metadata = metadata;
 	}
-	protected void setName(String containerName) throws NotImplementedException,
-			NotImplementedException {
+	protected void setName(String containerName) 
+	{
 		m_Name = containerName;
 	}
 	protected void setProperties(BlobContainerProperties properties)
-			throws NotImplementedException, NotImplementedException {
+	{
 		m_Properties = properties;
 	}
 	protected void setUri(URI containerUri) throws NotImplementedException,
 			NotImplementedException {
 		throw new NotImplementedException();
 	}
-	public void uploadMetadata() throws NotImplementedException,
-			StorageException, UnsupportedEncodingException, IOException {
+	public void uploadMetadata() throws StorageException, UnsupportedEncodingException, IOException {
 		StorageOperation storageOperation = new StorageOperation() {
 
 			public Void execute(CloudBlobClient serviceClient,
@@ -544,7 +527,7 @@ public final class CloudBlobContainer {
 		ExecutionEngine.execute(m_ServiceClient, this, storageOperation);
 	}
 	public void uploadPermissions(final BlobContainerPermissions permissions)
-			throws NotImplementedException, StorageException,
+			throws StorageException,
 			UnsupportedEncodingException, IOException {
 		StorageOperation storageOperation = new StorageOperation() {
 			public Void execute(CloudBlobClient cloudBlobClient,

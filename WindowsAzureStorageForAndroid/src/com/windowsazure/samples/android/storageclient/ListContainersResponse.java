@@ -67,8 +67,10 @@ final class ListContainersResponse {
 		for (int index = 0; index < items.getLength(); ++index) {
 			String name = items.item(index).getFirstChild().getFirstChild()
 					.getNodeValue();
+			/*
 			String url = items.item(index).getLastChild().getFirstChild()
 					.getNodeValue();
+			*/
 			m_Containers.add(new CloudBlobContainer(name, cloudblobclient));
 		}
 	}
