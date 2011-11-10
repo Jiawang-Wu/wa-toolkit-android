@@ -1,6 +1,7 @@
 package com.windowsazure.samples.android.storageclient;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
@@ -85,6 +86,14 @@ final class ContainerRequest implements AbstractContainerRequest {
 				.setURIAndHeaders(new HttpGet(), endpoint, uriQueryBuilder);
 	}
 
+    public static HttpGet getAcl(URI endpoint)
+            throws IOException, URISyntaxException, StorageException
+        {
+            UriQueryBuilder uriQueryBuilder = getContainerUriQueryBuilder();
+            uriQueryBuilder.add("comp", "acl");
+            return BaseRequest.setURIAndHeaders(new HttpGet(), endpoint, uriQueryBuilder);
+        }
+    
 	@Override
 	public HttpPut setAcl(URI endpoint,
 			BlobContainerPublicAccessType publicAccess)

@@ -1,5 +1,6 @@
 package com.windowsazure.samples.android.storageclient;
 
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.util.Date;
 
@@ -20,4 +21,13 @@ final class ContainerResponse extends BaseResponse {
 		attributes.metadata = getMetadata((AbstractHttpMessage) result.httpResponse);
 		return attributes;
 	}
+	
+    public static String getAcl(AbstractHttpMessage response)
+    {
+    	/*
+    	Utility.getFirstHeaderValueOrEmpty(request, propertyName)
+        return response.getHeaderField("x-ms-blob-public-access");
+        */
+    	return null;
+    }
 }

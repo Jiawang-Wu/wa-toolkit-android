@@ -176,22 +176,20 @@ public final class CloudBlobContainer {
 	public BlobContainerPermissions downloadPermissions()
 			throws NotImplementedException, StorageException, UnsupportedEncodingException, IOException {
         StorageOperation storageoperation = new StorageOperation() {
-            public BlobContainerPermissions execute(CloudBlobClient cloudblobclient, CloudBlobContainer cloudblobcontainer)
+            public BlobContainerPermissions execute(CloudBlobClient serviceClient, CloudBlobContainer container)
                 throws Exception
             {
-            	throw new NotImplementedException();
-            	/*
-                HttpHead request = ContainerRequest.getAcl(cloudblobcontainer.getUri());
-                cloudblobclient.getCredentials().signRequest(request, -1L);
+            	HttpGet request = ContainerRequest.getAcl(container.getUri());
+                serviceClient.getCredentials().signRequest(request, -1L);
                 result = ExecutionEngine.processRequest(request);
                 if(result.statusCode != 200)
                 {
 					throw new StorageInnerException("Couldn't download container's permissions");
                 }
-                String s = ContainerResponse.getAcl(result);
-                BlobContainerPermissions blobcontainerpermissions = CloudBlobContainer.getContainerAcl(s);
-                return blobcontainerpermissions;
-                */
+                //String s = ContainerResponse.getAcl(result);
+                String s = "";
+                BlobContainerPermissions permissions = CloudBlobContainer.getContainerAcl(s);
+                return permissions;
             }
 
             public Object execute(Object obj, Object obj1)
