@@ -6,6 +6,7 @@ import java.net.URISyntaxException;
 
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpPut;
 
 public interface AbstractContainerRequest {
@@ -20,6 +21,8 @@ public interface AbstractContainerRequest {
 
 	HttpGet getUri(URI endpoint)
 			throws IOException, URISyntaxException, StorageException;
+
+	HttpHead getProperties(URI endpoint) throws IllegalArgumentException, IOException, URISyntaxException, StorageException, StorageInnerException;
 
 	boolean isUsingWasServiceDirectly();
 

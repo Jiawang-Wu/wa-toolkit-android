@@ -142,10 +142,10 @@ public class Utility {
 		return s == null || s.length() == 0;
 	}
 
-	protected static HashMap parseAccountString(String s)
+	protected static HashMap<String, String> parseAccountString(String s)
 			throws IllegalArgumentException {
 		String as[] = s.split(";");
-		HashMap hashmap = new HashMap();
+		HashMap<String, String> hashmap = new HashMap<String, String>();
 		for (int i = 0; i < as.length; i++) {
 			int j = as[i].indexOf("=");
 			if (j < 1)

@@ -20,7 +20,7 @@ import com.windowsazure.samples.android.storageclient.internal.web.HttpStatusCod
 
 public abstract class CloudBlob implements IListBlobItem {
 
-	HashMap m_Metadata;
+	HashMap<String, String> m_Metadata;
 
 	BlobProperties m_Properties;
 
@@ -40,7 +40,7 @@ public abstract class CloudBlob implements IListBlobItem {
 
 	protected CloudBlob() throws NotImplementedException,
 			NotImplementedException {
-		m_Metadata = new HashMap();
+		m_Metadata = new HashMap<String, String>();
 		m_Properties = new BlobProperties();
 	}
 
@@ -268,7 +268,7 @@ public abstract class CloudBlob implements IListBlobItem {
 		return m_ServiceClient.getCredentials();
 	}
 
-	public HashMap getMetadata() throws NotImplementedException,
+	public HashMap<String, String> getMetadata() throws NotImplementedException,
 			NotImplementedException {
 		return m_Metadata;
 	}
@@ -406,7 +406,7 @@ public abstract class CloudBlob implements IListBlobItem {
 		throw new NotImplementedException();
 	}
 
-	public void setMetadata(HashMap metadata) throws NotImplementedException,
+	public void setMetadata(HashMap<String, String> metadata) throws NotImplementedException,
 			NotImplementedException {
 		throw new NotImplementedException();
 	}

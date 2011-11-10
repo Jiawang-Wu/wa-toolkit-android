@@ -198,18 +198,7 @@ final class BlobOutputStream extends OutputStream {
 			final long opOffset = l;
 			m_CurrentPageOffset += writeLength;
 
-			final CloudPageBlob val$blobRef;
-			final ByteArrayInputStream val$bufferRef;
-			final long val$opOffset;
-			final long val$opWriteLength;
-			final BlobOutputStream this$0;
-
 			{
-				this$0 = BlobOutputStream.this;
-				val$blobRef = blobRef;
-				val$bufferRef = bufferRef;
-				val$opOffset = opOffset;
-				val$opWriteLength = opWriteLength;
 			}
 
 			callable = new Callable() {

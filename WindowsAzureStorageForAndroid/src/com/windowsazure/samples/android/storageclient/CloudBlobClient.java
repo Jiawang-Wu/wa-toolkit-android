@@ -22,8 +22,6 @@ public final class CloudBlobClient {
 
 	private int m_StreamMinimumReadSizeInBytes;
 
-	private int m_ConcurrentRequestCount;
-
 	private String m_DirectoryDelimiter;
 
 	private int m_TimeoutInMs;

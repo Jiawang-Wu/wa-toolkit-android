@@ -14,12 +14,9 @@ final class StorageErrorResponse {
 
 	private StorageExtendedErrorInformation m_ErrorInfo;
 
-	private boolean m_IsParsed;
-
 	private InputStream m_StreamRef;
 
 	public StorageErrorResponse() {
-		m_IsParsed = false;
 		m_ErrorInfo = new StorageExtendedErrorInformation();
 		m_ErrorInfo.errorMessage = "The server response couldn't be parsed. Further details aren't available.";
 	}
@@ -29,7 +26,6 @@ final class StorageErrorResponse {
 			IOException {
 		Utility.assertNotNull("errorStream", errorStream);
 		m_StreamRef = errorStream;
-		m_IsParsed = false;
 		m_ErrorInfo = new StorageExtendedErrorInformation();
 		this.parseResponse();
 	}
@@ -65,6 +61,5 @@ final class StorageErrorResponse {
 			String xmlString = Utility.readStringFromStream(m_StreamRef);
 			m_ErrorInfo.errorMessage = xmlString;
 		}
-		m_IsParsed = true;
 	}
 }

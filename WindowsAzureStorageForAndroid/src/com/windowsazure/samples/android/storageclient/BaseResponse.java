@@ -30,7 +30,7 @@ class BaseResponse {
 		}
 	}
 
-	public static HashMap getMetadata(AbstractHttpMessage request) {
+	public static HashMap<String, String> getMetadata(AbstractHttpMessage request) {
 		return getValuesByHeaderPrefix(request, "x-ms-meta-");
 	}
 
@@ -38,9 +38,9 @@ class BaseResponse {
 		return getHeaderValueOrNullIfNonExistent(response, "x-ms-request-id");
 	}
 
-	private static HashMap getValuesByHeaderPrefix(
+	private static HashMap<String, String> getValuesByHeaderPrefix(
 			AbstractHttpMessage response, String prefix) {
-		HashMap headersByPrefix = new HashMap();
+		HashMap<String, String> headersByPrefix = new HashMap<String, String>();
 		int prefixLength = prefix.length();
 		for (Header header : response.getAllHeaders()) {
 			if (header.getName() != null && header.getName().startsWith(prefix)) {

@@ -255,9 +255,6 @@ public abstract class CloudBlockBlobTests<T extends CloudClientAccountProvider>
 		final CloudBlockBlob blob = container
 				.getBlockBlobReference("someBlockBlob");
 
-		final String[] blockIds2 = new String[] { "block1             ",
-				"sOMEBlock          ", "otherData          ",
-				"otherBlock         ", "moreBL345345453Name" };
 		// blocks ids must have the same length
 		final String[] blockIds = new String[] { "block1", "block2", "block3",
 				"block4", "block5", "block6" };

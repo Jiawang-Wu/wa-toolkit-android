@@ -35,7 +35,7 @@ final class ListContainersResponse {
 		m_Containers = new ArrayList<CloudBlobContainer>();
 		m_StreamRef = inputstream;
 	}
-	public ArrayList getContainers(CloudBlobClient cloudblobclient)
+	public ArrayList<CloudBlobContainer> getContainers(CloudBlobClient cloudblobclient)
 			throws NotImplementedException, StorageException,
 			UnsupportedEncodingException, IOException,
 			ParserConfigurationException, SAXException, URISyntaxException {

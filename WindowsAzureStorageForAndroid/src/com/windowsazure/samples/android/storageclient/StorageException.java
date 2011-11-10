@@ -3,6 +3,7 @@ package com.windowsazure.samples.android.storageclient;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 
 public final class StorageException extends Exception {
@@ -14,9 +15,20 @@ public final class StorageException extends Exception {
 			UnsupportedEncodingException, IOException {
 		if (response == null)
 			return null;
-		StorageErrorResponse storageerrorresponse = new StorageErrorResponse(
-				response.getEntity().getContent());
-		return storageerrorresponse.getExtendedErrorInformation();
+		HttpEntity responseEntity = response.getEntity();
+		if (responseEntity != null)
+		{
+			StorageErrorResponse storageerrorresponse = new StorageErrorResponse(
+					responseEntity.getContent());
+			return storageerrorresponse.getExtendedErrorInformation();
+		}
+		else
+		{
+			StorageExtendedErrorInformation errorInformatino = new StorageExtendedErrorInformation();
+			errorInformatino.errorCode = "No further error information";
+			errorInformatino.errorMessage = "The server response was " + response.getStatusLine().getReasonPhrase();
+			return errorInformatino;
+		}
 	}
 
 	public static StorageException translateException(HttpResponse response,

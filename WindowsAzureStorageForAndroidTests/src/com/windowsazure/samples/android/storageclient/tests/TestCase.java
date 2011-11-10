@@ -38,7 +38,7 @@ public abstract class TestCase extends junit.framework.TestCase {
 		return list;
 	}
 
-	protected void AssertHashMapsAreEquivalent(HashMap leftHashMap,
+	protected void AssertHashMapsAreEquivalent(HashMap<String, String> leftHashMap,
 			HashMap<String, String> rightHashMap) {
 		Assert.assertEquals(leftHashMap.size(), rightHashMap.size());
 		Assert.assertTrue(leftHashMap.entrySet().containsAll(

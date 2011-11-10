@@ -7,6 +7,7 @@ import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map.Entry;
 
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpHead;
@@ -21,10 +22,10 @@ final class BaseRequest {
 			addOptionalHeader(request, "x-ms-lease-id", leaseId);
 	}
 
-	public static void addMetadata(HttpRequestBase request, HashMap metadata) {
+	public static void addMetadata(HttpRequestBase request, HashMap<String, String> metadata) {
 		if (metadata != null) {
 			java.util.Map.Entry metadataEntry;
-			for (Iterator iterator = metadata.entrySet().iterator(); iterator
+			for (Iterator<Entry<String, String>> iterator = metadata.entrySet().iterator(); iterator
 					.hasNext(); addMetadata(request, (String) metadataEntry.getKey(),
 					(String) metadataEntry.getValue()))
 				metadataEntry = (java.util.Map.Entry) iterator.next();

@@ -5,9 +5,9 @@ import java.util.EnumSet;
 
 public class SharedAccessPolicy {
 
-	public static EnumSet permissionsFromString(String s) {
+	public static EnumSet<SharedAccessPermissions> permissionsFromString(String s) {
 		char ac[] = s.toCharArray();
-		EnumSet enumset = EnumSet.noneOf(SharedAccessPermissions.class);
+		EnumSet<SharedAccessPermissions> enumset = EnumSet.noneOf(SharedAccessPermissions.class);
 		char ac1[] = ac;
 		int i = ac1.length;
 		for (int j = 0; j < i; j++) {
@@ -37,7 +37,7 @@ public class SharedAccessPolicy {
 		return enumset;
 	}
 
-	public static String permissionsToString(EnumSet enumset) {
+	public static String permissionsToString(EnumSet<SharedAccessPermissions> enumset) {
 		if (enumset == null)
 			return "";
 		StringBuilder stringbuilder = new StringBuilder();
@@ -52,7 +52,7 @@ public class SharedAccessPolicy {
 		return stringbuilder.toString();
 	}
 
-	public EnumSet permissions;
+	public EnumSet<SharedAccessPermissions> permissions;
 
 	public Date sharedAccessExpiryTime;
 	public Date sharedAccessStartTime;

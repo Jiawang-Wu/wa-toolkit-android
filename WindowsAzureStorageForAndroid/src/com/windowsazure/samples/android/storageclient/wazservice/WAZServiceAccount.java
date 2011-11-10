@@ -5,13 +5,18 @@ import java.net.URISyntaxException;
 
 import javax.security.auth.login.LoginException;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+
 import com.windowsazure.samples.android.storageclient.CloudClientAccount;
-import com.windowsazure.samples.android.storageclient.NotImplementedException;
 import com.windowsazure.samples.android.storageclient.PathUtility;
 import com.windowsazure.samples.android.storageclient.StorageCredentials;
 import com.windowsazure.samples.android.storageclient.CloudBlobClient;
+import com.windowsazure.samples.android.storageclient.Utility;
 import com.windowsazure.samples.android.storageclient.WAZServiceAccountCredentials;
-import com.windowsazure.samples.android.storageclient.internal.web.XmlHttp;
 import com.windowsazure.samples.android.storageclient.internal.web.XmlHttpResult;
 import com.windowsazure.samples.android.storageclient.internal.xml.DOMAdapter;
 import com.windowsazure.samples.android.storageclient.internal.xml.DOMBuilder;
@@ -91,11 +96,21 @@ public class WAZServiceAccount implements CloudClientAccount {
 	public String loginToWAZService() throws Exception {
 		String loginXmlString = new LoginRequestDOMBuilder(this.m_WazServiceData.getUsername(),
 				this.m_WazServiceData.getPassword()).getXmlString(true);
+
 		String path = this.m_WazServiceBaseUri.getPath() + LOGIN_PATH;
-		XmlHttpResult result = XmlHttp.PostSSL(this.m_WazServiceBaseUri.getHost(), path, null, loginXmlString);
-		if (result.getStatusCode() == com.windowsazure.samples.android.storageclient.internal.web.HttpStatusCode.OK)
+		
+		HttpPost request = new HttpPost("https://" + this.m_WazServiceBaseUri.getHost() + path);
+		request.setEntity(new ByteArrayEntity(loginXmlString.getBytes()));
+		request.setHeader("Content-Type", "text/xml");
+		HttpClient client = new DefaultHttpClient();
+		HttpResponse httpResponse = client.execute(request);
+		
+		//XmlHttpResult result = XmlHttp.PostSSL(this.m_WazServiceBaseUri.getHost(), path, null, loginXmlString);
+		if (httpResponse.getStatusLine().getStatusCode() == 200)
 		{
-			LoginResponse response = new LoginResponseDOMAdapter(result.getXmlString()).build();
+			String responseBody = Utility.readStringFromStream(httpResponse.getEntity().getContent());
+
+			LoginResponse response = new LoginResponseDOMAdapter(responseBody).build();
 			if (response.isAuthenticated)
 			{
 				return response.token;
@@ -105,7 +120,7 @@ public class WAZServiceAccount implements CloudClientAccount {
 				throw new LoginException("Couldn't log-in to the WAZ Service: Invalid username or password");
 			}
 		}
-		throw new LoginException("Couldn't log-in to the WAZ Service: The login request returned ".concat(result.getStatusCode().toString()));
+		throw new LoginException("Couldn't log-in to the WAZ Service: The login request returned " + httpResponse.getStatusLine().getReasonPhrase());
 	}
 
 	public StorageCredentials getCredentials() throws Exception {

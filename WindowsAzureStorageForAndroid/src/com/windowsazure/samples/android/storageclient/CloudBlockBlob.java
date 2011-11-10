@@ -96,12 +96,7 @@ public final class CloudBlockBlob extends CloudBlob {
 		ExecutionEngine.execute(m_ServiceClient, this, storageoperation);
 	}
 
-	public ArrayList downloadBlockList() throws NotImplementedException,
-			StorageException {
-		throw new NotImplementedException();
-	}
-
-	public ArrayList downloadBlockList(BlockListingFilter listingFilter)
+	public ArrayList<String> downloadBlockList(BlockListingFilter listingFilter)
 			throws NotImplementedException, StorageException {
 		throw new NotImplementedException();
 	}

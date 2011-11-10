@@ -4,14 +4,15 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map.Entry;
 
 public class PathUtility {
-	public static URI addToQuery(URI uri, HashMap hashmap)
+	public static URI addToQuery(URI uri, HashMap<String, String[]> hashmap)
 			throws URISyntaxException, StorageException {
 		UriQueryBuilder uriquerybuilder = new UriQueryBuilder();
-		for (Iterator iterator = hashmap.entrySet().iterator(); iterator
+		for (Iterator<Entry<String, String[]>> iterator = hashmap.entrySet().iterator(); iterator
 				.hasNext();) {
-			java.util.Map.Entry entry = (java.util.Map.Entry) iterator.next();
+			Entry<String, String[]> entry = iterator.next();
 			String as[] = (String[]) entry.getValue();
 			int i = as.length;
 			int j = 0;
@@ -106,25 +107,8 @@ public class PathUtility {
 
 	public static String getServiceClientBaseAddress(URI uri)
 			throws URISyntaxException {
-		if (false) {
-			String as[] = uri.getRawPath().split("/");
-			if (as.length < 2) {
-				String s = String
-						.format("Missing account name information inside path style uri. Path style uris should be of the form http://<IPAddressPlusPort>/<accountName>",
-								new Object[0]);
-				throw new IllegalArgumentException(s);
-			} else {
-				StringBuilder stringbuilder = new StringBuilder(
-						(new URI(uri.getScheme(), uri.getAuthority(), null,
-								null, null)).toString());
-				stringbuilder.append("/");
-				stringbuilder.append(Utility.trimEnd(as[1], '/'));
-				return stringbuilder.toString();
-			}
-		} else {
-			return (new URI(uri.getScheme(), uri.getAuthority(), null, null,
-					null)).toString();
-		}
+		return (new URI(uri.getScheme(), uri.getAuthority(), null, null,
+				null)).toString();
 	}
 
 	public static HashMap<String, String[]> parseQueryString(String s)

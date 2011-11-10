@@ -5,13 +5,14 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map.Entry;
 
 final class UriQueryBuilder {
 
-	private HashMap m_Parameters;
+	private HashMap<String, ArrayList<String>> m_Parameters;
 
 	UriQueryBuilder() {
-		m_Parameters = new HashMap();
+		m_Parameters = new HashMap<String, ArrayList<String>>();
 	}
 
 	public void add(String parameterKey, String parameterValue)
@@ -30,8 +31,8 @@ final class UriQueryBuilder {
 		String originalRawFragment = originalUri.getRawFragment();
 		String originalUriAsString = originalUri.resolve(originalUri)
 				.toASCIIString();
-		HashMap queryArguments = PathUtility.parseQueryString(originalRawQuery);
-		for (Iterator queryArgumentIterator = queryArguments.entrySet()
+		HashMap<String, String[]> queryArguments = PathUtility.parseQueryString(originalRawQuery);
+		for (Iterator<Entry<String, String[]>> queryArgumentIterator = queryArguments.entrySet()
 				.iterator(); queryArgumentIterator.hasNext();) {
 			java.util.Map.Entry entry = (java.util.Map.Entry) queryArgumentIterator
 					.next();
@@ -74,9 +75,9 @@ final class UriQueryBuilder {
 		if (s1 != null)
 			s1 = Utility.safeEncode(s1);
 		s = Utility.safeEncode(s);
-		ArrayList arraylist = (ArrayList) m_Parameters.get(s);
+		ArrayList<String> arraylist = m_Parameters.get(s);
 		if (arraylist == null) {
-			arraylist = new ArrayList();
+			arraylist = new ArrayList<String>();
 			arraylist.add(s1);
 			m_Parameters.put(s, arraylist);
 		} else if (!arraylist.contains(s1))
@@ -87,13 +88,13 @@ final class UriQueryBuilder {
 	public String toString() {
 		StringBuilder stringbuilder = new StringBuilder();
 		boolean boolean1 = true;
-		Iterator iterator = m_Parameters.keySet().iterator();
+		Iterator<String> iterator = m_Parameters.keySet().iterator();
 		do {
 			if (!iterator.hasNext())
 				break;
 			String s = (String) iterator.next();
 			if (m_Parameters.get(s) != null) {
-				Iterator iterator1 = ((ArrayList) m_Parameters.get(s))
+				Iterator<String> iterator1 = m_Parameters.get(s)
 						.iterator();
 				while (iterator1.hasNext()) {
 					String s1 = (String) iterator1.next();

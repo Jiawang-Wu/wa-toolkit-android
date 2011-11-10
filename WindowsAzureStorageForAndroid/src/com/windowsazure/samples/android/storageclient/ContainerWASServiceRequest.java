@@ -7,11 +7,12 @@ import java.util.HashMap;
 
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 
 final class ContainerWASServiceRequest implements AbstractContainerRequest {
-	public void addMetadata(HttpRequestBase request, HashMap metadata) {
+	public void addMetadata(HttpRequestBase request, HashMap<String, String> metadata) {
 		BaseRequest.addMetadata(request, metadata);
 	}
 
@@ -19,7 +20,7 @@ final class ContainerWASServiceRequest implements AbstractContainerRequest {
 	public HttpPut create(URI endpoint, boolean createIfNotExist)
 			throws IOException, URISyntaxException, IllegalArgumentException,
 			StorageException {
-		return create(endpoint, false, false);
+		return create(endpoint, createIfNotExist, false);
 	}
 
 	public HttpPut create(URI endpoint, boolean createIfNotExists, boolean isPublic)
@@ -72,5 +73,10 @@ final class ContainerWASServiceRequest implements AbstractContainerRequest {
 			IOException, URISyntaxException, StorageException {
 		return this.create(uri, true,
 				publicAccess != BlobContainerPublicAccessType.OFF);
+	}
+
+	@Override
+	public HttpHead getProperties(URI endpoint) throws StorageInnerException {
+		throw new StorageInnerException("Getting the properties of a container isn't supported by the SAS service");
 	}
 }

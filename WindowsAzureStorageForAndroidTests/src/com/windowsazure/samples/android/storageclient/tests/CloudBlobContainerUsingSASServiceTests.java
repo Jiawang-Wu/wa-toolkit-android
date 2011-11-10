@@ -1,16 +1,22 @@
 package com.windowsazure.samples.android.storageclient.tests;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
 import junit.framework.Assert;
 
 import com.windowsazure.samples.android.storageclient.BlobContainerPermissions;
+import com.windowsazure.samples.android.storageclient.BlobContainerProperties;
 import com.windowsazure.samples.android.storageclient.BlobContainerPublicAccessType;
 import com.windowsazure.samples.android.storageclient.CloudBlob;
 import com.windowsazure.samples.android.storageclient.CloudBlobClient;
 import com.windowsazure.samples.android.storageclient.CloudBlobContainer;
+import com.windowsazure.samples.android.storageclient.NotImplementedException;
 import com.windowsazure.samples.android.storageclient.StorageCredentialsSharedAccessSignature;
 import com.windowsazure.samples.android.storageclient.StorageException;
 
@@ -27,6 +33,40 @@ public abstract class CloudBlobContainerUsingSASServiceTests<T extends WAZServic
 			e.printStackTrace();
 			Assert.fail();
 		}
+	}
+
+	public void testCreateExistingContainerReturnsAlwaysTrue() throws Exception {
+		/** The sas service always returns OK/200 **/
+		final CloudBlobContainer container = new CloudBlobContainer(
+				"testcreateexistingcontainerreturnsfalse", cloudBlobClient);
+		this.addResourceCleaner(container, cleanerFor(container));
+		Assert.assertTrue(container.createIfNotExist());
+		Assert.assertTrue(container.createIfNotExist());
+	}
+
+	public void testAccessingContainerPropertiesThrowsException() throws Exception
+	{
+		final CloudBlobContainer container = this.createContainer("testaccessingcontainerpropertiesthrowsexception");
+		
+		this.assertThrows(new RunnableWithExpectedException() {
+			
+			@Override
+			public void run() throws Exception {
+				container.downloadAttributes();
+			}
+		}, StorageException.class);
+	}
+	
+	public void testExistsMethodThrowsException() throws Exception
+	{
+		final CloudBlobContainer container = this.createContainer("testexistsmethodthrowsexception");
+		
+		this.assertThrows(new RunnableWithExpectedException() {
+			@Override
+			public void run() throws Exception {
+				container.exists();
+			}
+		}, StorageException.class);
 	}
 
 	public void testListedBlobsInPrivateContainerHaveSASCredentialsButSameClient()

@@ -2,17 +2,17 @@ package com.windowsazure.samples.android.storageclient;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpPut;
-
-import android.net.Uri;
 
 import com.windowsazure.samples.android.storageclient.internal.web.HttpStatusCode;
 import com.windowsazure.samples.android.storageclient.internal.xml.DOMAdapter;
@@ -24,7 +24,7 @@ public final class CloudBlobContainer {
 		throw new NotImplementedException();
 	}
 
-	protected HashMap m_Metadata;
+	protected HashMap<String, String> m_Metadata;
 
 	BlobContainerProperties m_Properties;
 
@@ -39,7 +39,7 @@ public final class CloudBlobContainer {
 	AbstractBlobRequest m_BlobRequest;
 
 	private CloudBlobContainer(CloudBlobClient serviceClient) {
-		m_Metadata = new HashMap();
+		m_Metadata = new HashMap<String, String>();
 		m_Properties = new BlobContainerProperties();
 		m_ServiceClient = serviceClient;
 		m_ContainerRequest = serviceClient.getCredentials()
@@ -148,14 +148,13 @@ public final class CloudBlobContainer {
 
 			public Void execute(CloudBlobClient serviceClient,
 					CloudBlobContainer container) throws Exception {
-				HttpHead request = ContainerRequest
+				HttpHead request = m_ContainerRequest
 						.getProperties(container
 								.getTransformedAddress());
 				serviceClient.getCredentials().signRequest(request, -1L);
 				result = ExecutionEngine.processRequest(request);
 				if (result.statusCode != 200) {
-					throw new StorageInnerException(
-							"Couldn't download container's attributes");
+					throw new StorageInnerException("Couldn't download container's attributes");
 				} else {
 					BlobContainerAttributes blobcontainerattributes = ContainerResponse
 							.getAttributes(container.getUri(), result);
@@ -175,8 +174,34 @@ public final class CloudBlobContainer {
 	}
 
 	public BlobContainerPermissions downloadPermissions()
-			throws NotImplementedException, StorageException {
-		throw new NotImplementedException();
+			throws NotImplementedException, StorageException, UnsupportedEncodingException, IOException {
+        StorageOperation storageoperation = new StorageOperation() {
+            public BlobContainerPermissions execute(CloudBlobClient cloudblobclient, CloudBlobContainer cloudblobcontainer)
+                throws Exception
+            {
+            	throw new NotImplementedException();
+            	/*
+                HttpHead request = ContainerRequest.getAcl(cloudblobcontainer.getUri());
+                cloudblobclient.getCredentials().signRequest(request, -1L);
+                result = ExecutionEngine.processRequest(request);
+                if(result.statusCode != 200)
+                {
+					throw new StorageInnerException("Couldn't download container's permissions");
+                }
+                String s = ContainerResponse.getAcl(result);
+                BlobContainerPermissions blobcontainerpermissions = CloudBlobContainer.getContainerAcl(s);
+                return blobcontainerpermissions;
+                */
+            }
+
+            public Object execute(Object obj, Object obj1)
+                throws Exception
+            {
+                return execute((CloudBlobClient)obj, (CloudBlobContainer)obj1);
+            }
+        };
+        
+        return (BlobContainerPermissions)ExecutionEngine.execute(m_ServiceClient, this, storageoperation);
 	}
 
 	public boolean exists() throws NotImplementedException, StorageException,
@@ -185,29 +210,19 @@ public final class CloudBlobContainer {
 			public boolean execute(CloudBlobClient serviceClient,
 					CloudBlobContainer container) throws Exception {
 
-				URI transformedAddress;
-				try
-				{
-					// The SAS service will throw an exception if we
-					// try to get the uri of a non existent container
-					transformedAddress = container.getTransformedAddress();
-				}
-				catch (StorageException exception)
-				{
-					return false;
-				}
-				HttpHead request = ContainerRequest
-						.getProperties(transformedAddress);
-				serviceClient.getCredentials().signRequest(request, -1L);
-				result = ExecutionEngine.processRequest(request);
-				if (result.statusCode == 200) {
-					return true;
-				} else if (result.statusCode == 404) {
-					return false;
-				} else {
-					throw new StorageInnerException(
-							"Couldn't check if a blob's container exists");
-				}
+					// If we are using WA directly, we try to get the properties
+					HttpHead request = m_ContainerRequest
+							.getProperties(container.getTransformedAddress());
+					serviceClient.getCredentials().signRequest(request, -1L);
+					result = ExecutionEngine.processRequest(request);
+					if (result.statusCode == 200) {
+						return true;
+					} else if (result.statusCode == 404) {
+						return false;
+					} else {
+						throw new StorageInnerException(
+								"Couldn't check if a blob's container exists");
+					}
 			}
 
 			@Override
@@ -273,7 +288,7 @@ public final class CloudBlobContainer {
 		throw new NotImplementedException();
 	}
 
-	public HashMap getMetadata() throws NotImplementedException,
+	public HashMap<String, String> getMetadata() throws NotImplementedException,
 			NotImplementedException {
 		return m_Metadata;
 	}
@@ -297,7 +312,7 @@ public final class CloudBlobContainer {
 
 	public BlobContainerProperties getProperties()
 			throws NotImplementedException, NotImplementedException {
-		throw new NotImplementedException();
+        return m_Properties;
 	}
 
 	public CloudBlobClient getServiceClient() throws NotImplementedException,
@@ -415,15 +430,15 @@ public final class CloudBlobContainer {
 		return response.getBlobs(this.getServiceClient(), this);
 	}
 
-	public Iterable listContainers() throws Exception {
+	public Iterable<CloudBlobContainer> listContainers() throws Exception {
 		return m_ServiceClient.listContainers();
 	}
 
-	public Iterable listContainers(String prefix) throws Exception {
+	public Iterable<CloudBlobContainer> listContainers(String prefix) throws Exception {
 		return m_ServiceClient.listContainers(prefix);
 	}
 
-	public Iterable listContainers(String prefix,
+	public Iterable<CloudBlobContainer> listContainers(String prefix,
 			ContainerListingDetails listingDetails) throws Exception {
 		return m_ServiceClient.listContainers(prefix, listingDetails);
 	}
@@ -440,7 +455,7 @@ public final class CloudBlobContainer {
 		}
 		m_ContainerOperationsUri = PathUtility
 				.stripURIQueryAndFragment(completeUri);
-		HashMap queryArguments = PathUtility.parseQueryString(completeUri.getQuery());
+		HashMap<String, String[]> queryArguments = PathUtility.parseQueryString(completeUri.getQuery());
 		StorageCredentialsSharedAccessSignature sasCredentials = SharedAccessSignatureHelper
 				.parseQuery(queryArguments);
 		if (sasCredentials == null)
@@ -468,7 +483,7 @@ public final class CloudBlobContainer {
 			m_ServiceClient.setTimeoutInMs(serviceClient.getTimeoutInMs());
 		}
 	}
-	public void setMetadata(HashMap metadata) throws NotImplementedException,
+	public void setMetadata(HashMap<String, String> metadata) throws NotImplementedException,
 			NotImplementedException {
 		m_Metadata = metadata;
 	}

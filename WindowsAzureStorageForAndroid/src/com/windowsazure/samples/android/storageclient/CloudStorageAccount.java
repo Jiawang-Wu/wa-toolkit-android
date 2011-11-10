@@ -6,6 +6,7 @@ import java.security.InvalidKeyException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map.Entry;
 
 public final class CloudStorageAccount implements CloudClientAccount {
 
@@ -41,7 +42,7 @@ public final class CloudStorageAccount implements CloudClientAccount {
 
 	private static final String USE_DEVELOPMENT_STORAGE_NAME = "UseDevelopmentStorage";
 
-	private static String getDefaultBlobEndpoint(HashMap configuration) {
+	private static String getDefaultBlobEndpoint(HashMap<String, String> configuration) {
 		String defaultEndpointsProtocol = configuration.get("DefaultEndpointsProtocol") == null ? "http"
 				: (String) configuration.get("DefaultEndpointsProtocol");
 		String accountName = configuration.get("AccountName") == null ? null
@@ -54,7 +55,7 @@ public final class CloudStorageAccount implements CloudClientAccount {
 				"blob.core.windows.net" });
 	}
 
-	private static String getDefaultQueueEndpoint(HashMap configuration) {
+	private static String getDefaultQueueEndpoint(HashMap<String, String> configuration) {
 		String defaultEndpointsProtocol = configuration.get("DefaultEndpointsProtocol") == null ? "http"
 				: (String) configuration.get("DefaultEndpointsProtocol");
 		String accountName = configuration.get("AccountName") == null ? null
@@ -67,7 +68,7 @@ public final class CloudStorageAccount implements CloudClientAccount {
 				"queue.core.windows.net" });
 	}
 
-	private static String getDefaultTableEndpoint(HashMap configuration) {
+	private static String getDefaultTableEndpoint(HashMap<String, String> configuration) {
 		String defaultEndpointsProtocol = configuration.get("DefaultEndpointsProtocol") == null ? "http"
 				: (String) configuration.get("DefaultEndpointsProtocol");
 		String accountName = configuration.get("AccountName") == null ? null
@@ -112,10 +113,10 @@ public final class CloudStorageAccount implements CloudClientAccount {
 			IllegalArgumentException, NotImplementedException {
 		if (configurationString == null || configurationString.length() == 0)
 			throw new IllegalArgumentException("Invalid Connection String");
-		HashMap accountString = Utility.parseAccountString(configurationString);
-		for (Iterator iterator = accountString.entrySet().iterator(); iterator
+		HashMap<String, String> accountString = Utility.parseAccountString(configurationString);
+		for (Iterator<Entry<String, String>> iterator = accountString.entrySet().iterator(); iterator
 				.hasNext();) {
-			java.util.Map.Entry entry = (java.util.Map.Entry) iterator.next();
+			Entry<String, String> entry = iterator.next();
 			if (entry.getValue() == null
 					|| ((String) entry.getValue()).equals(""))
 				throw new IllegalArgumentException("Invalid Connection String");
@@ -130,7 +131,7 @@ public final class CloudStorageAccount implements CloudClientAccount {
 		else
 			throw new IllegalArgumentException("Invalid Connection String");
 	}
-	private static CloudStorageAccount tryConfigureDevStore(HashMap configuration)
+	private static CloudStorageAccount tryConfigureDevStore(HashMap<String, String> configuration)
 			throws URISyntaxException, IllegalArgumentException,
 			NotImplementedException {
 		if (configuration.containsKey("UseDevelopmentStorage")) {
@@ -147,7 +148,7 @@ public final class CloudStorageAccount implements CloudClientAccount {
 		}
 	}
 	private static CloudStorageAccount tryConfigureServiceAccount(
-			HashMap configuration) throws URISyntaxException, InvalidKeyException,
+			HashMap<String, String> configuration) throws URISyntaxException, InvalidKeyException,
 			IllegalArgumentException, NotImplementedException {
 		String defaultEndpointsProtocol = configuration.get("DefaultEndpointsProtocol") == null ? null
 				: ((String) configuration.get("DefaultEndpointsProtocol"))
@@ -263,7 +264,7 @@ public final class CloudStorageAccount implements CloudClientAccount {
 		if (m_Credentials != null
 				&& Utility.isNullOrEmpty(m_Credentials.getAccountName()))
 			return m_Credentials.toString(showSignature);
-		ArrayList configurationList = new ArrayList();
+		ArrayList<String> configurationList = new ArrayList<String>();
 		if (this == m_devStoreAccount)
 			configurationList.add(String.format("%s=true",
 					new Object[] { "UseDevelopmentStorage" }));
@@ -316,7 +317,7 @@ public final class CloudStorageAccount implements CloudClientAccount {
 				configurationList.add(getCredentials().toString(showSignature));
 		}
 		StringBuilder stringBuilder = new StringBuilder();
-		for (Iterator iterator = configurationList.iterator(); iterator.hasNext(); stringBuilder
+		for (Iterator<String> iterator = configurationList.iterator(); iterator.hasNext(); stringBuilder
 				.append(';')) {
 			String configurationLine = (String) iterator.next();
 			stringBuilder.append(configurationLine);

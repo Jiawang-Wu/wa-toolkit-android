@@ -1,14 +1,19 @@
 package com.windowsazure.samples.android.storageclient.tests;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
 import junit.framework.Assert;
 
 import com.windowsazure.samples.android.storageclient.BlobContainerPermissions;
+import com.windowsazure.samples.android.storageclient.BlobContainerProperties;
 import com.windowsazure.samples.android.storageclient.BlobContainerPublicAccessType;
 import com.windowsazure.samples.android.storageclient.CloudBlob;
 import com.windowsazure.samples.android.storageclient.CloudBlobContainer;
@@ -53,16 +58,6 @@ public abstract class CloudBlobContainerTests<T extends CloudClientAccountProvid
 		}, IllegalArgumentException.class);
 		Assert.assertFalse(this.cloudBlobClient.listContainers().iterator()
 				.hasNext());
-	}
-
-	public void testCreateExistingContainerReturnsFalse() throws Exception {
-		CloudBlobContainer container = new CloudBlobContainer(
-				"testcreateexistingcontainerreturnsfalse", cloudBlobClient);
-		this.addResourceCleaner(container, cleanerFor(container));
-		Assert.assertFalse(container.exists());
-		Assert.assertTrue(container.createIfNotExist());
-		Assert.assertTrue(container.exists());
-		Assert.assertFalse(container.createIfNotExist());
 	}
 
 	public void testCreateContainerTwiceThrowsException() throws Exception {
@@ -368,38 +363,6 @@ public abstract class CloudBlobContainerTests<T extends CloudClientAccountProvid
 				Arrays.asList(new String[] {}));
 	}
 
-	public void testUploadingAndDownloadingMetadataWorksAsExpected()
-			throws Exception {
-		CloudBlobContainer container = this
-				.createContainer("testuploadinganddownloadingmetadataworksasexpected");
-		CloudBlobContainer sameContainer = new CloudBlobContainer(
-				container.getName(), cloudBlobClient);
-
-		this.AssertHashMapsAreEquivalent(container.getMetadata(),
-				new HashMap<String, String>());
-
-		HashMap<String, String> metadata = container.getMetadata();
-		metadata.put("key1", "value1");
-		container.uploadMetadata();
-		sameContainer.downloadAttributes();
-		this.AssertHashMapsAreEquivalent(container.getMetadata(),
-				sameContainer.getMetadata());
-
-		metadata.clear();
-		metadata.put("key3", "otherValue&-/\\@");
-		metadata.put("key2", "345654");
-		container.uploadMetadata();
-		sameContainer.downloadAttributes();
-		this.AssertHashMapsAreEquivalent(container.getMetadata(),
-				sameContainer.getMetadata());
-
-		metadata.clear();
-		container.uploadMetadata();
-		sameContainer.downloadAttributes();
-		this.AssertHashMapsAreEquivalent(sameContainer.getMetadata(),
-				new HashMap<String, String>());
-	}
-
 	public void testUploadingEmptyOrNullValueForMetadataThrowsException()
 			throws Exception {
 		final CloudBlobContainer container = this
@@ -475,7 +438,12 @@ public abstract class CloudBlobContainerTests<T extends CloudClientAccountProvid
 				Arrays.asList(new String[] { "ghi" }));
 	}
 
-	/** Listing blob's SASs - END **/
+	/** Listing blob's SASs - END 
+	 * @throws IOException 
+	 * @throws StorageException 
+	 * @throws NotImplementedException 
+	 * @throws UnsupportedEncodingException 
+	 * @throws URISyntaxException **/
 
 	@Override
 	protected void setUp() {

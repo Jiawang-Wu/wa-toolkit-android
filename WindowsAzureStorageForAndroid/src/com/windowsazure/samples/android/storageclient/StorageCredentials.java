@@ -12,7 +12,7 @@ import org.apache.http.client.methods.HttpRequestBase;
 
 public abstract class StorageCredentials {
 
-	protected static StorageCredentials tryParseCredentials(HashMap hashmap)
+	protected static StorageCredentials tryParseCredentials(HashMap<String, String> hashmap)
 			throws InvalidKeyException, IllegalArgumentException,
 			NotImplementedException {
 		String s = hashmap.get("AccountName") == null ? null : (String) hashmap

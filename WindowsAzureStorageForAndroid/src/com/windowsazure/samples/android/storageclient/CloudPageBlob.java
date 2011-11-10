@@ -3,7 +3,6 @@ package com.windowsazure.samples.android.storageclient;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.util.ArrayList;
 
 public final class CloudPageBlob extends CloudBlob {
 
@@ -46,11 +45,6 @@ public final class CloudPageBlob extends CloudBlob {
 	public void create(long length, final String leaseID)
 			throws NotImplementedException, StorageException,
 			IllegalArgumentException {
-		throw new NotImplementedException();
-	}
-
-	public ArrayList downloadPageRanges() throws NotImplementedException,
-			StorageException {
 		throw new NotImplementedException();
 	}
 

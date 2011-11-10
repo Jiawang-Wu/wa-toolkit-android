@@ -13,7 +13,7 @@ import org.apache.http.client.methods.HttpPut;
 
 final class BlobRequest implements AbstractBlobRequest {
 
-	public static void addMetadata(HttpPut request, HashMap metadata) {
+	public static void addMetadata(HttpPut request, HashMap<String, String> metadata) {
 		BaseRequest.addMetadata(request, metadata);
 	}
 

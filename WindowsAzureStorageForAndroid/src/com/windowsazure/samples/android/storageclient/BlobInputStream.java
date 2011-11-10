@@ -38,7 +38,7 @@ final class BlobInputStream extends InputStream {
 	private int m_BufferSize;
 
 	protected BlobInputStream(CloudBlob cloudBlob) throws StorageException,
-			NotImplementedException, UnsupportedEncodingException, IOException {
+			NotImplementedException, UnsupportedEncodingException, IOException, StorageInnerException {
 		m_StreamLength = -1L;
 		m_ParentBlobRef = cloudBlob;
 		m_ParentBlobRef.assertCorrectBlobType();
@@ -50,7 +50,9 @@ final class BlobInputStream extends InputStream {
 		HttpGet request = new HttpGet();
 		m_StreamLength = cloudBlob.getProperties().length;
 		if (m_ParentBlobRef.getProperties().blobType == BlobType.PAGE_BLOB)
-			m_PageBlobRanges = ((CloudPageBlob) cloudBlob).downloadPageRanges();
+		{
+			throw new StorageInnerException("Page blob's aren't supported");
+		}
 		else if (m_ParentBlobRef.getProperties().blobType == BlobType.BLOCK_BLOB)
 			throw new IllegalArgumentException(
 					"The UseSparsePageBlob option is not applicable of Block Blob streams.");

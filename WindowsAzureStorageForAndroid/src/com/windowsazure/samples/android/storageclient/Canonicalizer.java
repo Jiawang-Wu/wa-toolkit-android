@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map.Entry;
 
 import org.apache.http.Header;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -25,13 +26,13 @@ abstract class Canonicalizer {
 		}
 		Collections.sort(xMsHeaderNames);
 		StringBuilder singleElementStringBuilder;
-		for (Iterator headerNameIterator = xMsHeaderNames.iterator(); headerNameIterator.hasNext(); appendCanonicalizedElement(
+		for (Iterator<String> headerNameIterator = xMsHeaderNames.iterator(); headerNameIterator.hasNext(); appendCanonicalizedElement(
 				stringBuilder, singleElementStringBuilder.toString())) {
 			String headerName = (String) headerNameIterator.next();
 			singleElementStringBuilder = new StringBuilder(headerName);
 			String separator = ":";
-			ArrayList headerValues = getHeaderValues(headers, headerName);
-			for (Iterator headerValueIterator = headerValues.iterator(); headerValueIterator
+			ArrayList<String> headerValues = getHeaderValues(headers, headerName);
+			for (Iterator<String> headerValueIterator = headerValues.iterator(); headerValueIterator
 					.hasNext();) {
 				String headerValue = (String) headerValueIterator.next();
 				String headerValueWithoutNewLines = headerValue.replace("\r\n", "");
@@ -109,16 +110,16 @@ abstract class Canonicalizer {
 		accountNameStringBuilder.append(url.getPath());
 		StringBuilder stringBuilder = new StringBuilder(
 				accountNameStringBuilder.toString());
-		HashMap queryArguments = PathUtility.parseQueryString(url.getQuery());
-		HashMap queryArgumentsToCanonicalize = new HashMap();
-		java.util.Map.Entry queryArgumentEntry;
+		HashMap<String, String[]> queryArguments = PathUtility.parseQueryString(url.getQuery());
+		HashMap<String, String> queryArgumentsToCanonicalize = new HashMap<String, String>();
+		java.util.Map.Entry<String, String[]> queryArgumentEntry;
 		StringBuilder queryArgumentStringBuilder;
-		for (Iterator queryArgumentIterator = queryArguments.entrySet().iterator(); queryArgumentIterator
+		for (Iterator<Entry<String, String[]>> queryArgumentIterator = queryArguments.entrySet().iterator(); queryArgumentIterator
 				.hasNext(); queryArgumentsToCanonicalize.put(
-				queryArgumentEntry.getKey() != null ? ((Object) (((String) queryArgumentEntry.getKey())
-						.toLowerCase(Locale.US))) : null, queryArgumentStringBuilder
+				queryArgumentEntry.getKey() != null ? queryArgumentEntry.getKey()
+						.toLowerCase(Locale.US) : null, queryArgumentStringBuilder
 						.toString())) {
-			queryArgumentEntry = (java.util.Map.Entry) queryArgumentIterator.next();
+			queryArgumentEntry = (Entry<String, String[]>) queryArgumentIterator.next();
 			List list = Arrays.asList((Object[]) queryArgumentEntry.getValue());
 			Collections.sort(list);
 			queryArgumentStringBuilder = new StringBuilder();
@@ -132,10 +133,10 @@ abstract class Canonicalizer {
 
 		}
 
-		ArrayList canonicalizedQueryArguments = new ArrayList(queryArgumentsToCanonicalize.keySet());
+		ArrayList<String> canonicalizedQueryArguments = new ArrayList<String>(queryArgumentsToCanonicalize.keySet());
 		Collections.sort(canonicalizedQueryArguments);
 		StringBuilder stringbuilder3;
-		for (Iterator iterator1 = canonicalizedQueryArguments.iterator(); iterator1.hasNext(); appendCanonicalizedElement(
+		for (Iterator<String> iterator1 = canonicalizedQueryArguments.iterator(); iterator1.hasNext(); appendCanonicalizedElement(
 				stringBuilder, stringbuilder3.toString())) {
 			String s1 = (String) iterator1.next();
 			stringbuilder3 = new StringBuilder();
@@ -147,8 +148,8 @@ abstract class Canonicalizer {
 		return stringBuilder.toString();
 	}
 
-	private static ArrayList getHeaderValues(Header[] headers, String name) {
-		ArrayList trimmedValues = new ArrayList();
+	private static ArrayList<String> getHeaderValues(Header[] headers, String name) {
+		ArrayList<String> trimmedValues = new ArrayList<String>();
 		List<String> values = new ArrayList<String>();
 		for (Header entry : headers) {
 			if (entry.getName().toLowerCase(Locale.US).equals(name)) {
@@ -157,7 +158,7 @@ abstract class Canonicalizer {
 		}
 		if (values.size() != 0) {
 			String s1;
-			for (Iterator iterator1 = values.iterator(); iterator1.hasNext(); trimmedValues
+			for (Iterator<String> iterator1 = values.iterator(); iterator1.hasNext(); trimmedValues
 					.add(Utility.trimStart(s1)))
 				s1 = (String) iterator1.next();
 

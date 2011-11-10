@@ -84,15 +84,15 @@ public final class CloudBlobDirectory implements IListBlobItem {
 	public URI getUri() throws NotImplementedException {
 		throw new NotImplementedException();
 	}
-	public Iterable listBlobs() throws NotImplementedException,
+	public Iterable<CloudBlob> listBlobs() throws NotImplementedException,
 			StorageException, URISyntaxException {
 		throw new NotImplementedException();
 	}
-	public Iterable listBlobs(String s) throws NotImplementedException,
+	public Iterable<CloudBlob> listBlobs(String s) throws NotImplementedException,
 			URISyntaxException, StorageException {
 		throw new NotImplementedException();
 	}
-	public Iterable listBlobs(String s, boolean flag, EnumSet enumset)
+	public Iterable<CloudBlob> listBlobs(String s, boolean flag, EnumSet<BlobListingDetails> enumset)
 			throws NotImplementedException, URISyntaxException,
 			StorageException {
 		throw new NotImplementedException();
