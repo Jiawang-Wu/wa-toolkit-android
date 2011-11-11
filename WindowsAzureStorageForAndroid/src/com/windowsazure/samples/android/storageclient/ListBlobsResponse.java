@@ -95,8 +95,10 @@ class ListBlobsResponse {
 				client = cloudblobclient;
 			}
 
+			/*
 			Element propertiesElement = (Element) blobElement
 					.getElementsByTagName("Properties").item(0);
+			*/
 			Element blobTypeElement = (Element) blobElement
 					.getElementsByTagName("BlobType").item(0);
 			String blockTypeString = blobTypeElement.getFirstChild()

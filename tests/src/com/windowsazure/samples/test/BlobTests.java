@@ -502,6 +502,7 @@ public class BlobTests extends AndroidTestCase {
 				}
 				
 				Assert.assertEquals(blobCount, successCount);
+				Assert.assertEquals(0, failureCount);
 			}
 		}
 		catch (Exception e)

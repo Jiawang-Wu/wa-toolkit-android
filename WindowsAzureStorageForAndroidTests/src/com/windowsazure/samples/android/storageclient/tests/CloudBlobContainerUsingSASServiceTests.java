@@ -120,8 +120,7 @@ public abstract class CloudBlobContainerUsingSASServiceTests<T extends WAZServic
 	public void testUsersCanSeeOtherUsersContainers() throws Exception {
 		String privateContainerName = "testuserscanseeotheruserscontainers-private";
 		String publicContainerName = "testuserscanseeotheruserscontainers-public";
-		final CloudBlobContainer privatecontainer = this
-				.createContainer(privateContainerName);
+		this.createContainer(privateContainerName);
 		final CloudBlobContainer publicContainer = this
 				.createContainer(publicContainerName);
 

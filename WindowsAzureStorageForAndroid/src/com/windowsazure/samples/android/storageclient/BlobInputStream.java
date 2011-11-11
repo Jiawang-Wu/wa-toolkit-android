@@ -5,11 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 
-import org.apache.http.client.methods.HttpGet;
-
-final class BlobInputStream extends InputStream {
+public final class BlobInputStream extends InputStream {
 
 	private CloudBlob m_ParentBlobRef;
 
@@ -27,49 +24,39 @@ final class BlobInputStream extends InputStream {
 
 	private int m_MarkExpiry;
 
-	private ArrayList m_PageBlobRanges;
-
-	private int m_CurrentPageRangeIndex;
-
 	private long m_CurrentAbsoluteReadPosition;
 
 	private long m_BufferStartOffset;
 
 	private int m_BufferSize;
 
-	protected BlobInputStream(CloudBlob cloudBlob) throws StorageException,
-			NotImplementedException, UnsupportedEncodingException, IOException, StorageInnerException {
+	protected BlobInputStream(CloudBlob blob) throws StorageException,
+			UnsupportedEncodingException, IOException, StorageInnerException {
 		m_StreamLength = -1L;
-		m_ParentBlobRef = cloudBlob;
+		m_ParentBlobRef = blob;
 		m_ParentBlobRef.assertCorrectBlobType();
 		m_StreamFaulted = false;
 		m_CurrentAbsoluteReadPosition = 0L;
-		m_ReadSize = cloudBlob.m_ServiceClient
-				.getStreamMinimumReadSizeInBytes();
-		cloudBlob.downloadAttributes();
-		HttpGet request = new HttpGet();
-		m_StreamLength = cloudBlob.getProperties().length;
+		m_ReadSize = 0x400000;
+		blob.downloadAttributes();
+		m_StreamLength = blob.getProperties().length;
 		if (m_ParentBlobRef.getProperties().blobType == BlobType.PAGE_BLOB)
 		{
 			throw new StorageInnerException("Page blob's aren't supported");
 		}
-		else if (m_ParentBlobRef.getProperties().blobType == BlobType.BLOCK_BLOB)
-			throw new IllegalArgumentException(
-					"The UseSparsePageBlob option is not applicable of Block Blob streams.");
 		reposition(0L);
 	}
 
 	@Override
 	public synchronized int available() throws IOException {
-		return m_BufferSize
-				- (int) (m_CurrentAbsoluteReadPosition - m_BufferStartOffset);
+		return m_BufferSize - (int) (m_CurrentAbsoluteReadPosition - m_BufferStartOffset);
 	}
 
 	private synchronized void checkStreamState() throws IOException {
 		if (m_StreamFaulted)
+		{
 			throw m_LastError;
-		else
-			return;
+		}
 	}
 
 	@Override
@@ -78,68 +65,26 @@ final class BlobInputStream extends InputStream {
 		m_StreamFaulted = true;
 		m_LastError = new IOException("Stream is closed");
 	}
-	private synchronized void dispatchRead(int i, boolean useSparsePageBlob)
-			throws IOException, NotImplementedException {
+	
+	private synchronized void dispatchRead(int length)
+			throws IOException {
 		try {
-			byte abyte0[] = new byte[i];
-			if (useSparsePageBlob) {
-				long l = m_CurrentAbsoluteReadPosition;
-				long l1 = m_CurrentAbsoluteReadPosition + i;
-				PageRange pagerange = getCurrentRange();
-				if (pagerange != null) {
-					l = pagerange.startOffset;
-					l1 = pagerange.endOffset + 1L;
-					do {
-						if (m_CurrentAbsoluteReadPosition <= pagerange.endOffset)
-							break;
-						m_CurrentPageRangeIndex++;
-						pagerange = getCurrentRange();
-						if (pagerange == null)
-							break;
-						l = pagerange.startOffset;
-						l1 = pagerange.endOffset + 1L;
-					} while (true);
-				}
-				if (pagerange != null) {
-					int j = m_CurrentPageRangeIndex + 1;
-					for (PageRange pagerange1 = j >= m_PageBlobRanges.size() ? null
-							: (PageRange) m_PageBlobRanges.get(j); j < m_PageBlobRanges
-							.size() - 1
-							&& m_CurrentAbsoluteReadPosition + i >= pagerange1.endOffset;) {
-						j++;
-						pagerange1 = (PageRange) m_PageBlobRanges.get(j);
-						l1 = pagerange1.endOffset + 1L;
-					}
-
-					l1 = Math.min(l1, m_CurrentAbsoluteReadPosition + i);
-					int k = (int) (l - m_CurrentAbsoluteReadPosition);
-					int i1 = (int) Math.min(i - k, l1 - l);
-					if (i1 > 0)
-						m_ParentBlobRef.downloadRangeInternal(l, i1, abyte0, k);
-				}
-			} else {
-				m_ParentBlobRef.downloadRangeInternal(
-						m_CurrentAbsoluteReadPosition, i, abyte0, 0);
-			}
-			m_CurrentBuffer = new ByteArrayInputStream(abyte0);
-			m_BufferSize = i;
+			byte buffer[] = new byte[length];
+			m_ParentBlobRef.downloadRangeInternal(m_CurrentAbsoluteReadPosition, length, buffer);
+			m_CurrentBuffer = new ByteArrayInputStream(buffer);
+			m_BufferSize = length;
 			m_BufferStartOffset = m_CurrentAbsoluteReadPosition;
-		} catch (StorageException storageexception) {
+		} catch (StorageException exception) {
 			m_StreamFaulted = true;
-			m_LastError = Utility.initIOException(storageexception);
+			m_LastError = Utility.initIOException(exception);
 			throw m_LastError;
 		}
 	}
-	private PageRange getCurrentRange() {
-		if (m_CurrentPageRangeIndex >= m_PageBlobRanges.size())
-			return null;
-		else
-			return (PageRange) m_PageBlobRanges.get(m_CurrentPageRangeIndex);
-	}
+
 	@Override
-	public synchronized void mark(int i) {
+	public synchronized void mark(int markExpiry) {
 		m_MarkedPosition = m_CurrentAbsoluteReadPosition;
-		m_MarkExpiry = i;
+		m_MarkExpiry = markExpiry;
 	}
 	@Override
 	public boolean markSupported() {
@@ -147,44 +92,49 @@ final class BlobInputStream extends InputStream {
 	}
 	@Override
 	public int read() throws IOException {
-		byte abyte0[] = new byte[1];
-		read(abyte0, 0, 1);
-		return abyte0[0];
+		byte buffer[] = new byte[1];
+		read(buffer, 0, 1);
+		return buffer[0];
 	}
 	@Override
-	public int read(byte abyte0[]) throws IOException {
-		return read(abyte0, 0, abyte0.length);
+	public int read(byte buffer[]) throws IOException {
+		return read(buffer, 0, buffer.length);
 	}
-	public int read(byte abyte0[], int i, int j, boolean useSparsePageBlob)
-			throws IOException, NotImplementedException {
-		if (i < 0 || j < 0 || j > abyte0.length - i)
+	public int read(byte buffer[], int length, int startingOffset)
+			throws IOException {
+		if (length < 0 || startingOffset < 0 || startingOffset > buffer.length - length)
+		{
 			throw new IndexOutOfBoundsException();
+		}
 		else
-			return readInternal(abyte0, i, j, useSparsePageBlob);
+		{
+			return readInternal(buffer, length, startingOffset);
+		}
 	}
-	private synchronized int readInternal(byte abyte0[], int i, int j,
-			boolean useSparsePageBlob) throws IOException,
-			NotImplementedException {
+	
+	private synchronized int readInternal(byte buffer[], int length, int startingOffset) throws IOException
+			{
 		checkStreamState();
 		if ((m_CurrentBuffer == null || m_CurrentBuffer.available() == 0)
 				&& m_CurrentAbsoluteReadPosition < m_StreamLength)
-			dispatchRead(
-					(int) Math.min(m_ReadSize, m_StreamLength
-							- m_CurrentAbsoluteReadPosition), useSparsePageBlob);
-		j = Math.min(j, m_ReadSize);
-		int k = m_CurrentBuffer.read(abyte0, i, j);
-		if (k > 0) {
-			m_CurrentAbsoluteReadPosition += k;
+		{
+			dispatchRead((int) Math.min(m_ReadSize, m_StreamLength
+							- m_CurrentAbsoluteReadPosition));
+		}
+		startingOffset = Math.min(startingOffset, m_ReadSize);
+		int bytesRead = m_CurrentBuffer.read(buffer, length, startingOffset);
+		if (bytesRead > 0) {
+			m_CurrentAbsoluteReadPosition += bytesRead;
 		}
 		if (m_MarkExpiry > 0
 				&& m_MarkedPosition + m_MarkExpiry < m_CurrentAbsoluteReadPosition) {
 			m_MarkedPosition = 0L;
 			m_MarkExpiry = 0;
 		}
-		return k;
+		return bytesRead;
 	}
-	private synchronized void reposition(long l) {
-		m_CurrentAbsoluteReadPosition = l;
+	private synchronized void reposition(long offset) {
+		m_CurrentAbsoluteReadPosition = offset;
 		m_CurrentBuffer = new ByteArrayInputStream(new byte[0]);
 	}
 	@Override
@@ -197,24 +147,26 @@ final class BlobInputStream extends InputStream {
 		}
 	}
 	@Override
-	public synchronized long skip(long l) throws IOException {
-		if (l == 0L)
+	public synchronized long skip(long length) throws IOException {
+		if (length == 0L)
+		{
 			return 0L;
-		if (l < 0L || m_CurrentAbsoluteReadPosition + l > m_StreamLength) {
+		}
+		if (length < 0L || m_CurrentAbsoluteReadPosition + length > m_StreamLength) {
 			throw new IndexOutOfBoundsException();
 		} else {
-			reposition(m_CurrentAbsoluteReadPosition + l);
-			return l;
+			reposition(m_CurrentAbsoluteReadPosition + length);
+			return length;
 		}
 	}
-	protected long writeTo(OutputStream outputstream) throws IOException {
-		byte abyte0[] = new byte[8192];
-		long l = 0L;
-		for (int i = read(abyte0); i != -1; i = read(abyte0)) {
-			outputstream.write(abyte0, 0, i);
-			l += i;
+	protected long writeTo(OutputStream outputStream) throws IOException {
+		byte buffer[] = new byte[8192];
+		long offset = 0L;
+		for (int bytesRead = read(buffer); bytesRead != -1; bytesRead = read(buffer)) {
+			outputStream.write(buffer, 0, bytesRead);
+			offset += bytesRead;
 		}
 
-		return l;
+		return offset;
 	}
 }

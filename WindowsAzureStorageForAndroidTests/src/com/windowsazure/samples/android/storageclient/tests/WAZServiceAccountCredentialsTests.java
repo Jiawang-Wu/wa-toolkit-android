@@ -5,7 +5,6 @@ import java.net.UnknownHostException;
 
 import javax.security.auth.login.LoginException;
 
-import com.windowsazure.samples.android.storageclient.CloudBlobClient;
 import com.windowsazure.samples.android.storageclient.wazservice.WAZServiceAccount;
 import com.windowsazure.samples.android.storageclient.wazservice.WAZServiceUsernameAndPassword;
 
@@ -71,7 +70,7 @@ public abstract class WAZServiceAccountCredentialsTests<T extends WAZServiceAcco
 
 	public void testCloudBlobClientCreationUsingWAZServiceIsSuccessful()
 			throws Exception {
-		CloudBlobClient cloudBlobClient = accountProvider.getAccount()
+		accountProvider.getAccount()
 				.createCloudBlobClient();
 	}
 }

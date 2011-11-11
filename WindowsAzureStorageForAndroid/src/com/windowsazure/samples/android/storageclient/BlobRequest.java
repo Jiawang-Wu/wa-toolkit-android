@@ -2,7 +2,6 @@ package com.windowsazure.samples.android.storageclient;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
@@ -23,6 +22,15 @@ final class BlobRequest implements AbstractBlobRequest {
 		UriQueryBuilder uriquerybuilder = new UriQueryBuilder();
 		return BaseRequest.delete(endpoint, uriquerybuilder);
 	}
+
+    public static HttpGet get(URI endpoint, long rangeStart, long length)
+        throws IOException, URISyntaxException, IllegalArgumentException, StorageException
+    {
+    	HttpGet request = BaseRequest.setURIAndHeaders(new HttpGet(), endpoint, null);
+        String rangeToRead = String.format(Utility.LOCALE_US, "bytes=%d-%d", rangeStart, rangeStart + length - 1L);
+        request.setHeader("x-ms-range", rangeToRead);
+        return request;
+    }
 
     public static HttpPut copyFrom(URI endpoint, String sourceBlobCanonicalName)
         throws StorageException, IllegalArgumentException, IOException, URISyntaxException
@@ -115,7 +123,7 @@ final class BlobRequest implements AbstractBlobRequest {
 		return request;
 	}
 
-	public static HttpPut putBlock(URI endpoint, String encodedBlockId, String leaseId)
+	public static HttpPut putBlock(URI endpoint, String encodedBlockId)
 			throws IOException, URISyntaxException, IllegalArgumentException,
 			StorageException {
 		UriQueryBuilder uriQueryBuilder = new UriQueryBuilder();
@@ -123,7 +131,6 @@ final class BlobRequest implements AbstractBlobRequest {
 		uriQueryBuilder.add("blockid", encodedBlockId);
 		HttpPut request = BaseRequest.setURIAndHeaders(new HttpPut(), endpoint,
 				uriQueryBuilder);
-		BaseRequest.addLeaseId(request, leaseId);
 		return request;
 	}
 

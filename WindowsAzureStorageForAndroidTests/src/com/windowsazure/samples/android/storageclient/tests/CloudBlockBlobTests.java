@@ -3,6 +3,7 @@ package com.windowsazure.samples.android.storageclient.tests;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -10,12 +11,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
-
 import junit.framework.Assert;
 import android.util.Base64;
 
-import com.windowsazure.samples.android.storageclient.BlobContainerPermissions;
-import com.windowsazure.samples.android.storageclient.BlobContainerPublicAccessType;
 import com.windowsazure.samples.android.storageclient.BlobProperties;
 import com.windowsazure.samples.android.storageclient.BlobType;
 import com.windowsazure.samples.android.storageclient.BlockEntry;
@@ -27,6 +25,7 @@ import com.windowsazure.samples.android.storageclient.LeaseStatus;
 import com.windowsazure.samples.android.storageclient.NotImplementedException;
 import com.windowsazure.samples.android.storageclient.StorageException;
 import com.windowsazure.samples.android.storageclient.StorageInnerException;
+import com.windowsazure.samples.android.storageclient.Utility;
 
 public abstract class CloudBlockBlobTests<T extends CloudClientAccountProvider>
 		extends CloudBlobClientBasedTest<T> {
@@ -60,47 +59,35 @@ public abstract class CloudBlockBlobTests<T extends CloudClientAccountProvider>
 		Assert.assertEquals(sampleContent, downloadedContentsStream.toString());
 	}
 
-	public void testCopiedBlobIsIdenticalToSourceBlob() throws StorageInnerException, Exception {
-		CloudBlobContainer container = this.createContainer("testcopiedblobisidenticaltosourceblob1");
-		CloudBlockBlob sourceBlob = container.getBlockBlobReference("sourceBlob");
+	public void testReadCreatedBlobUsingStream() throws StorageInnerException, Exception {
+		CloudBlobContainer container = this.createContainer("testreadcreatedblobusingstream");
+		CloudBlockBlob blob = container.getBlockBlobReference("someblob");
 		String sampleContent = "SampleContent";
 
-		ByteArrayInputStream contentsStream = new ByteArrayInputStream(sampleContent.getBytes());
-		sourceBlob.upload(contentsStream, sampleContent.length());
-		
-		String key = "sampleKey";
-		String value = "sampleValue";
-		sourceBlob.getMetadata().put(key, value);
-		sourceBlob.uploadMetadata();
+		ByteArrayInputStream contentsStream = new ByteArrayInputStream(
+				sampleContent.getBytes());
+		blob.upload(contentsStream, sampleContent.length());
 
-		String contentEncoding = "someEncoding";
-		String contentLanguage = "english";
-		String contentType = "customType";
+		String content = Utility.readStringFromStream(blob.openInputStream());
+		Assert.assertEquals(sampleContent, content);
 
-		BlobProperties blobProperties = sourceBlob.getProperties();
-		
-		blobProperties.contentType = contentType;
-		blobProperties.contentEncoding = contentEncoding;
-		blobProperties.contentLanguage = contentLanguage;
-		
-		sourceBlob.uploadProperties();
-
-		CloudBlockBlob copiedBlob = container.getBlockBlobReference("copiedBlob");
-		copiedBlob.copyFromBlob(sourceBlob);
-
-		// Test that has same content
 		ByteArrayOutputStream downloadedContentsStream = new ByteArrayOutputStream();
-		copiedBlob.download(downloadedContentsStream);
-		Assert.assertEquals(sampleContent, downloadedContentsStream.toString());
-		
-		// Test that has same metadata
-		Assert.assertTrue(copiedBlob.getMetadata().containsKey(key));
-		Assert.assertEquals(value, copiedBlob.getMetadata().get(key));
+		blob.download(downloadedContentsStream);
+		Assert.assertEquals(downloadedContentsStream.toString(), content);
+	}
 
-		// Test that has same properties
-		Assert.assertEquals(contentEncoding, copiedBlob.getProperties().contentEncoding);
-		Assert.assertEquals(contentLanguage, copiedBlob.getProperties().contentLanguage);
-		Assert.assertEquals(contentType, copiedBlob.getProperties().contentType);
+	public void testWriteBlobUsingStreams() throws StorageInnerException, Exception {
+		CloudBlobContainer container = this.createContainer("testwriteblobusingstreams");
+		CloudBlockBlob blob = container.getBlockBlobReference("someblob");
+		String sampleContent = "SampleContent";
+
+		OutputStream outputStream = blob.openOutputStream();
+		outputStream.write(sampleContent.getBytes(), 0, sampleContent.length());
+		outputStream.close();
+
+		ByteArrayOutputStream downloadedContentsStream = new ByteArrayOutputStream();
+		blob.download(downloadedContentsStream);
+		Assert.assertEquals(sampleContent, downloadedContentsStream.toString());
 	}
 
 	public void testSettingAndGettingBlobProperties() throws StorageInnerException, Exception {
@@ -318,7 +305,7 @@ public abstract class CloudBlockBlobTests<T extends CloudClientAccountProvider>
 		String sampleContent = "sampleContent";
 		String encodedBlockId = encodedBlockId("block1");
 
-		blob.uploadBlock(encodedBlockId, null, new ByteArrayInputStream(
+		blob.uploadBlock(encodedBlockId, new ByteArrayInputStream(
 				sampleContent.getBytes()), sampleContent.length());
 
 		this.assertThrows(new RunnableWithExpectedException() {
@@ -373,8 +360,7 @@ public abstract class CloudBlockBlobTests<T extends CloudClientAccountProvider>
 			}
 
 			void upload(int blobIndex) throws Exception {
-				blob.uploadBlock(encodedBlockIds.get(blobIndex), null,
-						new ByteArrayInputStream(blockContents[blobIndex]),
+				blob.uploadBlock(encodedBlockIds.get(blobIndex), new ByteArrayInputStream(blockContents[blobIndex]),
 						blockContents[blobIndex].length);
 
 				this.assertExpectedBlobIsDownloaded();

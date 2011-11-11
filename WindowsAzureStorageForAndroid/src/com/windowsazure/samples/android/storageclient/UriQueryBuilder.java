@@ -34,7 +34,7 @@ final class UriQueryBuilder {
 		HashMap<String, String[]> queryArguments = PathUtility.parseQueryString(originalRawQuery);
 		for (Iterator<Entry<String, String[]>> queryArgumentIterator = queryArguments.entrySet()
 				.iterator(); queryArgumentIterator.hasNext();) {
-			java.util.Map.Entry entry = (java.util.Map.Entry) queryArgumentIterator
+			java.util.Map.Entry<String, String[]> entry = queryArgumentIterator
 					.next();
 			String argumentValues[] = (String[]) entry.getValue();
 			int argumentValuesLength = argumentValues.length;

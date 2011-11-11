@@ -14,19 +14,19 @@ public final class CloudStorageAccount implements CloudClientAccount {
 
 	protected static final String ACCOUNT_NAME_NAME = "AccountName";
 
-	private static final String BLOB_BASE_DNS_NAME = "blob.core.windows.net";
+	//private static final String BLOB_BASE_DNS_NAME = "blob.core.windows.net";
 
 	protected static final String BLOB_ENDPOINT_NAME = "BlobEndpoint";
 
-	private static final String DEFAULT_ENDPOINTS_PROTOCOL_NAME = "DefaultEndpointsProtocol";
+	//private static final String DEFAULT_ENDPOINTS_PROTOCOL_NAME = "DefaultEndpointsProtocol";
 
-	private static final String DEVELOPMENT_STORAGE_PROXY_URI_NAME = "DevelopmentStorageProxyUri";
+	//private static final String DEVELOPMENT_STORAGE_PROXY_URI_NAME = "DevelopmentStorageProxyUri";
 
-	private static final String DEVSTORE_ACCOUNT_KEY = "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==";
+	//private static final String DEVSTORE_ACCOUNT_KEY = "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==";
 
-	private static final String DEVSTORE_ACCOUNT_NAME = "devstoreaccount1";
+	//private static final String DEVSTORE_ACCOUNT_NAME = "devstoreaccount1";
 
-	private static final String DEVSTORE_CREDENTIALS_IN_STRING = "AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==";
+	//private static final String DEVSTORE_CREDENTIALS_IN_STRING = "AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==";
 
 	private static CloudStorageAccount m_devStoreAccount;
 
@@ -40,7 +40,7 @@ public final class CloudStorageAccount implements CloudClientAccount {
 
 	protected static final String TABLE_ENDPOINT_NAME = "TableEndpoint";
 
-	private static final String USE_DEVELOPMENT_STORAGE_NAME = "UseDevelopmentStorage";
+	//private static final String USE_DEVELOPMENT_STORAGE_NAME = "UseDevelopmentStorage";
 
 	private static String getDefaultBlobEndpoint(HashMap<String, String> configuration) {
 		String defaultEndpointsProtocol = configuration.get("DefaultEndpointsProtocol") == null ? "http"

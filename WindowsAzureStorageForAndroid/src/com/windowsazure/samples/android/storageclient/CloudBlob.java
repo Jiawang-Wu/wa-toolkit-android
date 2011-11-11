@@ -4,13 +4,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map.Entry;
 import java.util.StringTokenizer;
 
 import org.apache.http.client.methods.HttpDelete;
@@ -91,9 +88,18 @@ public abstract class CloudBlob implements IListBlobItem {
 		throw new NotImplementedException();
 	}
 
-	protected void assertCorrectBlobType() throws NotImplementedException,
-			StorageException {
-		throw new NotImplementedException();
+	protected void assertCorrectBlobType() throws StorageException {
+        if((this instanceof CloudBlockBlob) && m_Properties.blobType != BlobType.BLOCK_BLOB)
+        {
+            throw new StorageException("IncorrectBlobType", String.format("Incorrect Blob type, please use the correct Blob type to access a blob on the server. Expected %s, actual %s", 
+                BlobType.BLOCK_BLOB, m_Properties.blobType
+            ), 306, null, null);
+        }
+        if((this instanceof CloudPageBlob) && m_Properties.blobType != BlobType.PAGE_BLOB)
+        {
+            throw new StorageException("IncorrectBlobType", String.format("Incorrect Blob type, please use the correct Blob type to access a blob on the server. Expected %s, actual %s", 
+                BlobType.PAGE_BLOB, m_Properties.blobType), 306, null, null);
+        }
 	}
 
 	public long breakLease() throws NotImplementedException, StorageException {
@@ -257,11 +263,58 @@ public abstract class CloudBlob implements IListBlobItem {
 		throw new NotImplementedException();
 	}
 
-	protected void downloadRangeInternal(final long blobOffset,
-			final int length, final byte buffer[], int i)
-			throws NotImplementedException, StorageException {
-		throw new NotImplementedException();
-	}
+	protected void downloadRangeInternal(final long rangeStart, final int length, final byte buffer[])
+			throws StorageException, UnsupportedEncodingException, IOException {
+        StorageOperation storageOperation = new StorageOperation() {
+            public Void execute(CloudBlobClient serviceClient, CloudBlob blob)
+                throws Exception
+            {
+                HttpGet request = BlobRequest.get(blob.getTransformedAddress(), rangeStart, length);
+                serviceClient.getCredentials().signRequest(request, -1L);
+                RequestResult result = ExecutionEngine.processRequest(request);
+
+                if(result.statusCode != 206)
+                {
+					throw new StorageInnerException("Couldn't read Blob's content");
+                }
+
+                InputStream inputStream = result.httpResponse.getEntity().getContent(); 
+
+                int totalBytesRead = 0;
+                int bytesRead;
+                do
+                {
+                	bytesRead = inputStream.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
+                	totalBytesRead += bytesRead; 
+                } while (totalBytesRead < buffer.length && bytesRead != 0);
+
+                bytesRead = inputStream.read(new byte[1], 0, 20000);
+                if (buffer.length == totalBytesRead && bytesRead != -1)
+                {
+                	throw new StorageException("OutOfRangeInput", "An incorrect number of bytes was read from the connection. The connection may have been closed", 306, null, null);
+                }
+
+               
+                long contentLength = result.httpResponse.getEntity().getContentLength();
+
+                if((long)totalBytesRead != contentLength)
+                {
+                    throw new StorageException("OutOfRangeInput", "An incorrect number of bytes was read from the connection. The connection may have been closed", 306, null, null);
+                }
+                
+                return null;
+            }
+
+            public Object execute(Object obj, Object obj1)
+                throws Exception
+            {
+                return execute((CloudBlobClient)obj, (CloudBlob)obj1);
+            }
+
+        };
+        ExecutionEngine.execute(m_ServiceClient, this, storageOperation);
+        return;
+    }
 
 	public boolean exists() throws NotImplementedException, StorageException {
 		throw new NotImplementedException();
@@ -312,8 +365,8 @@ public abstract class CloudBlob implements IListBlobItem {
 		return m_Name;
 	}
 
-	public BlobProperties getProperties() throws NotImplementedException,
-			NotImplementedException {
+	public BlobProperties getProperties()
+	{
 		return m_Properties;
 	}
 
@@ -361,9 +414,8 @@ public abstract class CloudBlob implements IListBlobItem {
 		throw new NotImplementedException();
 	}
 
-	public BlobInputStream openInputStream() throws NotImplementedException,
-			StorageException {
-		throw new NotImplementedException();
+	public BlobInputStream openInputStream() throws StorageException, UnsupportedEncodingException, IOException, StorageInnerException {
+        return new BlobInputStream(this);
 	}
 
 	private void parseURIQueryStringAndVerify(URI resourceUri,

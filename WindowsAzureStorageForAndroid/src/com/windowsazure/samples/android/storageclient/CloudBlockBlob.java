@@ -111,9 +111,8 @@ public final class CloudBlockBlob extends CloudBlob {
 		}
 	}
 
-	public BlobOutputStream openOutputStream() throws NotImplementedException,
-			StorageException {
-		throw new NotImplementedException();
+	public BlobOutputStream openOutputStream() throws StorageException, NotImplementedException {
+		return new BlobOutputStream(this);
 	}
 
 	public BlobOutputStream openOutputStream(String snapshotId)
@@ -148,9 +147,8 @@ public final class CloudBlockBlob extends CloudBlob {
 		uploadFullBlob(inputStream, length, leaseID);
 	}
 
-	public void uploadBlock(String blockId, String leaseID,
-			InputStream inputStream, long length)
-			throws NotImplementedException, StorageException, IOException {
+	public void uploadBlock(String blockId, InputStream inputStream, long length)
+			throws StorageException, IOException {
 		if (Utility.isNullOrEmpty(blockId)
 				|| !this.isBase64URLSafeString(blockId)) {
 			throw new IllegalArgumentException(
@@ -169,18 +167,17 @@ public final class CloudBlockBlob extends CloudBlob {
 					"Invalid stream length, length must be less than or equal to 4 MB in size.");
 		}
 
-		uploadBlockInternal(blockId, leaseID, inputStream, length);
+		uploadBlockInternal(blockId, inputStream, length);
 	}
 
 	private void uploadBlockInternal(final String blockId,
-			final String leaseID, final InputStream inputStream,
-			final long length) throws NotImplementedException,
-			StorageException, IOException {
+			final InputStream inputStream,
+			final long length) throws StorageException, IOException {
 		StorageOperation storageOperation = new StorageOperation() {
 			public Void execute(CloudBlobClient serviceClient,
 					CloudBlob blob) throws Exception {
 				HttpPut request = BlobRequest.putBlock(
-						blob.getTransformedAddress(), blockId, leaseID);
+						blob.getTransformedAddress(), blockId);
 				serviceClient.getCredentials().signRequest(request, length);
 				InputStreamEntity entity = new InputStreamEntity(inputStream,
 						length);

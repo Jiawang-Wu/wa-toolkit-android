@@ -58,11 +58,6 @@ public final class CloudPageBlob extends CloudBlob {
 		throw new NotImplementedException();
 	}
 
-	private void putPagesInternal(final PageProperties pageProperties,
-			byte buffer[], final long length, final String leaseID) throws NotImplementedException, StorageException {
-		throw new NotImplementedException();
-	}
-
 	@Override
 	public void upload(InputStream inputStream, long length)
 			throws NotImplementedException, StorageException, IOException {
