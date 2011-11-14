@@ -12,7 +12,7 @@ public abstract class CloudClientAccountProvider {
 			NotImplementedException;
 
 	public abstract CloudClientAccount getDifferentAccount()
-			throws URISyntaxException, NotImplementedException;
+			throws URISyntaxException;
 
 	public CloudBlobClient getCloudBlobClient() throws URISyntaxException,
 			Exception {

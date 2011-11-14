@@ -65,19 +65,19 @@ public class CloudBlobContainerUsingAccountAndKeyTests extends
 
 		permissions.publicAccess = BlobContainerPublicAccessType.CONTAINER;
 		container.uploadPermissions(permissions);
-		Thread.sleep(1000);
+		Thread.sleep(2000);
 		Assert.assertEquals(container.downloadPermissions().publicAccess, BlobContainerPublicAccessType.CONTAINER);
 		Assert.assertEquals(sameContainer.downloadPermissions().publicAccess, BlobContainerPublicAccessType.CONTAINER);
 
 		permissions.publicAccess = BlobContainerPublicAccessType.BLOB;
 		container.uploadPermissions(permissions);
-		Thread.sleep(1000);
+		Thread.sleep(4000);
 		Assert.assertEquals(BlobContainerPublicAccessType.BLOB, container.downloadPermissions().publicAccess);
 		Assert.assertEquals(BlobContainerPublicAccessType.BLOB, sameContainer.downloadPermissions().publicAccess);
 
 		permissions.publicAccess = BlobContainerPublicAccessType.OFF;
 		container.uploadPermissions(permissions);
-		Thread.sleep(2000);
+		Thread.sleep(3000);
 		Assert.assertEquals(BlobContainerPublicAccessType.OFF, container.downloadPermissions().publicAccess);
 		Assert.assertEquals(BlobContainerPublicAccessType.OFF, sameContainer.downloadPermissions().publicAccess);
 	}

@@ -9,18 +9,20 @@ import java.security.InvalidKeyException;
 
 import org.apache.http.client.methods.HttpRequestBase;
 
+import android.util.Base64;
+
 public final class StorageCredentialsAccountAndKey extends StorageCredentials {
 
 	private Credentials m_Credentials;
 
 	public StorageCredentialsAccountAndKey(String s, byte abyte0[])
-			throws NotImplementedException {
+	{
 		m_Credentials = new Credentials(s, abyte0);
 	}
 
 	public StorageCredentialsAccountAndKey(String s, String s1)
-			throws IllegalArgumentException, NotImplementedException {
-		this(s, Base64.decode(s1));
+			throws IllegalArgumentException {
+		this(s, Base64.decode(s1, Base64.NO_WRAP));
 	}
 
 	@Override

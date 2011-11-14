@@ -1,5 +1,7 @@
 package com.windowsazure.samples.android.storageclient;
 
+import android.util.Base64;
+
 public final class Credentials {
 
 	private String m_AccountName;
@@ -19,7 +21,7 @@ public final class Credentials {
 	}
 
 	public Credentials(String s, String s1) {
-		this(s, Base64.decode(s1));
+		this(s, Base64.decode(s1, Base64.NO_WRAP));
 	}
 
 	public String exportBase64EncodedKey() {

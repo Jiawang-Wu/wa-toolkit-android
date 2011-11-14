@@ -10,6 +10,8 @@ import java.util.HashMap;
 
 import org.apache.http.client.methods.HttpRequestBase;
 
+import android.util.Base64;
+
 public abstract class StorageCredentials {
 
 	protected static StorageCredentials tryParseCredentials(HashMap<String, String> hashmap)
@@ -22,7 +24,7 @@ public abstract class StorageCredentials {
 		String s2 = hashmap.get("SharedAccessSignature") == null ? null
 				: (String) hashmap.get("SharedAccessSignature");
 		if (s != null && s1 != null && s2 == null)
-			if (Base64.validateIsBase64String(s1))
+			if (validateIsBase64String(s1))
 				return new StorageCredentialsAccountAndKey(s, s1);
 			else
 				throw new InvalidKeyException(
@@ -31,6 +33,17 @@ public abstract class StorageCredentials {
 			return new StorageCredentialsSharedAccessSignature(s2);
 		else
 			return null;
+	}
+
+	private static boolean validateIsBase64String(String s1) {
+		try
+		{
+			return Base64.decode(s1, Base64.NO_WRAP) != null;
+		}
+		catch (Exception exception)
+		{
+			return false;
+		}
 	}
 
 	public static StorageCredentials tryParseCredentials(String s)

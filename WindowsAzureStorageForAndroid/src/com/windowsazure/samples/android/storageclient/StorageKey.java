@@ -9,6 +9,8 @@ import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
+import android.util.Base64;
+
 public final class StorageKey {
 
 	public static synchronized String computeMacSha256(StorageKey storagekey,
@@ -21,7 +23,7 @@ public final class StorageKey {
 		} catch (UnsupportedEncodingException unsupportedencodingexception) {
 			throw new IllegalArgumentException(unsupportedencodingexception);
 		}
-		return Base64.encode(storagekey.m_Hmacsha256.doFinal(abyte0));
+		return Base64.encodeToString(storagekey.m_Hmacsha256.doFinal(abyte0), Base64.NO_WRAP);
 	}
 
 	public static synchronized String computeMacSha512(StorageKey storagekey,
@@ -34,7 +36,7 @@ public final class StorageKey {
 		} catch (UnsupportedEncodingException unsupportedencodingexception) {
 			throw new IllegalArgumentException(unsupportedencodingexception);
 		}
-		return Base64.encode(storagekey.m_Hmacsha512.doFinal(abyte0));
+		return Base64.encodeToString(storagekey.m_Hmacsha512.doFinal(abyte0), Base64.NO_WRAP);
 	}
 
 	private Mac m_Hmacsha256;
@@ -52,7 +54,7 @@ public final class StorageKey {
 	}
 
 	public String getBase64EncodedKey() {
-		return Base64.encode(m_Key);
+		return Base64.encodeToString(m_Key, Base64.NO_WRAP);
 	}
 
 	public byte[] getKey() {
@@ -85,6 +87,6 @@ public final class StorageKey {
 		m_Key512 = null;
 	}
 	public void setKey(String s) throws IOException {
-		m_Key = Base64.decode(s);
+		m_Key = Base64.decode(s, Base64.NO_WRAP);
 	}
 }

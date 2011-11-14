@@ -102,7 +102,8 @@ public final class CloudBlockBlob extends CloudBlob {
 	}
 
 	private boolean isBase64URLSafeString(String base64UrlString) {
-		try {
+		try 
+		{
 			Base64.decode(base64UrlString, Base64.URL_SAFE | Base64.NO_WRAP
 					| Base64.NO_PADDING);
 			return true;
