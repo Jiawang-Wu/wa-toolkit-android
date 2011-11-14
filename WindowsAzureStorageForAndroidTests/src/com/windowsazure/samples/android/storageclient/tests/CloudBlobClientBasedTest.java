@@ -50,7 +50,6 @@ public abstract class CloudBlobClientBasedTest<T extends CloudClientAccountProvi
 
 	protected ResourceCleaner cleanerFor(final CloudBlobContainer container) {
 		return new ResourceCleaner() {
-			@Override
 			public void clean() throws NotImplementedException,
 					StorageException, UnsupportedEncodingException, IOException {
 				try {

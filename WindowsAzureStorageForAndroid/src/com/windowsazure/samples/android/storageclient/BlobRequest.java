@@ -166,7 +166,6 @@ final class BlobRequest implements AbstractBlobRequest {
 	BlobRequest() {
 	}
 
-	@Override
 	public HttpGet list(URI endpoint, CloudBlobContainer container, String prefix,
 			boolean useFlatBlobListing) throws URISyntaxException,
 			IllegalArgumentException, StorageException,

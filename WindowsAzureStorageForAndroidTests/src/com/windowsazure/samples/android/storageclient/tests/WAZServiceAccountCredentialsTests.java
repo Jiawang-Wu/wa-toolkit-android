@@ -21,7 +21,6 @@ public abstract class WAZServiceAccountCredentialsTests<T extends WAZServiceAcco
 				accountProvider.getServiceHost());
 
 		this.assertThrows(new RunnableWithExpectedException() {
-			@Override
 			public void run() throws Exception {
 				account.createCloudBlobClient();
 			}
@@ -35,7 +34,6 @@ public abstract class WAZServiceAccountCredentialsTests<T extends WAZServiceAcco
 						"InvalidPassword"), accountProvider.getServiceHost());
 
 		this.assertThrows(new RunnableWithExpectedException() {
-			@Override
 			public void run() throws Exception {
 				account.createCloudBlobClient();
 			}
@@ -48,7 +46,6 @@ public abstract class WAZServiceAccountCredentialsTests<T extends WAZServiceAcco
 				new URI("https://www.microsoft.com"));
 
 		this.assertThrows(new RunnableWithExpectedException() {
-			@Override
 			public void run() throws Exception {
 				account.createCloudBlobClient();
 			}
@@ -61,7 +58,6 @@ public abstract class WAZServiceAccountCredentialsTests<T extends WAZServiceAcco
 				new URI("https://www.site.that.doesnt.exist.com.iDontExist"));
 
 		this.assertThrows(new RunnableWithExpectedException() {
-			@Override
 			public void run() throws Exception {
 				account.createCloudBlobClient();
 			}

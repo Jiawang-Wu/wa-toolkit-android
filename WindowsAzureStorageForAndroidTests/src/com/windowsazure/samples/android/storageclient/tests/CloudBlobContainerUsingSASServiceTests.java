@@ -44,7 +44,6 @@ public abstract class CloudBlobContainerUsingSASServiceTests<T extends WAZServic
 		
 		this.assertThrows(new RunnableWithExpectedException() {
 			
-			@Override
 			public void run() throws Exception {
 				container.downloadAttributes();
 			}
@@ -56,7 +55,6 @@ public abstract class CloudBlobContainerUsingSASServiceTests<T extends WAZServic
 		final CloudBlobContainer container = this.createContainer("testexistsmethodthrowsexception");
 		
 		this.assertThrows(new RunnableWithExpectedException() {
-			@Override
 			public void run() throws Exception {
 				container.exists();
 			}
@@ -86,7 +84,6 @@ public abstract class CloudBlobContainerUsingSASServiceTests<T extends WAZServic
 		final CloudBlobContainer sameContainer = new CloudBlobContainer(
 				container.getName(), otherCloudBlobClient);
 		this.assertThrows(new RunnableWithExpectedException() {
-			@Override
 			public void run() throws Exception {
 				sameContainer.create();
 			}
@@ -102,7 +99,6 @@ public abstract class CloudBlobContainerUsingSASServiceTests<T extends WAZServic
 		final CloudBlobContainer sameContainer = new CloudBlobContainer(
 				containerName, otherCloudBlobClient);
 		this.assertThrows(new RunnableWithExpectedException() {
-			@Override
 			public void run() throws Exception {
 				sameContainer.delete();
 			}

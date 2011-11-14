@@ -41,7 +41,6 @@ final class ContainerRequest implements AbstractContainerRequest {
 		return BaseRequest.setMetadata(endpoint, uriQueryBuilder);
 	}
 
-	@Override
 	public HttpPut create(URI endpoint, boolean createIfNotExist)
 			throws IOException, URISyntaxException, IllegalArgumentException,
 			StorageException {
@@ -49,25 +48,21 @@ final class ContainerRequest implements AbstractContainerRequest {
 		return BaseRequest.create(endpoint, uriQueryBuilder);
 	}
 
-	@Override
 	public HttpDelete delete(URI endpoint) throws IOException,
 			URISyntaxException, IllegalArgumentException, StorageException {
 		UriQueryBuilder uriQueryBuilder = getContainerUriQueryBuilder();
 		return BaseRequest.delete(endpoint, uriQueryBuilder);
 	}
 
-	@Override
 	public HttpGet getUri(URI endpoint)
 			throws IOException, URISyntaxException, StorageException {
 		return null;
 	}
 
-	@Override
 	public boolean isUsingWasServiceDirectly() {
 		return true;
 	}
 
-	@Override
 	public HttpGet list(URI endpoint, String prefix,
 			ContainerListingDetails listingDetails)
 			throws NotImplementedException, IOException, URISyntaxException,
@@ -93,7 +88,6 @@ final class ContainerRequest implements AbstractContainerRequest {
             return BaseRequest.setURIAndHeaders(new HttpGet(), endpoint, uriQueryBuilder);
         }
     
-	@Override
 	public HttpPut setAcl(URI endpoint,
 			BlobContainerPublicAccessType publicAccess)
 			throws NotImplementedException, IOException, URISyntaxException,

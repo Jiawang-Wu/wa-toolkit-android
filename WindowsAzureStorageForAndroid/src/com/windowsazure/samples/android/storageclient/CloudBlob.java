@@ -340,7 +340,6 @@ public abstract class CloudBlob implements IListBlobItem {
     	return String.format("/%s%s", accountName, containerNameAndBlobName);
     }
 
-	@Override
 	public CloudBlobContainer getContainer() throws StorageException, URISyntaxException {
 		if (m_Container == null) {
 			String name = PathUtility.getContainerNameFromUri(getUri());
@@ -403,7 +402,6 @@ public abstract class CloudBlob implements IListBlobItem {
 		}
 	}
 
-	@Override
 	public URI getUri() {
 		return m_Uri;
 	}

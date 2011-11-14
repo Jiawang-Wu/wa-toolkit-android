@@ -24,7 +24,6 @@ public abstract class CloudBlobContainerTests<T extends CloudClientAccountProvid
 	public void testCreateContainerWithInvalidNameThrowsException()
 			throws Exception {
 		this.assertThrows(new RunnableWithExpectedException() {
-			@Override
 			public void run() throws Exception {
 				thisTest.createContainer("my_test_container");
 			}
@@ -36,7 +35,6 @@ public abstract class CloudBlobContainerTests<T extends CloudClientAccountProvid
 	public void testCreateContainerWithEmptydNameThrowsException()
 			throws Exception {
 		this.assertThrows(new RunnableWithExpectedException() {
-			@Override
 			public void run() throws Exception {
 				new CloudBlobContainer("", cloudBlobClient);
 			}
@@ -48,7 +46,6 @@ public abstract class CloudBlobContainerTests<T extends CloudClientAccountProvid
 	public void testCreateContainerWithNullNameThrowsException()
 			throws Exception {
 		this.assertThrows(new RunnableWithExpectedException() {
-			@Override
 			public void run() throws Exception {
 				new CloudBlobContainer((String) null, cloudBlobClient);
 			}
@@ -65,7 +62,6 @@ public abstract class CloudBlobContainerTests<T extends CloudClientAccountProvid
 		Assert.assertEquals(containers.size(), 1);
 		Assert.assertEquals(containers.get(0).getName(), container.getName());
 		this.assertThrows(new RunnableWithExpectedException() {
-			@Override
 			public void run() throws Exception {
 				container.create();
 			}
@@ -77,7 +73,6 @@ public abstract class CloudBlobContainerTests<T extends CloudClientAccountProvid
 	public void testCreateExistentContainerThrowsException() throws Exception {
 		this.createContainer("testcreateexistentcontainerthrowsexception");
 		this.assertThrows(new RunnableWithExpectedException() {
-			@Override
 			public void run() throws Exception {
 				thisTest.createContainer("testcreateexistentcontainerthrowsexception");
 			}
@@ -95,7 +90,6 @@ public abstract class CloudBlobContainerTests<T extends CloudClientAccountProvid
 		final CloudBlobContainer container = new CloudBlobContainer(
 				"non-existant-container", cloudBlobClient);
 		this.assertThrows(new RunnableWithExpectedException() {
-			@Override
 			public void run() throws Exception {
 				container.delete();
 			}
@@ -107,7 +101,6 @@ public abstract class CloudBlobContainerTests<T extends CloudClientAccountProvid
 		final CloudBlobContainer container = new CloudBlobContainer(
 				"invalid_container", cloudBlobClient);
 		this.assertThrows(new RunnableWithExpectedException() {
-			@Override
 			public void run() throws Exception {
 				container.delete();
 			}
@@ -367,7 +360,6 @@ public abstract class CloudBlobContainerTests<T extends CloudClientAccountProvid
 
 		container.getMetadata().put("key2", "");
 		this.assertThrows(new RunnableWithExpectedException() {
-			@Override
 			public void run() throws Exception {
 				container.uploadMetadata();
 			}
@@ -376,7 +368,6 @@ public abstract class CloudBlobContainerTests<T extends CloudClientAccountProvid
 		container.getMetadata().clear();
 		container.getMetadata().put("key2", null);
 		this.assertThrows(new RunnableWithExpectedException() {
-			@Override
 			public void run() throws Exception {
 				container.uploadMetadata();
 			}

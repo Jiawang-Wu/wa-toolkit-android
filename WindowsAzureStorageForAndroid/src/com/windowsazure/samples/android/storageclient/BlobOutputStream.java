@@ -123,7 +123,6 @@ public final class BlobOutputStream extends OutputStream {
 
 			m_BlockList.add(new BlockEntry(blockID, BlockSearchMode.UNCOMMITTED));
 			Callable<Void> callable = new Callable<Void>() {
-				@Override
 				public Void call() {
 					try {
 						blob.uploadBlock(blockID, bufferRef,writeLength);

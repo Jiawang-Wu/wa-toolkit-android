@@ -156,7 +156,6 @@ public abstract class CloudBlockBlobTests<T extends CloudClientAccountProvider>
 		blob.delete();
 
 		this.assertThrows(new RunnableWithExpectedException() {
-			@Override
 			public void run() throws Exception {
 				blob.delete();
 			}
@@ -308,7 +307,6 @@ public abstract class CloudBlockBlobTests<T extends CloudClientAccountProvider>
 				sampleContent.getBytes()), sampleContent.length());
 
 		this.assertThrows(new RunnableWithExpectedException() {
-			@Override
 			public void run() throws Exception {
 				thisTest.contentsOf(blob);  // We can't download the blob,
 											// because it's not committed yet.
@@ -470,7 +468,6 @@ public abstract class CloudBlockBlobTests<T extends CloudClientAccountProvider>
 
 		container.getMetadata().put("key2", "");
 		this.assertThrows(new RunnableWithExpectedException() {
-			@Override
 			public void run() throws Exception {
 				container.uploadMetadata();
 			}
@@ -479,7 +476,6 @@ public abstract class CloudBlockBlobTests<T extends CloudClientAccountProvider>
 		container.getMetadata().clear();
 		container.getMetadata().put("key2", null);
 		this.assertThrows(new RunnableWithExpectedException() {
-			@Override
 			public void run() throws Exception {
 				container.uploadMetadata();
 			}

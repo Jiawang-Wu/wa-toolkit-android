@@ -216,7 +216,6 @@ public final class CloudStorageAccount implements CloudClientAccount {
 						useHttps ? "https" : "http",
 						accountAndKey.getAccountName())));
 	}
-	@Override
 	public CloudBlobClient createCloudBlobClient()
 			throws NotImplementedException {
 		if (getBlobEndpoint() == null)

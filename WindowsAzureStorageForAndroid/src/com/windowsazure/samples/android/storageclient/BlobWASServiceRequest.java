@@ -8,7 +8,6 @@ import org.apache.http.client.methods.HttpGet;
 
 public class BlobWASServiceRequest implements AbstractBlobRequest {
 
-	@Override
 	public HttpGet list(URI endpoint, CloudBlobContainer container,
 			String prefix, boolean useFlatBlobListing)
 			throws URISyntaxException, IllegalArgumentException,

@@ -16,7 +16,6 @@ final class ContainerWASServiceRequest implements AbstractContainerRequest {
 		BaseRequest.addMetadata(request, metadata);
 	}
 
-	@Override
 	public HttpPut create(URI endpoint, boolean createIfNotExist)
 			throws IOException, URISyntaxException, IllegalArgumentException,
 			StorageException {
@@ -32,7 +31,6 @@ final class ContainerWASServiceRequest implements AbstractContainerRequest {
 		return BaseRequest.create(endpoint, uriquerybuilder);
 	}
 
-	@Override
 	public HttpDelete delete(URI endpoint)
 			throws IOException, URISyntaxException, IllegalArgumentException,
 			StorageException {
@@ -40,7 +38,6 @@ final class ContainerWASServiceRequest implements AbstractContainerRequest {
 		return BaseRequest.delete(endpoint, uriquerybuilder);
 	}
 
-	@Override
 	public HttpGet getUri(URI endpoint)
 			throws IOException, URISyntaxException, StorageException {
 		HttpGet request = new HttpGet();
@@ -49,12 +46,10 @@ final class ContainerWASServiceRequest implements AbstractContainerRequest {
 		return request;
 	}
 
-	@Override
 	public boolean isUsingWasServiceDirectly() {
 		return false;
 	}
 
-	@Override
 	public HttpGet list(URI endpoint, String prefix,
 			ContainerListingDetails containerlistingdetails)
 			throws IOException, URISyntaxException, StorageException {
@@ -67,7 +62,6 @@ final class ContainerWASServiceRequest implements AbstractContainerRequest {
 				uriquerybuilder);
 	}
 
-	@Override
 	public HttpPut setAcl(URI uri, BlobContainerPublicAccessType publicAccess)
 			throws NotImplementedException, IllegalArgumentException,
 			IOException, URISyntaxException, StorageException {
@@ -75,7 +69,6 @@ final class ContainerWASServiceRequest implements AbstractContainerRequest {
 				publicAccess != BlobContainerPublicAccessType.OFF);
 	}
 
-	@Override
 	public HttpHead getProperties(URI endpoint) throws StorageInnerException {
 		throw new StorageInnerException("Getting the properties of a container isn't supported by the SAS service");
 	}
