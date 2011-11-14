@@ -52,7 +52,7 @@ public final class CloudStorageAccount implements CloudClientAccount {
 
 	private static String getDefaultBlobEndpoint(String scheme, String accountName) {
 		return String.format("%s://%s.%s", new Object[] { scheme, accountName,
-				"blob.core.windows.net" });
+		"blob.core.windows.net" });
 	}
 
 	private static String getDefaultQueueEndpoint(HashMap<String, String> configuration) {

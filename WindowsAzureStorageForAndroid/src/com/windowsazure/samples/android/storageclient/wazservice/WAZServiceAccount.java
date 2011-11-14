@@ -1,25 +1,26 @@
 package com.windowsazure.samples.android.storageclient.wazservice;
 
+import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 
 import javax.security.auth.login.LoginException;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import com.windowsazure.samples.android.storageclient.CloudClientAccount;
 import com.windowsazure.samples.android.storageclient.PathUtility;
 import com.windowsazure.samples.android.storageclient.StorageCredentials;
 import com.windowsazure.samples.android.storageclient.CloudBlobClient;
-import com.windowsazure.samples.android.storageclient.Utility;
 import com.windowsazure.samples.android.storageclient.WAZServiceAccountCredentials;
-import com.windowsazure.samples.android.storageclient.internal.xml.DOMAdapter;
-import com.windowsazure.samples.android.storageclient.internal.xml.DOMBuilder;
-import com.windowsazure.samples.android.storageclient.internal.xml.XmlNode;
 
 public class WAZServiceAccount implements CloudClientAccount {
 
@@ -36,65 +37,21 @@ public class WAZServiceAccount implements CloudClientAccount {
 		return new CloudBlobClient(getBlobEndpoint(), getCredentials());
 	}
 
-	private class LoginRequestDOMBuilder extends DOMBuilder {
-		
-		public LoginRequestDOMBuilder(String username, String password) {
-			this.username = username;
-			this.password = password;
-		}
-		
-		@Override
-		protected void buildDOM() {
-			XmlNode loginNode = addRootNode(LOGIN_NODE_NAME);
-			addDefaultNamespace(loginNode, CREDENTIAL_NS);
-			addNamespace(loginNode, "i", INSTANCE_NS);
-			
-			addTextNode(loginNode, PASSWORD_NODE_NAME , password);
-			addTextNode(loginNode, USERNAME_NODE_NAME , username);
-		}
-		
-		private static final String CREDENTIAL_NS = "http://schemas.datacontract.org/2004/07/Microsoft.Samples.WindowsPhoneCloud.StorageClient.Credentials";
-		private static final String INSTANCE_NS = "http://www.w3.org/2001/XMLSchema-instance";
-		private static final String LOGIN_NODE_NAME = "Login";
-		private static final String PASSWORD_NODE_NAME = "Password";
-		private static final String USERNAME_NODE_NAME = "UserName";
-		
-		private String password;
-		private String username;
-	}
-	
-	private class LoginResponse {
-		public boolean isAuthenticated;
-		public String token;
-	}
-	
-	private class LoginResponseDOMAdapter extends DOMAdapter<LoginResponse> {
-		
-		public LoginResponseDOMAdapter(String xmlString) {
-			super(xmlString);
-		}
-
-		@Override
-		public LoginResponse build() {
-			LoginResponse result = new LoginResponse();
-			result.isAuthenticated = false;
-			
-			try
-			{
-				result.token = getRootNode().getInnerText();
-				result.isAuthenticated = result.token != null;
-			}
-			catch (Exception e)
-			{
-			} 
-			
-			return result;
-		}
-	}
-	
 	public String loginToWAZService() throws Exception {
-		String loginXmlString = new LoginRequestDOMBuilder(this.m_WazServiceData.getUsername(),
-				this.m_WazServiceData.getPassword()).getXmlString(true);
+		final String CREDENTIAL_NS = "http://schemas.datacontract.org/2004/07/Microsoft.Samples.WindowsPhoneCloud.StorageClient.Credentials";
+		final String INSTANCE_NS = "http://www.w3.org/2001/XMLSchema-instance";
+		final String LOGIN_NODE_NAME = "Login";
+		final String PASSWORD_NODE_NAME = "Password";
+		final String USERNAME_NODE_NAME = "UserName";
+
+		StringWriter stringwriter = new StringWriter();
+		stringwriter.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+		stringwriter.append(String.format("<%s xmlns=\"%s\" xmlns:i=\"%s\">\n", LOGIN_NODE_NAME, CREDENTIAL_NS, INSTANCE_NS));
+		stringwriter.append(String.format("<%s>%s</%s>\n", PASSWORD_NODE_NAME, m_WazServiceData.getPassword(), PASSWORD_NODE_NAME));
+		stringwriter.append(String.format("<%s>%s</%s>\n", USERNAME_NODE_NAME, m_WazServiceData.getUsername(), USERNAME_NODE_NAME));
+		stringwriter.append(String.format("</%s>\n", LOGIN_NODE_NAME));
+
+		String loginXmlString = stringwriter.toString();
 
 		String path = this.m_WazServiceBaseUri.getPath() + LOGIN_PATH;
 		
@@ -104,15 +61,16 @@ public class WAZServiceAccount implements CloudClientAccount {
 		HttpClient client = new DefaultHttpClient();
 		HttpResponse httpResponse = client.execute(request);
 		
-		//XmlHttpResult result = XmlHttp.PostSSL(this.m_WazServiceBaseUri.getHost(), path, null, loginXmlString);
 		if (httpResponse.getStatusLine().getStatusCode() == 200)
 		{
-			String responseBody = Utility.readStringFromStream(httpResponse.getEntity().getContent());
-
-			LoginResponse response = new LoginResponseDOMAdapter(responseBody).build();
-			if (response.isAuthenticated)
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			Document dom = builder.parse(httpResponse.getEntity().getContent());
+			Element root = dom.getDocumentElement();
+			String token = root.getTextContent();
+			if (token != null)
 			{
-				return response.token;
+				return token;
 			}
 			else
 			{

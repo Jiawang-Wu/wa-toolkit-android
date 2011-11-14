@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 import junit.framework.Assert;
-import android.util.Base64;
 
 import com.windowsazure.samples.android.storageclient.BlobProperties;
 import com.windowsazure.samples.android.storageclient.BlobType;
@@ -303,7 +302,7 @@ public abstract class CloudBlockBlobTests<T extends CloudClientAccountProvider>
 		final CloudBlockBlob blob = container
 				.getBlockBlobReference("singleBlockBlob");
 		String sampleContent = "sampleContent";
-		String encodedBlockId = encodedBlockId("block1");
+		String encodedBlockId = CloudBlockBlob.encodedBlockId("block1");
 
 		blob.uploadBlock(encodedBlockId, new ByteArrayInputStream(
 				sampleContent.getBytes()), sampleContent.length());
@@ -355,7 +354,7 @@ public abstract class CloudBlockBlobTests<T extends CloudClientAccountProvider>
 					blockContents[i] = contents;
 				}
 				for (String blockId : blockIds) {
-					encodedBlockIds.add(thisTest.encodedBlockId(blockId));
+					encodedBlockIds.add(CloudBlockBlob.encodedBlockId(blockId));
 				}
 			}
 
@@ -427,11 +426,6 @@ public abstract class CloudBlockBlobTests<T extends CloudClientAccountProvider>
 		helper.commit(new int[] { 3, 1 });
 		helper.upload(0);
 		helper.commit(new int[] { 0 });
-	}
-
-	private String encodedBlockId(String blockId) {
-		return Base64.encodeToString(blockId.getBytes(), Base64.URL_SAFE
-				| Base64.NO_WRAP | Base64.NO_PADDING);
 	}
 
 	public void testUploadingAndDownloadingBlobMetadataWorksAsExpected()

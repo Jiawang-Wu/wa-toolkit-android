@@ -10,14 +10,13 @@ import java.security.InvalidKeyException;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
+import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.message.AbstractHttpMessage;
-
-import com.windowsazure.samples.android.storageclient.internal.web.HttpStatusCode;
 
 public abstract class CloudBlob implements IListBlobItem {
 
@@ -116,7 +115,7 @@ public abstract class CloudBlob implements IListBlobItem {
                 BlobRequest.addMetadata(request, sourceBlob.m_Metadata);
                 serviceClient.getCredentials().signRequest(request, 0L);
                 result = ExecutionEngine.processRequest(request);
-                if(result.statusCode != HttpStatusCode.Created.getStatus())
+                if(result.statusCode != HttpStatus.SC_CREATED)
                 {
 					throw new StorageInnerException("Couldn't delete a blob");
                 }
@@ -157,7 +156,7 @@ public abstract class CloudBlob implements IListBlobItem {
 						.getTransformedAddress());
 				serviceClient.getCredentials().signRequest(request, -1L);
 				result = ExecutionEngine.processRequest(request);
-				if (result.statusCode != HttpStatusCode.Accepted.getStatus()) {
+				if (result.statusCode != HttpStatus.SC_ACCEPTED) {
 					throw new StorageInnerException("Couldn't delete a blob");
 				}
 				return null;
@@ -529,7 +528,7 @@ public abstract class CloudBlob implements IListBlobItem {
 							inputStream, length);
 					request.setEntity(contentEntity);
 					result = ExecutionEngine.processRequest(request);
-					if (result.statusCode != HttpStatusCode.Created.getStatus()) {
+					if (result.statusCode != HttpStatus.SC_CREATED) {
 						throw new StorageInnerException(
 								"Couldn't upload a blob's data");
 					}

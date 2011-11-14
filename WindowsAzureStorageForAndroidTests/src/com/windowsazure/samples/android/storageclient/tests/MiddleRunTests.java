@@ -10,9 +10,9 @@ public class MiddleRunTests {
 		// $JUnit-BEGIN$
 		suite.addTestSuite(CloudBlobContainerUsingAccountAndKeyTests.class);
 		suite.addTestSuite(CloudBlockBlobUsingAccountAndKeyTests.class);
-		suite.addTestSuite(CloudBlobContainerUsingSASServiceByHttpsTests.class);
-		suite.addTestSuite(CloudBlockBlobUsingSASServiceByHttpsTests.class);
-		suite.addTestSuite(WAZServiceAccountCredentialsUsingHttpsTests.class);
+		suite.addTestSuite(CloudBlobContainerUsingSASServiceByHttpTests.class);
+		suite.addTestSuite(CloudBlockBlobUsingSASServiceByHttpTests.class);
+		suite.addTestSuite(WAZServiceAccountCredentialsUsingHttpTests.class);
 		// $JUnit-END$
 		return suite;
 	}

@@ -198,4 +198,14 @@ public final class CloudBlockBlob extends CloudBlob {
 		};
 		ExecutionEngine.execute(m_ServiceClient, this, storageOperation);
 	}
+
+	public static String encodedBlockId(String blockId)
+	{
+		return encodedBlockId(blockId.getBytes());
+	}
+	public static String encodedBlockId(byte[] blockIdBytes)
+	{
+		return Base64.encodeToString(blockIdBytes, Base64.URL_SAFE
+				| Base64.NO_WRAP);
+	}
 }

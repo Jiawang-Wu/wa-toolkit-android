@@ -5,9 +5,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpGet;
-
-import com.windowsazure.samples.android.storageclient.internal.web.HttpStatusCode;
 
 public final class CloudBlobClient {
 	private URI m_Endpoint;
@@ -163,7 +162,7 @@ public final class CloudBlobClient {
 				listingDetails);
 		getCredentials().signRequest(request, -1L);
 		RequestResult result = ExecutionEngine.processRequest(request);
-		if (HttpStatusCode.fromInt(result.statusCode) != HttpStatusCode.OK) {
+		if (result.statusCode != HttpStatus.SC_OK) {
 			throw new StorageInnerException("Couldn't list blob's containers");
 		}
 		ListContainersResponse response = new ListContainersResponse(

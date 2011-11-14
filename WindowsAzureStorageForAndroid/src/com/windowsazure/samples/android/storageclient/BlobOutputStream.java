@@ -119,7 +119,8 @@ public final class BlobOutputStream extends OutputStream {
 		}
 		final ByteArrayInputStream bufferRef = new ByteArrayInputStream(m_OutBuffer.toByteArray());
 			final CloudBlockBlob blob = (CloudBlockBlob) m_ParentBlobRef;
-			final String blockID = Base64.encode(Utility.getBytesFromLong(m_BlockIdSequenceNumber++));
+			final String blockID = CloudBlockBlob.encodedBlockId(Utility.getBytesFromLong(m_BlockIdSequenceNumber++));
+
 			m_BlockList.add(new BlockEntry(blockID, BlockSearchMode.UNCOMMITTED));
 			Callable<Void> callable = new Callable<Void>() {
 				@Override

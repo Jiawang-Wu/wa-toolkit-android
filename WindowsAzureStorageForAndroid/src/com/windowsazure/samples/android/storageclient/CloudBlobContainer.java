@@ -1,19 +1,23 @@
 package com.windowsazure.samples.android.storageclient;
 
+import org.apache.http.HttpStatus;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.util.HashMap;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.message.AbstractHttpMessage;
-
-import com.windowsazure.samples.android.storageclient.internal.web.HttpStatusCode;
-import com.windowsazure.samples.android.storageclient.internal.xml.DOMAdapter;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 public final class CloudBlobContainer {
 
@@ -94,12 +98,14 @@ public final class CloudBlobContainer {
 				serviceClient.getCredentials().signRequest(request, 0L);
 				result = ExecutionEngine.processRequest(request);
 
-				if (result.statusCode == HttpStatusCode.Conflict.getStatus()
+				if (result.statusCode == HttpStatus.SC_OK
 						&& createIfNotExist) {
-					return false;
-				} else if (result.statusCode != HttpStatusCode.OK.getStatus()
-						&& result.statusCode != HttpStatusCode.Created
-								.getStatus()) {
+					return true;
+				} else if (result.statusCode == HttpStatus.SC_CONFLICT
+							&& createIfNotExist) {
+						return false;
+				} else if (result.statusCode != HttpStatus.SC_OK
+						&& result.statusCode != HttpStatus.SC_CREATED) {
 					throw new StorageInnerException(
 							"Couldn't create a blob container");
 				} else {
@@ -140,8 +146,8 @@ public final class CloudBlobContainer {
 						container.m_ContainerOperationsUri);
 				serviceClient.getCredentials().signRequest(request, -1L);
 				result = ExecutionEngine.processRequest(request);
-				if (HttpStatusCode.fromInt(result.statusCode) != HttpStatusCode.OK
-						&& HttpStatusCode.fromInt(result.statusCode) != HttpStatusCode.Accepted) {
+				if (result.statusCode != HttpStatus.SC_OK
+						&& result.statusCode != HttpStatus.SC_ACCEPTED) {
 					throw new StorageInnerException(
 							"Couldn't delete a blob container");
 				}
@@ -367,18 +373,6 @@ public final class CloudBlobContainer {
 			return this.getTransformedAddress();
 		}
 
-		class GetSASResponseDOMAdapter extends DOMAdapter<URI> {
-
-			public GetSASResponseDOMAdapter(String xmlString) {
-				super(xmlString);
-			}
-
-			@Override
-			public URI build() throws URISyntaxException {
-				return new URI(getRootNode().getInnerText());
-			}
-		}
-
 		StorageOperation storageOperation = new StorageOperation() {
 			public URI execute(CloudBlobClient serviceClient,
 					CloudBlobContainer container) throws Exception {
@@ -386,10 +380,13 @@ public final class CloudBlobContainer {
 						container.m_ContainerOperationsUri);
 				serviceClient.getCredentials().signRequest(request, -1L);
 				result = ExecutionEngine.processRequest(request);
-				if (result.statusCode == HttpStatusCode.OK.getStatus()) {
-					return new GetSASResponseDOMAdapter(
-							Utility.getHttpResponseBody(result.httpResponse))
-							.build();
+				if (result.statusCode == HttpStatus.SC_OK) {
+					DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+					DocumentBuilder builder = factory.newDocumentBuilder();
+					Document dom = builder.parse(result.httpResponse.getEntity().getContent());
+					Element root = dom.getDocumentElement();
+					return new URI(root.getTextContent());
+					
 				} else {
 					throw new StorageInnerException(
 							"Couldn't get a blob container uri");
@@ -424,7 +421,7 @@ public final class CloudBlobContainer {
 				.getEndpoint(), this, prefix, useFlatBlobListing);
 		this.getServiceClient().getCredentials().signRequest(request, -1L);
 		RequestResult result = ExecutionEngine.processRequest(request);
-		if (HttpStatusCode.fromInt(result.statusCode) != HttpStatusCode.OK) {
+		if (result.statusCode != HttpStatus.SC_OK) {
 			throw new StorageInnerException("Couldn't list container blobs");
 		}
 		ListBlobsResponse response = new ListBlobsResponse(
@@ -537,7 +534,7 @@ public final class CloudBlobContainer {
 						permissions.publicAccess);
 				cloudBlobClient.getCredentials().signRequest(request, 0);
 				result = ExecutionEngine.processRequest(request);
-				if (result.statusCode != HttpStatusCode.OK.getStatus()) {
+				if (result.statusCode != HttpStatus.SC_OK) {
 					throw new StorageInnerException(
 							"Couldn't upload permissions to a blob's container");
 				}
