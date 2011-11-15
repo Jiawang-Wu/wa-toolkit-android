@@ -46,48 +46,48 @@ final class UriQueryBuilder {
 			}
 		}
 
-		StringBuilder stringbuilder = new StringBuilder();
+		StringBuilder stringBuilder = new StringBuilder();
 		if (Utility.isNullOrEmpty(originalRawQuery)
 				&& !Utility.isNullOrEmpty(originalRawFragment)) {
-			int i = originalUriAsString.indexOf('#');
-			stringbuilder.append(originalUriAsString.substring(0, i));
+			int anchorIndex = originalUriAsString.indexOf('#');
+			stringBuilder.append(originalUriAsString.substring(0, anchorIndex));
 		} else if (!Utility.isNullOrEmpty(originalRawQuery)) {
-			int j = originalUriAsString.indexOf('?');
-			stringbuilder.append(originalUriAsString.substring(0, j));
+			int querySeparatorIndex = originalUriAsString.indexOf('?');
+			stringBuilder.append(originalUriAsString.substring(0, querySeparatorIndex));
 		} else {
-			stringbuilder.append(originalUriAsString);
+			stringBuilder.append(originalUriAsString);
 			if (originalUri.getRawPath().length() <= 0)
-				stringbuilder.append("/");
+				stringBuilder.append("/");
 		}
-		String s3 = toString();
-		if (s3.length() > 0) {
-			stringbuilder.append("?");
-			stringbuilder.append(s3);
+		String uriAsString = toString();
+		if (uriAsString.length() > 0) {
+			stringBuilder.append("?");
+			stringBuilder.append(uriAsString);
 		}
 		if (!Utility.isNullOrEmpty(originalRawFragment)) {
-			stringbuilder.append("#");
-			stringbuilder.append(originalRawFragment);
+			stringBuilder.append("#");
+			stringBuilder.append(originalRawFragment);
 		}
-		return new URI(stringbuilder.toString());
+		return new URI(stringBuilder.toString());
 	}
 
-	private void insertKeyValue(String s, String s1) throws StorageException {
-		if (s1 != null)
-			s1 = Utility.safeEncode(s1);
-		s = Utility.safeEncode(s);
-		ArrayList<String> arraylist = m_Parameters.get(s);
+	private void insertKeyValue(String name, String value) throws StorageException {
+		if (value != null)
+			value = Utility.safeEncode(value);
+		name = Utility.safeEncode(name);
+		ArrayList<String> arraylist = m_Parameters.get(name);
 		if (arraylist == null) {
 			arraylist = new ArrayList<String>();
-			arraylist.add(s1);
-			m_Parameters.put(s, arraylist);
-		} else if (!arraylist.contains(s1))
-			arraylist.add(s1);
+			arraylist.add(value);
+			m_Parameters.put(name, arraylist);
+		} else if (!arraylist.contains(value))
+			arraylist.add(value);
 	}
 
 	@Override
 	public String toString() {
-		StringBuilder stringbuilder = new StringBuilder();
-		boolean boolean1 = true;
+		StringBuilder stringBuilder = new StringBuilder();
+		boolean firstArgument = true;
 		Iterator<String> iterator = m_Parameters.keySet().iterator();
 		do {
 			if (!iterator.hasNext())
@@ -98,15 +98,15 @@ final class UriQueryBuilder {
 						.iterator();
 				while (iterator1.hasNext()) {
 					String s1 = (String) iterator1.next();
-					if (boolean1)
-						boolean1 = false;
+					if (firstArgument)
+						firstArgument = false;
 					else
-						stringbuilder.append("&");
-					stringbuilder.append(String.format("%s=%s", new Object[] {
+						stringBuilder.append("&");
+					stringBuilder.append(String.format("%s=%s", new Object[] {
 							s, s1 }));
 				}
 			}
 		} while (true);
-		return stringbuilder.toString();
+		return stringBuilder.toString();
 	}
 }

@@ -15,14 +15,14 @@ public final class StorageCredentialsAccountAndKey extends StorageCredentials {
 
 	private Credentials m_Credentials;
 
-	public StorageCredentialsAccountAndKey(String s, byte abyte0[])
+	public StorageCredentialsAccountAndKey(String accountName, byte key[])
 	{
-		m_Credentials = new Credentials(s, abyte0);
+		m_Credentials = new Credentials(accountName, key);
 	}
 
-	public StorageCredentialsAccountAndKey(String s, String s1)
+	public StorageCredentialsAccountAndKey(String accountName, String key)
 			throws IllegalArgumentException {
-		this(s, Base64.decode(s1, Base64.NO_WRAP));
+		this(accountName, Base64.decode(key, Base64.NO_WRAP));
 	}
 
 	@Override
@@ -41,15 +41,15 @@ public final class StorageCredentialsAccountAndKey extends StorageCredentials {
 	}
 
 	@Override
-	public String computeHmac256(String text) throws InvalidKeyException,
+	public String computeHmac256(String string) throws InvalidKeyException,
 			IllegalArgumentException {
-		return StorageKey.computeMacSha256(m_Credentials.getKey(), text);
+		return StorageKey.computeMacSha256(m_Credentials.getKey(), string);
 	}
 
 	@Override
-	public String computeHmac512(String text) throws InvalidKeyException,
+	public String computeHmac512(String string) throws InvalidKeyException,
 			IllegalArgumentException {
-		return StorageKey.computeMacSha512(m_Credentials.getKey(), text);
+		return StorageKey.computeMacSha512(m_Credentials.getKey(), string);
 	}
 
 	@Override
@@ -59,7 +59,7 @@ public final class StorageCredentialsAccountAndKey extends StorageCredentials {
 
 	@Override
 	StorageCredentials credentialsForBlobOf(
-			CloudBlobContainer cloudBlobContainer)
+			CloudBlobContainer container)
 			throws IllegalArgumentException, UnsupportedEncodingException,
 			URISyntaxException, StorageException,
 			IOException {
@@ -99,14 +99,14 @@ public final class StorageCredentialsAccountAndKey extends StorageCredentials {
 	}
 
 	@Override
-	public void signRequest(HttpRequestBase request, long contentLength)
+	public void signRequest(HttpRequestBase request, long length)
 			throws InvalidKeyException, StorageException, MalformedURLException {
 		BaseRequest.signRequestForBlobAndQueue(request, m_Credentials,
-				contentLength);
+				length);
 	}
 
 	@Override
-	public void signRequestLite(HttpRequestBase request, long l)
+	public void signRequestLite(HttpRequestBase request, long length)
 			throws StorageException, InvalidKeyException,
 			NotImplementedException {
 		// BaseRequest.signRequestForBlobAndQueueSharedKeyLite(httpurlconnection,
@@ -115,12 +115,12 @@ public final class StorageCredentialsAccountAndKey extends StorageCredentials {
 	}
 
 	@Override
-	public String toString(boolean boolean1) {
+	public String toString(boolean showKey) {
 		return String.format("%s=%s;%s=%s", new Object[] {
 				"AccountName",
 				getAccountName(),
 				"AccountKey",
-				boolean1 ? m_Credentials.getKey()
+				showKey ? m_Credentials.getKey()
 						.getBase64EncodedKey() : "[key hidden]" });
 	}
 

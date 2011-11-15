@@ -3,37 +3,29 @@ package com.windowsazure.samples.android.storageclient;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map.Entry;
 
 public class PathUtility {
-	public static URI addToQuery(URI uri, HashMap<String, String[]> hashmap)
+	public static URI addToQuery(URI uri, HashMap<String, String[]> queryArguments)
 			throws URISyntaxException, StorageException {
-		UriQueryBuilder uriquerybuilder = new UriQueryBuilder();
-		for (Iterator<Entry<String, String[]>> iterator = hashmap.entrySet().iterator(); iterator
-				.hasNext();) {
-			Entry<String, String[]> entry = iterator.next();
-			String as[] = (String[]) entry.getValue();
-			int i = as.length;
-			int j = 0;
-			while (j < i) {
-				String s = as[j];
-				uriquerybuilder.add((String) entry.getKey(), s);
-				j++;
+		UriQueryBuilder uriQueryBuilder = new UriQueryBuilder();
+		for (Entry<String, String[]> queryArgument : queryArguments.entrySet()) {
+			for (String argumentValue : queryArgument.getValue()) {
+				uriQueryBuilder.add(queryArgument.getKey(), argumentValue);
 			}
 		}
 
-		return uriquerybuilder.addToURI(uri);
+		return uriQueryBuilder.addToURI(uri);
 	}
 
-	public static URI addToQuery(URI uri, String s) throws URISyntaxException,
+	public static URI addToQuery(URI uri, String queryString) throws URISyntaxException,
 			StorageException {
-		return addToQuery(uri, parseQueryString(s));
+		return addToQuery(uri, parseQueryString(queryString));
 	}
 
-	public static URI appendPathToUri(URI uri, String path)
+	public static URI appendPathToUri(URI baseUri, String path)
 			throws URISyntaxException {
-		return appendPathToUri(uri, path, "/");
+		return appendPathToUri(baseUri, path, "/");
 	}
 
 	public static URI appendPathToUri(URI baseUri, String path,
@@ -100,9 +92,9 @@ public class PathUtility {
 	}
 
 	public static URI getContainerURI(URI uri) throws URISyntaxException {
-		String s = getContainerNameFromUri(uri);
-		URI uri1 = appendPathToUri(new URI(getServiceClientBaseAddress(uri)), s);
-		return uri1;
+		String containerName = getContainerNameFromUri(uri);
+		URI containerUri = appendPathToUri(new URI(getServiceClientBaseAddress(uri)), containerName);
+		return containerUri;
 	}
 
 	public static String getServiceClientBaseAddress(URI uri)
@@ -111,37 +103,54 @@ public class PathUtility {
 				null)).toString();
 	}
 
-	public static HashMap<String, String[]> parseQueryString(String s)
+	public static HashMap<String, String[]> parseQueryString(String queryString)
 			throws StorageException {
-		HashMap<String, String[]> hashmap = new HashMap<String, String[]>();
-		if (Utility.isNullOrEmpty(s))
-			return hashmap;
-		int i = s.indexOf("?");
-		if (i >= 0 && s.length() > 0)
-			s = s.substring(i + 1);
-		String as[] = s.contains("&") ? s.split("&") : s.split(";");
-		for (int j = 0; j < as.length; j++) {
-			int k = as[j].indexOf("=");
-			if (k < 0)
-				continue;
-			String s1 = as[j].substring(0, k);
-			String s2 = as[j].substring(k + 1);
-			s1 = Utility.safeDecode(s1);
-			s2 = Utility.safeDecode(s2);
-			String as1[] = hashmap.get(s1);
-			if (as1 == null) {
-				as1 = (new String[] { s2 });
-				hashmap.put(s1, as1);
+		HashMap<String, String[]> queryArguments = new HashMap<String, String[]>();
+		if (Utility.isNullOrEmpty(queryString))
+		{
+			return queryArguments;
+		}
+		
+		int querySeparatorIndex = queryString.indexOf("?");
+		if (querySeparatorIndex >= 0 && queryString.length() > 0)
+		{
+			queryString = queryString.substring(querySeparatorIndex + 1);
+		}
+		
+		String queryArgumentsAsStringsList[] = queryString.contains("&") ? queryString.split("&") : queryString.split(";");
+		
+		for (String queryArgument : queryArgumentsAsStringsList) {
+			int queryArgumentSeparatorIndex = queryArgument.indexOf("=");
+			if (queryArgumentSeparatorIndex < 0)
+			{
 				continue;
 			}
-			String as2[] = new String[as1.length + 1];
-			for (int l = 0; l < as1.length; l++)
-				as2[l] = as1[l];
-
-			as2[as2.length] = s2;
+			
+			String argumentName = queryArgument.substring(0, queryArgumentSeparatorIndex);
+			String argumentValue = queryArgument.substring(queryArgumentSeparatorIndex + 1);
+			argumentName = Utility.safeDecode(argumentName);
+			argumentValue = Utility.safeDecode(argumentValue);
+			
+			String queryArgumentValues[] = queryArguments.get(argumentName);
+			
+			if (queryArgumentValues == null) {
+				queryArgumentValues = new String[] { argumentValue };
+			}
+			else
+			{
+				String enlargedArray[] = new String[queryArgumentValues.length + 1];
+				for (int index = 0; index < queryArgumentValues.length; index++)
+				{
+					enlargedArray[index] = queryArgumentValues[index];
+				}
+	
+				enlargedArray[enlargedArray.length] = argumentValue;
+				queryArgumentValues = enlargedArray;
+			}
+			queryArguments.put(argumentName, queryArgumentValues);
 		}
 
-		return hashmap;
+		return queryArguments;
 	}
 
 	public static URI stripURIQueryAndFragment(URI uri) throws StorageException {

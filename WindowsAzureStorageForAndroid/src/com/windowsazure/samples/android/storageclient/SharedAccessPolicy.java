@@ -5,28 +5,26 @@ import java.util.EnumSet;
 
 public class SharedAccessPolicy {
 
-	public static EnumSet<SharedAccessPermissions> permissionsFromString(String s) {
-		char ac[] = s.toCharArray();
-		EnumSet<SharedAccessPermissions> enumset = EnumSet.noneOf(SharedAccessPermissions.class);
-		char ac1[] = ac;
-		int i = ac1.length;
-		for (int j = 0; j < i; j++) {
-			char c = ac1[j];
-			switch (c) {
-			case 114: // 'r'
-				enumset.add(SharedAccessPermissions.READ);
+	public static EnumSet<SharedAccessPermissions> permissionsFromString(String policyString) {
+		EnumSet<SharedAccessPermissions> permissions = EnumSet.noneOf(SharedAccessPermissions.class);
+
+		char policyAsCharacters[] = policyString.toCharArray();
+		for (char singlePermissionCharacter : policyAsCharacters) {
+			switch (singlePermissionCharacter) {
+			case 'r':
+				permissions.add(SharedAccessPermissions.READ);
 				break;
 
-			case 119: // 'w'
-				enumset.add(SharedAccessPermissions.WRITE);
+			case 'w':
+				permissions.add(SharedAccessPermissions.WRITE);
 				break;
 
-			case 100: // 'd'
-				enumset.add(SharedAccessPermissions.DELETE);
+			case 'd':
+				permissions.add(SharedAccessPermissions.DELETE);
 				break;
 
-			case 108: // 'l'
-				enumset.add(SharedAccessPermissions.LIST);
+			case 'l':
+				permissions.add(SharedAccessPermissions.LIST);
 				break;
 
 			default:
@@ -34,22 +32,25 @@ public class SharedAccessPolicy {
 			}
 		}
 
-		return enumset;
+		return permissions;
 	}
 
-	public static String permissionsToString(EnumSet<SharedAccessPermissions> enumset) {
-		if (enumset == null)
+	public static String permissionsToString(EnumSet<SharedAccessPermissions> permissions) {
+		if (permissions == null)
+		{
 			return "";
-		StringBuilder stringbuilder = new StringBuilder();
-		if (enumset.contains(SharedAccessPermissions.READ))
-			stringbuilder.append("r");
-		if (enumset.contains(SharedAccessPermissions.WRITE))
-			stringbuilder.append("w");
-		if (enumset.contains(SharedAccessPermissions.DELETE))
-			stringbuilder.append("d");
-		if (enumset.contains(SharedAccessPermissions.LIST))
-			stringbuilder.append("l");
-		return stringbuilder.toString();
+		}
+		
+		StringBuilder stringBuilder = new StringBuilder();
+		if (permissions.contains(SharedAccessPermissions.READ))
+			stringBuilder.append("r");
+		if (permissions.contains(SharedAccessPermissions.WRITE))
+			stringBuilder.append("w");
+		if (permissions.contains(SharedAccessPermissions.DELETE))
+			stringBuilder.append("d");
+		if (permissions.contains(SharedAccessPermissions.LIST))
+			stringBuilder.append("l");
+		return stringBuilder.toString();
 	}
 
 	public EnumSet<SharedAccessPermissions> permissions;

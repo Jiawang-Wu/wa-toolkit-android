@@ -31,25 +31,25 @@ public class Utility {
 	protected static final Locale LOCALE_US = Locale.US;
 
 	protected static boolean areCredentialsEqual(
-			StorageCredentials storagecredentials,
-			StorageCredentials storagecredentials1) {
-		if (storagecredentials == storagecredentials1)
+			StorageCredentials leftCredentials,
+			StorageCredentials rightCredentials) {
+		if (leftCredentials == rightCredentials)
 			return true;
-		if (storagecredentials1 == null
-				|| storagecredentials.getClass() != storagecredentials1
+		if (rightCredentials == null
+				|| leftCredentials.getClass() != rightCredentials
 						.getClass())
 			return false;
-		if (storagecredentials instanceof StorageCredentialsAccountAndKey)
-			return ((StorageCredentialsAccountAndKey) storagecredentials)
+		if (leftCredentials instanceof StorageCredentialsAccountAndKey)
+			return ((StorageCredentialsAccountAndKey) leftCredentials)
 					.toString(true)
-					.equals(((StorageCredentialsAccountAndKey) storagecredentials1)
+					.equals(((StorageCredentialsAccountAndKey) rightCredentials)
 							.toString(true));
-		if (storagecredentials instanceof StorageCredentialsSharedAccessSignature)
-			return ((StorageCredentialsSharedAccessSignature) storagecredentials)
+		if (leftCredentials instanceof StorageCredentialsSharedAccessSignature)
+			return ((StorageCredentialsSharedAccessSignature) leftCredentials)
 					.getToken()
-					.equals(((StorageCredentialsSharedAccessSignature) storagecredentials1)
+					.equals(((StorageCredentialsSharedAccessSignature) rightCredentials)
 							.getToken());
-		return storagecredentials.equals(storagecredentials1);
+		return leftCredentials.equals(rightCredentials);
 	}
 
 	protected static void assertNotNull(String description, Object object) {
@@ -76,10 +76,10 @@ public class Utility {
 		return storageexception;
 	}
 
-	protected static byte[] getBytesFromLong(long l) {
+	protected static byte[] getBytesFromLong(long number) {
 		byte abyte0[] = new byte[8];
 		for (int i = 0; i < 8; i++)
-			abyte0[7 - i] = (byte) (int) (l >> 8 * i & 255L);
+			abyte0[7 - i] = (byte) (int) (number >> 8 * i & 255L);
 
 		return abyte0;
 	}
@@ -138,24 +138,24 @@ public class Utility {
 		return ioexception;
 	}
 
-	protected static boolean isNullOrEmpty(String s) {
-		return s == null || s.length() == 0;
+	protected static boolean isNullOrEmpty(String string) {
+		return string == null || string.length() == 0;
 	}
 
-	protected static HashMap<String, String> parseAccountString(String s)
+	protected static HashMap<String, String> parseAccountString(String accountString)
 			throws IllegalArgumentException {
-		String as[] = s.split(";");
-		HashMap<String, String> hashmap = new HashMap<String, String>();
-		for (int i = 0; i < as.length; i++) {
-			int j = as[i].indexOf("=");
-			if (j < 1)
+		String arguments[] = accountString.split(";");
+		HashMap<String, String> argumentsMap = new HashMap<String, String>();
+		for (String argument : arguments) {
+			int argumentSeparatorIndex = argument.indexOf("=");
+			if (argumentSeparatorIndex < 1)
 				throw new IllegalArgumentException("Invalid Connection String");
-			String s1 = as[i].substring(0, j);
-			String s2 = as[i].substring(j + 1);
-			hashmap.put(s1, s2);
+			String name = argument.substring(0, argumentSeparatorIndex);
+			String value = argument.substring(argumentSeparatorIndex + 1);
+			argumentsMap.put(name, value);
 		}
 
-		return hashmap;
+		return argumentsMap;
 	}
 
 	public static String readStringFromStream(InputStream inputStream)
@@ -172,129 +172,127 @@ public class Utility {
 		return writer.toString();
 	}
 
-	protected static String safeDecode(String s) throws StorageException {
-		if (s == null)
+	protected static String safeDecode(String encodedString) throws StorageException {
+		if (encodedString == null)
 			return null;
-		if (s.length() == 0)
+		if (encodedString.length() == 0)
 			return "";
 		try {
-			if (s.contains("+")) {
-				StringBuilder stringbuilder = new StringBuilder();
-				int i = 0;
-				for (int j = 0; j < s.length(); j++) {
-					if (s.charAt(j) != '+')
+			if (encodedString.contains("+")) {
+				StringBuilder stringBuilder = new StringBuilder();
+				int index = 0;
+				for (int j = 0; j < encodedString.length(); j++) {
+					if (encodedString.charAt(j) != '+')
 						continue;
-					if (j > i)
-						stringbuilder.append(URLDecoder.decode(
-								s.substring(i, j), "UTF-8"));
-					stringbuilder.append("+");
-					i = j + 1;
+					if (j > index)
+						stringBuilder.append(URLDecoder.decode(
+								encodedString.substring(index, j), "UTF-8"));
+					stringBuilder.append("+");
+					index = j + 1;
 				}
 
-				if (i != s.length())
-					stringbuilder.append(URLDecoder.decode(
-							s.substring(i, s.length()), "UTF-8"));
-				return stringbuilder.toString();
+				if (index != encodedString.length())
+					stringBuilder.append(URLDecoder.decode(
+							encodedString.substring(index, encodedString.length()), "UTF-8"));
+				return stringBuilder.toString();
 			}
 		} catch (UnsupportedEncodingException unsupportedencodingexception) {
 			throw generateNewUnexpectedStorageException(unsupportedencodingexception);
 		}
 		try {
-			return URLDecoder.decode(s, "UTF-8");
+			return URLDecoder.decode(encodedString, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
-			// TODO TO DO I added the try and catch because the exception wasn't
-			// being handled
 			e.printStackTrace();
 			throw new StorageException("UnsupportedEncodingException",
 					"UnsupportedEncodingException", 0, null, e);
 		}
 	}
 
-	protected static String safeEncode(String s) throws StorageException {
-		if (s == null)
+	protected static String safeEncode(String string) throws StorageException {
+		if (string == null)
 			return null;
-		if (s.length() == 0)
+		if (string.length() == 0)
 			return "";
-		String s1;
+		String stringAsUtf8;
 		try {
-			s1 = URLEncoder.encode(s, "UTF-8");
-			if (s.contains(" ")) {
+			stringAsUtf8 = URLEncoder.encode(string, "UTF-8");
+			if (string.contains(" ")) {
 				StringBuilder stringbuilder = new StringBuilder();
 				int i = 0;
-				for (int j = 0; j < s.length(); j++) {
-					if (s.charAt(j) != ' ')
+				for (int j = 0; j < string.length(); j++) {
+					if (string.charAt(j) != ' ')
 						continue;
 					if (j > i)
 						stringbuilder.append(URLEncoder.encode(
-								s.substring(i, j), "UTF-8"));
+								string.substring(i, j), "UTF-8"));
 					stringbuilder.append("%20");
 					i = j + 1;
 				}
 
-				if (i != s.length())
+				if (i != string.length())
 					stringbuilder.append(URLEncoder.encode(
-							s.substring(i, s.length()), "UTF-8"));
+							string.substring(i, string.length()), "UTF-8"));
 				return stringbuilder.toString();
 			}
 		} catch (UnsupportedEncodingException unsupportedencodingexception) {
 			throw generateNewUnexpectedStorageException(unsupportedencodingexception);
 		}
-		return s1;
+		return stringAsUtf8;
 	}
-	protected static String safeRelativize(URI uri, URI uri1)
+	protected static String safeRelativize(URI baseUri, URI uriToRelativize)
 			throws URISyntaxException {
-		if (!uri.getHost().equals(uri1.getHost())
-				|| !uri.getScheme().equals(uri1.getScheme()))
-			return uri1.toString();
-		String s = uri.getPath();
-		String s1 = uri1.getPath();
+		if (!baseUri.getHost().equals(uriToRelativize.getHost())
+				|| !baseUri.getScheme().equals(uriToRelativize.getScheme()))
+			return uriToRelativize.toString();
+		String baseUriPath = baseUri.getPath();
+		String uriToRelativizePath = uriToRelativize.getPath();
 		int i = 1;
-		int j = 0;
-		int k = 0;
-		for (; j < s.length(); j++) {
-			if (j >= s1.length()) {
-				if (s.charAt(j) == '/')
-					k++;
+		int baseUriPathIndex = 0;
+		int directoriesCount = 0;
+		for (; baseUriPathIndex < baseUriPath.length(); baseUriPathIndex++) {
+			if (baseUriPathIndex >= uriToRelativizePath.length()) {
+				if (baseUriPath.charAt(baseUriPathIndex) == '/')
+					directoriesCount++;
 				continue;
 			}
-			if (s.charAt(j) != s1.charAt(j))
+			if (baseUriPath.charAt(baseUriPathIndex) != uriToRelativizePath.charAt(baseUriPathIndex))
 				break;
-			if (s.charAt(j) == '/')
-				i = j + 1;
+			if (baseUriPath.charAt(baseUriPathIndex) == '/')
+				i = baseUriPathIndex + 1;
 		}
 
-		if (j == s1.length())
-			return (new URI(null, null, null, uri1.getQuery(),
-					uri1.getFragment())).toString();
-		s1 = s1.substring(i);
+		if (baseUriPathIndex == uriToRelativizePath.length())
+			return (new URI(null, null, null, uriToRelativize.getQuery(),
+					uriToRelativize.getFragment())).toString();
+		uriToRelativizePath = uriToRelativizePath.substring(i);
 		StringBuilder stringbuilder = new StringBuilder();
-		for (; k > 0; k--)
+		for (; directoriesCount > 0; directoriesCount--)
 			stringbuilder.append("../");
 
-		if (!isNullOrEmpty(s1))
-			stringbuilder.append(s1);
-		if (!isNullOrEmpty(uri1.getQuery())) {
+		if (!isNullOrEmpty(uriToRelativizePath))
+			stringbuilder.append(uriToRelativizePath);
+		if (!isNullOrEmpty(uriToRelativize.getQuery())) {
 			stringbuilder.append("?");
-			stringbuilder.append(uri1.getQuery());
+			stringbuilder.append(uriToRelativize.getQuery());
 		}
-		if (!isNullOrEmpty(uri1.getFragment())) {
+		if (!isNullOrEmpty(uriToRelativize.getFragment())) {
 			stringbuilder.append("#");
-			stringbuilder.append(uri1.getRawFragment());
+			stringbuilder.append(uriToRelativize.getRawFragment());
 		}
 		return stringbuilder.toString();
 	}
 
-	protected static String trimEnd(String s, char c) {
+	protected static String trimEnd(String string, char characterToTrim) {
 		int i;
-		for (i = s.length() - 1; i > 0 && s.charAt(i) == c; i--)
+		for (i = string.length() - 1; i > 0 && string.charAt(i) == characterToTrim; i--)
 			;
-		return i != s.length() - 1 ? s.substring(i) : s;
+		return i != string.length() - 1 ? string.substring(i) : string;
 	}
 
-	protected static String trimStart(String s) {
+	protected static String trimStart(String string) {
 		int i;
-		for (i = 0; i < s.length() && s.charAt(i) == ' '; i++)
+		for (i = 0; i < string.length() && string.charAt(i) == ' '; i++)
 			;
-		return s.substring(i);
+		return string.substring(i);
 	}
 }

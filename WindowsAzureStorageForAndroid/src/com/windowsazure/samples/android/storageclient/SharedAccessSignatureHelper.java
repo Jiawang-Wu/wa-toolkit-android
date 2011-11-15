@@ -13,29 +13,31 @@ final class SharedAccessSignatureHelper {
 			throws IllegalArgumentException, StorageException {
 		Utility.assertNotNullOrEmpty("resourceType", signedResource);
 		Utility.assertNotNull("signature", signature);
-		UriQueryBuilder uriquerybuilder = new UriQueryBuilder();
+
+		UriQueryBuilder uriQueryBuilder = new UriQueryBuilder();
 		if (policy != null) {
-			String signedpermissions = SharedAccessPolicy
+			String signedPermissions = SharedAccessPolicy
 					.permissionsToString(policy.permissions);
-			if (Utility.isNullOrEmpty(signedpermissions))
-				signedpermissions = null;
-			String signedstart = Utility
+			if (Utility.isNullOrEmpty(signedPermissions))
+				signedPermissions = null;
+			String signedStart = Utility
 					.getUTCTimeOrEmpty(policy.sharedAccessStartTime);
-			if (!Utility.isNullOrEmpty(signedstart))
-				uriquerybuilder.add("st", signedstart);
-			String signedexpiry = Utility
+			if (!Utility.isNullOrEmpty(signedStart))
+				uriQueryBuilder.add("st", signedStart);
+			String signedExpiry = Utility
 					.getUTCTimeOrEmpty(policy.sharedAccessExpiryTime);
-			if (!Utility.isNullOrEmpty(signedexpiry))
-				uriquerybuilder.add("se", signedexpiry);
-			if (!Utility.isNullOrEmpty(signedpermissions))
-				uriquerybuilder.add("sp", signedpermissions);
+			if (!Utility.isNullOrEmpty(signedExpiry))
+				uriQueryBuilder.add("se", signedExpiry);
+			if (!Utility.isNullOrEmpty(signedPermissions))
+				uriQueryBuilder.add("sp", signedPermissions);
 		}
-		uriquerybuilder.add("sr", signedResource);
+		
+		uriQueryBuilder.add("sr", signedResource);
 		if (!Utility.isNullOrEmpty(signedIdentifier))
-			uriquerybuilder.add("si", signedIdentifier);
+			uriQueryBuilder.add("si", signedIdentifier);
 		if (!Utility.isNullOrEmpty(signature))
-			uriquerybuilder.add("sig", signature);
-		return uriquerybuilder;
+			uriQueryBuilder.add("sig", signature);
+		return uriQueryBuilder;
 	}
 
 	protected static String generateSharedAccessSignatureHash(
@@ -44,10 +46,11 @@ final class SharedAccessSignatureHelper {
 			StorageException, NotImplementedException {
 		Utility.assertNotNullOrEmpty("resourceName", saCanonicalName);
 		Utility.assertNotNull("client", serviceClient);
-		String s2 = null;
+
+		String sharedAccessSignatureString = null;
 		if (policy == null) {
 			Utility.assertNotNullOrEmpty("groupPolicyIdentifier", signedIdentifier);
-			s2 = String.format("%s\n%s\n%s\n%s\n%s", new Object[] { "", "", "",
+			sharedAccessSignatureString = String.format("%s\n%s\n%s\n%s\n%s", new Object[] { "", "", "",
 					saCanonicalName, signedIdentifier });
 		} else {
 			if (policy.sharedAccessExpiryTime == null)
@@ -56,7 +59,7 @@ final class SharedAccessSignatureHelper {
 			if (policy.permissions == null)
 				throw new IllegalArgumentException(
 						"Policy permissions are mandatory and cannot be null");
-			s2 = String
+			sharedAccessSignatureString = String
 					.format("%s\n%s\n%s\n%s\n%s",
 							new Object[] {
 									SharedAccessPolicy
@@ -65,50 +68,52 @@ final class SharedAccessSignatureHelper {
 									Utility.getUTCTimeOrEmpty(policy.sharedAccessExpiryTime),
 									saCanonicalName, signedIdentifier != null ? signedIdentifier : "" });
 		}
-		s2 = Utility.safeDecode(s2);
-		String s3 = serviceClient.getCredentials().computeHmac256(s2);
-		return s3;
+		sharedAccessSignatureString = Utility.safeDecode(sharedAccessSignatureString);
+		String hmac256String = serviceClient.getCredentials().computeHmac256(sharedAccessSignatureString);
+		return hmac256String;
 	}
 
 	protected static StorageCredentialsSharedAccessSignature parseQuery(
-			HashMap<String, String[]> hashmap) throws IllegalArgumentException,
+			HashMap<String, String[]> sasQueryArguments) throws IllegalArgumentException,
 			StorageException {
+		
 		String signature = null;
 		String signedStart = null;
 		String signedExpiry = null;
 		String signedResource = null;
 		String signedPermissions = null;
 		String signedIdentifier = null;
-		String s6 = null;
-		boolean flag = false;
+		String sv = null;
+		boolean hasSasParameters = false;
 		StorageCredentialsSharedAccessSignature credentialsSAS = null;
-		for (Entry<String, String[]> entry : hashmap.entrySet()) {
+		for (Entry<String, String[]> entry : sasQueryArguments.entrySet()) {
 			String keyAsLowerCase = entry.getKey().toLowerCase(Locale.US);
 			String entryValue = entry.getValue()[0];
 			if (keyAsLowerCase.equals("st")) {
 				signedStart = entryValue;
-				flag = true;
+				hasSasParameters = true;
 			} else if (keyAsLowerCase.equals("se")) {
 				signedExpiry = entryValue;
-				flag = true;
+				hasSasParameters = true;
 			} else if (keyAsLowerCase.equals("sp")) {
 				signedPermissions = entryValue;
-				flag = true;
+				hasSasParameters = true;
 			} else if (keyAsLowerCase.equals("sr")) {
 				signedResource = entryValue;
-				flag = true;
+				hasSasParameters = true;
 			} else if (keyAsLowerCase.equals("si")) {
 				signedIdentifier = entryValue;
-				flag = true;
+				hasSasParameters = true;
 			} else if (keyAsLowerCase.equals("sig")) {
 				signature = entryValue;
-				flag = true;
+				hasSasParameters = true;
 			} else if (keyAsLowerCase.equals("sv")) {
-				s6 = entryValue;
-				flag = true;
+				sv = entryValue;
+				hasSasParameters = true;
 			}
 		}
-		if (flag) {
+		
+		if (hasSasParameters) {
 			if (signature == null || signedResource == null) {
 				throw new IllegalArgumentException(
 						"Missing mandatory parameters for valid Shared Access Signature");
@@ -123,8 +128,8 @@ final class SharedAccessSignatureHelper {
 			uriquerybuilder.add("sr", signedResource);
 			if (!Utility.isNullOrEmpty(signedIdentifier))
 				uriquerybuilder.add("si", signedIdentifier);
-			if (!Utility.isNullOrEmpty(s6))
-				uriquerybuilder.add("sv", s6);
+			if (!Utility.isNullOrEmpty(sv))
+				uriquerybuilder.add("sv", sv);
 			if (!Utility.isNullOrEmpty(signature))
 				uriquerybuilder.add("sig", signature);
 			credentialsSAS = new StorageCredentialsSharedAccessSignature(

@@ -20,35 +20,30 @@ public class WAZServiceAccountCredentials extends StorageCredentials {
 	@Override
 	protected boolean canCredentialsComputeHmac()
 			throws NotImplementedException {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	protected boolean canCredentialsSignRequest()
 			throws NotImplementedException {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	protected boolean canCredentialsSignRequestLite()
 			throws NotImplementedException {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public String computeHmac256(String s) throws NotImplementedException,
 			InvalidKeyException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public String computeHmac512(String s) throws NotImplementedException,
 			InvalidKeyException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -73,7 +68,6 @@ public class WAZServiceAccountCredentials extends StorageCredentials {
 	@Override
 	protected boolean doCredentialsNeedTransformUri()
 	{
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -103,19 +97,15 @@ public class WAZServiceAccountCredentials extends StorageCredentials {
 	public void signRequestLite(HttpRequestBase request, long l)
 			throws NotImplementedException, StorageException,
 			InvalidKeyException {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
-	public String toString(boolean boolean1) {
-		// TODO Auto-generated method stub
+	public String toString(boolean showSignature) {
 		return null;
 	}
 
 	@Override
 	public URI transformUri(URI uri) throws URISyntaxException, StorageException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }

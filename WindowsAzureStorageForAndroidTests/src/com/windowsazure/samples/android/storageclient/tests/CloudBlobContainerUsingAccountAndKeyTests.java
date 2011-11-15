@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.concurrent.Callable;
 
 import junit.framework.Assert;
 
@@ -53,9 +54,6 @@ public class CloudBlobContainerUsingAccountAndKeyTests extends
 
 	public void testChangingContainerPermssions() throws Exception
 	{
-		/* The Thread.sleep(); are necessary because changing the access
-		   of a container sometimes have a small delay to take effect. */
-
 		final CloudBlobContainer container = this.createContainer("testchangingcontainerpermssions");
 		final CloudBlobContainer sameContainer = new CloudBlobContainer(container.getName(), cloudBlobClient);
 		BlobContainerPermissions permissions = new BlobContainerPermissions();
@@ -65,21 +63,55 @@ public class CloudBlobContainerUsingAccountAndKeyTests extends
 
 		permissions.publicAccess = BlobContainerPublicAccessType.CONTAINER;
 		container.uploadPermissions(permissions);
-		Thread.sleep(2000);
-		Assert.assertEquals(container.downloadPermissions().publicAccess, BlobContainerPublicAccessType.CONTAINER);
-		Assert.assertEquals(sameContainer.downloadPermissions().publicAccess, BlobContainerPublicAccessType.CONTAINER);
+
+		this.assertEventuallyTrue( new Callable<Boolean>()
+		{
+			public Boolean call() throws Exception
+			{
+				return container.downloadPermissions().publicAccess == BlobContainerPublicAccessType.CONTAINER;
+			}
+		}, 10);
+		this.assertEventuallyTrue( new Callable<Boolean>()
+		{
+			public Boolean call() throws Exception
+			{
+				return sameContainer.downloadPermissions().publicAccess == BlobContainerPublicAccessType.CONTAINER;
+			}
+		}, 10);
 
 		permissions.publicAccess = BlobContainerPublicAccessType.BLOB;
 		container.uploadPermissions(permissions);
-		Thread.sleep(4000);
-		Assert.assertEquals(BlobContainerPublicAccessType.BLOB, container.downloadPermissions().publicAccess);
-		Assert.assertEquals(BlobContainerPublicAccessType.BLOB, sameContainer.downloadPermissions().publicAccess);
+		this.assertEventuallyTrue( new Callable<Boolean>()
+		{
+			public Boolean call() throws Exception
+			{
+				return container.downloadPermissions().publicAccess == BlobContainerPublicAccessType.BLOB;
+			}
+		}, 10);
+		this.assertEventuallyTrue( new Callable<Boolean>()
+		{
+			public Boolean call() throws Exception
+			{
+				return sameContainer.downloadPermissions().publicAccess == BlobContainerPublicAccessType.BLOB;
+			}
+		}, 10);
 
 		permissions.publicAccess = BlobContainerPublicAccessType.OFF;
 		container.uploadPermissions(permissions);
-		Thread.sleep(3000);
-		Assert.assertEquals(BlobContainerPublicAccessType.OFF, container.downloadPermissions().publicAccess);
-		Assert.assertEquals(BlobContainerPublicAccessType.OFF, sameContainer.downloadPermissions().publicAccess);
+		this.assertEventuallyTrue( new Callable<Boolean>()
+		{
+			public Boolean call() throws Exception
+			{
+				return container.downloadPermissions().publicAccess == BlobContainerPublicAccessType.OFF;
+			}
+		}, 10);
+		this.assertEventuallyTrue( new Callable<Boolean>()
+		{
+			public Boolean call() throws Exception
+			{
+				return sameContainer.downloadPermissions().publicAccess == BlobContainerPublicAccessType.OFF;
+			}
+		}, 10);
 	}
 	
 	public void testUploadingAndDownloadingMetadataWorksAsExpected()

@@ -348,7 +348,7 @@ public final class CloudBlobContainer {
 			} else {
 				StorageException storageexception = Utility
 						.generateNewUnexpectedStorageException(null);
-				storageexception.extendedErrorInformation.errorMessage = "Blob Object relative URIs not supported.";
+				storageexception.m_ExtendedErrorInformation.errorMessage = "Blob Object relative URIs not supported.";
 				throw storageexception;
 			}
 		} else {

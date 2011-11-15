@@ -6,7 +6,7 @@ public class PageRange {
 
 	public long endOffset;
 
-	public PageRange(long l, long l1) throws NotImplementedException {
+	public PageRange(long startOffset, long length) throws NotImplementedException {
 		throw new NotImplementedException();
 	}
 	@Override

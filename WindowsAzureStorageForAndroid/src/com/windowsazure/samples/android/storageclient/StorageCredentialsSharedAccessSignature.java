@@ -10,8 +10,8 @@ public final class StorageCredentialsSharedAccessSignature extends
 
 	private String m_Token;
 
-	public StorageCredentialsSharedAccessSignature(String s) {
-		m_Token = s;
+	public StorageCredentialsSharedAccessSignature(String token) {
+		m_Token = token;
 	}
 
 	@Override
@@ -30,12 +30,12 @@ public final class StorageCredentialsSharedAccessSignature extends
 	}
 
 	@Override
-	public String computeHmac256(String s) {
+	public String computeHmac256(String string) {
 		return null;
 	}
 
 	@Override
-	public String computeHmac512(String s) {
+	public String computeHmac512(String length) {
 		return null;
 	}
 
@@ -46,7 +46,7 @@ public final class StorageCredentialsSharedAccessSignature extends
 
 	@Override
 	StorageCredentials credentialsForBlobOf(
-			CloudBlobContainer cloudBlobContainer) {
+			CloudBlobContainer container) {
 		return this;
 	}
 
@@ -75,11 +75,11 @@ public final class StorageCredentialsSharedAccessSignature extends
 	}
 
 	@Override
-	public void signRequest(HttpRequestBase request, long l) {
+	public void signRequest(HttpRequestBase request, long length) {
 	}
 
 	@Override
-	public void signRequestLite(HttpRequestBase request, long l) {
+	public void signRequestLite(HttpRequestBase request, long length) {
 	}
 
 	@Override

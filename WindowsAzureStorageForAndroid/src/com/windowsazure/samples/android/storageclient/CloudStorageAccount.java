@@ -76,8 +76,8 @@ public final class CloudStorageAccount implements CloudClientAccount {
 		return getDefaultTableEndpoint(defaultEndpointsProtocol, accountName);
 	}
 
-	private static String getDefaultTableEndpoint(String s, String s1) {
-		return String.format("%s://%s.%s", new Object[] { s, s1,
+	private static String getDefaultTableEndpoint(String scheme, String accountName) {
+		return String.format("%s://%s.%s", new Object[] { scheme, accountName,
 				"table.core.windows.net" });
 	}
 
@@ -124,12 +124,18 @@ public final class CloudStorageAccount implements CloudClientAccount {
 
 		CloudStorageAccount account = tryConfigureDevStore(accountString);
 		if (account != null)
+		{
 			return account;
+		}
 		account = tryConfigureServiceAccount(accountString);
 		if (account != null)
+		{
 			return account;
+		}
 		else
+		{
 			throw new IllegalArgumentException("Invalid Connection String");
+		}
 	}
 	private static CloudStorageAccount tryConfigureDevStore(HashMap<String, String> configuration)
 			throws URISyntaxException, IllegalArgumentException,
@@ -195,12 +201,12 @@ public final class CloudStorageAccount implements CloudClientAccount {
 		m_TableEndpoint = new URI(getDefaultTableEndpoint("http",
 				m_Credentials.getAccountName()));
 	}
-	public CloudStorageAccount(StorageCredentials storagecredentials, URI uri,
-			URI uri1, URI uri2) {
-		m_Credentials = storagecredentials;
-		m_BlobEndpoint = uri;
-		m_QueueEndpoint = uri1;
-		m_TableEndpoint = uri2;
+	public CloudStorageAccount(StorageCredentials credentials, URI blobEndpoint,
+			URI queueEndpoint, URI tableEndpoint) {
+		m_Credentials = credentials;
+		m_BlobEndpoint = blobEndpoint;
+		m_QueueEndpoint = queueEndpoint;
+		m_TableEndpoint = tableEndpoint;
 	}
 	public CloudStorageAccount(
 			StorageCredentialsAccountAndKey accountAndKey,
@@ -230,27 +236,39 @@ public final class CloudStorageAccount implements CloudClientAccount {
 	}
 	public URI getBlobEndpoint() {
 		if (getCredentials() instanceof StorageCredentialsSharedAccessSignature)
+		{
 			throw new IllegalArgumentException(
 					"Endpoint information not available for Account using Shared Access Credentials.");
+		}
 		else
+		{
 			return m_BlobEndpoint;
+		}
 	}
 	public StorageCredentials getCredentials() {
 		return m_Credentials;
 	}
 	public URI getQueueEndpoint() {
 		if (getCredentials() instanceof StorageCredentialsSharedAccessSignature)
+		{
 			throw new IllegalArgumentException(
 					"Endpoint information not available for Account using Shared Access Credentials.");
+		}
 		else
+		{
 			return m_QueueEndpoint;
+		}
 	}
 	public URI getTableEndpoint() {
 		if (getCredentials() instanceof StorageCredentialsSharedAccessSignature)
+		{
 			throw new IllegalArgumentException(
 					"Endpoint information not available for Account using Shared Access Credentials.");
+		}
 		else
+		{
 			return m_TableEndpoint;
+		}
 	}
 	protected void setCredentials(StorageCredentials storagecredentials) {
 		m_Credentials = storagecredentials;

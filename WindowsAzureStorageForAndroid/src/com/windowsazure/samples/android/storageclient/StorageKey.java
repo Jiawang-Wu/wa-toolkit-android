@@ -13,30 +13,30 @@ import android.util.Base64;
 
 public final class StorageKey {
 
-	public static synchronized String computeMacSha256(StorageKey storagekey,
-			String s) throws InvalidKeyException, IllegalArgumentException {
-		if (storagekey.m_Hmacsha256 == null)
-			storagekey.initHmacSha256();
-		byte abyte0[] = null;
+	public static synchronized String computeMacSha256(StorageKey key,
+			String canonicalRequestString) throws InvalidKeyException, IllegalArgumentException {
+		if (key.m_Hmacsha256 == null)
+			key.initHmacSha256();
+		byte canonicalRequestBytes[] = null;
 		try {
-			abyte0 = s.getBytes("UTF8");
+			canonicalRequestBytes = canonicalRequestString.getBytes("UTF8");
 		} catch (UnsupportedEncodingException unsupportedencodingexception) {
 			throw new IllegalArgumentException(unsupportedencodingexception);
 		}
-		return Base64.encodeToString(storagekey.m_Hmacsha256.doFinal(abyte0), Base64.NO_WRAP);
+		return Base64.encodeToString(key.m_Hmacsha256.doFinal(canonicalRequestBytes), Base64.NO_WRAP);
 	}
 
 	public static synchronized String computeMacSha512(StorageKey storagekey,
-			String s) throws IllegalArgumentException, InvalidKeyException {
+			String canonicalRequestString) throws IllegalArgumentException, InvalidKeyException {
 		if (storagekey.m_Hmacsha512 == null)
 			storagekey.initHmacSha512();
-		byte abyte0[] = null;
+		byte canonicalRequestBytes[] = null;
 		try {
-			abyte0 = s.getBytes("UTF8");
+			canonicalRequestBytes = canonicalRequestString.getBytes("UTF8");
 		} catch (UnsupportedEncodingException unsupportedencodingexception) {
 			throw new IllegalArgumentException(unsupportedencodingexception);
 		}
-		return Base64.encodeToString(storagekey.m_Hmacsha512.doFinal(abyte0), Base64.NO_WRAP);
+		return Base64.encodeToString(storagekey.m_Hmacsha512.doFinal(canonicalRequestBytes), Base64.NO_WRAP);
 	}
 
 	private Mac m_Hmacsha256;
@@ -49,8 +49,8 @@ public final class StorageKey {
 
 	private byte m_Key[];
 
-	public StorageKey(byte abyte0[]) {
-		setKey(abyte0);
+	public StorageKey(byte key[]) {
+		setKey(key);
 	}
 
 	public String getBase64EncodedKey() {
@@ -58,8 +58,8 @@ public final class StorageKey {
 	}
 
 	public byte[] getKey() {
-		byte abyte0[] = m_Key.clone();
-		return abyte0;
+		byte key[] = m_Key.clone();
+		return key;
 	}
 	private void initHmacSha256() throws InvalidKeyException {
 		m_Key256 = new SecretKeySpec(m_Key, "HmacSHA256");
@@ -79,14 +79,14 @@ public final class StorageKey {
 		}
 		m_Hmacsha512.init(m_Key512);
 	}
-	public void setKey(byte abyte0[]) {
-		m_Key = abyte0;
+	public void setKey(byte key[]) {
+		m_Key = key;
 		m_Hmacsha256 = null;
 		m_Hmacsha512 = null;
 		m_Key256 = null;
 		m_Key512 = null;
 	}
-	public void setKey(String s) throws IOException {
-		m_Key = Base64.decode(s, Base64.NO_WRAP);
+	public void setKey(String key) throws IOException {
+		m_Key = Base64.decode(key, Base64.NO_WRAP);
 	}
 }

@@ -8,20 +8,20 @@ public final class Credentials {
 
 	private StorageKey m_Key;
 
-	public Credentials(String s, byte abyte0[]) {
-		if (s == null || s.length() == 0)
+	public Credentials(String accountName, byte key[]) {
+		if (accountName == null || accountName.length() == 0)
 			throw new IllegalArgumentException("Invalid accountName");
-		if (abyte0 == null) {
+		if (key == null) {
 			throw new IllegalArgumentException("Invalid key");
 		} else {
-			m_AccountName = s;
-			m_Key = new StorageKey(abyte0);
+			m_AccountName = accountName;
+			m_Key = new StorageKey(key);
 			return;
 		}
 	}
 
-	public Credentials(String s, String s1) {
-		this(s, Base64.decode(s1, Base64.NO_WRAP));
+	public Credentials(String accountName, String key) {
+		this(accountName, Base64.decode(key, Base64.NO_WRAP));
 	}
 
 	public String exportBase64EncodedKey() {
@@ -39,7 +39,7 @@ public final class Credentials {
 	public StorageKey getKey() {
 		return m_Key;
 	}
-	protected void setAccountName(String s) {
-		m_AccountName = s;
+	protected void setAccountName(String accountName) {
+		m_AccountName = accountName;
 	}
 }

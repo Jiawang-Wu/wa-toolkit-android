@@ -6,10 +6,10 @@ import java.util.Date;
 import org.apache.http.message.AbstractHttpMessage;
 
 final class ContainerResponse extends BaseResponse {
-	public static BlobContainerAttributes getAttributes(URI transformedContainerUri,
+	public static BlobContainerAttributes getAttributes(URI endpoint,
 			RequestResult result) throws StorageException {
 		BlobContainerAttributes attributes = new BlobContainerAttributes();
-		java.net.URI containerUri = PathUtility.stripURIQueryAndFragment(transformedContainerUri);
+		java.net.URI containerUri = PathUtility.stripURIQueryAndFragment(endpoint);
 		attributes.uri = containerUri;
 		attributes.name = PathUtility.getContainerNameFromUri(containerUri);
 		BlobContainerProperties properties = attributes.properties;

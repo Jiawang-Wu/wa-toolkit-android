@@ -23,10 +23,10 @@ public final class StorageException extends Exception {
 		}
 		else
 		{
-			StorageExtendedErrorInformation errorInformatino = new StorageExtendedErrorInformation();
-			errorInformatino.errorCode = "No further error information";
-			errorInformatino.errorMessage = "The server response was " + response.getStatusLine().getReasonPhrase();
-			return errorInformatino;
+			StorageExtendedErrorInformation errorInformation = new StorageExtendedErrorInformation();
+			errorInformation.errorCode = "No further error information";
+			errorInformation.errorMessage = "The server response was " + response.getStatusLine().getReasonPhrase();
+			return errorInformation;
 		}
 	}
 
@@ -37,104 +37,104 @@ public final class StorageException extends Exception {
 					"Client error",
 					"A Client side exception occurred, please check the inner exception for more details: "
 							+ exception.getMessage(), 306, null, exception);
-		StorageExtendedErrorInformation storageextendederrorinformation = getErrorDetailsFromRequest(response);
-		StorageException storageexception = null;
-		String s = "";
-		int i = 0;
-		i = response.getStatusLine().getStatusCode();
-		s = response.getStatusLine().getReasonPhrase();
-		if (s == null)
-			s = "";
-		if (storageextendederrorinformation != null) {
-			storageexception = new StorageException(
-					storageextendederrorinformation.errorCode, s, i,
-					storageextendederrorinformation, exception);
-			if (storageexception != null)
-				return storageexception;
+		StorageExtendedErrorInformation extendedErrorInformation = getErrorDetailsFromRequest(response);
+		StorageException translatedException = null;
+		String reasonPhrase = "";
+		int statusCode = 0;
+		statusCode = response.getStatusLine().getStatusCode();
+		reasonPhrase = response.getStatusLine().getReasonPhrase();
+		if (reasonPhrase == null)
+			reasonPhrase = "";
+		if (extendedErrorInformation != null) {
+			translatedException = new StorageException(
+					extendedErrorInformation.errorCode, reasonPhrase, statusCode,
+					extendedErrorInformation, exception);
+			if (translatedException != null)
+				return translatedException;
 		}
-		storageexception = translateFromHttpStatus(i, s, null, exception);
-		if (storageexception != null)
-			return storageexception;
+		translatedException = translateFromHttpStatus(statusCode, reasonPhrase, null, exception);
+		if (translatedException != null)
+			return translatedException;
 		else
 			return new StorageException(
 					StorageErrorCode.SERVICE_INTERNAL_ERROR.toString(),
-					"The server encountered an unknown failure: ".concat(s),
+					"The server encountered an unknown failure: ".concat(reasonPhrase),
 					500, null, exception);
 	}
 
-	protected static StorageException translateFromHttpStatus(int i, String s,
-			StorageExtendedErrorInformation storageextendederrorinformation,
+	protected static StorageException translateFromHttpStatus(int statusCode, String reasonPhrase,
+			StorageExtendedErrorInformation extenderErrorInformation,
 			Exception exception) {
-		switch (i) {
+		switch (statusCode) {
 		case 403:
 			return new StorageException(
-					StorageErrorCode.ACCESS_DENIED.toString(), s, i,
-					storageextendederrorinformation, exception);
+					StorageErrorCode.ACCESS_DENIED.toString(), reasonPhrase, statusCode,
+					extenderErrorInformation, exception);
 
 		case 404:
 		case 410:
 			return new StorageException(
-					StorageErrorCode.RESOURCE_NOT_FOUND.toString(), s, i,
-					storageextendederrorinformation, exception);
+					StorageErrorCode.RESOURCE_NOT_FOUND.toString(), reasonPhrase, statusCode,
+					extenderErrorInformation, exception);
 
 		case 400:
 			return new StorageException(
-					StorageErrorCode.BAD_REQUEST.toString(), s, i,
-					storageextendederrorinformation, exception);
+					StorageErrorCode.BAD_REQUEST.toString(), reasonPhrase, statusCode,
+					extenderErrorInformation, exception);
 
 		case 304:
 		case 412:
 			return new StorageException(
-					StorageErrorCode.CONDITION_FAILED.toString(), s, i,
-					storageextendederrorinformation, exception);
+					StorageErrorCode.CONDITION_FAILED.toString(), reasonPhrase, statusCode,
+					extenderErrorInformation, exception);
 
 		case 409:
 			return new StorageException(
-					StorageErrorCode.RESOURCE_ALREADY_EXISTS.toString(), s, i,
-					storageextendederrorinformation, exception);
+					StorageErrorCode.RESOURCE_ALREADY_EXISTS.toString(), reasonPhrase, statusCode,
+					extenderErrorInformation, exception);
 
 		case 504:
 			return new StorageException(
-					StorageErrorCode.SERVICE_TIMEOUT.toString(), s, i,
-					storageextendederrorinformation, exception);
+					StorageErrorCode.SERVICE_TIMEOUT.toString(), reasonPhrase, statusCode,
+					extenderErrorInformation, exception);
 
 		case 416:
 			return new StorageException(
-					StorageErrorCode.BAD_REQUEST.toString(), s, i,
-					storageextendederrorinformation, exception);
+					StorageErrorCode.BAD_REQUEST.toString(), reasonPhrase, statusCode,
+					extenderErrorInformation, exception);
 
 		case 500:
 			return new StorageException(
-					StorageErrorCode.SERVICE_INTERNAL_ERROR.toString(), s, i,
-					storageextendederrorinformation, exception);
+					StorageErrorCode.SERVICE_INTERNAL_ERROR.toString(), reasonPhrase, statusCode,
+					extenderErrorInformation, exception);
 
 		case 501:
 			return new StorageException(
-					StorageErrorCode.NOT_IMPLEMENTED.toString(), s, i,
-					storageextendederrorinformation, exception);
+					StorageErrorCode.NOT_IMPLEMENTED.toString(), reasonPhrase, statusCode,
+					extenderErrorInformation, exception);
 
 		case 502:
 			return new StorageException(
-					StorageErrorCode.BAD_GATEWAY.toString(), s, i,
-					storageextendederrorinformation, exception);
+					StorageErrorCode.BAD_GATEWAY.toString(), reasonPhrase, statusCode,
+					extenderErrorInformation, exception);
 
 		case 505:
 			return new StorageException(
-					StorageErrorCode.HTTP_VERSION_NOT_SUPPORTED.toString(), s,
-					i, storageextendederrorinformation, exception);
+					StorageErrorCode.HTTP_VERSION_NOT_SUPPORTED.toString(), reasonPhrase,
+					statusCode, extenderErrorInformation, exception);
 		}
 		return null;
 	}
 
-	public final String errorCode;
-	public final StorageExtendedErrorInformation extendedErrorInformation;
-	public final int httpStatusCode;
-	public StorageException(String s, String detailMessage, int i,
-			StorageExtendedErrorInformation storageextendederrorinformation,
+	public final String m_ErrorCode;
+	public final StorageExtendedErrorInformation m_ExtendedErrorInformation;
+	public final int m_HttpStatusCode;
+	public StorageException(String errrorCode, String detailMessage, int statusCode,
+			StorageExtendedErrorInformation extendedErrorInformation,
 			Exception exception) {
 		super(detailMessage, exception);
-		errorCode = s;
-		httpStatusCode = i;
-		extendedErrorInformation = storageextendederrorinformation;
+		m_ErrorCode = errrorCode;
+		m_HttpStatusCode = statusCode;
+		m_ExtendedErrorInformation = extendedErrorInformation;
 	}
 }

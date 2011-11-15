@@ -10,13 +10,12 @@ abstract class StorageOperation {
 
 	protected RequestResult result;
 
-	boolean nonExceptionedRetryableFailure;
-
 	public abstract Object execute(Object firstArgument, Object secondArgument)
 			throws Exception;
 	protected void initialize() {
 		result = new RequestResult();
 	}
+	
 	protected StorageException materializeException(HttpResponse response)
 			throws NotImplementedException, UnsupportedEncodingException,
 			IOException {

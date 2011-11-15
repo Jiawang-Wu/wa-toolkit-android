@@ -19,16 +19,6 @@ final class ListContainersResponse {
 
 	private ArrayList<CloudBlobContainer> m_Containers;
 
-	private boolean m_IsParsed;
-
-	private String m_Marker;
-
-	private int m_MaxResults;
-
-	private String m_NextMarker;
-
-	private String m_Prefix;
-
 	private InputStream m_StreamRef;
 
 	public ListContainersResponse(InputStream inputstream) {
@@ -39,21 +29,8 @@ final class ListContainersResponse {
 			throws NotImplementedException, StorageException,
 			UnsupportedEncodingException, IOException,
 			ParserConfigurationException, SAXException, URISyntaxException {
-		if (!m_IsParsed)
 			parseResponse(cloudblobclient);
 		return m_Containers;
-	}
-	public String getMarker() {
-		return m_Marker;
-	}
-	public int getMaxResults() {
-		return m_MaxResults;
-	}
-	public String getNextMarker() {
-		return m_NextMarker;
-	}
-	public String getPrefix() {
-		return m_Prefix;
 	}
 	public void parseResponse(CloudBlobClient cloudblobclient)
 			throws NotImplementedException, StorageException,

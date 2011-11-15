@@ -10,47 +10,35 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 final class ExecutionEngine {
-	protected static Object execute(Object obj, Object obj1,
-			StorageOperation storageoperation) throws StorageException,
+	protected static Object execute(Object firstArgument, Object secondArgument,
+			StorageOperation storageOperation) throws StorageException,
 			UnsupportedEncodingException, IOException {
-		storageoperation.initialize();
+		storageOperation.initialize();
 		try {
-			return storageoperation.execute(obj, obj1);
-		} catch (Exception e) {
-			e.printStackTrace();
-			storageoperation.exceptionReference = StorageException
-					.translateException(storageoperation.result.httpResponse, e);
-			throw storageoperation.exceptionReference;
+			return storageOperation.execute(firstArgument, secondArgument);
+		} catch (Exception exception) {
+			exception.printStackTrace();
+			storageOperation.exceptionReference = StorageException
+					.translateException(storageOperation.result.httpResponse, exception);
+			throw storageOperation.exceptionReference;
 		}
-	}
-
-	protected static void getResponseCode(RequestResult requestresult,
-			HttpResponse response) throws IOException {
-		requestresult.statusCode = response.getStatusLine().getStatusCode();
-		requestresult.statusMessage = response.getStatusLine()
-				.getReasonPhrase();
-		requestresult.stopDate = new Date();
-		requestresult.serviceRequestID = BaseResponse.getRequestId(response);
-		requestresult.eTag = BaseResponse.getEtag(response);
-		requestresult.date = BaseResponse.getDate(response);
-		requestresult.contentMD5 = BaseResponse.getContentMD5(response);
 	}
 
 	protected static RequestResult processRequest(HttpRequestBase request)
 			throws IOException {
-		HttpClient client = new DefaultHttpClient();
-		HttpResponse response = client.execute(request);
-		RequestResult requestresult = new RequestResult();
-		requestresult.startDate = new Date();
-		requestresult.statusCode = response.getStatusLine().getStatusCode();
-		requestresult.statusMessage = response.getStatusLine()
+		HttpClient httpClient = new DefaultHttpClient();
+		HttpResponse httpResponse = httpClient.execute(request);
+		RequestResult requestResult = new RequestResult();
+		requestResult.startDate = new Date();
+		requestResult.statusCode = httpResponse.getStatusLine().getStatusCode();
+		requestResult.statusMessage = httpResponse.getStatusLine()
 				.getReasonPhrase();
-		requestresult.stopDate = new Date();
-		requestresult.serviceRequestID = BaseResponse.getRequestId(response);
-		requestresult.eTag = BaseResponse.getEtag(response);
-		requestresult.date = BaseResponse.getDate(response);
-		requestresult.contentMD5 = BaseResponse.getContentMD5(response);
-		requestresult.httpResponse = response;
-		return requestresult;
+		requestResult.stopDate = new Date();
+		requestResult.serviceRequestID = BaseResponse.getRequestId(httpResponse);
+		requestResult.eTag = BaseResponse.getEtag(httpResponse);
+		requestResult.date = BaseResponse.getDate(httpResponse);
+		requestResult.contentMD5 = BaseResponse.getContentMD5(httpResponse);
+		requestResult.httpResponse = httpResponse;
+		return requestResult;
 	}
 }

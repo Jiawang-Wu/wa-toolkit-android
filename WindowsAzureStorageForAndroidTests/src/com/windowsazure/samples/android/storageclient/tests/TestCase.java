@@ -3,11 +3,11 @@ package com.windowsazure.samples.android.storageclient.tests;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.concurrent.Callable;
 
 import junit.framework.Assert;
 
-//public abstract class TestCase extends android.test.AndroidTestCase {
-public abstract class TestCase extends junit.framework.TestCase {
+public abstract class TestCase extends android.test.AndroidTestCase {
 	protected <T extends Exception> void assertThrows(
 			RunnableWithExpectedException runnable, Class<T> exceptionClass)
 			throws Exception {
@@ -30,6 +30,20 @@ public abstract class TestCase extends junit.framework.TestCase {
 		Assert.assertFalse(secondCollection.retainAll(firstCollection));
 	}
 
+	protected void assertEventuallyTrue(Callable<Boolean> callable, int timeout) throws Exception {
+		long start = System.currentTimeMillis();
+		long current;
+		do
+		{
+			if (callable.call())
+			{
+				return;
+			}
+			current = System.currentTimeMillis();
+		} while (start + timeout < current);
+		Assert.assertTrue(callable.call());
+	}
+	
 	protected <T> ArrayList<T> toList(Iterable<T> iterable) {
 		ArrayList<T> list = new ArrayList<T>();
 		for (T element : iterable) {

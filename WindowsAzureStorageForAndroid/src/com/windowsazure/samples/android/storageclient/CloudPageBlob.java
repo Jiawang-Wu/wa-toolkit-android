@@ -32,7 +32,7 @@ public final class CloudPageBlob extends CloudBlob {
 		throw new NotImplementedException();
 	}
 
-	public void clearPages(long startOffset, long length, String s)
+	public void clearPages(long startOffset, long length, String leaseID)
 			throws NotImplementedException, StorageException, IOException {
 		throw new NotImplementedException();
 	}
@@ -65,7 +65,7 @@ public final class CloudPageBlob extends CloudBlob {
 	}
 
 	@Override
-	public void upload(InputStream inputStream, long length, String s)
+	public void upload(InputStream inputStream, long length, String leaseId)
 			throws NotImplementedException, StorageException, IOException {
 		throw new NotImplementedException();
 	}
@@ -76,7 +76,7 @@ public final class CloudPageBlob extends CloudBlob {
 		throw new NotImplementedException();
 	}
 
-	public void uploadPages(InputStream inputstream, long startOffset, long length, String s)
+	public void uploadPages(InputStream inputstream, long startOffset, long length, String leaseId)
 			throws NotImplementedException, StorageException, IOException,
 			IllegalArgumentException {
 		throw new NotImplementedException();

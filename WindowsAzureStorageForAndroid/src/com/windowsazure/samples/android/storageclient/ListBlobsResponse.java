@@ -20,54 +20,26 @@ class ListBlobsResponse {
 
 	private ArrayList<CloudBlob> m_Blobs;
 
-	private boolean m_IsParsed;
-
-	private String m_Marker;
-
-	private int m_MaxResults;
-
-	private String m_NextMarker;
-
-	private String m_Prefix;
-
 	private InputStream m_StreamRef;
 
-	private String m_Delimiter;
-
-	public ListBlobsResponse(InputStream inputstream) {
+	public ListBlobsResponse(InputStream inputStream) {
 		m_Blobs = new ArrayList<CloudBlob>();
-		m_StreamRef = inputstream;
+		m_StreamRef = inputStream;
 	}
-	public ArrayList<CloudBlob> getBlobs(CloudBlobClient cloudblobclient,
-			CloudBlobContainer cloudblobcontainer) throws StorageException,
+	public ArrayList<CloudBlob> getBlobs(CloudBlobClient serviceClient,
+			CloudBlobContainer container) throws StorageException,
 			NotImplementedException, SAXException, IOException,
 			ParserConfigurationException, URISyntaxException,
 			StorageInnerException {
-		if (!m_IsParsed)
-			parseResponse(cloudblobclient, cloudblobcontainer);
+			parseResponse(serviceClient, container);
 		return m_Blobs;
 	}
-	public String getDelimiter() {
-		return m_Delimiter;
-	}
-	public String getMarker() {
-		return m_Marker;
-	}
-	public int getMaxResults() {
-		return m_MaxResults;
-	}
-	public String getNextMarker() {
-		return m_NextMarker;
-	}
-	public String getPrefix() {
-		return m_Prefix;
-	}
-	public void parseResponse(CloudBlobClient cloudblobclient,
-			CloudBlobContainer cloudblobcontainer) throws StorageException,
+	public void parseResponse(CloudBlobClient serviceClient,
+			CloudBlobContainer container) throws StorageException,
 			NotImplementedException, SAXException, IOException,
 			ParserConfigurationException, URISyntaxException,
 			StorageInnerException {
-		URI containerUri = cloudblobcontainer.getUri();
+		URI containerUri = container.getUri();
 		URI endpoint = new URI(containerUri.getScheme() + "://"
 				+ containerUri.getAuthority());
 
@@ -92,7 +64,7 @@ class ListBlobsResponse {
 						.parseQuery(arguments);
 				client = new CloudBlobClient(endpoint, credentials);
 			} catch (IllegalArgumentException exception) {
-				client = cloudblobclient;
+				client = serviceClient;
 			}
 
 			/*
@@ -109,9 +81,9 @@ class ListBlobsResponse {
 			URI blobUri = PathUtility.stripURIQueryAndFragment(new URI(
 					urlString));
 			if (blockTypeString.equals("BlockBlob")) {
-				blob = new CloudBlockBlob(blobUri, client, cloudblobcontainer);
+				blob = new CloudBlockBlob(blobUri, client, container);
 			} else if (blockTypeString.equals("PageBlob")) {
-				blob = cloudblobcontainer.getPageBlobReference(name);
+				blob = container.getPageBlobReference(name);
 			} else {
 				throw new StorageInnerException("Unknown blob type");
 			}

@@ -14,31 +14,31 @@ import android.util.Base64;
 
 public abstract class StorageCredentials {
 
-	protected static StorageCredentials tryParseCredentials(HashMap<String, String> hashmap)
+	protected static StorageCredentials tryParseCredentials(HashMap<String, String> configuration)
 			throws InvalidKeyException, IllegalArgumentException,
 			NotImplementedException {
-		String s = hashmap.get("AccountName") == null ? null : (String) hashmap
+		String accountName = configuration.get("AccountName") == null ? null : (String) configuration
 				.get("AccountName");
-		String s1 = hashmap.get("AccountKey") == null ? null : (String) hashmap
+		String accountKey = configuration.get("AccountKey") == null ? null : (String) configuration
 				.get("AccountKey");
-		String s2 = hashmap.get("SharedAccessSignature") == null ? null
-				: (String) hashmap.get("SharedAccessSignature");
-		if (s != null && s1 != null && s2 == null)
-			if (validateIsBase64String(s1))
-				return new StorageCredentialsAccountAndKey(s, s1);
+		String sas = configuration.get("SharedAccessSignature") == null ? null
+				: (String) configuration.get("SharedAccessSignature");
+		if (accountName != null && accountKey != null && sas == null)
+			if (validateIsBase64String(accountKey))
+				return new StorageCredentialsAccountAndKey(accountName, accountKey);
 			else
 				throw new InvalidKeyException(
 						"Storage Key is not a valid base64 encoded string.");
-		if (s == null && s1 == null && s2 != null)
-			return new StorageCredentialsSharedAccessSignature(s2);
+		if (accountName == null && accountKey == null && sas != null)
+			return new StorageCredentialsSharedAccessSignature(sas);
 		else
 			return null;
 	}
 
-	private static boolean validateIsBase64String(String s1) {
+	private static boolean validateIsBase64String(String base64String) {
 		try
 		{
-			return Base64.decode(s1, Base64.NO_WRAP) != null;
+			return Base64.decode(base64String, Base64.NO_WRAP) != null;
 		}
 		catch (Exception exception)
 		{
@@ -46,7 +46,7 @@ public abstract class StorageCredentials {
 		}
 	}
 
-	public static StorageCredentials tryParseCredentials(String s)
+	public static StorageCredentials tryParseCredentials(String configurationString)
 			throws NotImplementedException, InvalidKeyException,
 			StorageException {
 		throw new NotImplementedException();
@@ -64,16 +64,16 @@ public abstract class StorageCredentials {
 	protected abstract boolean canCredentialsSignRequestLite()
 			throws NotImplementedException;
 
-	public abstract String computeHmac256(String s) throws InvalidKeyException,
+	public abstract String computeHmac256(String string) throws InvalidKeyException,
 			NotImplementedException;
 
-	public abstract String computeHmac512(String s) throws InvalidKeyException,
+	public abstract String computeHmac512(String string) throws InvalidKeyException,
 			NotImplementedException;
 
 	public abstract String containerEndpointPostfix();
 
 	abstract StorageCredentials credentialsForBlobOf(
-			CloudBlobContainer cloudBlobContainer)
+			CloudBlobContainer container)
 			throws IllegalArgumentException, UnsupportedEncodingException,
 			URISyntaxException, StorageException,
 			IOException;
@@ -86,11 +86,11 @@ public abstract class StorageCredentials {
 
 	abstract AbstractContainerRequest getContainerRequest();
 
-	public abstract void signRequest(HttpRequestBase request, long l)
+	public abstract void signRequest(HttpRequestBase request, long length)
 			throws NotImplementedException, InvalidKeyException,
 			StorageException, MalformedURLException;
 
-	public abstract void signRequestLite(HttpRequestBase request, long l)
+	public abstract void signRequestLite(HttpRequestBase request, long length)
 			throws NotImplementedException, StorageException,
 			InvalidKeyException;
 
