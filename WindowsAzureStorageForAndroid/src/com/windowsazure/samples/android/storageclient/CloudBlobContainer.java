@@ -315,7 +315,7 @@ public final class CloudBlobContainer {
 			if (containerUri.isAbsolute()) {
 				return m_ServiceClient.getCredentials().transformUri(containerUri);
 			} else {
-				StorageException storageexception = Utility
+				StorageException storageexception = StorageException
 						.generateNewUnexpectedStorageException(null);
 				storageexception.m_ExtendedErrorInformation.errorMessage = "Blob Object relative URIs not supported.";
 				throw storageexception;
@@ -426,9 +426,7 @@ public final class CloudBlobContainer {
 				.parseQuery(queryArguments);
 		if (sasCredentials == null)
 			return;
-		boolean serviceClientUsesSAS = serviceClient != null ? Utility
-				.areCredentialsEqual(sasCredentials,
-						serviceClient.getCredentials()) : false;
+		boolean serviceClientUsesSAS = serviceClient != null ? sasCredentials.equals(serviceClient.getCredentials()) : false;
 		if (serviceClient == null || !serviceClientUsesSAS)
 			m_ServiceClient = new CloudBlobClient(
 					new URI(

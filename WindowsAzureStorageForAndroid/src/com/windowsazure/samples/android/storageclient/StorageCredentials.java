@@ -35,6 +35,8 @@ public abstract class StorageCredentials {
 			return null;
 	}
 
+	abstract boolean equals(StorageCredentials rightCredentials);
+
 	private static boolean validateIsBase64String(String base64String) {
 		try
 		{

@@ -15,6 +15,17 @@ public final class StorageCredentialsAccountAndKey extends StorageCredentials {
 
 	private Credentials m_Credentials;
 
+	boolean equals(StorageCredentials rightCredentials)
+	{
+		return rightCredentials instanceof StorageCredentialsAccountAndKey
+				&& this.equals((StorageCredentialsAccountAndKey) rightCredentials);
+	}
+
+	boolean equals(StorageCredentialsAccountAndKey rightCredentials)
+	{
+		return this.toString(true).equals(rightCredentials.toString(true));
+	}
+
 	public StorageCredentialsAccountAndKey(String accountName, byte key[])
 	{
 		m_Credentials = new Credentials(accountName, key);

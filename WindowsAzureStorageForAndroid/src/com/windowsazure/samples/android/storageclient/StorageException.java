@@ -10,6 +10,14 @@ public final class StorageException extends Exception {
 
 	public static final long serialVersionUID = 0x6ea4e362e7d2d5f0L;
 
+	public static StorageException generateNewUnexpectedStorageException(Exception exception) {
+		StorageException storageexception = new StorageException(
+				StorageErrorCode.NONE.toString(),
+				"Unexpected internal storage client error.", 306, null, null);
+		storageexception.initCause(exception);
+		return storageexception;
+	}
+
 	protected static StorageExtendedErrorInformation getErrorDetailsFromRequest(
 			HttpResponse response) throws UnsupportedEncodingException, IOException {
 		if (response == null)

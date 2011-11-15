@@ -2,6 +2,7 @@ package com.windowsazure.samples.android.storageclient;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -13,6 +14,8 @@ import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+
+import android.util.Log;
 
 public final class BlobOutputStream extends OutputStream {
 
@@ -95,19 +98,28 @@ public final class BlobOutputStream extends OutputStream {
 		try {
 			commit();
 		} catch (StorageException storageexception) {
-			throw Utility.initIOException(storageexception);
-		} catch (NotImplementedException e) {
-			throw Utility.initIOException(e);
+			IOException ioException = new IOException();
+			ioException.initCause(storageexception);
+			throw ioException;
 		}
 	}
-	private void commit() throws StorageException, IOException,
-			NotImplementedException {
+	private void commit() throws StorageException, IOException
+			{
 		if (m_StreamType == BlobType.BLOCK_BLOB) 
 		{
 			CloudBlockBlob cloudblockblob = (CloudBlockBlob) m_ParentBlobRef;
 			cloudblockblob.commitBlockList(m_BlockList);
 		}
 	}
+
+	private byte[] getBytesFromLong(long number) throws IOException {
+	    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();  
+	    DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);  
+	    dataOutputStream.writeLong(number);  
+	    dataOutputStream.flush();  
+	    return byteArrayOutputStream.toByteArray();  
+	}
+
 	private synchronized void dispatchWrite(final int writeLength) throws IOException {
 		if (writeLength == 0)
 		{
@@ -119,8 +131,8 @@ public final class BlobOutputStream extends OutputStream {
 		}
 		final ByteArrayInputStream bufferRef = new ByteArrayInputStream(m_OutBuffer.toByteArray());
 			final CloudBlockBlob blob = (CloudBlockBlob) m_ParentBlobRef;
-			final String blockID = CloudBlockBlob.encodedBlockId(Utility.getBytesFromLong(m_BlockIdSequenceNumber++));
-
+			Log.d("block id sequence number", "" + m_BlockIdSequenceNumber);
+			final String blockID = CloudBlockBlob.encodedBlockId(getBytesFromLong(m_BlockIdSequenceNumber++));
 			m_BlockList.add(new BlockEntry(blockID, BlockSearchMode.UNCOMMITTED));
 			Callable<Void> callable = new Callable<Void>() {
 				public Void call() {
@@ -136,7 +148,8 @@ public final class BlobOutputStream extends OutputStream {
 					catch (StorageException storageexception) {
 						synchronized (m_LastErrorLock) {
 							m_StreamFaulted = true;
-							m_LastError = Utility.initIOException(storageexception);
+							m_LastError = new IOException();
+							m_LastError.initCause(storageexception);
 						}
 					}
 					return null;
@@ -157,7 +170,9 @@ public final class BlobOutputStream extends OutputStream {
 			Future<Void> future = m_CompletionService.take();
 			future.get();
 		} catch (Exception exception) {
-			throw Utility.initIOException(exception);
+			IOException ioException = new IOException();
+			ioException.initCause(exception);
+			throw ioException;
 		}
 		m_OutstandingRequests--;
 	}

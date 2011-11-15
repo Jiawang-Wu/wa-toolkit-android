@@ -76,7 +76,8 @@ public final class BlobInputStream extends InputStream {
 			m_BufferStartOffset = m_CurrentAbsoluteReadPosition;
 		} catch (StorageException exception) {
 			m_StreamFaulted = true;
-			m_LastError = Utility.initIOException(exception);
+			m_LastError = new IOException();
+			m_LastError.initCause(exception);
 			throw m_LastError;
 		}
 	}

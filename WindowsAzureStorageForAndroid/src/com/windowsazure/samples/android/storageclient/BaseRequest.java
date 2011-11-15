@@ -5,9 +5,13 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.Map.Entry;
 
 import org.apache.http.client.methods.HttpDelete;
@@ -111,10 +115,23 @@ final class BaseRequest {
 		return request;
 	}
 
+	protected static final TimeZone GMT_ZONE = TimeZone.getTimeZone("GMT");
+
+	protected static String getGMTTime() {
+		SimpleDateFormat simpledateformat = new SimpleDateFormat(
+				"EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
+		simpledateformat.setTimeZone(GMT_ZONE);
+		String result = simpledateformat.format(new Date());
+		if (result.endsWith("GMT+00:00")) {
+			result = result.replace("GMT+00:00", "GMT");
+		}
+		return result;
+	}
+
 	public static void signRequestForBlobAndQueue(HttpRequestBase request,
 			Credentials credentials, Long contentLength)
 			throws InvalidKeyException, StorageException, MalformedURLException {
-		request.setHeader("x-ms-date", Utility.getGMTTime());
+		request.setHeader("x-ms-date", getGMTTime());
 		Canonicalizer canonicalizer = CanonicalizerFactory
 				.getBlobQueueFullCanonicalizer(request);
 		String canonicalizedRequest = canonicalizer.canonicalize(request,

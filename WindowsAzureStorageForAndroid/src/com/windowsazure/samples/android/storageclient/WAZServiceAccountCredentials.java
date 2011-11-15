@@ -13,6 +13,17 @@ public class WAZServiceAccountCredentials extends StorageCredentials {
 
 	private String m_AuthorizationToken;
 
+	boolean equals(StorageCredentials rightCredentials)
+	{
+		return rightCredentials instanceof WAZServiceAccountCredentials
+				&& this.equals((WAZServiceAccountCredentials) rightCredentials);
+	}
+
+	boolean equals(WAZServiceAccountCredentials rightCredentials)
+	{
+		return this.m_AuthorizationToken.equals(rightCredentials.m_AuthorizationToken);
+	}
+
 	public WAZServiceAccountCredentials(String authorizationToken) {
 		this.m_AuthorizationToken = authorizationToken;
 	}

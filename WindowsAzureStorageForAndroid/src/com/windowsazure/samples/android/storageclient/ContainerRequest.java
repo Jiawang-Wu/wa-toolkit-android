@@ -22,7 +22,7 @@ final class ContainerRequest implements AbstractContainerRequest {
 		try {
 			uriQueryBuilder.add("restype", "container");
 		} catch (IllegalArgumentException illegalargumentexception) {
-			throw Utility
+			throw StorageException
 					.generateNewUnexpectedStorageException(illegalargumentexception);
 		}
 		return uriQueryBuilder;

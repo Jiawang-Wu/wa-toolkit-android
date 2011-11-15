@@ -108,12 +108,29 @@ public final class CloudStorageAccount implements CloudClientAccount {
 							.concat(":10002/devstoreaccount1")));
 		}
 	}
+
+	protected static HashMap<String, String> parseAccountString(String accountString)
+			throws IllegalArgumentException {
+		String arguments[] = accountString.split(";");
+		HashMap<String, String> argumentsMap = new HashMap<String, String>();
+		for (String argument : arguments) {
+			int argumentSeparatorIndex = argument.indexOf("=");
+			if (argumentSeparatorIndex < 1)
+				throw new IllegalArgumentException("Invalid Connection String");
+			String name = argument.substring(0, argumentSeparatorIndex);
+			String value = argument.substring(argumentSeparatorIndex + 1);
+			argumentsMap.put(name, value);
+		}
+
+		return argumentsMap;
+	}
+	
 	public static CloudStorageAccount parse(String configurationString)
 			throws URISyntaxException, InvalidKeyException,
 			IllegalArgumentException, NotImplementedException {
 		if (configurationString == null || configurationString.length() == 0)
 			throw new IllegalArgumentException("Invalid Connection String");
-		HashMap<String, String> accountString = Utility.parseAccountString(configurationString);
+		HashMap<String, String> accountString = parseAccountString(configurationString);
 		for (Iterator<Entry<String, String>> iterator = accountString.entrySet().iterator(); iterator
 				.hasNext();) {
 			Entry<String, String> entry = iterator.next();
@@ -137,6 +154,7 @@ public final class CloudStorageAccount implements CloudClientAccount {
 			throw new IllegalArgumentException("Invalid Connection String");
 		}
 	}
+	
 	private static CloudStorageAccount tryConfigureDevStore(HashMap<String, String> configuration)
 			throws URISyntaxException, IllegalArgumentException,
 			NotImplementedException {

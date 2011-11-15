@@ -1,11 +1,25 @@
 package com.windowsazure.samples.android.storageclient;
 
 import java.security.InvalidKeyException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.TimeZone;
 import java.util.Map.Entry;
 
 final class SharedAccessSignatureHelper {
+
+	protected static String getUTCTimeOrEmpty(Date date) {
+		if (date == null) {
+			return "";
+		} else {
+			SimpleDateFormat simpledateformat = new SimpleDateFormat(
+					"yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
+			simpledateformat.setTimeZone(TimeZone.getTimeZone("UTC"));
+			return simpledateformat.format(date);
+		}
+	}
 
 	protected static UriQueryBuilder generateSharedAccessSignature(
 			SharedAccessPolicy policy, String signedIdentifier,
@@ -20,12 +34,10 @@ final class SharedAccessSignatureHelper {
 					.permissionsToString(policy.permissions);
 			if (Utility.isNullOrEmpty(signedPermissions))
 				signedPermissions = null;
-			String signedStart = Utility
-					.getUTCTimeOrEmpty(policy.sharedAccessStartTime);
+			String signedStart = getUTCTimeOrEmpty(policy.sharedAccessStartTime);
 			if (!Utility.isNullOrEmpty(signedStart))
 				uriQueryBuilder.add("st", signedStart);
-			String signedExpiry = Utility
-					.getUTCTimeOrEmpty(policy.sharedAccessExpiryTime);
+			String signedExpiry = getUTCTimeOrEmpty(policy.sharedAccessExpiryTime);
 			if (!Utility.isNullOrEmpty(signedExpiry))
 				uriQueryBuilder.add("se", signedExpiry);
 			if (!Utility.isNullOrEmpty(signedPermissions))
@@ -64,8 +76,8 @@ final class SharedAccessSignatureHelper {
 							new Object[] {
 									SharedAccessPolicy
 											.permissionsToString(policy.permissions),
-									Utility.getUTCTimeOrEmpty(policy.sharedAccessStartTime),
-									Utility.getUTCTimeOrEmpty(policy.sharedAccessExpiryTime),
+									getUTCTimeOrEmpty(policy.sharedAccessStartTime),
+									getUTCTimeOrEmpty(policy.sharedAccessExpiryTime),
 									saCanonicalName, signedIdentifier != null ? signedIdentifier : "" });
 		}
 		sharedAccessSignatureString = Utility.safeDecode(sharedAccessSignatureString);

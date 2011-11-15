@@ -2,6 +2,7 @@ package com.windowsazure.samples.android.storageclient;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -10,6 +11,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 import java.util.Map.Entry;
 
 import org.apache.http.Header;
@@ -51,6 +53,19 @@ abstract class Canonicalizer {
 		stringBuilder.append(canonicalizedElementString);
 	}
 
+	protected static final TimeZone GMT_ZONE = TimeZone.getTimeZone("GMT");
+
+	protected static String getGMTTime(Date date) {
+		SimpleDateFormat simpledateformat = new SimpleDateFormat(
+				"EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
+		simpledateformat.setTimeZone(GMT_ZONE);
+		return simpledateformat.format(date);
+	}
+
+	public static String getIfModifiedSince(HttpRequestBase request) {
+		return Utility.getFirstHeaderValueOrEmpty(request, "If-Modified-Since");
+	}
+
 	protected static String canonicalizeHttpRequest(URL url, String accountName,
 			String httpMethodName, String contentTypeString, long contentLength, String defaultDate, HttpRequestBase request)
 			throws StorageException {
@@ -67,9 +82,9 @@ abstract class Canonicalizer {
 		String xMsDateString = Utility.getFirstHeaderValueOrEmpty(request, "x-ms-date");
 		appendCanonicalizedElement(stringBuilder, xMsDateString.equals("") ? defaultDate : "");
 		String ifModifiedSinceString = "";
-		String ifModifiedSince = Utility.getIfModifiedSince(request);
+		String ifModifiedSince = getIfModifiedSince(request);
 		if (ifModifiedSince != null && ifModifiedSince.length() != 0) {
-			ifModifiedSinceString = Utility.getGMTTime(new Date(ifModifiedSince));
+			ifModifiedSinceString = getGMTTime(new Date(ifModifiedSince));
 		}
 		appendCanonicalizedElement(stringBuilder, ifModifiedSinceString);
 		appendCanonicalizedElement(stringBuilder,

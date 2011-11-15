@@ -12,15 +12,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.TimeZone;
 
 import org.apache.http.Header;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.message.AbstractHttpMessage;
 
 public class Utility {
@@ -29,28 +24,6 @@ public class Utility {
 	protected static final TimeZone UTC_ZONE = TimeZone.getTimeZone("UTC");
 
 	protected static final Locale LOCALE_US = Locale.US;
-
-	protected static boolean areCredentialsEqual(
-			StorageCredentials leftCredentials,
-			StorageCredentials rightCredentials) {
-		if (leftCredentials == rightCredentials)
-			return true;
-		if (rightCredentials == null
-				|| leftCredentials.getClass() != rightCredentials
-						.getClass())
-			return false;
-		if (leftCredentials instanceof StorageCredentialsAccountAndKey)
-			return ((StorageCredentialsAccountAndKey) leftCredentials)
-					.toString(true)
-					.equals(((StorageCredentialsAccountAndKey) rightCredentials)
-							.toString(true));
-		if (leftCredentials instanceof StorageCredentialsSharedAccessSignature)
-			return ((StorageCredentialsSharedAccessSignature) leftCredentials)
-					.getToken()
-					.equals(((StorageCredentialsSharedAccessSignature) rightCredentials)
-							.getToken());
-		return leftCredentials.equals(rightCredentials);
-	}
 
 	protected static void assertNotNull(String description, Object object) {
 		if (object == null) {
@@ -67,95 +40,14 @@ public class Utility {
 		}
 	}
 
-	public static StorageException generateNewUnexpectedStorageException(
-			Exception exception) {
-		StorageException storageexception = new StorageException(
-				StorageErrorCode.NONE.toString(),
-				"Unexpected internal storage client error.", 306, null, null);
-		storageexception.initCause(exception);
-		return storageexception;
-	}
-
-	protected static byte[] getBytesFromLong(long number) {
-		byte abyte0[] = new byte[8];
-		for (int i = 0; i < 8; i++)
-			abyte0[7 - i] = (byte) (int) (number >> 8 * i & 255L);
-
-		return abyte0;
-	}
-
 	protected static String getFirstHeaderValueOrEmpty(
 			AbstractHttpMessage request, String propertyName) {
 		Header header = request.getFirstHeader(propertyName);
 		return header != null ? header.getValue() : "";
 	}
 
-	protected static String getGMTTime() {
-		SimpleDateFormat simpledateformat = new SimpleDateFormat(
-				"EEE, dd MMM yyyy HH:mm:ss z", LOCALE_US);
-		simpledateformat.setTimeZone(GMT_ZONE);
-		String result = simpledateformat.format(new Date());
-		if (result.endsWith("GMT+00:00")) {
-			result = result.replace("GMT+00:00", "GMT");
-		}
-		return result;
-	}
-
-	protected static String getGMTTime(Date date) {
-		SimpleDateFormat simpledateformat = new SimpleDateFormat(
-				"EEE, dd MMM yyyy HH:mm:ss z", LOCALE_US);
-		simpledateformat.setTimeZone(GMT_ZONE);
-		return simpledateformat.format(date);
-	}
-
-	public static String getHttpResponseBody(HttpResponse response)
-			throws UnsupportedEncodingException, IOException {
-		Reader reader = new BufferedReader(new InputStreamReader(response
-				.getEntity().getContent(), "UTF-8"));
-		char[] buffer = new char[(int) response.getEntity().getContentLength()];
-		reader.read(buffer);
-		return new String(buffer);
-	}
-
-	public static String getIfModifiedSince(HttpRequestBase request) {
-		return getFirstHeaderValueOrEmpty(request, "If-Modified-Since");
-	}
-
-	protected static String getUTCTimeOrEmpty(Date date) {
-		if (date == null) {
-			return "";
-		} else {
-			SimpleDateFormat simpledateformat = new SimpleDateFormat(
-					"yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
-			simpledateformat.setTimeZone(TimeZone.getTimeZone("UTC"));
-			return simpledateformat.format(date);
-		}
-	}
-
-	protected static IOException initIOException(Exception exception) {
-		IOException ioexception = new IOException();
-		ioexception.initCause(exception);
-		return ioexception;
-	}
-
 	protected static boolean isNullOrEmpty(String string) {
 		return string == null || string.length() == 0;
-	}
-
-	protected static HashMap<String, String> parseAccountString(String accountString)
-			throws IllegalArgumentException {
-		String arguments[] = accountString.split(";");
-		HashMap<String, String> argumentsMap = new HashMap<String, String>();
-		for (String argument : arguments) {
-			int argumentSeparatorIndex = argument.indexOf("=");
-			if (argumentSeparatorIndex < 1)
-				throw new IllegalArgumentException("Invalid Connection String");
-			String name = argument.substring(0, argumentSeparatorIndex);
-			String value = argument.substring(argumentSeparatorIndex + 1);
-			argumentsMap.put(name, value);
-		}
-
-		return argumentsMap;
 	}
 
 	public static String readStringFromStream(InputStream inputStream)
@@ -197,7 +89,7 @@ public class Utility {
 				return stringBuilder.toString();
 			}
 		} catch (UnsupportedEncodingException unsupportedencodingexception) {
-			throw generateNewUnexpectedStorageException(unsupportedencodingexception);
+			throw StorageException.generateNewUnexpectedStorageException(unsupportedencodingexception);
 		}
 		try {
 			return URLDecoder.decode(encodedString, "UTF-8");
@@ -235,7 +127,7 @@ public class Utility {
 				return stringbuilder.toString();
 			}
 		} catch (UnsupportedEncodingException unsupportedencodingexception) {
-			throw generateNewUnexpectedStorageException(unsupportedencodingexception);
+			throw StorageException.generateNewUnexpectedStorageException(unsupportedencodingexception);
 		}
 		return stringAsUtf8;
 	}

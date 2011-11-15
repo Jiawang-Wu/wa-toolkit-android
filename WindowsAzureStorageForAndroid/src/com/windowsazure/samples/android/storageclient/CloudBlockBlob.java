@@ -49,14 +49,13 @@ public final class CloudBlockBlob extends CloudBlob {
 	}
 
 	public void commitBlockList(Iterable<BlockEntry> blockEntriesList)
-			throws NotImplementedException, StorageException,
+			throws StorageException,
 			UnsupportedEncodingException, IOException {
 		commitBlockList(blockEntriesList, null);
 	}
 
 	public void commitBlockList(final Iterable<BlockEntry> blockEntriesList,
-			final String leaseID) throws NotImplementedException,
-			StorageException, UnsupportedEncodingException, IOException {
+			final String leaseID) throws StorageException, UnsupportedEncodingException, IOException {
 		final CloudBlockBlob blob = this;
 		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
 			public Void execute() throws Exception {
@@ -182,6 +181,7 @@ public final class CloudBlockBlob extends CloudBlob {
 				this.processRequest(request);
 				if (result.statusCode != 201) {
 					Log.d("Upload blob uri", request.getURI().toString());
+					Log.d("encoded block id", blockId);
 					for (Header header : request.getAllHeaders())
 					{
 						Log.d("Upload blob header",

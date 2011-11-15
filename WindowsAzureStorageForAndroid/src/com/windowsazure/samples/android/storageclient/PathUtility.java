@@ -158,7 +158,7 @@ public class PathUtility {
 			return new URI(uri.getScheme(), uri.getAuthority(), uri.getPath(),
 					null, null);
 		} catch (URISyntaxException urisyntaxexception) {
-			throw Utility
+			throw StorageException
 					.generateNewUnexpectedStorageException(urisyntaxexception);
 		}
 	}
