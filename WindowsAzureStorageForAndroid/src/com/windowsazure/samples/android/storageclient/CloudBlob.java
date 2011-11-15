@@ -90,13 +90,13 @@ public abstract class CloudBlob implements IListBlobItem {
 	protected void assertCorrectBlobType() throws StorageException {
         if((this instanceof CloudBlockBlob) && m_Properties.blobType != BlobType.BLOCK_BLOB)
         {
-            throw new StorageException("IncorrectBlobType", String.format("Incorrect Blob type, please use the correct Blob type to access a blob on the server. Expected %s, actual %s", 
+            throw new StorageException("IncorrectBlobType", String.format("Incorrect Blob type, please use the correct Blob type to access a blob on the server. Expected %s, actual %s",
                 BlobType.BLOCK_BLOB, m_Properties.blobType
             ), 306, null, null);
         }
         if((this instanceof CloudPageBlob) && m_Properties.blobType != BlobType.PAGE_BLOB)
         {
-            throw new StorageException("IncorrectBlobType", String.format("Incorrect Blob type, please use the correct Blob type to access a blob on the server. Expected %s, actual %s", 
+            throw new StorageException("IncorrectBlobType", String.format("Incorrect Blob type, please use the correct Blob type to access a blob on the server. Expected %s, actual %s",
                 BlobType.PAGE_BLOB, m_Properties.blobType), 306, null, null);
         }
 	}
@@ -107,29 +107,23 @@ public abstract class CloudBlob implements IListBlobItem {
 
 	public void copyFromBlob(final CloudBlob sourceBlob)
 			throws NotImplementedException, StorageException, UnsupportedEncodingException, IOException {
-        StorageOperation storageoperation = new StorageOperation() {
-            public Void execute(CloudBlobClient serviceClient, CloudBlob blob)
+		final CloudBlob blob = this;
+        StorageOperation<Void> storageoperation = new StorageOperation<Void>() {
+            public Void execute()
                 throws Exception
             {
                 HttpPut request = BlobRequest.copyFrom(blob.getTransformedAddress(), sourceBlob.getCanonicalName());
                 BlobRequest.addMetadata(request, sourceBlob.m_Metadata);
-                serviceClient.getCredentials().signRequest(request, 0L);
-                result = ExecutionEngine.processRequest(request);
+                m_ServiceClient.getCredentials().signRequest(request, 0L);
+				this.processRequest(request);
                 if(result.statusCode != HttpStatus.SC_CREATED)
                 {
 					throw new StorageInnerException("Couldn't delete a blob");
                 }
                 return null;
             }
-
-            public Object execute(Object obj, Object obj1)
-                throws Exception
-            {
-                return execute((CloudBlobClient)obj, (CloudBlob)obj1);
-            }
-
         };
-        ExecutionEngine.execute(m_ServiceClient, this, storageoperation);
+        storageoperation.executeTranslatingExceptions();
 	}
 
 	public void copyFromBlob(final CloudBlob sourceBlob, String snapshotId)
@@ -149,25 +143,20 @@ public abstract class CloudBlob implements IListBlobItem {
 
 	public void delete() throws StorageException,
 			UnsupportedEncodingException, IOException {
-		StorageOperation storageOperation = new StorageOperation() {
-			public Void execute(CloudBlobClient serviceClient,
-					CloudBlob blob) throws Exception {
+		final CloudBlob blob = this;
+		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
+			public Void execute() throws Exception {
 				HttpDelete request = BlobRequest.delete(blob
 						.getTransformedAddress());
-				serviceClient.getCredentials().signRequest(request, -1L);
-				result = ExecutionEngine.processRequest(request);
+				m_ServiceClient.getCredentials().signRequest(request, -1L);
+				this.processRequest(request);
 				if (result.statusCode != HttpStatus.SC_ACCEPTED) {
 					throw new StorageInnerException("Couldn't delete a blob");
 				}
 				return null;
 			}
-
-			@Override
-			public Object execute(Object serviceClient, Object blob) throws Exception {
-				return execute((CloudBlobClient) serviceClient, (CloudBlob) blob);
-			}
 		};
-		ExecutionEngine.execute(m_ServiceClient, this, storageOperation);
+        storageOperation.executeTranslatingExceptions();
 	}
 
 	public void delete(final String snapshotId) throws NotImplementedException,
@@ -187,45 +176,41 @@ public abstract class CloudBlob implements IListBlobItem {
 
 	public void download(final OutputStream outputStream)
 			throws StorageException, IOException {
-		StorageOperation storageOperation = new StorageOperation() {
-			public Void execute(CloudBlobClient serviceClient,
-					CloudBlob blob) throws Exception {
+		final CloudBlob blob = this;
+		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
+			public Void execute() throws Exception {
 				HttpGet request = BlobRequest.get(blob
 						.getTransformedAddress());
-				serviceClient.getCredentials().signRequest(request, -1L);
-				RequestResult result = ExecutionEngine.processRequest(request);
+				m_ServiceClient.getCredentials().signRequest(request, -1L);
+				this.processRequest(request);
 				BlobAttributes attributes = BlobResponse.getAttributes(
 						(AbstractHttpMessage) result.httpResponse,
 						blob.getUri(), null);
 				m_Properties.copyFrom(attributes.properties);
 				blob.m_Metadata = attributes.metadata;
-				result.httpResponse.getEntity().writeTo(outputStream);
-				
-				if (result.statusCode != 200) {
+
+				if (result.statusCode == HttpStatus.SC_OK) {
+					result.httpResponse.getEntity().writeTo(outputStream);
+				}
+				else
+				{
 					throw new StorageInnerException("Couldn't download a blob");
 				}
 				return null;
 			}
-
-			@Override
-			public Object execute(Object obj, Object obj1) throws Exception {
-				return execute((CloudBlobClient) obj, (CloudBlob) obj1);
-			}
-
 		};
-		ExecutionEngine.execute(m_ServiceClient, this, storageOperation);
+        storageOperation.executeTranslatingExceptions();
 	}
 
 	public void downloadAttributes() throws StorageException, UnsupportedEncodingException, IOException {
-		StorageOperation storageOperation = new StorageOperation() {
-
-			public Void execute(CloudBlobClient serviceClient,
-					CloudBlob blob) throws Exception {
+		final CloudBlob blob = this;
+		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
+			public Void execute() throws Exception {
 				HttpHead request = BlobRequest.getProperties(
 						blob.getTransformedAddress(),
 						blob.m_SnapshotID, null);
-				serviceClient.getCredentials().signRequest(request, -1L);
-				result = ExecutionEngine.processRequest(request);
+				m_ServiceClient.getCredentials().signRequest(request, -1L);
+				this.processRequest(request);
 				if (result.statusCode != 200) {
 					throw new StorageInnerException(
 							"Couldn't download blob attributes");
@@ -248,13 +233,8 @@ public abstract class CloudBlob implements IListBlobItem {
 					return null;
 				}
 			}
-
-			@Override
-			public Object execute(Object obj, Object obj1) throws Exception {
-				return execute((CloudBlobClient) obj, (CloudBlob) obj1);
-			}
 		};
-		ExecutionEngine.execute(m_ServiceClient, this, storageOperation);
+        storageOperation.executeTranslatingExceptions();
 	}
 
 	public void downloadRange(long blobOffset, int length, byte buffer[], int j)
@@ -264,27 +244,28 @@ public abstract class CloudBlob implements IListBlobItem {
 
 	protected void downloadRangeInternal(final long rangeStart, final int length, final byte buffer[])
 			throws StorageException, UnsupportedEncodingException, IOException {
-        StorageOperation storageOperation = new StorageOperation() {
-            public Void execute(CloudBlobClient serviceClient, CloudBlob blob)
+		final CloudBlob blob = this;
+        StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
+            public Void execute()
                 throws Exception
             {
                 HttpGet request = BlobRequest.get(blob.getTransformedAddress(), rangeStart, length);
-                serviceClient.getCredentials().signRequest(request, -1L);
-                RequestResult result = ExecutionEngine.processRequest(request);
+                m_ServiceClient.getCredentials().signRequest(request, -1L);
+				this.processRequest(request);
 
                 if(result.statusCode != 206)
                 {
 					throw new StorageInnerException("Couldn't read Blob's content");
                 }
 
-                InputStream inputStream = result.httpResponse.getEntity().getContent(); 
+                InputStream inputStream = result.httpResponse.getEntity().getContent();
 
                 int totalBytesRead = 0;
                 int bytesRead;
                 do
                 {
                 	bytesRead = inputStream.read(buffer, totalBytesRead, buffer.length - totalBytesRead);
-                	totalBytesRead += bytesRead; 
+                	totalBytesRead += bytesRead;
                 } while (totalBytesRead < buffer.length && bytesRead != 0);
 
                 bytesRead = inputStream.read(new byte[1], 0, 20000);
@@ -293,26 +274,18 @@ public abstract class CloudBlob implements IListBlobItem {
                 	throw new StorageException("OutOfRangeInput", "An incorrect number of bytes was read from the connection. The connection may have been closed", 306, null, null);
                 }
 
-               
+
                 long contentLength = result.httpResponse.getEntity().getContentLength();
 
                 if((long)totalBytesRead != contentLength)
                 {
                     throw new StorageException("OutOfRangeInput", "An incorrect number of bytes was read from the connection. The connection may have been closed", 306, null, null);
                 }
-                
+
                 return null;
             }
-
-            public Object execute(Object obj, Object obj1)
-                throws Exception
-            {
-                return execute((CloudBlobClient)obj, (CloudBlob)obj1);
-            }
-
         };
-        ExecutionEngine.execute(m_ServiceClient, this, storageOperation);
-        return;
+        storageOperation.executeTranslatingExceptions();
     }
 
 	public boolean exists() throws NotImplementedException, StorageException {
@@ -335,7 +308,7 @@ public abstract class CloudBlob implements IListBlobItem {
     String getCanonicalName()
     {
     	//Blob in named container: /accountName/containerName/blobName
-    	String accountName = new StringTokenizer(this.getUri().getAuthority(), ".").nextToken();  
+    	String accountName = new StringTokenizer(this.getUri().getAuthority(), ".").nextToken();
     	String containerNameAndBlobName = this.getUri().getPath();
     	return String.format("/%s%s", accountName, containerNameAndBlobName);
     }
@@ -373,7 +346,7 @@ public abstract class CloudBlob implements IListBlobItem {
 		throw new NotImplementedException();
 	}
 
-	public CloudBlobClient getServiceClient() 
+	public CloudBlobClient getServiceClient()
 	{
 		if (m_Container != null) {
 			return m_Container.getServiceClient();
@@ -498,13 +471,13 @@ public abstract class CloudBlob implements IListBlobItem {
 			StorageException {
 		throw new NotImplementedException();
 	}
-	
+
 	public abstract void upload(InputStream inputStream, long length)
 			throws NotImplementedException, StorageException, IOException;
-	
+
 	public abstract void upload(InputStream inputStream, long length, String snapshotId)
 			throws NotImplementedException, StorageException, IOException;
-	
+
 	protected void uploadFullBlob(final InputStream inputStream,
 			final long length, final String leaseID)
 			throws StorageException, IOException {
@@ -512,80 +485,65 @@ public abstract class CloudBlob implements IListBlobItem {
 			throw new IllegalArgumentException(
 					"Invalid stream length, specify a positive number of bytes");
 		} else {
-			StorageOperation storageOperation = new StorageOperation() {
-				public Void execute(CloudBlobClient serviceClient,
-						CloudBlob blob) throws Exception {
+		final CloudBlob blob = this;
+			StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
+				public Void execute() throws Exception {
 					HttpPut request = BlobRequest.put(
 							blob.getTransformedAddress(),
 							blob.m_Properties,
 							blob.m_Properties.blobType, leaseID, 0L);
 					BlobRequest.addMetadata(request, blob.m_Metadata);
-					serviceClient.getCredentials().signRequest(request,
+					m_ServiceClient.getCredentials().signRequest(request,
 							length);
 					InputStreamEntity contentEntity = new InputStreamEntity(
 							inputStream, length);
 					request.setEntity(contentEntity);
-					result = ExecutionEngine.processRequest(request);
+					this.processRequest(request);
 					if (result.statusCode != HttpStatus.SC_CREATED) {
 						throw new StorageInnerException(
 								"Couldn't upload a blob's data");
 					}
 					return null;
 				}
-
-				@Override
-				public Object execute(Object firstArgument,
-						Object secondArgument) throws Exception {
-					return execute((CloudBlobClient) firstArgument,
-							(CloudBlob) secondArgument);
-				}
-
 			};
 
-			ExecutionEngine.execute(m_ServiceClient, this, storageOperation);
-			return;
+	        storageOperation.executeTranslatingExceptions();
 		}
 	}
-	
+
 	public void uploadMetadata() throws StorageException, UnsupportedEncodingException, IOException {
 		final String leaseId = "";
-		StorageOperation storageOperation = new StorageOperation() {
-			public Void execute(CloudBlobClient serviceClient,
-					CloudBlob blob) throws Exception {
+		final CloudBlob blob = this;
+		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
+			public Void execute() throws Exception {
 				HttpPut request = BlobRequest.setMetadata(
 						blob.getTransformedAddress(), leaseId);
 				BlobRequest.addMetadata(request, blob.m_Metadata);
-				serviceClient.getCredentials().signRequest(request, 0L);
-				result = ExecutionEngine.processRequest(request);
+				m_ServiceClient.getCredentials().signRequest(request, 0L);
+				this.processRequest(request);
 				if (result.statusCode != 200) {
 					throw new StorageInnerException(
 							"Couldn't upload a blob's data");
 				}
 				return null;
 			}
-
-			@Override
-			public Object execute(Object obj, Object obj1) throws Exception {
-				return execute((CloudBlobClient) obj, (CloudBlob) obj1);
-			}
-
 		};
-		ExecutionEngine.execute(m_ServiceClient, this, storageOperation);
+        storageOperation.executeTranslatingExceptions();
 	}
 	public void uploadMetadata(String snapshotId) throws NotImplementedException,
 			StorageException {
 		throw new NotImplementedException();
 	}
 	public void uploadProperties() throws StorageException, UnsupportedEncodingException, IOException {
-        StorageOperation storageoperation = new StorageOperation() {
-
-            public Void execute(CloudBlobClient cloudblobclient, CloudBlob cloudblob)
+		final CloudBlob blob = this;
+        StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
+            public Void execute()
                 throws Exception
             {
-                HttpPut request = BlobRequest.setProperties(cloudblob.getTransformedAddress(), cloudblob.m_Properties);
-                BlobRequest.addMetadata(request, cloudblob.m_Metadata);
-                cloudblobclient.getCredentials().signRequest(request, 0L);
-                result = ExecutionEngine.processRequest(request);
+                HttpPut request = BlobRequest.setProperties(blob.getTransformedAddress(), blob.m_Properties);
+                BlobRequest.addMetadata(request, blob.m_Metadata);
+                m_ServiceClient.getCredentials().signRequest(request, 0L);
+				this.processRequest(request);
                 if(result.statusCode != 200)
                 {
 					throw new StorageInnerException(
@@ -593,18 +551,10 @@ public abstract class CloudBlob implements IListBlobItem {
                 }
                 return null;
             }
-
-            public Object execute(Object obj, Object obj1)
-                throws Exception
-            {
-                return execute((CloudBlobClient)obj, (CloudBlob)obj1);
-            }
-
-        }
-        ;
-        ExecutionEngine.execute(m_ServiceClient, this, storageoperation);	
+        };
+        storageOperation.executeTranslatingExceptions();
 }
-	
+
 	public void uploadProperties(String snapshotId) throws NotImplementedException,
 			StorageException {
 		throw new NotImplementedException();

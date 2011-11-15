@@ -7,12 +7,14 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.ArrayList;
 
+import org.apache.http.Header;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.message.AbstractHttpMessage;
 
 import android.util.Base64;
+import android.util.Log;
 
 public final class CloudBlockBlob extends CloudBlob {
 
@@ -55,22 +57,22 @@ public final class CloudBlockBlob extends CloudBlob {
 	public void commitBlockList(final Iterable<BlockEntry> blockEntriesList,
 			final String leaseID) throws NotImplementedException,
 			StorageException, UnsupportedEncodingException, IOException {
-		StorageOperation storageoperation = new StorageOperation() {
-			public Void execute(CloudBlobClient cloudblobclient,
-					CloudBlob cloudblob) throws Exception {
+		final CloudBlockBlob blob = this;
+		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
+			public Void execute() throws Exception {
 				HttpPut request = BlobRequest.putBlockList(
-						cloudblob.getTransformedAddress(),
-						cloudblob.m_Properties, leaseID);
-				BlobRequest.addMetadata(request, cloudblob.m_Metadata);
+						blob.getTransformedAddress(),
+						blob.m_Properties, leaseID);
+				BlobRequest.addMetadata(request, blob.m_Metadata);
 
 				String formattedBlocksList = BlobRequest
 						.formatBlockListAsXML(blockEntriesList);
 				request.setEntity(new ByteArrayEntity(formattedBlocksList
 						.getBytes()));
 
-				cloudblobclient.getCredentials().signRequest(request,
+				m_ServiceClient.getCredentials().signRequest(request,
 						formattedBlocksList.length());
-				result = ExecutionEngine.processRequest(request);
+				this.processRequest(request);
 				if (result.statusCode != 201) {
 					throw new StorageInnerException(
 							"Couldn't commit a blocks list");
@@ -78,22 +80,16 @@ public final class CloudBlockBlob extends CloudBlob {
 
 				BlobAttributes attributes = BlobResponse.getAttributes(
 						(AbstractHttpMessage) result.httpResponse,
-						cloudblob.getUri(), null);
-				cloudblob.m_Properties.eTag = attributes.properties.eTag == null ? cloudblob.m_Properties.eTag
+						blob.getUri(), null);
+				blob.m_Properties.eTag = attributes.properties.eTag == null ? blob.m_Properties.eTag
 						: attributes.properties.eTag;
-				cloudblob.m_Properties.lastModified = attributes.properties.lastModified;
+				blob.m_Properties.lastModified = attributes.properties.lastModified;
 				if (attributes.properties.length != 0L)
-					cloudblob.m_Properties.length = attributes.properties.length;
+					blob.m_Properties.length = attributes.properties.length;
 				return null;
 			}
-
-			@Override
-			public Object execute(Object obj, Object obj1) throws Exception {
-				return execute((CloudBlobClient) obj, (CloudBlob) obj1);
-			}
-
 		};
-		ExecutionEngine.execute(m_ServiceClient, this, storageoperation);
+        storageOperation.executeTranslatingExceptions();
 	}
 
 	public ArrayList<String> downloadBlockList(BlockListingFilter listingFilter)
@@ -174,30 +170,30 @@ public final class CloudBlockBlob extends CloudBlob {
 	private void uploadBlockInternal(final String blockId,
 			final InputStream inputStream,
 			final long length) throws StorageException, IOException {
-		StorageOperation storageOperation = new StorageOperation() {
-			public Void execute(CloudBlobClient serviceClient,
-					CloudBlob blob) throws Exception {
+		final CloudBlockBlob blob = this;
+		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
+			public Void execute() throws Exception {
 				HttpPut request = BlobRequest.putBlock(
 						blob.getTransformedAddress(), blockId);
-				serviceClient.getCredentials().signRequest(request, length);
+				m_ServiceClient.getCredentials().signRequest(request, length);
 				InputStreamEntity entity = new InputStreamEntity(inputStream,
 						length);
 				request.setEntity(entity);
-				result = ExecutionEngine.processRequest(request);
+				this.processRequest(request);
 				if (result.statusCode != 201) {
+					Log.d("Upload blob uri", request.getURI().toString());
+					for (Header header : request.getAllHeaders())
+					{
+						Log.d("Upload blob header",
+								String.format("%s=%s", header.getName(), header.getValue()));
+					}
 					throw new StorageInnerException(
 							"Couldn't upload a blob block");
 				}
 				return null;
 			}
-
-			@Override
-			public Object execute(Object obj, Object obj1) throws Exception {
-				return execute((CloudBlobClient) obj, (CloudBlob) obj1);
-			}
-
 		};
-		ExecutionEngine.execute(m_ServiceClient, this, storageOperation);
+        storageOperation.executeTranslatingExceptions();
 	}
 
 	public static String encodedBlockId(String blockId)

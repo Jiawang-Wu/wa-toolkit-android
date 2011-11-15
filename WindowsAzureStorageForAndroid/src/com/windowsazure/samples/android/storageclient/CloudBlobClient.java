@@ -155,19 +155,25 @@ public final class CloudBlobClient {
 			NotImplementedException {
 		return listContainersWithPrefix(prefix, listingDetails);
 	}
-	protected Iterable<CloudBlobContainer> listContainersWithPrefix(String prefix,
-			ContainerListingDetails listingDetails)
+	protected Iterable<CloudBlobContainer> listContainersWithPrefix(final String prefix,
+			final ContainerListingDetails listingDetails)
 			throws StorageInnerException, Exception {
+		final CloudBlobClient client = this;
+		StorageOperation<Iterable<CloudBlobContainer>> storageOperation = new StorageOperation<Iterable<CloudBlobContainer>>() {
+			public Iterable<CloudBlobContainer> execute() throws Exception {
 		HttpGet request = containerRequest.list(getEndpoint(), prefix,
 				listingDetails);
 		getCredentials().signRequest(request, -1L);
-		RequestResult result = ExecutionEngine.processRequest(request);
+		this.processRequest(request);
 		if (result.statusCode != HttpStatus.SC_OK) {
 			throw new StorageInnerException("Couldn't list blob's containers");
 		}
 		ListContainersResponse response = new ListContainersResponse(
 				result.httpResponse.getEntity().getContent());
-		return response.getContainers(this);
+		return response.getContainers(client);
+			}
+		};
+		return storageOperation.executeTranslatingExceptions();
 	}
 	protected void setBaseURI(URI baseUri) throws NotImplementedException,
 			NotImplementedException {

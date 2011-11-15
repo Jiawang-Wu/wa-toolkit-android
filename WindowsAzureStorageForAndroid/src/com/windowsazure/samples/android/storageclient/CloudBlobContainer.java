@@ -87,16 +87,16 @@ public final class CloudBlobContainer {
 
 	public boolean create(final boolean createIfNotExist)
 			throws StorageException, UnsupportedEncodingException, IOException {
-		StorageOperation storageOperation = new StorageOperation() {
-			public boolean execute(CloudBlobClient serviceClient,
-					CloudBlobContainer container) throws Exception {
+		final CloudBlobContainer container = this;
+		StorageOperation<Boolean> storageOperation = new StorageOperation<Boolean>() {
+			public Boolean execute() throws Exception {
 				HttpPut request = m_ContainerRequest.create(
 						container.m_ContainerOperationsUri,
 						createIfNotExist);
 				ContainerRequest.addMetadata(request,
 						container.m_Metadata);
-				serviceClient.getCredentials().signRequest(request, 0L);
-				result = ExecutionEngine.processRequest(request);
+				m_ServiceClient.getCredentials().signRequest(request, 0L);
+				this.processRequest(request);
 
 				if (result.statusCode == HttpStatus.SC_OK
 						&& createIfNotExist) {
@@ -120,17 +120,9 @@ public final class CloudBlobContainer {
 					return true;
 				}
 			}
-
-			@Override
-			public Object execute(Object cloudBlobClient,
-					Object cloudBlobContainer) throws Exception {
-				return execute((CloudBlobClient) cloudBlobClient,
-						(CloudBlobContainer) cloudBlobContainer);
-			}
 		};
 
-		return (Boolean) ExecutionEngine.execute(m_ServiceClient, this,
-				storageOperation);
+        return storageOperation.executeTranslatingExceptions();
 	}
 
 	public boolean createIfNotExist() throws StorageException, UnsupportedEncodingException, IOException {
@@ -139,13 +131,13 @@ public final class CloudBlobContainer {
 
 	public void delete() throws StorageException,
 			UnsupportedEncodingException, IOException, StorageInnerException {
-		StorageOperation storageOperation = new StorageOperation() {
-			public Void execute(CloudBlobClient serviceClient,
-					CloudBlobContainer container) throws Exception {
+		final CloudBlobContainer container = this;
+		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
+			public Void execute() throws Exception {
 				HttpDelete request = m_ContainerRequest.delete(
 						container.m_ContainerOperationsUri);
-				serviceClient.getCredentials().signRequest(request, -1L);
-				result = ExecutionEngine.processRequest(request);
+				m_ServiceClient.getCredentials().signRequest(request, -1L);
+				this.processRequest(request);
 				if (result.statusCode != HttpStatus.SC_OK
 						&& result.statusCode != HttpStatus.SC_ACCEPTED) {
 					throw new StorageInnerException(
@@ -153,26 +145,20 @@ public final class CloudBlobContainer {
 				}
 				return null;
 			}
-
-			@Override
-			public Object execute(Object obj, Object obj1) throws Exception {
-				return execute((CloudBlobClient) obj, (CloudBlobContainer) obj1);
-			}
 		};
 
-		ExecutionEngine.execute(m_ServiceClient, this, storageOperation);
+        storageOperation.executeTranslatingExceptions();
 	}
 
 	public void downloadAttributes() throws StorageException, UnsupportedEncodingException, IOException {
-		StorageOperation storageOperation = new StorageOperation() {
-
-			public Void execute(CloudBlobClient serviceClient,
-					CloudBlobContainer container) throws Exception {
+		final CloudBlobContainer container = this;
+		StorageOperation<Void>  storageOperation = new StorageOperation<Void>() {
+			public Void execute() throws Exception {
 				HttpHead request = m_ContainerRequest
 						.getProperties(container
 								.getTransformedAddress());
-				serviceClient.getCredentials().signRequest(request, -1L);
-				result = ExecutionEngine.processRequest(request);
+				m_ServiceClient.getCredentials().signRequest(request, -1L);
+				this.processRequest(request);
 				if (result.statusCode != 200) {
 					throw new StorageInnerException("Couldn't download container's attributes");
 				} else {
@@ -184,24 +170,20 @@ public final class CloudBlobContainer {
 					return null;
 				}
 			}
-
-			@Override
-			public Object execute(Object obj, Object obj1) throws Exception {
-				return execute((CloudBlobClient) obj, (CloudBlobContainer) obj1);
-			}
 		};
-		ExecutionEngine.execute(m_ServiceClient, this, storageOperation);
+        storageOperation.executeTranslatingExceptions();
 	}
 
 	public BlobContainerPermissions downloadPermissions()
 			throws StorageException, UnsupportedEncodingException, IOException {
-        StorageOperation storageoperation = new StorageOperation() {
-            public BlobContainerPermissions execute(CloudBlobClient serviceClient, CloudBlobContainer container)
+		final CloudBlobContainer container = this;
+        StorageOperation<BlobContainerPermissions> storageOperation = new StorageOperation<BlobContainerPermissions> () {
+            public BlobContainerPermissions execute()
                 throws Exception
             {
             	HttpGet request = ContainerRequest.getAcl(container.getUri());
-                serviceClient.getCredentials().signRequest(request, -1L);
-                result = ExecutionEngine.processRequest(request);
+            	m_ServiceClient.getCredentials().signRequest(request, -1L);
+				this.processRequest(request);
                 if(result.statusCode != 200)
                 {
 					throw new StorageInnerException("Couldn't download container's permissions");
@@ -210,28 +192,21 @@ public final class CloudBlobContainer {
                 BlobContainerPermissions permissions = CloudBlobContainer.getContainerAcl(s);
                 return permissions;
             }
-
-            public Object execute(Object obj, Object obj1)
-                throws Exception
-            {
-                return execute((CloudBlobClient)obj, (CloudBlobContainer)obj1);
-            }
         };
-        
-        return (BlobContainerPermissions)ExecutionEngine.execute(m_ServiceClient, this, storageoperation);
+        return storageOperation.executeTranslatingExceptions();
 	}
 
 	public boolean exists() throws StorageException,
 			UnsupportedEncodingException, IOException {
-		StorageOperation storageOperation = new StorageOperation() {
-			public boolean execute(CloudBlobClient serviceClient,
-					CloudBlobContainer container) throws Exception {
+		final CloudBlobContainer container = this;
+		StorageOperation<Boolean> storageOperation = new StorageOperation<Boolean>() {
+			public Boolean execute() throws Exception {
 
 					// If we are using WA directly, we try to get the properties
 					HttpHead request = m_ContainerRequest
 							.getProperties(container.getTransformedAddress());
-					serviceClient.getCredentials().signRequest(request, -1L);
-					result = ExecutionEngine.processRequest(request);
+					m_ServiceClient.getCredentials().signRequest(request, -1L);
+					this.processRequest(request);
 					if (result.statusCode == 200) {
 						return true;
 					} else if (result.statusCode == 404) {
@@ -241,15 +216,9 @@ public final class CloudBlobContainer {
 								"Couldn't check if a blob's container exists");
 					}
 			}
-
-			@Override
-			public Object execute(Object obj, Object obj1) throws Exception {
-				return execute((CloudBlobClient) obj, (CloudBlobContainer) obj1);
-			}
 		};
 
-		return ((Boolean) ExecutionEngine.execute(m_ServiceClient, this,
-				storageOperation));
+        return storageOperation.executeTranslatingExceptions();
 	}
 
 	public String generateSharedAccessSignature(
@@ -299,7 +268,7 @@ public final class CloudBlobContainer {
 		throw new NotImplementedException();
 	}
 
-	public HashMap<String, String> getMetadata() 
+	public HashMap<String, String> getMetadata()
 	{
 		return m_Metadata;
 	}
@@ -373,36 +342,28 @@ public final class CloudBlobContainer {
 			return this.getTransformedAddress();
 		}
 
-		StorageOperation storageOperation = new StorageOperation() {
-			public URI execute(CloudBlobClient serviceClient,
-					CloudBlobContainer container) throws Exception {
+		final CloudBlobContainer container = this;
+		StorageOperation<URI> storageOperation = new StorageOperation<URI>() {
+			public URI execute() throws Exception {
 				HttpGet request = m_ContainerRequest.getUri(
 						container.m_ContainerOperationsUri);
-				serviceClient.getCredentials().signRequest(request, -1L);
-				result = ExecutionEngine.processRequest(request);
+				m_ServiceClient.getCredentials().signRequest(request, -1L);
+				this.processRequest(request);
 				if (result.statusCode == HttpStatus.SC_OK) {
 					DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 					DocumentBuilder builder = factory.newDocumentBuilder();
 					Document dom = builder.parse(result.httpResponse.getEntity().getContent());
 					Element root = dom.getDocumentElement();
 					return new URI(root.getTextContent());
-					
+
 				} else {
 					throw new StorageInnerException(
 							"Couldn't get a blob container uri");
 				}
 			}
-
-			@Override
-			public Object execute(Object firstArgument, Object secondArgument)
-					throws Exception {
-				return execute((CloudBlobClient) firstArgument,
-						(CloudBlobContainer) secondArgument);
-			}
 		};
 
-		return (URI) ExecutionEngine.execute(m_ServiceClient, this,
-				storageOperation);
+        return storageOperation.executeTranslatingExceptions();
 	}
 
 	public Iterable<CloudBlob> listBlobs() throws StorageInnerException,
@@ -415,18 +376,24 @@ public final class CloudBlobContainer {
 		return this.listBlobs(prefix, false);
 	}
 
-	public Iterable<CloudBlob> listBlobs(String prefix, boolean useFlatBlobListing)
+	public Iterable<CloudBlob> listBlobs(final String prefix, final boolean useFlatBlobListing)
 			throws StorageInnerException, Exception {
-		HttpGet request = m_BlobRequest.list(this.getServiceClient()
-				.getEndpoint(), this, prefix, useFlatBlobListing);
-		this.getServiceClient().getCredentials().signRequest(request, -1L);
-		RequestResult result = ExecutionEngine.processRequest(request);
+		final CloudBlobContainer container = this;
+		StorageOperation<Iterable<CloudBlob>> storageOperation = new StorageOperation<Iterable<CloudBlob>>() {
+			public Iterable<CloudBlob> execute() throws Exception {
+		HttpGet request = m_BlobRequest.list(container.getServiceClient()
+				.getEndpoint(), container, prefix, useFlatBlobListing);
+		container.getServiceClient().getCredentials().signRequest(request, -1L);
+		this.processRequest(request);
 		if (result.statusCode != HttpStatus.SC_OK) {
 			throw new StorageInnerException("Couldn't list container blobs");
 		}
 		ListBlobsResponse response = new ListBlobsResponse(
 				result.httpResponse.getEntity().getContent());
-		return response.getBlobs(this.getServiceClient(), this);
+		return response.getBlobs(container.getServiceClient(), container);
+			}
+		};
+		return storageOperation.executeTranslatingExceptions();
 	}
 
 	public Iterable<CloudBlobContainer> listContainers() throws Exception {
@@ -486,7 +453,7 @@ public final class CloudBlobContainer {
 	{
 		m_Metadata = metadata;
 	}
-	protected void setName(String containerName) 
+	protected void setName(String containerName)
 	{
 		m_Name = containerName;
 	}
@@ -499,56 +466,43 @@ public final class CloudBlobContainer {
 		throw new NotImplementedException();
 	}
 	public void uploadMetadata() throws StorageException, UnsupportedEncodingException, IOException {
-		StorageOperation storageOperation = new StorageOperation() {
-
-			public Void execute(CloudBlobClient serviceClient,
-					CloudBlobContainer container) throws Exception {
+		final CloudBlobContainer container = this;
+		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
+			public Void execute() throws Exception {
 				HttpPut request = ContainerRequest
 						.setMetadata(container.getTransformedAddress());
 				ContainerRequest.addMetadata(request,
 						container.m_Metadata);
-				serviceClient.getCredentials().signRequest(request, 0L);
-				result = ExecutionEngine.processRequest(request);
+				m_ServiceClient.getCredentials().signRequest(request, 0L);
+				this.processRequest(request);
 				if (result.statusCode != 200) {
 					throw new StorageInnerException(
 							"Couldn't upload container's metadata");
 				}
 				return null;
 			}
-
-			@Override
-			public Object execute(Object obj, Object obj1) throws Exception {
-				return execute((CloudBlobClient) obj, (CloudBlobContainer) obj1);
-			}
 		};
-		ExecutionEngine.execute(m_ServiceClient, this, storageOperation);
+        storageOperation.executeTranslatingExceptions();
 	}
 	public void uploadPermissions(final BlobContainerPermissions permissions)
 			throws StorageException,
 			UnsupportedEncodingException, IOException {
-		StorageOperation storageOperation = new StorageOperation() {
-			public Void execute(CloudBlobClient cloudBlobClient,
-					CloudBlobContainer cloudBlobContainer) throws Exception {
+		final CloudBlobContainer container = this;
+		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
+			public Void execute() throws Exception {
 				HttpPut request = m_ContainerRequest.setAcl(
-						cloudBlobContainer.m_ContainerOperationsUri,
+						container.m_ContainerOperationsUri,
 						permissions.publicAccess);
-				cloudBlobClient.getCredentials().signRequest(request, 0);
-				result = ExecutionEngine.processRequest(request);
+				m_ServiceClient.getCredentials().signRequest(request, 0);
+				this.processRequest(request);
 				if (result.statusCode != HttpStatus.SC_OK) {
 					throw new StorageInnerException(
 							"Couldn't upload permissions to a blob's container");
 				}
 				return null;
 			}
-
-			@Override
-			public Object execute(Object cloudBlobClient,
-					Object cloudBlobContainer) throws Exception {
-				return execute((CloudBlobClient) cloudBlobClient,
-						(CloudBlobContainer) cloudBlobContainer);
-			}
 		};
 
-		ExecutionEngine.execute(m_ServiceClient, this, storageOperation);
+        storageOperation.executeTranslatingExceptions();
 	}
 }
