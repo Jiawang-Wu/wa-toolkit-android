@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <!-- common -->   
+    
+    <string name="app_name">Toolkit Sample</string>
+            
+    <!-- storage_type_selector view -->    
+    
+    <string name="storage_type_selector_title">Which type of Windows Azure® storage do you want to work with?</string>
+    
+    <string name="table_storage_title">Table Storage</string>
+    <string name="table_storage_hint">Table data similar to rows in a database.</string> 
+    
+    <string name="blob_storage_title">Blob Storage</string>
+    <string name="blob_storage_hint">For large data objects such as images.</string>
+    
+    <string name="queue_storage_title">Queue Storage</string>    
+    <string name="queue_storage_hint">Queue of items written/read in order.</string>
+    
+    <!-- storage_create_item view -->
+       
+    <string name="create_button_text">Create</string>
+    <string name="pick_image_text">Pick Image</string>
+    
+    <string name="create_table">Create Table</string>
+    <string name="create_container">Create Container</string>
+    <string name="create_blob">Create Blob</string>
+    <string name="create_queue">Create Queue</string>
+    <string name="create_queue_message">Add Message</string>
+    
+    <string name="create_table_label">Table Name</string>
+    <string name="create_container_label">Container Name</string>
+    <string name="create_blob_label">Blob Name</string>
+    <string name="create_queue_label">Queue Name</string>
+    <string name="create_queue_message_label">Message Text</string>
+        
+    <string name="create_item_failed_title">Create Item Failed</string>
+    <string name="error_missing_title">You must provide a valid name.</string>    
+    <string name="error_missing_image">You must provide an image source.</string>   
+    
+    <!-- storage_entity view --> 
+    <string name="save_button_text">Save</string>
+    <string name="edit_entity_title">Edit Entity</string>
+    <string name="add_entity_title">Add Entity</string>
+        
+	<!-- configuration -->      
+	
+    <string name="toolkit_connection_type">Direct</string>
+    
+    <string name="cloud_ready_acs_namespace">{the namespace of the ACS service you are using}</string>
+    <string name="cloud_ready_acs_realm">uri:wazmobiletoolkit</string>
+    <string name="cloud_ready_acs_proxy_service">{the service name where the ACS Cloud Ready package is deployed}</string>
+    
+    <string name="cloud_ready_simple_proxy_service">{the service name where the Membership Cloud Ready package is deployed}</string>
+    
+    <string name="direct_account_name">{the name of the Windows Azure storage account}</string>
+    <string name="direct_access_key">{the access key for the storage account}</string>  
+    
+    <string name="configuration_error_title">Configuration Error</string>
+    <string name="error_missing_connection_type">You must provide valid parameter for the ToolkitConnectionType in the application res/values/strings.xml file before running the first time.</string>
+    <string name="error_missing_direct_parameters">You must update valid values for Direct_AccountName and Direct_AccountKeythe in the application res/values/strings.xml file before running the first time.</string>
+    <string name="error_missing_cloud_ready_acs_parameters">You must update valid values for CloudReadyAcs_Namespace, CloudReadyAcs_Realm and CloudReadySimple_ProxyService in the application res/values/strings.xml file before running the first time.</string>
+    <string name="error_missing_cloud_ready_simple_parameters">You must update valid value for CloudReadySimple_ProxyService in the application res/values/strings.xml file before running the first time.</string>
+</resources>

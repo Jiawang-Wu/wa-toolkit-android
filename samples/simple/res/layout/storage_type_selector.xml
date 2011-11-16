@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/storage_type_selector"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <include android:id="@+id/header" layout="@layout/navigation_header"/>
+    
+    <TextView
+        android:id="@+id/storage_type_selector_title"
+        android:text="@string/storage_type_selector_title"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="50dp"
+        android:layout_marginTop="40dp"
+        android:gravity="center"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+	<Button 
+	    android:id="@+id/table_storage_button"
+	    android:text="@string/table_storage_title"
+	    android:layout_height="35dp"
+	    android:layout_width="150dp"
+		android:gravity="center_vertical|center_horizontal"
+		android:background="@drawable/gradient"
+    	android:layout_gravity="center_vertical|center_horizontal|center"/>
+
+    <TextView
+        android:id="@+id/table_storage_title"
+        android:text="@string/table_storage_hint"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        android:layout_marginTop="5dp"
+        android:gravity="center"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+	
+	<Button 
+	    android:id="@+id/blob_storage_button"
+	    android:text="@string/blob_storage_title"
+	    android:layout_height="35dp"
+	    android:layout_width="150dp"
+		android:gravity="center_vertical|center_horizontal"
+		android:background="@drawable/gradient"
+    	android:layout_gravity="center_vertical|center_horizontal|center"/>
+
+    <TextView
+        android:id="@+id/blob_storage_title"
+        android:text="@string/blob_storage_hint"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        android:layout_marginTop="5dp"
+        android:gravity="center"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+    
+    <Button 
+	    android:id="@+id/queue_storage_button"
+	    android:text="@string/queue_storage_title"
+	    android:layout_height="35dp"
+	    android:layout_width="150dp"
+		android:gravity="center_vertical|center_horizontal"
+		android:background="@drawable/gradient"
+    	android:layout_gravity="center_vertical|center_horizontal|center"/>
+
+    <TextView
+        android:id="@+id/queue_storage_title"
+        android:text="@string/queue_storage_hint"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        android:layout_marginTop="5dp"
+        android:gravity="center"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+</LinearLayout>

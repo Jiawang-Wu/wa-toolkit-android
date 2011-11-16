@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/storage_create_item"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+	<include android:id="@+id/header" layout="@layout/navigation_header"/>
+
+    <TextView  
+	    android:id="@+id/storage_create_item_title"  
+	    android:layout_width="wrap_content"  
+	    android:layout_height="wrap_content"  
+	    android:layout_marginTop="40dp"
+	    android:textSize="10pt">  
+	</TextView>  
+
+	<EditText  
+	    android:id="@+id/storage_create_item_value"  
+	    android:layout_height="wrap_content"
+	    android:inputType="text"  
+	    android:layout_width="fill_parent">  
+	</EditText>      
+	
+	<TextView  
+	    android:id="@+id/storage_create_item_image_selected"  
+	    android:layout_width="wrap_content"  
+	    android:layout_height="wrap_content"  
+	    android:layout_marginTop="5dp"
+	    android:textAppearance="?android:attr/textAppearanceSmall"
+	    android:visibility="gone">  
+	</TextView> 
+	
+	<Button  
+	    android:id="@+id/pick_image_button"  
+	    android:text="@string/pick_image_text"
+	    android:background="@drawable/gradient"	    
+	    android:layout_height="35dp"
+	    android:layout_marginTop="5dp"
+	    android:layout_width="fill_parent"
+	    android:visibility="gone">  
+	</Button>
+	
+	<Button  
+	    android:id="@+id/storage_create_item_button"  
+	    android:text="@string/create_button_text"
+	    android:background="@drawable/gradient"	    
+	    android:layout_height="35dp"
+	    android:layout_marginTop="5dp"
+	    android:layout_width="fill_parent">  
+	</Button>
+
+</LinearLayout>
