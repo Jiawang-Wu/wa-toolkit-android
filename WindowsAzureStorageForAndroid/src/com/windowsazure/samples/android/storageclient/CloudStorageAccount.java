@@ -64,7 +64,6 @@ public final class CloudStorageAccount implements CloudClientAccount {
 	}
 
 	public static String getDefaultQueueEndpoint(HashMap<String, String> configuration) {
-			HashMap<String, String> configuration) {
 		String defaultEndpointsProtocol = configuration
 				.get("DefaultEndpointsProtocol") == null ? "http"
 				: (String) configuration.get("DefaultEndpointsProtocol");
@@ -74,7 +73,6 @@ public final class CloudStorageAccount implements CloudClientAccount {
 	}
 
 	public static String getDefaultQueueEndpoint(String scheme, String accountName) {
-			String accountName) {
 		return String.format("%s://%s.%s", new Object[] { scheme, accountName,
 				"queue.core.windows.net" });
 	}
