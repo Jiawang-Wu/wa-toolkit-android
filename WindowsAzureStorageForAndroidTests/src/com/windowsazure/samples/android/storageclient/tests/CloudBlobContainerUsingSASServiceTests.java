@@ -40,7 +40,7 @@ public abstract class CloudBlobContainerUsingSASServiceTests<T extends WAZServic
 
 	public void testAccessingContainerPropertiesThrowsException() throws Exception
 	{
-		final CloudBlobContainer container = this.createContainer("testaccessingcontainerpropertiesthrowsexception");
+		final CloudBlobContainer container = this.createQueue("testaccessingcontainerpropertiesthrowsexception");
 		
 		this.assertThrows(new RunnableWithExpectedException() {
 			
@@ -52,7 +52,7 @@ public abstract class CloudBlobContainerUsingSASServiceTests<T extends WAZServic
 	
 	public void testExistsMethodThrowsException() throws Exception
 	{
-		final CloudBlobContainer container = this.createContainer("testexistsmethodthrowsexception");
+		final CloudBlobContainer container = this.createQueue("testexistsmethodthrowsexception");
 		
 		this.assertThrows(new RunnableWithExpectedException() {
 			public void run() throws Exception {
@@ -64,7 +64,7 @@ public abstract class CloudBlobContainerUsingSASServiceTests<T extends WAZServic
 	public void testListedBlobsInPrivateContainerHaveSASCredentialsButSameClient()
 			throws Exception {
 		CloudBlobContainer container = this
-				.createContainer("testlistedblobshavesascredentials");
+				.createQueue("testlistedblobshavesascredentials");
 		this.createEmptyBlob(container, "blob1");
 		this.createEmptyBlob(container, "blob2");
 
@@ -80,7 +80,7 @@ public abstract class CloudBlobContainerUsingSASServiceTests<T extends WAZServic
 
 	public void testCreateContainerCreatedByOtherAccountThrowsException()
 			throws Exception {
-		final CloudBlobContainer container = this.createContainer("testcreatecontainercreatedbyotheraccountthrowsexception");
+		final CloudBlobContainer container = this.createQueue("testcreatecontainercreatedbyotheraccountthrowsexception");
 		final CloudBlobContainer sameContainer = new CloudBlobContainer(
 				container.getName(), otherCloudBlobClient);
 		this.assertThrows(new RunnableWithExpectedException() {
@@ -95,7 +95,7 @@ public abstract class CloudBlobContainerUsingSASServiceTests<T extends WAZServic
 			throws Exception {
 		String containerName = "testdeletecontainerwithoutpermissionsthrowsexception";
 		final CloudBlobContainer container = this
-				.createContainer(containerName);
+				.createQueue(containerName);
 		final CloudBlobContainer sameContainer = new CloudBlobContainer(
 				containerName, otherCloudBlobClient);
 		this.assertThrows(new RunnableWithExpectedException() {
@@ -116,9 +116,9 @@ public abstract class CloudBlobContainerUsingSASServiceTests<T extends WAZServic
 	public void testUsersCanSeeOtherUsersContainers() throws Exception {
 		String privateContainerName = "testuserscanseeotheruserscontainers-private";
 		String publicContainerName = "testuserscanseeotheruserscontainers-public";
-		this.createContainer(privateContainerName);
+		this.createQueue(privateContainerName);
 		final CloudBlobContainer publicContainer = this
-				.createContainer(publicContainerName);
+				.createQueue(publicContainerName);
 
 		BlobContainerPermissions permissions = new BlobContainerPermissions();
 		permissions.publicAccess = BlobContainerPublicAccessType.CONTAINER;

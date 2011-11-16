@@ -25,7 +25,7 @@ public abstract class CloudBlobContainerTests<T extends CloudClientAccountProvid
 			throws Exception {
 		this.assertThrows(new RunnableWithExpectedException() {
 			public void run() throws Exception {
-				thisTest.createContainer("my_test_container");
+				thisTest.createQueue("my_test_container");
 			}
 		}, StorageException.class);
 		Assert.assertFalse(this.cloudBlobClient.listContainers().iterator()
@@ -56,7 +56,7 @@ public abstract class CloudBlobContainerTests<T extends CloudClientAccountProvid
 
 	public void testCreateContainerTwiceThrowsException() throws Exception {
 		final CloudBlobContainer container = this
-				.createContainer("testcreatecontainertwicethrowsexception");
+				.createQueue("testcreatecontainertwicethrowsexception");
 		List<CloudBlobContainer> containers = this.toList(this.cloudBlobClient
 				.listContainers());
 		Assert.assertEquals(containers.size(), 1);
@@ -71,10 +71,10 @@ public abstract class CloudBlobContainerTests<T extends CloudClientAccountProvid
 	}
 
 	public void testCreateExistentContainerThrowsException() throws Exception {
-		this.createContainer("testcreateexistentcontainerthrowsexception");
+		this.createQueue("testcreateexistentcontainerthrowsexception");
 		this.assertThrows(new RunnableWithExpectedException() {
 			public void run() throws Exception {
-				thisTest.createContainer("testcreateexistentcontainerthrowsexception");
+				thisTest.createQueue("testcreateexistentcontainerthrowsexception");
 			}
 		}, StorageException.class);
 		List<CloudBlobContainer> containers = this.toList(this.cloudBlobClient
@@ -112,7 +112,7 @@ public abstract class CloudBlobContainerTests<T extends CloudClientAccountProvid
 	/** Listing containers - START **/
 	public void testCreatedContainerIsListed() throws Exception {
 		final CloudBlobContainer container = this
-				.createContainer("testcreatedcontainerislisted");
+				.createQueue("testcreatedcontainerislisted");
 		List<CloudBlobContainer> containers = this.toList(this.cloudBlobClient
 				.listContainers());
 		Assert.assertEquals(containers.size(), 1);
@@ -121,7 +121,7 @@ public abstract class CloudBlobContainerTests<T extends CloudClientAccountProvid
 
 	public void testPublicContainerIsListed() throws Exception {
 		final CloudBlobContainer container = this
-				.createContainer("testcreatedcontainerislisted");
+				.createQueue("testcreatedcontainerislisted");
 		BlobContainerPermissions permissions = new BlobContainerPermissions();
 		permissions.publicAccess = BlobContainerPublicAccessType.CONTAINER;
 		container.uploadPermissions(permissions);
@@ -133,7 +133,7 @@ public abstract class CloudBlobContainerTests<T extends CloudClientAccountProvid
 
 	public void testDeletedContainerIsNotListed() throws Exception {
 		final CloudBlobContainer container = this
-				.createContainer("testdeletedcontainerisnotlisted");
+				.createQueue("testdeletedcontainerisnotlisted");
 		List<CloudBlobContainer> containers = this.toList(this.cloudBlobClient
 				.listContainers());
 		Assert.assertEquals(containers.size(), 1);
@@ -150,7 +150,7 @@ public abstract class CloudBlobContainerTests<T extends CloudClientAccountProvid
 		class CreateAndDeleteContainersHelper {
 			void create(String suffix) throws Exception {
 				String containerName = containerBaseName + suffix;
-				thisTest.createContainer(containerName);
+				thisTest.createQueue(containerName);
 				expectedContainerNames.add(containerName);
 				this.assertListingGivesExpectedContainers();
 			}
@@ -171,8 +171,7 @@ public abstract class CloudBlobContainerTests<T extends CloudClientAccountProvid
 				thisTest.AssertHaveSameElements(expectedContainerNames,
 						containerNames);
 			}
-		}
-		;
+		};
 
 		CreateAndDeleteContainersHelper helper = new CreateAndDeleteContainersHelper();
 		helper.create("0");
@@ -208,13 +207,13 @@ public abstract class CloudBlobContainerTests<T extends CloudClientAccountProvid
 	}
 
 	public void testListingContainersByPrefixes() throws Exception {
-		this.createContainer("abc-0");
-		this.createContainer("abc-1");
-		this.createContainer("abc-2");
-		this.createContainer("ab-3");
-		this.createContainer("a-4");
-		this.createContainer("def-5");
-		this.createContainer("def-6");
+		this.createQueue("abc-0");
+		this.createQueue("abc-1");
+		this.createQueue("abc-2");
+		this.createQueue("ab-3");
+		this.createQueue("a-4");
+		this.createQueue("def-5");
+		this.createQueue("def-6");
 		Assert.assertFalse(cloudBlobClient.listContainers("nothing").iterator()
 				.hasNext());
 		this.AssertHaveSameElements(
@@ -255,9 +254,9 @@ public abstract class CloudBlobContainerTests<T extends CloudClientAccountProvid
 	/** Getting container SAS - START **/
 	public void testContainersDoesntShareUris() throws Exception {
 		CloudBlobContainer container = this
-				.createContainer("testcontainersdoesntshareuris-1");
+				.createQueue("testcontainersdoesntshareuris-1");
 		CloudBlobContainer otherContainer = this
-				.createContainer("testcontainersdoesntshareuris-2");
+				.createQueue("testcontainersdoesntshareuris-2");
 		URI firstUri = container.getUri();
 		URI secondUri = otherContainer.getUri();
 		Assert.assertTrue(!firstUri.equals(secondUri));
@@ -265,7 +264,7 @@ public abstract class CloudBlobContainerTests<T extends CloudClientAccountProvid
 
 	public void testContainerUriHasProperPattern() throws Exception {
 		CloudBlobContainer container = this
-				.createContainer("testcontainerurihasproperpattern");
+				.createQueue("testcontainerurihasproperpattern");
 		URI uri = container.getUri();
 		Assert.assertTrue(uri.getAuthority().endsWith(".blob.core.windows.net"));
 		Assert.assertEquals(uri.getPath(), "/testcontainerurihasproperpattern");
@@ -278,7 +277,7 @@ public abstract class CloudBlobContainerTests<T extends CloudClientAccountProvid
 		String blob1Name = "blob1";
 		String blob2Name = "blob2";
 		CloudBlobContainer container = this
-				.createContainer("testcreatedblobsarelisted");
+				.createQueue("testcreatedblobsarelisted");
 
 		this.createEmptyBlob(container, blob1Name);
 		this.AssertHaveSameElements(this.getBlobNames(container.listBlobs()),
@@ -292,7 +291,7 @@ public abstract class CloudBlobContainerTests<T extends CloudClientAccountProvid
 	public void testCreatedBlobsAreListedProperlyByPrefixesUsingFlatListing()
 			throws Exception {
 		CloudBlobContainer container = this
-				.createContainer("testcreatedblobsarelistedproperlybyprefixes");
+				.createQueue("testcreatedblobsarelistedproperlybyprefixes");
 		this.createEmptyBlob(container, "abc/def/jkl");
 		this.createEmptyBlob(container, "abc/0");
 		this.createEmptyBlob(container, "abc/1");
@@ -344,7 +343,7 @@ public abstract class CloudBlobContainerTests<T extends CloudClientAccountProvid
 
 	public void testListWithEmptyPrefixAuthorizesCorrectly() throws Exception {
 		CloudBlobContainer container = this
-				.createContainer("testlistwithemptyprefixauthorizescorrectly");
+				.createQueue("testlistwithemptyprefixauthorizescorrectly");
 		this.AssertHaveSameElements(
 				this.getBlobNames(container.listBlobs("", true)),
 				Arrays.asList(new String[] {}));
@@ -356,7 +355,7 @@ public abstract class CloudBlobContainerTests<T extends CloudClientAccountProvid
 	public void testUploadingEmptyOrNullValueForMetadataThrowsException()
 			throws Exception {
 		final CloudBlobContainer container = this
-				.createContainer("testuploadingemptyornullvaluethrowsexception");
+				.createQueue("testuploadingemptyornullvaluethrowsexception");
 
 		container.getMetadata().put("key2", "");
 		this.assertThrows(new RunnableWithExpectedException() {
@@ -377,7 +376,7 @@ public abstract class CloudBlobContainerTests<T extends CloudClientAccountProvid
 	public void testCreatedBlobsAreListedProperlyByPrefixesNotUsingFlatListing()
 			throws Exception {
 		CloudBlobContainer container = this
-				.createContainer("testcreatedblobsarelistedproperlybyprefixesusingflatlisting");
+				.createQueue("testcreatedblobsarelistedproperlybyprefixesusingflatlisting");
 		this.createEmptyBlob(container, "abc/def/jkl");
 		this.createEmptyBlob(container, "abc/0");
 		this.createEmptyBlob(container, "abc/1");

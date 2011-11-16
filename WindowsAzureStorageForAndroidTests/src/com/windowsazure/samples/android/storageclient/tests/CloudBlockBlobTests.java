@@ -31,7 +31,7 @@ public abstract class CloudBlockBlobTests<T extends CloudClientAccountProvider>
 	public void testCreateBlobInPrivateContainer()
 			throws StorageInnerException, Exception {
 		CloudBlobContainer container = this
-				.createContainer("testcreateblobinprivatecontainer");
+				.createQueue("testcreateblobinprivatecontainer");
 		String blobName = "someblob";
 		CloudBlockBlob blob = container.getBlockBlobReference(blobName);
 		ByteArrayInputStream contentsStream = new ByteArrayInputStream(
@@ -44,7 +44,7 @@ public abstract class CloudBlockBlobTests<T extends CloudClientAccountProvider>
 
 	public void testReadCreatedBlob() throws StorageInnerException, Exception {
 		CloudBlobContainer container = this
-				.createContainer("testreadcreatedblob");
+				.createQueue("testreadcreatedblob");
 		CloudBlockBlob blob = container.getBlockBlobReference("someblob");
 		String sampleContent = "SampleContent";
 
@@ -59,7 +59,7 @@ public abstract class CloudBlockBlobTests<T extends CloudClientAccountProvider>
 	}
 
 	public void testReadCreatedBlobUsingStream() throws StorageInnerException, Exception {
-		CloudBlobContainer container = this.createContainer("testreadcreatedblobusingstream");
+		CloudBlobContainer container = this.createQueue("testreadcreatedblobusingstream");
 		CloudBlockBlob blob = container.getBlockBlobReference("someblob");
 		String sampleContent = "SampleContent";
 
@@ -76,7 +76,7 @@ public abstract class CloudBlockBlobTests<T extends CloudClientAccountProvider>
 	}
 
 	public void testWriteBlobUsingStreams() throws StorageInnerException, Exception {
-		CloudBlobContainer container = this.createContainer("testwriteblobusingstreams");
+		CloudBlobContainer container = this.createQueue("testwriteblobusingstreams");
 		CloudBlockBlob blob = container.getBlockBlobReference("someblob");
 		String sampleContent = "SampleContent";
 
@@ -90,7 +90,7 @@ public abstract class CloudBlockBlobTests<T extends CloudClientAccountProvider>
 	}
 
 	public void testSettingAndGettingBlobProperties() throws StorageInnerException, Exception {
-		CloudBlobContainer container = this.createContainer("testsettingandgettingblobproperties");
+		CloudBlobContainer container = this.createQueue("testsettingandgettingblobproperties");
 		CloudBlob blob = this.createEmptyBlob(container, "someblob");
 		CloudBlob sameBlob = container.getBlockBlobReference(blob.getName());
 		
@@ -130,7 +130,7 @@ public abstract class CloudBlockBlobTests<T extends CloudClientAccountProvider>
 	public void testReadPropertiesOfCreatedBlob() throws StorageInnerException,
 			Exception {
 		CloudBlobContainer container = this
-				.createContainer("testreadpropertiesofcreatedblob");
+				.createQueue("testreadpropertiesofcreatedblob");
 		CloudBlockBlob blob = container.getBlockBlobReference("someblob");
 		String sampleContent = "SampleContent";
 		String contentType = "text/plain";
@@ -150,7 +150,7 @@ public abstract class CloudBlockBlobTests<T extends CloudClientAccountProvider>
 	public void testDeletingBlobTwiceThrowsException()
 			throws StorageInnerException, Exception {
 		CloudBlobContainer container = this
-				.createContainer("testdeletingblobtwicethrowsexception");
+				.createQueue("testdeletingblobtwicethrowsexception");
 		final CloudBlob blob = this.createEmptyBlob(container, "someBlob");
 
 		blob.delete();
@@ -165,7 +165,7 @@ public abstract class CloudBlockBlobTests<T extends CloudClientAccountProvider>
 	public void testBlobIsntListedAfterBeingDeleted()
 			throws StorageInnerException, Exception {
 		CloudBlobContainer container = this
-				.createContainer("testblobisntlistedafterbeingdeleted");
+				.createQueue("testblobisntlistedafterbeingdeleted");
 		String blobName = "someBlob";
 		final CloudBlob blob = this.createEmptyBlob(container, blobName);
 
@@ -181,7 +181,7 @@ public abstract class CloudBlockBlobTests<T extends CloudClientAccountProvider>
 	public void testListingIsAccurateWhileCreatingAndDeletingSeveralBlobs()
 			throws Exception {
 		final CloudBlobContainer container = this
-				.createContainer("testlistingisaccuratewhilecreatinganddeletingseveralblobs");
+				.createQueue("testlistingisaccuratewhilecreatinganddeletingseveralblobs");
 		final ArrayList<String> expectedBlobNames = new ArrayList<String>();
 		class CreateAndDeleteBlobsHelper {
 			void upload(String blobName) throws Exception {
@@ -258,7 +258,7 @@ public abstract class CloudBlockBlobTests<T extends CloudClientAccountProvider>
 		generator.nextBytes(sampleContent);
 
 		CloudBlobContainer container = this
-				.createContainer("testwriteandreadlargeblob");
+				.createQueue("testwriteandreadlargeblob");
 		CloudBlockBlob blob = container.getBlockBlobReference("someblob");
 
 		ByteArrayInputStream contentsStream = new ByteArrayInputStream(
@@ -280,7 +280,7 @@ public abstract class CloudBlockBlobTests<T extends CloudClientAccountProvider>
 		generator.nextBytes(sampleContent);
 
 		CloudBlobContainer container = this
-				.createContainer("testwriteblobwithstreamofunknownlength");
+				.createQueue("testwriteblobwithstreamofunknownlength");
 		CloudBlockBlob blob = container.getBlockBlobReference("someblob");
 
 		ByteArrayInputStream contentsStream = new ByteArrayInputStream(
@@ -297,7 +297,7 @@ public abstract class CloudBlockBlobTests<T extends CloudClientAccountProvider>
 	public void testCanCreateBlockBlobsUsingSingleBlock()
 			throws StorageInnerException, Exception {
 		CloudBlobContainer container = this
-				.createContainer("testcancreateblockblobsusingsingleblock");
+				.createQueue("testcancreateblockblobsusingsingleblock");
 		final CloudBlockBlob blob = container
 				.getBlockBlobReference("singleBlockBlob");
 		String sampleContent = "sampleContent";
@@ -323,7 +323,7 @@ public abstract class CloudBlockBlobTests<T extends CloudClientAccountProvider>
 	public void testUpdatingBlobByBlocksWorksAsExpected()
 			throws StorageInnerException, Exception {
 		final CloudBlobContainer container = this
-				.createContainer("testupdatingblobbyblocksworksasexpected");
+				.createQueue("testupdatingblobbyblocksworksasexpected");
 		final CloudBlockBlob blob = container
 				.getBlockBlobReference("someBlockBlob");
 
@@ -429,7 +429,7 @@ public abstract class CloudBlockBlobTests<T extends CloudClientAccountProvider>
 	public void testUploadingAndDownloadingBlobMetadataWorksAsExpected()
 			throws Exception {
 		CloudBlobContainer container = this
-				.createContainer("testuploadinganddownloadingblobmetadataworksasexpected");
+				.createQueue("testuploadinganddownloadingblobmetadataworksasexpected");
 		String blobName = "someBlob";
 		CloudBlob blob = this.createEmptyBlob(container, blobName);
 		CloudBlob sameBlob = container.getBlockBlobReference("someBlob");
@@ -464,7 +464,7 @@ public abstract class CloudBlockBlobTests<T extends CloudClientAccountProvider>
 	public void testUploadingEmptyOrNullValueForBlobMetadataThrowsException()
 			throws Exception {
 		final CloudBlobContainer container = this
-				.createContainer("testuploadingemptyornullvalueforblobmetadatathrowsexception");
+				.createQueue("testuploadingemptyornullvalueforblobmetadatathrowsexception");
 
 		container.getMetadata().put("key2", "");
 		this.assertThrows(new RunnableWithExpectedException() {

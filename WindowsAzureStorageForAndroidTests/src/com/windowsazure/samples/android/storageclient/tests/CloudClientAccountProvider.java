@@ -4,6 +4,7 @@ import java.net.URISyntaxException;
 
 import com.windowsazure.samples.android.storageclient.CloudBlobClient;
 import com.windowsazure.samples.android.storageclient.CloudClientAccount;
+import com.windowsazure.samples.android.storageclient.CloudQueueClient;
 import com.windowsazure.samples.android.storageclient.NotImplementedException;
 
 public abstract class CloudClientAccountProvider {
@@ -18,4 +19,10 @@ public abstract class CloudClientAccountProvider {
 			Exception {
 		return getAccount().createCloudBlobClient();
 	}
+
+	public CloudQueueClient getCloudQueueClient() throws URISyntaxException,
+	Exception {
+		return getAccount().createCloudQueueClient();
+	}
+
 }

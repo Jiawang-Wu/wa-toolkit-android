@@ -13,7 +13,7 @@ import com.windowsazure.samples.android.storageclient.StorageInnerException;
 public class CloudBlockBlobUsingAccountAndKeyTests extends
 		CloudBlockBlobTests<CloudStorageAccountProvider> {
 	public void testCopiedBlobIsIdenticalToSourceBlob() throws StorageInnerException, Exception {
-		CloudBlobContainer container = this.createContainer("testcopiedblobisidenticaltosourceblob1");
+		CloudBlobContainer container = this.createQueue("testcopiedblobisidenticaltosourceblob1");
 		CloudBlockBlob sourceBlob = container.getBlockBlobReference("sourceBlob");
 		String sampleContent = "SampleContent";
 

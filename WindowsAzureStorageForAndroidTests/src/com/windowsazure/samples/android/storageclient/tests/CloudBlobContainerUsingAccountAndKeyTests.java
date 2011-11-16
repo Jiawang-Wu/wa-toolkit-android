@@ -20,8 +20,8 @@ public class CloudBlobContainerUsingAccountAndKeyTests extends
 		CloudBlobContainerTests<CloudStorageAccountProvider> {
 	public void testContainerProperties() throws UnsupportedEncodingException, NotImplementedException, StorageException, IOException, URISyntaxException
 	{
-		CloudBlobContainer container1 = this.createContainer("testcontainerproperties-1");
-		CloudBlobContainer container2 = this.createContainer("testcontainerproperties-2");
+		CloudBlobContainer container1 = this.createQueue("testcontainerproperties-1");
+		CloudBlobContainer container2 = this.createQueue("testcontainerproperties-2");
 		
 		container1.downloadAttributes();
 		BlobContainerProperties properties = container1.getProperties();
@@ -54,7 +54,7 @@ public class CloudBlobContainerUsingAccountAndKeyTests extends
 
 	public void testChangingContainerPermssions() throws Exception
 	{
-		final CloudBlobContainer container = this.createContainer("testchangingcontainerpermssions");
+		final CloudBlobContainer container = this.createQueue("testchangingcontainerpermssions");
 		final CloudBlobContainer sameContainer = new CloudBlobContainer(container.getName(), cloudBlobClient);
 		BlobContainerPermissions permissions = new BlobContainerPermissions();
 
@@ -117,7 +117,7 @@ public class CloudBlobContainerUsingAccountAndKeyTests extends
 	public void testUploadingAndDownloadingMetadataWorksAsExpected()
 			throws Exception {
 		CloudBlobContainer container = this
-				.createContainer("testuploadinganddownloadingmetadataworksasexpected");
+				.createQueue("testuploadinganddownloadingmetadataworksasexpected");
 		CloudBlobContainer sameContainer = new CloudBlobContainer(
 				container.getName(), cloudBlobClient);
 
@@ -149,7 +149,7 @@ public class CloudBlobContainerUsingAccountAndKeyTests extends
 	public void testDeleteContainerTwiceShouldNotThrowException()
 			throws Exception {
 		final CloudBlobContainer container = this
-				.createContainer("testdeletecontainertwicethrowsexception");
+				.createQueue("testdeletecontainertwicethrowsexception");
 		this.deleteContainer(container);
 
 		// Windows Azure works this way. Two deletes inside the 30 seconds

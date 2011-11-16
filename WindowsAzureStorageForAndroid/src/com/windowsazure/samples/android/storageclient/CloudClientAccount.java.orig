@@ -2,6 +2,9 @@ package com.windowsazure.samples.android.storageclient;
 
 public interface CloudClientAccount {
 	CloudBlobClient createCloudBlobClient() throws Exception;
-	CloudQueueClient createCloudQueueClient() throws Exception;
+<<<<<<< HEAD
 	CloudTableClient createCloudTableClient() throws Exception;
+=======
+	CloudQueueClient createCloudQueueClient() throws Exception;
+>>>>>>> 3f09d56074de54d489e2d1097b90a15805ae14b2
 }
