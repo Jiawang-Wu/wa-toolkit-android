@@ -100,7 +100,7 @@ public final class StorageCredentialsAccountAndKey extends StorageCredentials {
 	AbstractContainerRequest getContainerRequest() {
 		return new ContainerRequest();
 	}
-
+	
 	public Credentials getCredentials() {
 		return m_Credentials;
 	}
@@ -126,6 +126,19 @@ public final class StorageCredentialsAccountAndKey extends StorageCredentials {
 	}
 
 	@Override
+	public void signTableRequest(HttpRequestBase request) 
+			throws InvalidKeyException, MalformedURLException, IllegalArgumentException, StorageException {
+		// TODO Auto-generated method stub
+		BaseRequest.signRequestForTable(request, m_Credentials);
+	}
+	
+	@Override
+	public void signTableRequestLite(HttpRequestBase request) {
+	// TODO Auto-generated method stub
+	
+	}
+
+	@Override
 	public String toString(boolean showKey) {
 		return String.format("%s=%s;%s=%s", new Object[] {
 				"AccountName",
@@ -139,4 +152,5 @@ public final class StorageCredentialsAccountAndKey extends StorageCredentials {
 	public URI transformUri(URI uri) {
 		return uri;
 	}
+
 }

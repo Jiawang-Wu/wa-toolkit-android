@@ -11,6 +11,8 @@ final class CanonicalizerFactory {
 	private static final BlobQueueFullCanonicalizer BLOB_QUEUE_FULL_V2_INSTANCE = new BlobQueueFullCanonicalizer();
 
 	private static final BlobQueueLiteCanonicalizer BLOB_QUEUE_LITE_INSTANCE = new BlobQueueLiteCanonicalizer();
+	
+	private static final TableFullCanonicalizer TABLE_FULL_V2_INSTANCE = new TableFullCanonicalizer();
 
 	protected static Canonicalizer getBlobQueueFullCanonicalizer(
 			HttpRequestBase request) {
@@ -28,6 +30,15 @@ final class CanonicalizerFactory {
 		else
 			throw new UnsupportedOperationException(
 					"Versions before 2009-09-19 do not support Shared Key Lite for Blob And Queue.");
+	}
+
+	protected static Canonicalizer getTableFullCanonicalizer(
+			HttpRequestBase request) {
+		if (validateVersionIsSupported(request))
+			return TABLE_FULL_V2_INSTANCE;
+		else
+			throw new UnsupportedOperationException(
+					"Storage protocol version prior to 2009-09-19 are not supported.");
 	}
 
 	private static boolean validateVersionIsSupported(HttpRequestBase request) {

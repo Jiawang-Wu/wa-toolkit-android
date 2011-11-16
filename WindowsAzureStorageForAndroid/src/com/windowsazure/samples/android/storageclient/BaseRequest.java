@@ -127,7 +127,7 @@ final class BaseRequest {
 		}
 		return result;
 	}
-
+	
 	public static void signRequestForBlobAndQueue(HttpRequestBase request,
 			Credentials credentials, Long contentLength)
 			throws InvalidKeyException, StorageException, MalformedURLException {
@@ -142,4 +142,17 @@ final class BaseRequest {
 				String.format("%s %s:%s", "SharedKey",
 						credentials.getAccountName(), signature));
 	}
+	
+	public static void signRequestForTable(HttpRequestBase request, Credentials credentials) 
+			throws MalformedURLException, StorageException, InvalidKeyException, IllegalArgumentException {
+		request.setHeader("x-ms-date", getGMTTime());
+		//Beginning with version 2009-09-19 
+		request.setHeader("DataServiceVersion", "1.0;NetFx");
+		request.setHeader("MaxDataServiceVersion", "1.0;NetFx");
+		Canonicalizer canonicalizer = CanonicalizerFactory.getTableFullCanonicalizer(request);
+		String canonicalizedRequest = canonicalizer.canonicalize(request, credentials.getAccountName(), -1l);
+		String signature = StorageKey.computeMacSha256(credentials.getKey(), canonicalizedRequest);
+		request.setHeader("Authorization", String.format("%s %s:%s", "SharedKey", credentials.getAccountName(), signature));		
+	}
+	
 }

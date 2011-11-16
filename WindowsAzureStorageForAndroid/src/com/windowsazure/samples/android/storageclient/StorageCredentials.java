@@ -87,7 +87,7 @@ public abstract class StorageCredentials {
 	abstract AbstractBlobRequest getBlobRequest();
 
 	abstract AbstractContainerRequest getContainerRequest();
-
+	
 	public abstract void signRequest(HttpRequestBase request, long length)
 			throws NotImplementedException, InvalidKeyException,
 			StorageException, MalformedURLException;
@@ -95,6 +95,11 @@ public abstract class StorageCredentials {
 	public abstract void signRequestLite(HttpRequestBase request, long length)
 			throws NotImplementedException, StorageException,
 			InvalidKeyException;
+	
+	public abstract void signTableRequest(HttpRequestBase request) 
+			throws InvalidKeyException, MalformedURLException, IllegalArgumentException, StorageException;
+	
+	public abstract void signTableRequestLite(HttpRequestBase request);
 
 	public abstract String toString(boolean showSignature);
 
