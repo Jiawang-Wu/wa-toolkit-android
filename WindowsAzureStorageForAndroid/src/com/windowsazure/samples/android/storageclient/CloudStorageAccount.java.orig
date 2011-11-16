@@ -63,16 +63,27 @@ public final class CloudStorageAccount implements CloudClientAccount {
 				"blob.core.windows.net" });
 	}
 
-	public static String getDefaultQueueEndpoint(HashMap<String, String> configuration) {
+<<<<<<< HEAD
+	private static String getDefaultQueueEndpoint(
+			HashMap<String, String> configuration) {
 		String defaultEndpointsProtocol = configuration
 				.get("DefaultEndpointsProtocol") == null ? "http"
+=======
+	public static String getDefaultQueueEndpoint(HashMap<String, String> configuration) {
+		String defaultEndpointsProtocol = configuration.get("DefaultEndpointsProtocol") == null ? "http"
+>>>>>>> 3f09d56074de54d489e2d1097b90a15805ae14b2
 				: (String) configuration.get("DefaultEndpointsProtocol");
 		String accountName = configuration.get("AccountName") == null ? null
 				: (String) configuration.get("AccountName");
 		return getDefaultQueueEndpoint(defaultEndpointsProtocol, accountName);
 	}
 
+<<<<<<< HEAD
+	private static String getDefaultQueueEndpoint(String scheme,
+			String accountName) {
+=======
 	public static String getDefaultQueueEndpoint(String scheme, String accountName) {
+>>>>>>> 3f09d56074de54d489e2d1097b90a15805ae14b2
 		return String.format("%s://%s.%s", new Object[] { scheme, accountName,
 				"queue.core.windows.net" });
 	}
@@ -275,31 +286,32 @@ public final class CloudStorageAccount implements CloudClientAccount {
 		else
 			return new CloudBlobClient(getBlobEndpoint(), getCredentials());
 	}
+<<<<<<< HEAD
+
+	public CloudTableClient createCloudTableClient()
+			throws NotImplementedException {
+		if (getTableEndpoint() == null)
+			throw new IllegalArgumentException("No blob endpoint configured.");
+=======
 	
 	public CloudQueueClient createCloudQueueClient()
 			throws NotImplementedException, URISyntaxException {
 		if (getQueueEndpoint() == null)
 			throw new IllegalArgumentException("No queue endpoint configured.");
+>>>>>>> 3f09d56074de54d489e2d1097b90a15805ae14b2
 		if (m_Credentials == null)
 			throw new IllegalArgumentException("No credentials provided.");
 		if (!m_Credentials.canCredentialsSignRequest())
 			throw new IllegalArgumentException(
-					"CloudQueueClient requires a credential that can sign request");
-		else
-			return new CloudQueueClient(getQueueEndpoint(), getCredentials());
-	}
-	
-	public CloudTableClient createCloudTableClient()
-			throws NotImplementedException {
-		if (getTableEndpoint() == null)
-			throw new IllegalArgumentException("No blob endpoint configured.");
-		if (m_Credentials == null)
-			throw new IllegalArgumentException("No credentials provided.");
-		if (!m_Credentials.canCredentialsSignRequest())
-			throw new IllegalArgumentException(
+<<<<<<< HEAD
 					"CloudBlobClient requires a credential that can sign request");
 		else
 			return new CloudTableClient(getTableEndpoint(), getCredentials());
+=======
+					"CloudQueueClient requires a credential that can sign request");
+		else
+			return new CloudQueueClient(getQueueEndpoint(), getCredentials());
+>>>>>>> 3f09d56074de54d489e2d1097b90a15805ae14b2
 	}
 
 	public URI getBlobEndpoint() {

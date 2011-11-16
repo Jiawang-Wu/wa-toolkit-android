@@ -96,7 +96,7 @@ public class WAZServiceAccountCredentials extends StorageCredentials {
 	AbstractContainerRequest getContainerRequest() {
 		return new ContainerWASServiceRequest();
 	}
-
+	
 	@Override
 	public void signRequest(HttpRequestBase request, long l)
 			throws NotImplementedException, InvalidKeyException,
@@ -118,5 +118,17 @@ public class WAZServiceAccountCredentials extends StorageCredentials {
 	@Override
 	public URI transformUri(URI uri) throws URISyntaxException, StorageException {
 		return null;
+	}
+
+	@Override
+	public void signTableRequest(HttpRequestBase request) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void signTableRequestLite(HttpRequestBase request) {
+		// TODO Auto-generated method stub
+		
 	}
 }

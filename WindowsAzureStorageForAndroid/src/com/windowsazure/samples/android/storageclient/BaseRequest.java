@@ -7,7 +7,6 @@ import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
@@ -27,7 +26,7 @@ final class BaseRequest {
 			addOptionalHeader(request, "x-ms-lease-id", leaseId);
 	}
 
-	public static void addMetadata(HttpRequestBase request, HashMap<String, String> metadata) {
+	public static void addMetadata(HttpRequestBase request, Map<String, String> metadata) {
 		if (metadata != null) {
 			Map.Entry<String, String> metadataEntry;
 			for (Iterator<Entry<String, String>> iterator = metadata.entrySet().iterator(); iterator
@@ -127,7 +126,7 @@ final class BaseRequest {
 		}
 		return result;
 	}
-
+	
 	public static void signRequestForBlobAndQueue(HttpRequestBase request,
 			Credentials credentials, Long contentLength)
 			throws InvalidKeyException, StorageException, MalformedURLException {
@@ -142,4 +141,17 @@ final class BaseRequest {
 				String.format("%s %s:%s", "SharedKey",
 						credentials.getAccountName(), signature));
 	}
+	
+	public static void signRequestForTable(HttpRequestBase request, Credentials credentials) 
+			throws MalformedURLException, StorageException, InvalidKeyException, IllegalArgumentException {
+		request.setHeader("x-ms-date", getGMTTime());
+		//Beginning with version 2009-09-19 
+		request.setHeader("DataServiceVersion", "1.0;NetFx");
+		request.setHeader("MaxDataServiceVersion", "1.0;NetFx");
+		Canonicalizer canonicalizer = CanonicalizerFactory.getTableFullCanonicalizer(request);
+		String canonicalizedRequest = canonicalizer.canonicalize(request, credentials.getAccountName(), -1l);
+		String signature = StorageKey.computeMacSha256(credentials.getKey(), canonicalizedRequest);
+		request.setHeader("Authorization", String.format("%s %s:%s", "SharedKey", credentials.getAccountName(), signature));		
+	}
+	
 }

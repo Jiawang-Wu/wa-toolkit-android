@@ -66,6 +66,7 @@ abstract class Canonicalizer {
 		return Utility.getFirstHeaderValueOrEmpty(request, "If-Modified-Since");
 	}
 
+	//TODO: refactoring (this should be abstract an implemented on the subclasses) 
 	protected static String canonicalizeHttpRequest(URL url, String accountName,
 			String httpMethodName, String contentTypeString, long contentLength, String defaultDate, HttpRequestBase request)
 			throws StorageException {
@@ -103,6 +104,7 @@ abstract class Canonicalizer {
 		return result;
 	}
 
+	//TODO: refactoring (this should be abstract an implemented on the subclasses) 
 	protected static String canonicalizeHttpRequestLite(URL url, String accountName,
 			String httpMethodName, String contentTypeString, long contentLength, String defaultDate, HttpRequestBase request)
 			throws StorageException {
@@ -113,9 +115,21 @@ abstract class Canonicalizer {
 		String s5 = Utility.getFirstHeaderValueOrEmpty(request, "x-ms-date");
 		appendCanonicalizedElement(stringbuilder, s5.equals("") ? defaultDate : "");
 		addCanonicalizedHeaders(request, stringbuilder);
-		appendCanonicalizedElement(stringbuilder,
-				getCanonicalizedResource(url, accountName));
+		appendCanonicalizedElement(stringbuilder, getCanonicalizedResource(url, accountName));
 		return stringbuilder.toString();
+	}
+	
+	//TODO: refactoring (this should be named abstract canonicalizeHttpRequest an implemented on the subclasses) 
+	protected static String canonicalizeHttpTableRequest(URL url, String accountName, String httpMethodName, String contentTypeString, 
+			long contentLength, String defaultDate, HttpRequestBase request) throws StorageException {
+		StringBuilder stringBuilder = new StringBuilder(request.getMethod());
+		appendCanonicalizedElement(stringBuilder, Utility.getFirstHeaderValueOrEmpty(request, "Content-MD5"));
+		appendCanonicalizedElement(stringBuilder, contentTypeString == null ? "" : contentTypeString);
+		String xMsDateString = Utility.getFirstHeaderValueOrEmpty(request, "x-ms-date");
+		appendCanonicalizedElement(stringBuilder, xMsDateString.equals("") ? defaultDate : xMsDateString);
+		appendCanonicalizedElement(stringBuilder, getCanonicalizedResource(url, accountName));
+		String result = stringBuilder.toString();
+		return result;		
 	}
 
 	private static String getCanonicalizedResource(URL url, String accountName)

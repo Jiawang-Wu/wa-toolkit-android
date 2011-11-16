@@ -2,7 +2,7 @@ package com.windowsazure.samples.android.storageclient.tests;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 import junit.framework.Assert;
@@ -52,8 +52,8 @@ public abstract class TestCase extends android.test.AndroidTestCase {
 		return list;
 	}
 
-	protected void AssertHashMapsAreEquivalent(HashMap<String, String> leftHashMap,
-			HashMap<String, String> rightHashMap) {
+	protected void AssertHashMapsAreEquivalent(Map<String, String> leftHashMap,
+			Map<String, String> rightHashMap) {
 		Assert.assertEquals(leftHashMap.size(), rightHashMap.size());
 		Assert.assertTrue(leftHashMap.entrySet().containsAll(
 				rightHashMap.entrySet()));

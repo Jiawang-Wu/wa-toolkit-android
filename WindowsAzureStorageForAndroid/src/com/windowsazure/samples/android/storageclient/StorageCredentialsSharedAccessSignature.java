@@ -92,6 +92,18 @@ public final class StorageCredentialsSharedAccessSignature extends
 	@Override
 	public void signRequestLite(HttpRequestBase request, long length) {
 	}
+	
+	@Override
+	public void signTableRequest(HttpRequestBase request) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public void signTableRequestLite(HttpRequestBase request) {
+	// TODO Auto-generated method stub
+	
+	}
 
 	@Override
 	public String toString(boolean showSignature) {

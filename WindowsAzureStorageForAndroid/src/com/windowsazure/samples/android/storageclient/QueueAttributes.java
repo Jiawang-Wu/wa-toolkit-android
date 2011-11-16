@@ -1,23 +1,32 @@
 package com.windowsazure.samples.android.storageclient;
 
+import java.net.URI;
 import java.util.HashMap;
-
-import android.net.Uri;
+import java.util.Map;
 
 public class QueueAttributes {
-	public QueueAttributes() {
+	private Map<String, String> m_Metadata;
+	private URI m_Uri;
 
+	public QueueAttributes() {
+		m_Metadata = new HashMap<String, String>();
 	}
 
 	public QueueAttributes(QueueAttributes other) {
-
+		this(other.getUri(), other.getMetadata());
 	}
 
-	public HashMap<String, String> getMetadata() {
-		return null;
+	public QueueAttributes(URI uri, Map<String, String> metadata) {
+		m_Uri = uri;
+		m_Metadata = new HashMap<String, String>();
+		m_Metadata.putAll(metadata);
 	}
 
-	public Uri getUri() {
-		return null;
+	public Map<String, String> getMetadata() {
+		return m_Metadata;
+	}
+
+	public URI getUri() {
+		return m_Uri;
 	}
 }

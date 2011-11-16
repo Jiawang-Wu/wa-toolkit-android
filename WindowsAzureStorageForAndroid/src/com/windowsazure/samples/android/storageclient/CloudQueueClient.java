@@ -1,35 +1,67 @@
 package com.windowsazure.samples.android.storageclient;
 
-import android.net.Uri;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.HttpGet;
 
 public class CloudQueueClient {
-	public CloudQueueClient(String baseAddress, StorageCredentials credentials) {
-	}
+	private URI m_BaseUri;
+	private StorageCredentials m_Credentials;
 
+	public CloudQueueClient(String baseAddress, StorageCredentials credentials) throws URISyntaxException {
+		this(new URI(baseAddress), credentials);
+	}
+	public CloudQueueClient(URI baseAddress, StorageCredentials credentials) throws URISyntaxException {
+		m_BaseUri = baseAddress;
+		m_Credentials = credentials;
+	}
+	public CloudQueueClient(StorageCredentials credentials) throws URISyntaxException {
+		this(CloudStorageAccount.getDefaultQueueEndpoint(CloudStorageAccount.getDefaultScheme(),
+				credentials.getAccountName()), credentials);
+	}
 	public StorageCredentials getCredentials() {
-		return null;
+		return m_Credentials;
 
 	}
 
-	public Uri getBaseUri() {
-		return null;
-
+	public URI getBaseUri() {
+		return m_BaseUri;
 	}
 
-	public CloudQueue GetQueueReference(String queueAddress) {
-		return null;
+	public CloudQueue getQueueReference(String queueAddress) throws URISyntaxException {
+		return new CloudQueue(queueAddress, this);
 	}
 
-	public Iterable<CloudQueue> ListQueues() {
-		return null;
+	public Iterable<CloudQueue> listQueues() throws UnsupportedEncodingException, StorageException, IOException {
+		return this.listQueues(null);
 	}
 
-	public Iterable<CloudQueue> ListQueues(String prefix) {
-		return null;
+	public Iterable<CloudQueue> listQueues(String prefix) throws UnsupportedEncodingException, StorageException, IOException {
+		return this.listQueues(prefix, QueueListingDetails.All);
 	}
 
-	public Iterable<CloudQueue> ListQueues(String prefix,
-			QueueListingDetails detailsIncluded) {
-		return null;
+	public Iterable<CloudQueue> listQueues(final String prefix,
+			final QueueListingDetails detailsIncluded) throws UnsupportedEncodingException, StorageException, IOException {
+		final CloudQueueClient client = this;
+		StorageOperation<Iterable<CloudQueue>> storageOperation = new StorageOperation<Iterable<CloudQueue>>() {
+			public Iterable<CloudQueue> execute() throws Exception {
+				HttpGet request = QueueRequest.list(client.getBaseUri(), prefix, detailsIncluded);
+				client.getCredentials().signRequest(request, -1L);
+				this.processRequest(request);
+				
+				if (result.statusCode != HttpStatus.SC_OK) {
+					throw new StorageInnerException(
+							"Couldn't list queues");
+				}
+
+				return QueueResponse.getList(result.httpResponse.getEntity().getContent(), client);
+			}
+		};
+
+        return storageOperation.executeTranslatingExceptions();
 	}
 }
