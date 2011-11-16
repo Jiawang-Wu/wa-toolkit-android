@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">This is a sample for the ACS login activity!</string>
+    <string name="app_name">ACS Login sample</string>
+    <string name="identityproviders">Identity Providers</string>
+    <string name="cancel">Cancel</string>
+    <string name="login">Start login process</string>
+    <string name="login_ok">Succesfull login!</string>
+    <string name="acs_token">Below is your token</string>
+    <string name="login_error">Unsuccesfull login!</string>
+
+</resources>
