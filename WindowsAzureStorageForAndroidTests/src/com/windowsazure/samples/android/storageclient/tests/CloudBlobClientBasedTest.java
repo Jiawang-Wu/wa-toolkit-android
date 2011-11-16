@@ -12,6 +12,7 @@ import com.windowsazure.samples.android.storageclient.CloudBlob;
 import com.windowsazure.samples.android.storageclient.CloudBlobClient;
 import com.windowsazure.samples.android.storageclient.CloudBlobContainer;
 import com.windowsazure.samples.android.storageclient.CloudBlockBlob;
+import com.windowsazure.samples.android.storageclient.CloudQueue;
 import com.windowsazure.samples.android.storageclient.NotImplementedException;
 import com.windowsazure.samples.android.storageclient.StorageException;
 import com.windowsazure.samples.android.storageclient.StorageInnerException;
@@ -30,7 +31,7 @@ public abstract class CloudBlobClientBasedTest<T extends CloudClientAccountProvi
 		}
 	}
 
-	protected CloudBlobContainer createContainer(String containerName)
+	protected CloudBlobContainer createQueue(String containerName)
 			throws StorageException, NotImplementedException,
 			URISyntaxException, UnsupportedEncodingException, IOException {
 		final CloudBlobContainer container = new CloudBlobContainer(
@@ -54,6 +55,18 @@ public abstract class CloudBlobClientBasedTest<T extends CloudClientAccountProvi
 					StorageException, UnsupportedEncodingException, IOException {
 				try {
 					container.delete();
+				} catch (Exception e) {
+				}
+			}
+		};
+	}
+
+	protected ResourceCleaner cleanerFor(final CloudQueue queue) {
+		return new ResourceCleaner() {
+			public void clean() throws NotImplementedException,
+					StorageException, UnsupportedEncodingException, IOException {
+				try {
+					queue.delete();
 				} catch (Exception e) {
 				}
 			}

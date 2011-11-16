@@ -17,6 +17,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.windowsazure.samples.android.storageclient.CloudClientAccount;
+import com.windowsazure.samples.android.storageclient.CloudQueueClient;
 import com.windowsazure.samples.android.storageclient.PathUtility;
 import com.windowsazure.samples.android.storageclient.StorageCredentials;
 import com.windowsazure.samples.android.storageclient.CloudBlobClient;
@@ -35,6 +36,10 @@ public class WAZServiceAccount implements CloudClientAccount {
 
 	public CloudBlobClient createCloudBlobClient() throws Exception {
 		return new CloudBlobClient(getBlobEndpoint(), getCredentials());
+	}
+
+	public CloudQueueClient createCloudQueueClient() throws Exception {
+		return new CloudQueueClient(getQueueEndpoint(), getCredentials());
 	}
 
 	public String loginToWAZService() throws Exception {
@@ -85,6 +90,10 @@ public class WAZServiceAccount implements CloudClientAccount {
 	}
 
 	private URI getBlobEndpoint() throws URISyntaxException {
+    	return PathUtility.appendPathToUri(this.m_WazServiceBaseUri, SHARED_ACCESS_SIGNATURE_SERVICE_PATH);
+	}
+
+	private URI getQueueEndpoint() throws URISyntaxException {
     	return PathUtility.appendPathToUri(this.m_WazServiceBaseUri, SHARED_ACCESS_SIGNATURE_SERVICE_PATH);
 	}
 

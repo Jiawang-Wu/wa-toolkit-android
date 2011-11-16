@@ -55,7 +55,7 @@ public final class CloudStorageAccount implements CloudClientAccount {
 		"blob.core.windows.net" });
 	}
 
-	private static String getDefaultQueueEndpoint(HashMap<String, String> configuration) {
+	public static String getDefaultQueueEndpoint(HashMap<String, String> configuration) {
 		String defaultEndpointsProtocol = configuration.get("DefaultEndpointsProtocol") == null ? "http"
 				: (String) configuration.get("DefaultEndpointsProtocol");
 		String accountName = configuration.get("AccountName") == null ? null
@@ -63,7 +63,7 @@ public final class CloudStorageAccount implements CloudClientAccount {
 		return getDefaultQueueEndpoint(defaultEndpointsProtocol, accountName);
 	}
 
-	private static String getDefaultQueueEndpoint(String scheme, String accountName) {
+	public static String getDefaultQueueEndpoint(String scheme, String accountName) {
 		return String.format("%s://%s.%s", new Object[] { scheme, accountName,
 				"queue.core.windows.net" });
 	}
@@ -79,6 +79,10 @@ public final class CloudStorageAccount implements CloudClientAccount {
 	private static String getDefaultTableEndpoint(String scheme, String accountName) {
 		return String.format("%s://%s.%s", new Object[] { scheme, accountName,
 				"table.core.windows.net" });
+	}
+
+	public static String getDefaultScheme() {
+		return "http";
 	}
 
 	public static CloudStorageAccount getDevelopmentStorageAccount()
@@ -240,6 +244,7 @@ public final class CloudStorageAccount implements CloudClientAccount {
 						useHttps ? "https" : "http",
 						accountAndKey.getAccountName())));
 	}
+
 	public CloudBlobClient createCloudBlobClient()
 			throws NotImplementedException {
 		if (getBlobEndpoint() == null)
@@ -252,6 +257,20 @@ public final class CloudStorageAccount implements CloudClientAccount {
 		else
 			return new CloudBlobClient(getBlobEndpoint(), getCredentials());
 	}
+	
+	public CloudQueueClient createCloudQueueClient()
+			throws NotImplementedException, URISyntaxException {
+		if (getQueueEndpoint() == null)
+			throw new IllegalArgumentException("No queue endpoint configured.");
+		if (m_Credentials == null)
+			throw new IllegalArgumentException("No credentials provided.");
+		if (!m_Credentials.canCredentialsSignRequest())
+			throw new IllegalArgumentException(
+					"CloudQueueClient requires a credential that can sign request");
+		else
+			return new CloudQueueClient(getQueueEndpoint(), getCredentials());
+	}
+
 	public URI getBlobEndpoint() {
 		if (getCredentials() instanceof StorageCredentialsSharedAccessSignature)
 		{

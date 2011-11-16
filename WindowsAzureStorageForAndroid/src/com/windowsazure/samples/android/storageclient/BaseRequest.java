@@ -7,7 +7,6 @@ import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
@@ -27,7 +26,7 @@ final class BaseRequest {
 			addOptionalHeader(request, "x-ms-lease-id", leaseId);
 	}
 
-	public static void addMetadata(HttpRequestBase request, HashMap<String, String> metadata) {
+	public static void addMetadata(HttpRequestBase request, Map<String, String> metadata) {
 		if (metadata != null) {
 			Map.Entry<String, String> metadataEntry;
 			for (Iterator<Entry<String, String>> iterator = metadata.entrySet().iterator(); iterator
