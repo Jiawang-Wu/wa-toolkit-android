@@ -1,7 +1,5 @@
 package com.windowsazure.samples.android.storageclient.tests;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.util.Iterator;
 
@@ -9,9 +7,7 @@ import org.apache.http.HttpStatus;
 
 import junit.framework.Assert;
 
-import com.windowsazure.samples.android.storageclient.CloudStorageAccount;
 import com.windowsazure.samples.android.storageclient.CloudTableClient;
-import com.windowsazure.samples.android.storageclient.StorageCredentialsAccountAndKey;
 import com.windowsazure.samples.android.storageclient.StorageException;
 
 import android.test.AndroidTestCase;
@@ -36,6 +32,10 @@ public class CloudTableClientTests extends AndroidTestCase {
 		}
 
 		Assert.assertTrue(table1 && table2 && table3);
+		
+		client.deleteTable("TableClientTestsList1");
+		client.deleteTable("TableClientTestsList2");
+		client.deleteTable("TableClientTestsList3");
 	}
 
 	public void testWhenCreateTableShouldBeAdded() throws Exception {
@@ -43,13 +43,14 @@ public class CloudTableClientTests extends AndroidTestCase {
 		CloudTableClient client = accountProvider.getAccount().createCloudTableClient();
 
 		String testTableName = "TableClientTestsAdd";
-		client.deleteTableIfExist(testTableName);
-
+		
+		client.deleteTableIfExist(testTableName);		
 		Assert.assertFalse(client.doesTableExist(testTableName));
-
+		
 		client.createTable(testTableName);
-
 		Assert.assertTrue(client.doesTableExist(testTableName));
+		
+		client.deleteTable(testTableName);
 	}
 
 	public void testWhenCreateDuplicatedTableShouldThrow() throws Exception {
@@ -58,7 +59,6 @@ public class CloudTableClientTests extends AndroidTestCase {
 
 		String testTableName = "TableClientTestsDupAdd";
 		client.deleteTableIfExist(testTableName);
-
 		Assert.assertFalse(client.doesTableExist(testTableName));
 
 		boolean errorThrown = false;
@@ -69,8 +69,9 @@ public class CloudTableClientTests extends AndroidTestCase {
 		} catch (StorageException e) {
 			errorThrown = e.m_HttpStatusCode == HttpStatus.SC_CONFLICT;
 		}
-
 		Assert.assertTrue(errorThrown);
+		
+		client.deleteTable(testTableName);
 	}
 
 	public void testWhenDeleteTableShouldBeRemoved() throws Exception {
@@ -102,6 +103,27 @@ public class CloudTableClientTests extends AndroidTestCase {
 		}
 
 		Assert.assertTrue(errorThrown);
+	}
+	
+	public void testWhenFindExistentShouldReturnTrue() throws URISyntaxException, Exception {
+		CloudStorageAccountProvider accountProvider = new CloudStorageAccountProvider();
+		CloudTableClient client = accountProvider.getAccount().createCloudTableClient();
+		
+		String testTableName = "TableClientTestsFindExist";
+		client.createTableIfNotExist(testTableName);
+		
+		Assert.assertTrue(client.doesTableExist(testTableName));
+		
+		client.deleteTable(testTableName);
+	}
+
+	public void testWhenFindNotExistentShouldReturnFalse() throws URISyntaxException, Exception {
+		CloudStorageAccountProvider accountProvider = new CloudStorageAccountProvider();
+		CloudTableClient client = accountProvider.getAccount().createCloudTableClient();
+		
+		String testTableName = "TableClientTestsFindNotExist";
+		
+		Assert.assertFalse(client.doesTableExist(testTableName));
 	}
 
 }
