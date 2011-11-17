@@ -127,12 +127,16 @@ abstract class Canonicalizer {
 		appendCanonicalizedElement(stringBuilder, contentTypeString == null ? "" : contentTypeString);
 		String xMsDateString = Utility.getFirstHeaderValueOrEmpty(request, "x-ms-date");
 		appendCanonicalizedElement(stringBuilder, xMsDateString.equals("") ? defaultDate : xMsDateString);
-		appendCanonicalizedElement(stringBuilder, getCanonicalizedResource(url, accountName));
+		appendCanonicalizedElement(stringBuilder, getCanonicalizedResource(url, accountName, false));
 		String result = stringBuilder.toString();
 		return result;		
 	}
+	
+	private static String getCanonicalizedResource(URL url, String accountName) throws StorageException {
+		return getCanonicalizedResource(url, accountName, true);
+	}
 
-	private static String getCanonicalizedResource(URL url, String accountName)
+	private static String getCanonicalizedResource(URL url, String accountName, boolean addParameters)
 			throws StorageException {
 		StringBuilder accountNameStringBuilder = new StringBuilder("/");
 		accountNameStringBuilder.append(accountName);
@@ -162,16 +166,18 @@ abstract class Canonicalizer {
 
 		}
 
-		ArrayList<String> canonicalizedQueryArguments = new ArrayList<String>(queryArgumentsToCanonicalize.keySet());
-		Collections.sort(canonicalizedQueryArguments);
-		StringBuilder stringbuilder3;
-		for (Iterator<String> iterator1 = canonicalizedQueryArguments.iterator(); iterator1.hasNext(); appendCanonicalizedElement(
-				stringBuilder, stringbuilder3.toString())) {
-			String s1 = (String) iterator1.next();
-			stringbuilder3 = new StringBuilder();
-			stringbuilder3.append(s1);
-			stringbuilder3.append(":");
-			stringbuilder3.append((String) queryArgumentsToCanonicalize.get(s1));
+		if (addParameters) {
+			ArrayList<String> canonicalizedQueryArguments = new ArrayList<String>(queryArgumentsToCanonicalize.keySet());
+			Collections.sort(canonicalizedQueryArguments);
+			StringBuilder stringbuilder3;
+			for (Iterator<String> iterator1 = canonicalizedQueryArguments.iterator(); iterator1.hasNext(); appendCanonicalizedElement(
+					stringBuilder, stringbuilder3.toString())) {
+				String s1 = (String) iterator1.next();
+				stringbuilder3 = new StringBuilder();
+				stringbuilder3.append(s1);
+				stringbuilder3.append(":");
+				stringbuilder3.append((String) queryArgumentsToCanonicalize.get(s1));
+			}
 		}
 
 		return stringBuilder.toString();

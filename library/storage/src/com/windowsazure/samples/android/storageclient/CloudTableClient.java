@@ -2,7 +2,9 @@ package com.windowsazure.samples.android.storageclient;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 
@@ -55,7 +57,7 @@ public class CloudTableClient {
 		final String thatTableName = tableName;
 		StorageOperation<Boolean>  storageOperation = new StorageOperation<Boolean>() {
 			public Boolean execute() throws Exception {				
-				HttpGet request = TableRequest.find(m_Endpoint, thatTableName);						
+				HttpGet request = TableRequest.exist(m_Endpoint, thatTableName);						
 				m_Credentials.signTableRequest(request);
 				this.processRequest(request);
 				return result.statusCode == HttpStatus.SC_OK;
@@ -92,6 +94,35 @@ public class CloudTableClient {
         return storageOperation.executeTranslatingExceptions();
 	}
 
+	public Iterable<String> listTables(String prefix)
+			throws UnsupportedEncodingException, StorageException, IOException {
+		final String thatPrefix = prefix;
+		StorageOperation<Iterable<String>>  storageOperation = new StorageOperation<Iterable<String>>() {
+			public Iterable<String> execute() throws Exception {
+				ArrayList<String> tables = new ArrayList<String>();
+				HttpGet request = TableRequest.list(m_Endpoint, thatPrefix);						
+				m_Credentials.signTableRequest(request);
+				this.processRequest(request);
+				if (result.statusCode != HttpStatus.SC_OK) {
+					throw new StorageInnerException("Couldn't get table's list");
+				} else {
+					DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+					DocumentBuilder builder = factory.newDocumentBuilder();
+					Document document = builder.parse(result.httpResponse.getEntity().getContent());
+					
+					XPath xpath = XPathFactory.newInstance().newXPath();
+					String expression = "/feed/entry/content/properties/TableName";
+					NodeList tableNames = (NodeList) xpath.evaluate(expression, document, XPathConstants.NODESET);
+					for (int i = 0; i < tableNames.getLength(); i++) {						
+						tables.add(tableNames.item(i).getTextContent());
+					}
+				}
+				return tables;
+			}
+		};
+        return storageOperation.executeTranslatingExceptions();
+	}
+	
 	public void createTable(String tableName) 
 			throws UnsupportedEncodingException, StorageException, IOException {
 		final String thatTableName = tableName;
@@ -151,13 +182,35 @@ public class CloudTableClient {
 		}
 	}
 
-	// public static void CreateTablesFromModel(Type serviceContextType, String
-	// baseAddress, StorageCredentials credentials);
+	public static void CreateTableFromModel(Class<?> type, final String baseAddress, final StorageCredentials credentials) 
+			throws UnsupportedEncodingException, StorageException, IOException, URISyntaxException {
+
+		Field[] fields = type.getFields();
+		final TableProperty<?>[] properties = new TableProperty<?>[fields.length];
+		for (int i = 0; i < fields.length; i++) {
+			properties[i] = TableProperty.newProperty(fields[i].getName(), fields[i].getType());
+		}
+		
+		final String tableName = type.getSimpleName();		
+		CloudTableClient client = new CloudTableClient(new URI(baseAddress), credentials);
+		//TODO: change it for createTable
+		client.createTableIfNotExist(tableName);		
+
+		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
+			public Void execute() throws Exception {
+				HttpPost request = TableRequest.createFromModel(new URI(baseAddress), tableName, properties);
+				credentials.signTableRequest(request);
+				this.processRequest(request);
+				if (result.statusCode != HttpStatus.SC_CREATED) {
+					throw new StorageInnerException(String.format("Couldn't create table '%s'", tableName));
+				}
+				return null;
+			}
+		};
+		storageOperation.executeTranslatingExceptions();
+	}
+	
 	// public TableServiceContext GetDataServiceContext();
 	// public void Attach(DataServiceContext serviceContext);
 	
-	public Iterable<String> listTables(String prefix) {
-		return null;
-	}
-
 }

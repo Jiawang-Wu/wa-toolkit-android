@@ -1,12 +1,16 @@
 package com.windowsazure.samples.android.storageclient.tests;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
+import java.util.Date;
 import java.util.Iterator;
 
 import org.apache.http.HttpStatus;
 
 import junit.framework.Assert;
 
+import com.windowsazure.samples.android.storageclient.CloudStorageAccount;
 import com.windowsazure.samples.android.storageclient.CloudTableClient;
 import com.windowsazure.samples.android.storageclient.StorageException;
 
@@ -36,6 +40,30 @@ public class CloudTableClientTests extends AndroidTestCase {
 		client.deleteTable("TableClientTestsList1");
 		client.deleteTable("TableClientTestsList2");
 		client.deleteTable("TableClientTestsList3");
+	}
+
+	public void testWhenQueryPrefixTablesShouldReturnTableList() throws Exception {
+		CloudStorageAccountProvider accountProvider = new CloudStorageAccountProvider();
+		CloudTableClient client = accountProvider.getAccount().createCloudTableClient();
+
+		client.createTableIfNotExist("PreTableClientTestsList1");
+		client.createTableIfNotExist("PreTableClientTestsList2");
+		client.createTableIfNotExist("NPreTableClientTestsList3");
+
+		boolean returnedListOk = true; int count = 0;
+		Iterator<String> tables = client.listTables("PreTableClientTestsList").iterator();
+		while (tables.hasNext()) {
+			String table = tables.next();
+			returnedListOk = returnedListOk && table.startsWith("PreTableClientTestsList");
+			count++;
+		}
+
+		Assert.assertTrue(returnedListOk);
+		Assert.assertTrue(count >= 2);
+		
+		client.deleteTable("PreTableClientTestsList1");
+		client.deleteTable("PreTableClientTestsList2");
+		client.deleteTable("NPreTableClientTestsList3");
 	}
 
 	public void testWhenCreateTableShouldBeAdded() throws Exception {
@@ -126,4 +154,20 @@ public class CloudTableClientTests extends AndroidTestCase {
 		Assert.assertFalse(client.doesTableExist(testTableName));
 	}
 
+	public void testWhenCreateFromModelShouldDefineTableColumns() throws URISyntaxException, UnsupportedEncodingException, StorageException, IOException {
+		CloudStorageAccountProvider accountProvider = new CloudStorageAccountProvider();
+		CloudStorageAccount account = (CloudStorageAccount)accountProvider.getAccount();
+		CloudTableClient.CreateTableFromModel(TestTableEntity.class, account.getTableEndpoint().toASCIIString(), account.getCredentials());
+	}
+
+	final class TestTableEntity {
+		public String PartitionKey;
+		public String RowKey;
+		public Date TimeStamp;
+
+		public String Description;
+		public boolean Flag;
+		public int Count;		
+	}
+	
 }
