@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/storage_blob_view"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <include
+        android:id="@+id/header"
+        layout="@layout/navigation_header" />
+
+    <ProgressBar
+        android:id="@+id/storage_blob_view_progress"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_height="64dp"
+        android:layout_width="64dp"
+		android:layout_marginTop="170dp"
+	    android:gravity="center_vertical|center_horizontal"    	
+		android:layout_gravity="center_vertical|center_horizontal|center" />
+    
+    <ImageView
+        android:id="@+id/storage_blob_view_image_view"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="0.70" 
+        android:scaleType="fitCenter"
+        android:visibility="gone" />
+    
+    <ScrollView
+        android:id="@+id/storage_blob_view_scroll_view"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:visibility="gone" >
+        
+	    <TextView
+	        android:id="@+id/storage_blob_view_text_view"
+	        android:layout_width="fill_parent"
+	        android:layout_height="fill_parent"
+	        android:layout_weight="0.70" 
+	        android:scrollbars="vertical" 
+	        android:visibility="gone" />
+
+    </ScrollView>
+
+</LinearLayout>
