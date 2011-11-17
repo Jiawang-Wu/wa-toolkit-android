@@ -3,6 +3,7 @@ package com.windowsazure.samples.android.storageclient;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -71,6 +72,51 @@ public class QueueResponse {
 			}
 		}
 		return metadata;
+	}
+
+	public static Iterable<CloudQueueMessage> getMessagesList(InputStream responseStream) throws SAXException, IOException, ParserConfigurationException {
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder builder = factory.newDocumentBuilder();
+		Document dom = builder.parse(responseStream);
+		Element root = dom.getDocumentElement();
+		NodeList items = root.getElementsByTagName("QueueMessage");
+
+		ArrayList<CloudQueueMessage> messages = new ArrayList<CloudQueueMessage>(items.getLength());
+		for (int index = 0; index < items.getLength(); ++index) {
+			Element messageElement = (Element) items.item(index);
+
+			String messageId = messageElement.getElementsByTagName("MessageId").item(0).getTextContent();
+			Timestamp insertionTime = new Timestamp(Timestamp.parse(messageElement.getElementsByTagName("InsertionTime").item(0).getTextContent()));
+			Timestamp expirationTime = new Timestamp(Timestamp.parse(messageElement.getElementsByTagName("ExpirationTime").item(0).getTextContent()));
+			int dequeueCount = Integer.parseInt(messageElement.getElementsByTagName("DequeueCount").item(0).getTextContent());
+			String messageText = messageElement.getElementsByTagName("MessageText").item(0).getTextContent();
+			
+			String popReceipt = null;
+			NodeList popReceiptNodes = messageElement.getElementsByTagName("PopReceipt");
+			if (popReceiptNodes.getLength() != 0)
+			{
+				popReceipt = popReceiptNodes.item(0).getTextContent();
+			}
+			
+			Timestamp timeNextVisible = null;
+			NodeList timeNextVisibleNodes = messageElement.getElementsByTagName("TimeNextVisible");
+			if (timeNextVisibleNodes.getLength() != 0)
+			{
+				timeNextVisible = new Timestamp(Timestamp.parse(timeNextVisibleNodes.item(0).getTextContent()));
+			}
+
+			CloudQueueMessage message = new CloudQueueMessage(messageId, 
+					messageText, 
+					insertionTime, 
+					expirationTime, 
+					dequeueCount,
+					popReceipt,
+					timeNextVisible);
+
+			messages.add(message);
+		}
+		
+		return messages;
 	}
 
 }

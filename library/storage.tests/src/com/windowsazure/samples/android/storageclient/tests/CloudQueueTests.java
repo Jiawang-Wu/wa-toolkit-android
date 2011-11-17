@@ -241,38 +241,38 @@ public class CloudQueueTests extends CloudQueueClientBasedTest<CloudStorageAccou
 
 		Assert.assertFalse(cloudQueueClient.listQueues("nothing").iterator().hasNext());
 		ArrayList<CloudQueue> queues = this.toList(cloudQueueClient.listQueues("abc"));
-		this.AssertHaveSameElements(
+		this.assertHaveSameElements(
 				this.getQueuesNames(queues),
 				Arrays.asList(new String[] { "abc-0", "abc-1", "abc-2",
 						"abc-def-jkl" }));
-		this.AssertHaveSameElements(
+		this.assertHaveSameElements(
 				this.getQueuesNames(cloudQueueClient.listQueues("abc-")),
 				Arrays.asList(new String[] { "abc-0", "abc-1", "abc-2",
 						"abc-def-jkl" }));
-		this.AssertHaveSameElements(
+		this.assertHaveSameElements(
 				this.getQueuesNames(cloudQueueClient.listQueues("abc-0")),
 				Arrays.asList(new String[] { "abc-0" }));
-		this.AssertHaveSameElements(
+		this.assertHaveSameElements(
 				this.getQueuesNames(cloudQueueClient.listQueues("ab")),
 				Arrays.asList(new String[] { "ab-3", "abc-0", "abc-1", "abc-2",
 						"abc-def-jkl" }));
-		this.AssertHaveSameElements(
+		this.assertHaveSameElements(
 				this.getQueuesNames(cloudQueueClient.listQueues("ab-")),
 				Arrays.asList(new String[] { "ab-3" }));
-		this.AssertHaveSameElements(
+		this.assertHaveSameElements(
 				this.getQueuesNames(cloudQueueClient.listQueues("a")),
 				Arrays.asList(new String[] { "ab-3", "abc-0", "abc-1", "abc-2",
 						"a-4", "abc-def-jkl" }));
-		this.AssertHaveSameElements(
+		this.assertHaveSameElements(
 				this.getQueuesNames(cloudQueueClient.listQueues("d")),
 				Arrays.asList(new String[] { "def-5", "def-6" }));
-		this.AssertHaveSameElements(
+		this.assertHaveSameElements(
 				this.getQueuesNames(cloudQueueClient.listQueues("def-55")),
 				Arrays.asList(new String[] {}));
-		this.AssertHaveSameElements(
+		this.assertHaveSameElements(
 				this.getQueuesNames(cloudQueueClient.listQueues("blah")),
 				Arrays.asList(new String[] {}));
-		this.AssertHaveSameElements(
+		this.assertHaveSameElements(
 				this.getQueuesNames(cloudQueueClient.listQueues("")),
 				Arrays.asList(new String[] { "ab-3", "abc-0", "abc-1", "abc-2",
 						"a-4", "def-5", "def-6", "abc-def-jkl" }));
@@ -302,7 +302,7 @@ public class CloudQueueTests extends CloudQueueClientBasedTest<CloudStorageAccou
 					throws NotImplementedException, Exception {
 				ArrayList<String> queuesNames = thisTest
 						.getQueuesNames(cloudQueueClient.listQueues());
-				thisTest.AssertHaveSameElements(expectedQueuesNames,
+				thisTest.assertHaveSameElements(expectedQueuesNames,
 						queuesNames);
 			}
 		};

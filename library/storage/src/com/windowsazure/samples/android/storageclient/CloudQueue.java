@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
@@ -198,7 +199,7 @@ public class CloudQueue {
 	}
 
 	private int getDefaultTimeToLiveInSeconds() {
-		return 7 * 24 * 60 * 60; //7 Days
+		return CloudQueueMessage.MaxTimeToLiveInSeconds;
 	}
 
 	public void addMessage(final CloudQueueMessage message,
@@ -223,35 +224,79 @@ public class CloudQueue {
         storageOperation.executeTranslatingExceptions();
 	}
 
-	public Iterable<CloudQueueMessage> getMessages(int messageCount) {
-		return null;
+	public Iterable<CloudQueueMessage> getMessages(int messageCount) throws UnsupportedEncodingException, StorageException, IOException {
+		return this.getMessages(messageCount, this.getDefaultVisibilityTimeoutInSeconds());
+	}
+
+	private int getDefaultVisibilityTimeoutInSeconds() {
+		return 60;
 	}
 
 	public Iterable<CloudQueueMessage> getMessages(int messageCount,
-			int visibilityTimeoutInMilliseconds) {
-		return null;
+			int visibilityTimeoutInSeconds) throws UnsupportedEncodingException, StorageException, IOException {
+		return this.getOrPeekMessages(messageCount, false, visibilityTimeoutInSeconds);
 	}
 
-	public CloudQueueMessage getMessage() {
-		return null;
+	public CloudQueueMessage getMessage() throws UnsupportedEncodingException, StorageException, IOException {
+		return this.getMessages(1).iterator().next();
 	}
 
-	public CloudQueueMessage getMessage(int visibilityTimeoutInMilliseconds) {
-		return null;
+	public CloudQueueMessage getMessage(int visibilityTimeoutInSeconds) throws UnsupportedEncodingException, StorageException, IOException {
+		return this.getMessages(1, visibilityTimeoutInSeconds).iterator().next();
 	}
 
-	public CloudQueueMessage peekMessage() {
-		return null;
+	public CloudQueueMessage peekMessage() throws UnsupportedEncodingException, StorageException, IOException {
+		return this.peekMessages(1).iterator().next();
 	}
 
-	public Iterable<CloudQueueMessage> peekMessages(int messageCount) {
-		return null;
+	public Iterable<CloudQueueMessage> peekMessages(final int messageCount) throws UnsupportedEncodingException, StorageException, IOException {
+		return this.getOrPeekMessages(messageCount, true, 0);
+	}
+	
+	public Iterable<CloudQueueMessage> getOrPeekMessages(final int messageCount, final boolean peekMessages, final int visibilityTimeoutInSeconds) throws UnsupportedEncodingException, StorageException, IOException {
+		final CloudQueue queue = this;
+		StorageOperation<Iterable<CloudQueueMessage>> storageOperation = new StorageOperation<Iterable<CloudQueueMessage>>() {
+			public Iterable<CloudQueueMessage> execute() throws Exception {
+				HttpGet request = QueueRequest.getMessages(queue.getUri(), messageCount, peekMessages, visibilityTimeoutInSeconds);
+				m_ServiceClient.getCredentials().signRequest(request, -1L);
+				this.processRequest(request);
+
+				switch (result.statusCode)
+				{
+					case HttpStatus.SC_OK:
+						return QueueResponse.getMessagesList(result.httpResponse.getEntity().getContent());
+					default:
+						throw new StorageInnerException("Couldn't peek queue messages");
+				}
+			}
+		};
+
+        return storageOperation.executeTranslatingExceptions();	
+    }
+
+	public void deleteMessage(CloudQueueMessage message) throws UnsupportedEncodingException, StorageException, IOException {
+		this.deleteMessage(message.getId(), message.getPopReceipt());
 	}
 
-	public void deleteMessage(CloudQueueMessage message) {
-	}
+	public void deleteMessage(String messageId, final String popReceipt) throws UnsupportedEncodingException, StorageException, IOException {
+		final CloudQueue queue = this;
+		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
+			public Void execute() throws Exception {
+				HttpDelete request = QueueRequest.deleteMessage(queue.getUri(), popReceipt);
+				m_ServiceClient.getCredentials().signRequest(request, -1L);
+				this.processRequest(request);
 
-	public void deleteMessage(String messageId, String popReceipt) {
+				switch (result.statusCode)
+				{
+					case HttpStatus.SC_NO_CONTENT:
+						return null;
+					default:
+						throw new StorageInnerException("Couldn't delete queue message");
+				}
+			}
+		};
+
+        storageOperation.executeTranslatingExceptions();	
 	}
 
 	public void clear() {

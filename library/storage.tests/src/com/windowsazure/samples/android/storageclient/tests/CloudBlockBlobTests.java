@@ -38,7 +38,7 @@ public abstract class CloudBlockBlobTests<T extends CloudClientAccountProvider>
 				"".getBytes());
 		blob.upload(contentsStream, 0);
 		ArrayList<String> blobNames = this.getBlobNames(container.listBlobs());
-		this.AssertHaveSameElements(blobNames,
+		this.assertHaveSameElements(blobNames,
 				Arrays.asList(new String[] { blobName }));
 	}
 
@@ -169,12 +169,12 @@ public abstract class CloudBlockBlobTests<T extends CloudClientAccountProvider>
 		String blobName = "someBlob";
 		final CloudBlob blob = this.createEmptyBlob(container, blobName);
 
-		this.AssertHaveSameElements(this.getBlobNames(container.listBlobs()),
+		this.assertHaveSameElements(this.getBlobNames(container.listBlobs()),
 				Arrays.asList(new String[] { blobName }));
 
 		blob.delete();
 
-		this.AssertHaveSameElements(this.getBlobNames(container.listBlobs()),
+		this.assertHaveSameElements(this.getBlobNames(container.listBlobs()),
 				Arrays.asList(new String[] {}));
 	}
 
@@ -212,7 +212,7 @@ public abstract class CloudBlockBlobTests<T extends CloudClientAccountProvider>
 					throws NotImplementedException, Exception {
 				ArrayList<String> blobNames = thisTest.getBlobNames(container
 						.listBlobs());
-				thisTest.AssertHaveSameElements(expectedBlobNames, blobNames);
+				thisTest.assertHaveSameElements(expectedBlobNames, blobNames);
 			}
 		}
 		;

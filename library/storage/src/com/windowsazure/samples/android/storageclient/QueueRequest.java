@@ -52,16 +52,44 @@ public class QueueRequest {
 	}
 
 	public static HttpPost addMessage(URI uri, int timeToLiveInMilliseconds, CloudQueueMessage message) throws IOException, URISyntaxException, StorageException {
-		URI putMessageUri = PathUtility.appendPathToUri(uri, "messages");
-
 		UriQueryBuilder uriQueryBuilder = new UriQueryBuilder();
 		uriQueryBuilder.add("messagettl", "" + timeToLiveInMilliseconds);
 		
-		HttpPost request = BaseRequest.setURIAndHeaders(new HttpPost(), putMessageUri, uriQueryBuilder);
+		HttpPost request = BaseRequest.setURIAndHeaders(new HttpPost(), queueMessagesUri(uri), uriQueryBuilder);
 		
-		String requestBody =  String.format("<QueueMessage>\n<MessageText>%s</MessageText>\n</QueueMessage>", message.getAsString());
+		String requestBody = String.format("<QueueMessage>\n<MessageText>%s</MessageText>\n</QueueMessage>", message.getRawContent());
 		request.setEntity(new ByteArrayEntity(requestBody.getBytes()));
 		
 		return request;
+	}
+
+	private static URI queueMessagesUri(URI uri) throws URISyntaxException {
+		return PathUtility.appendPathToUri(uri, "messages");
+	}
+
+	public static HttpGet getMessages(URI uri, int messageCount, boolean peekMessages, int visibilityTimeoutInSeconds) throws IOException, URISyntaxException, StorageException {
+		UriQueryBuilder uriQueryBuilder = new UriQueryBuilder();
+		
+		if (peekMessages)
+		{
+			uriQueryBuilder.add("peekonly", "true");
+		}
+		else
+		{
+			uriQueryBuilder.add("visibilitytimeout", "" + visibilityTimeoutInSeconds);
+		}
+
+		if (messageCount != 1)
+		{
+			uriQueryBuilder.add("numofmessages", "" + messageCount);
+		}
+		
+		return BaseRequest.setURIAndHeaders(new HttpGet(), queueMessagesUri(uri), uriQueryBuilder);
+	}
+
+	public static HttpDelete deleteMessage(URI uri, String popReceipt) throws IOException, URISyntaxException, StorageException {
+		UriQueryBuilder uriQueryBuilder = new UriQueryBuilder();
+		uriQueryBuilder.add("popreceipt", popReceipt);
+		return BaseRequest.delete(queueMessagesUri(uri), uriQueryBuilder);
 	}
 }

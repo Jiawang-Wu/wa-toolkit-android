@@ -23,7 +23,7 @@ public abstract class TestCase extends android.test.AndroidTestCase {
 		}
 	}
 
-	protected <T> void AssertHaveSameElements(Collection<T> firstCollection,
+	protected <T> void assertHaveSameElements(Collection<T> firstCollection,
 			Collection<T> secondCollection) {
 		Assert.assertEquals(firstCollection.size(), secondCollection.size());
 		Assert.assertFalse(firstCollection.retainAll(secondCollection));
@@ -40,7 +40,7 @@ public abstract class TestCase extends android.test.AndroidTestCase {
 				return;
 			}
 			current = System.currentTimeMillis();
-		} while (start + timeout < current);
+		} while (start + timeout > current);
 		Assert.assertTrue(callable.call());
 	}
 	

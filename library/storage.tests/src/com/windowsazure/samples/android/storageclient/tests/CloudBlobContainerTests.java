@@ -168,7 +168,7 @@ public abstract class CloudBlobContainerTests<T extends CloudClientAccountProvid
 					throws NotImplementedException, Exception {
 				ArrayList<String> containerNames = thisTest
 						.getContainerNames(cloudBlobClient.listContainers());
-				thisTest.AssertHaveSameElements(expectedContainerNames,
+				thisTest.assertHaveSameElements(expectedContainerNames,
 						containerNames);
 			}
 		};
@@ -216,34 +216,34 @@ public abstract class CloudBlobContainerTests<T extends CloudClientAccountProvid
 		this.createQueue("def-6");
 		Assert.assertFalse(cloudBlobClient.listContainers("nothing").iterator()
 				.hasNext());
-		this.AssertHaveSameElements(
+		this.assertHaveSameElements(
 				this.getContainerNames(cloudBlobClient.listContainers("abc")),
 				Arrays.asList(new String[] { "abc-0", "abc-1", "abc-2" }));
-		this.AssertHaveSameElements(
+		this.assertHaveSameElements(
 				this.getContainerNames(cloudBlobClient.listContainers("abc-")),
 				Arrays.asList(new String[] { "abc-0", "abc-1", "abc-2" }));
-		this.AssertHaveSameElements(
+		this.assertHaveSameElements(
 				this.getContainerNames(cloudBlobClient.listContainers("abc-0")),
 				Arrays.asList(new String[] { "abc-0" }));
-		this.AssertHaveSameElements(this.getContainerNames(cloudBlobClient
+		this.assertHaveSameElements(this.getContainerNames(cloudBlobClient
 				.listContainers("ab")), Arrays.asList(new String[] { "ab-3",
 				"abc-0", "abc-1", "abc-2" }));
-		this.AssertHaveSameElements(
+		this.assertHaveSameElements(
 				this.getContainerNames(cloudBlobClient.listContainers("ab-")),
 				Arrays.asList(new String[] { "ab-3" }));
-		this.AssertHaveSameElements(
+		this.assertHaveSameElements(
 				this.getContainerNames(cloudBlobClient.listContainers("a")),
 				Arrays.asList(new String[] { "ab-3", "abc-0", "abc-1", "abc-2",
 						"a-4" }));
-		this.AssertHaveSameElements(
+		this.assertHaveSameElements(
 				this.getContainerNames(cloudBlobClient.listContainers("d")),
 				Arrays.asList(new String[] { "def-5", "def-6" }));
-		this.AssertHaveSameElements(this.getContainerNames(cloudBlobClient
+		this.assertHaveSameElements(this.getContainerNames(cloudBlobClient
 				.listContainers("def-55")), Arrays.asList(new String[] {}));
-		this.AssertHaveSameElements(
+		this.assertHaveSameElements(
 				this.getContainerNames(cloudBlobClient.listContainers("blah")),
 				Arrays.asList(new String[] {}));
-		this.AssertHaveSameElements(
+		this.assertHaveSameElements(
 				this.getContainerNames(cloudBlobClient.listContainers("")),
 				Arrays.asList(new String[] { "ab-3", "abc-0", "abc-1", "abc-2",
 						"a-4", "def-5", "def-6" }));
@@ -280,11 +280,11 @@ public abstract class CloudBlobContainerTests<T extends CloudClientAccountProvid
 				.createQueue("testcreatedblobsarelisted");
 
 		this.createEmptyBlob(container, blob1Name);
-		this.AssertHaveSameElements(this.getBlobNames(container.listBlobs()),
+		this.assertHaveSameElements(this.getBlobNames(container.listBlobs()),
 				Arrays.asList(new String[] { blob1Name }));
 
 		this.createEmptyBlob(container, blob2Name);
-		this.AssertHaveSameElements(this.getBlobNames(container.listBlobs()),
+		this.assertHaveSameElements(this.getBlobNames(container.listBlobs()),
 				Arrays.asList(new String[] { blob1Name, blob2Name }));
 	}
 
@@ -304,38 +304,38 @@ public abstract class CloudBlobContainerTests<T extends CloudClientAccountProvid
 		Assert.assertFalse(container.listBlobs("nothing").iterator().hasNext());
 		ArrayList<CloudBlob> blobs = this.toList(container.listBlobs("abc",
 				true));
-		this.AssertHaveSameElements(
+		this.assertHaveSameElements(
 				this.getBlobNames(blobs),
 				Arrays.asList(new String[] { "abc/0", "abc/1", "abc/2",
 						"abc/def/jkl" }));
-		this.AssertHaveSameElements(
+		this.assertHaveSameElements(
 				this.getBlobNames(container.listBlobs("abc/", true)),
 				Arrays.asList(new String[] { "abc/0", "abc/1", "abc/2",
 						"abc/def/jkl" }));
-		this.AssertHaveSameElements(
+		this.assertHaveSameElements(
 				this.getBlobNames(container.listBlobs("abc/0", true)),
 				Arrays.asList(new String[] { "abc/0" }));
-		this.AssertHaveSameElements(
+		this.assertHaveSameElements(
 				this.getBlobNames(container.listBlobs("ab", true)),
 				Arrays.asList(new String[] { "ab/3", "abc/0", "abc/1", "abc/2",
 						"abc/def/jkl" }));
-		this.AssertHaveSameElements(
+		this.assertHaveSameElements(
 				this.getBlobNames(container.listBlobs("ab/", true)),
 				Arrays.asList(new String[] { "ab/3" }));
-		this.AssertHaveSameElements(
+		this.assertHaveSameElements(
 				this.getBlobNames(container.listBlobs("a", true)),
 				Arrays.asList(new String[] { "ab/3", "abc/0", "abc/1", "abc/2",
 						"a/4", "abc/def/jkl" }));
-		this.AssertHaveSameElements(
+		this.assertHaveSameElements(
 				this.getBlobNames(container.listBlobs("d", true)),
 				Arrays.asList(new String[] { "def/5", "def/6" }));
-		this.AssertHaveSameElements(
+		this.assertHaveSameElements(
 				this.getBlobNames(container.listBlobs("def/55", true)),
 				Arrays.asList(new String[] {}));
-		this.AssertHaveSameElements(
+		this.assertHaveSameElements(
 				this.getBlobNames(container.listBlobs("blah", true)),
 				Arrays.asList(new String[] {}));
-		this.AssertHaveSameElements(
+		this.assertHaveSameElements(
 				this.getBlobNames(container.listBlobs("", true)),
 				Arrays.asList(new String[] { "ab/3", "abc/0", "abc/1", "abc/2",
 						"a/4", "def/5", "def/6", "abc/def/jkl" }));
@@ -344,10 +344,10 @@ public abstract class CloudBlobContainerTests<T extends CloudClientAccountProvid
 	public void testListWithEmptyPrefixAuthorizesCorrectly() throws Exception {
 		CloudBlobContainer container = this
 				.createQueue("testlistwithemptyprefixauthorizescorrectly");
-		this.AssertHaveSameElements(
+		this.assertHaveSameElements(
 				this.getBlobNames(container.listBlobs("", true)),
 				Arrays.asList(new String[] {}));
-		this.AssertHaveSameElements(
+		this.assertHaveSameElements(
 				this.getBlobNames(container.listBlobs("", false)),
 				Arrays.asList(new String[] {}));
 	}
@@ -389,38 +389,38 @@ public abstract class CloudBlobContainerTests<T extends CloudClientAccountProvid
 
 		Assert.assertFalse(container.listBlobs("nothing", false).iterator()
 				.hasNext());
-		this.AssertHaveSameElements(
+		this.assertHaveSameElements(
 				this.getBlobNames(container.listBlobs("abc", false)),
 				Arrays.asList(new String[] {}));
-		this.AssertHaveSameElements(
+		this.assertHaveSameElements(
 				this.getBlobNames(container.listBlobs("abc/", false)),
 				Arrays.asList(new String[] { "abc/0", "abc/1", "abc/2" }));
-		this.AssertHaveSameElements(
+		this.assertHaveSameElements(
 				this.getBlobNames(container.listBlobs("abc/0", false)),
 				Arrays.asList(new String[] { "abc/0" }));
-		this.AssertHaveSameElements(
+		this.assertHaveSameElements(
 				this.getBlobNames(container.listBlobs("ab", false)),
 				Arrays.asList(new String[] {}));
-		this.AssertHaveSameElements(
+		this.assertHaveSameElements(
 				this.getBlobNames(container.listBlobs("ab/", false)),
 				Arrays.asList(new String[] { "ab/3" }));
-		this.AssertHaveSameElements(
+		this.assertHaveSameElements(
 				this.getBlobNames(container.listBlobs("a", false)),
 				Arrays.asList(new String[] {}));
-		this.AssertHaveSameElements(
+		this.assertHaveSameElements(
 				this.getBlobNames(container.listBlobs("d", false)),
 				Arrays.asList(new String[] {}));
-		this.AssertHaveSameElements(
+		this.assertHaveSameElements(
 				this.getBlobNames(container.listBlobs("def/", false)),
 				Arrays.asList(new String[] { "def/5", "def/6" }));
-		this.AssertHaveSameElements(
+		this.assertHaveSameElements(
 				this.getBlobNames(container.listBlobs("def/55", false)),
 				Arrays.asList(new String[] {}));
-		this.AssertHaveSameElements(
+		this.assertHaveSameElements(
 				this.getBlobNames(container.listBlobs("blah", false)),
 				Arrays.asList(new String[] {}));
 
-		this.AssertHaveSameElements(
+		this.assertHaveSameElements(
 				this.getBlobNames(container.listBlobs("", false)),
 				Arrays.asList(new String[] { "ghi" }));
 	}

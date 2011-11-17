@@ -124,7 +124,7 @@ public abstract class CloudBlobContainerUsingSASServiceTests<T extends WAZServic
 		permissions.publicAccess = BlobContainerPublicAccessType.CONTAINER;
 		publicContainer.uploadPermissions(permissions);
 
-		this.AssertHaveSameElements(
+		this.assertHaveSameElements(
 				this.getContainerNames(otherCloudBlobClient.listContainers()),
 				Arrays.asList(new String[] { privateContainerName,
 						publicContainerName }));
