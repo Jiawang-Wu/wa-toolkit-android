@@ -43,7 +43,10 @@
     <string name="save_button_text">Save</string>
     <string name="edit_entity_title">Edit Entity</string>
     <string name="add_entity_title">Add Entity</string>
-        
+    
+    <!-- storage_blob_view view --> 
+    <string name="blob_view_title">Blob Viewer</string>
+    
 	<!-- configuration -->      
 	
     <string name="toolkit_connection_type">Direct</string>

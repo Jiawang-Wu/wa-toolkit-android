@@ -91,6 +91,7 @@ public class StorageListActivity extends Activity implements OnItemClickListener
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 		Intent storageEntityListIntent = new Intent(this, StorageEntityListActivity.class);
 		Intent storageListIntent = new Intent(this, StorageListActivity.class);
+		Intent blobViewIntent = new Intent(this, StorageBlobViewActivity.class);
 		
     	switch (listType) {			
 			case LIST_TYPE_TABLE:
@@ -100,7 +101,18 @@ public class StorageListActivity extends Activity implements OnItemClickListener
 		    	startActivity (storageEntityListIntent);
 				break;
 			case LIST_TYPE_BLOB:
-				// TODO: Show blob contents
+				// TODO: Set real url and content-type and remove the even/odd hack to show both contentTypes			
+				if (arg2 % 2 == 0) {
+					String mockImageLocation = "http://blog.toggle.com/wp-content/uploads/2011/05/android-apps-iphone-apps.jpg";
+					blobViewIntent.putExtra(StorageBlobViewActivity.TYPE_NAMESPACE, StorageBlobViewActivity.CONTENT_TYPE_IMAGE);
+					blobViewIntent.putExtra(StorageBlobViewActivity.LOCATION_NAMESPACE, mockImageLocation);
+				} else {
+					String mockTextLocation = "http://generator.lorem-ipsum.info/lorem-ipsum-copy";
+					blobViewIntent.putExtra(StorageBlobViewActivity.TYPE_NAMESPACE, StorageBlobViewActivity.CONTENT_TYPE_TEXT);
+					blobViewIntent.putExtra(StorageBlobViewActivity.LOCATION_NAMESPACE, mockTextLocation);
+				}				
+				
+		    	startActivity (blobViewIntent);		    	
 				break;    			
 			case LIST_TYPE_CONTAINER:				
 				storageListIntent.putExtra(StorageListActivity.TYPE_NAMESPACE, StorageListActivity.LIST_TYPE_BLOB);
