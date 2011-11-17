@@ -18,8 +18,8 @@ import android.test.AndroidTestCase;
 
 public class CloudTableClientTests extends AndroidTestCase {
 
-	private final String ACCOUNT_NAME = "panthro";
-	private final String ACCOUNT_KEY = "9r3qbPdSzEzp/CQsVm64eY3ntmgJoeVkdeGuI1qJH4xv+JcJiFDFo5aKcinaA9oPdoUzwsHEO17IA8lwZZHGMA==";
+	private final String ACCOUNT_NAME = "account";
+	private final String ACCOUNT_KEY = "key";
 	
 	public void testWhenQueryTablesShouldReturnTableList() 
 			throws IllegalArgumentException, URISyntaxException, UnsupportedEncodingException, StorageException, IOException {
