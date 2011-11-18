@@ -16,6 +16,7 @@ public class CloudQueueMessage {
 	private int m_DequeueCount;
 	private String m_PopReceipt;
 	private Timestamp m_NextVisibleTime;
+	private boolean m_isBinaryMessage; 
 
 	public CloudQueueMessage(byte[] content) {
 		this(null, Base64.encodeToString(content, Base64.DEFAULT), null, null, 0);

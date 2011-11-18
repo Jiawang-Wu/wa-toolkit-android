@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.http.HttpStatus;
@@ -229,7 +230,7 @@ public class CloudQueue {
 	}
 
 	private int getDefaultVisibilityTimeoutInSeconds() {
-		return 60;
+		return 6000;
 	}
 
 	public Iterable<CloudQueueMessage> getMessages(int messageCount,
@@ -238,7 +239,13 @@ public class CloudQueue {
 	}
 
 	public CloudQueueMessage getMessage() throws UnsupportedEncodingException, StorageException, IOException {
-		return this.getMessages(1).iterator().next();
+		Iterator<CloudQueueMessage> iterator = this.getMessages(1).iterator();
+		CloudQueueMessage message = iterator.next();
+		if (iterator.hasNext())
+		{
+			throw new StorageException("Internal error", "More than one message was get, but only one was expected", 0, null, null);
+		}
+		return message;
 	}
 
 	public CloudQueueMessage getMessage(int visibilityTimeoutInSeconds) throws UnsupportedEncodingException, StorageException, IOException {
@@ -278,11 +285,11 @@ public class CloudQueue {
 		this.deleteMessage(message.getId(), message.getPopReceipt());
 	}
 
-	public void deleteMessage(String messageId, final String popReceipt) throws UnsupportedEncodingException, StorageException, IOException {
+	public void deleteMessage(final String messageId, final String popReceipt) throws UnsupportedEncodingException, StorageException, IOException {
 		final CloudQueue queue = this;
 		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
 			public Void execute() throws Exception {
-				HttpDelete request = QueueRequest.deleteMessage(queue.getUri(), popReceipt);
+				HttpDelete request = QueueRequest.deleteMessage(queue.getUri(), messageId, popReceipt);
 				m_ServiceClient.getCredentials().signRequest(request, -1L);
 				this.processRequest(request);
 
@@ -299,6 +306,24 @@ public class CloudQueue {
         storageOperation.executeTranslatingExceptions();	
 	}
 
-	public void clear() {
+	public void clear() throws UnsupportedEncodingException, StorageException, IOException {
+		final CloudQueue queue = this;
+		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
+			public Void execute() throws Exception {
+				HttpDelete request = QueueRequest.clear(queue.getUri());
+				m_ServiceClient.getCredentials().signRequest(request, -1L);
+				this.processRequest(request);
+
+				switch (result.statusCode)
+				{
+					case HttpStatus.SC_NO_CONTENT:
+						return null;
+					default:
+						throw new StorageInnerException("Couldn't clear queue messages");
+				}
+			}
+		};
+
+        storageOperation.executeTranslatingExceptions();	
 	}
 }

@@ -87,9 +87,14 @@ public class QueueRequest {
 		return BaseRequest.setURIAndHeaders(new HttpGet(), queueMessagesUri(uri), uriQueryBuilder);
 	}
 
-	public static HttpDelete deleteMessage(URI uri, String popReceipt) throws IOException, URISyntaxException, StorageException {
+	public static HttpDelete deleteMessage(URI uri, String messageId, String popReceipt) throws IOException, URISyntaxException, StorageException {
 		UriQueryBuilder uriQueryBuilder = new UriQueryBuilder();
 		uriQueryBuilder.add("popreceipt", popReceipt);
-		return BaseRequest.delete(queueMessagesUri(uri), uriQueryBuilder);
+		URI deleteMessageUri = PathUtility.appendPathToUri(queueMessagesUri(uri), messageId);
+		return BaseRequest.delete(deleteMessageUri, uriQueryBuilder);
+	}
+
+	public static HttpDelete clear(URI uri) throws IOException, URISyntaxException, StorageException {
+		return BaseRequest.delete(queueMessagesUri(uri), null);
 	}
 }
