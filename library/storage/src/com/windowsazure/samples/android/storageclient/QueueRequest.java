@@ -12,6 +12,8 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.ByteArrayEntity;
 
+import android.util.Base64;
+
 public class QueueRequest {
 
 	public static HttpPut create(URI uri) throws IllegalArgumentException, IOException, URISyntaxException, StorageException {
@@ -51,13 +53,15 @@ public class QueueRequest {
 		return BaseRequest.setMetadata(uri, null);
 	}
 
-	public static HttpPost addMessage(URI uri, int timeToLiveInMilliseconds, CloudQueueMessage message) throws IOException, URISyntaxException, StorageException {
+	public static HttpPost addMessage(URI uri, int timeToLiveInMilliseconds, CloudQueueMessage message, boolean encodeMessage) throws IOException, URISyntaxException, StorageException {
 		UriQueryBuilder uriQueryBuilder = new UriQueryBuilder();
 		uriQueryBuilder.add("messagettl", "" + timeToLiveInMilliseconds);
 		
 		HttpPost request = BaseRequest.setURIAndHeaders(new HttpPost(), queueMessagesUri(uri), uriQueryBuilder);
 		
-		String requestBody = String.format("<QueueMessage>\n<MessageText>%s</MessageText>\n</QueueMessage>", message.getRawContent());
+		String content = encodeMessage ? Base64.encodeToString(message.getAsBytes(), Base64.DEFAULT) : message.getAsString();
+		
+		String requestBody = String.format("<QueueMessage>\n<MessageText>%s</MessageText>\n</QueueMessage>", content);
 		request.setEntity(new ByteArrayEntity(requestBody.getBytes()));
 		
 		return request;

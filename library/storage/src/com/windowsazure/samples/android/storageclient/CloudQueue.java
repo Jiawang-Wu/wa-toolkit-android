@@ -21,6 +21,7 @@ public class CloudQueue {
 	private URI m_Uri;
 	private String m_Name;
 	private int m_ApproximateMessageCount;
+	private boolean m_EncodeMessage;
 	
 	public CloudQueue(String queueName, StorageCredentials credentials) throws URISyntaxException {
 		this(queueName, new CloudQueueClient(credentials));
@@ -33,6 +34,7 @@ public class CloudQueue {
 		m_ServiceClient = serviceClient;
 		m_Metadata = new HashMap<String, String>();
 		m_ApproximateMessageCount = 0;
+		m_EncodeMessage = true;
 	}
 
 	public CloudQueueClient getServiceClient() {
@@ -61,11 +63,11 @@ public class CloudQueue {
 	}
 
 	public boolean getEncodeMessage() {
-		return false;
+		return m_EncodeMessage;
 	}
 
-	public boolean setEncodeMessage(boolean encodeMessage) {
-		return false;
+	public void setEncodeMessage(boolean encodeMessage) {
+		m_EncodeMessage = encodeMessage;
 	}
 
 	public boolean create(final boolean createIfNotExist) throws UnsupportedEncodingException, StorageException, IOException {
@@ -208,7 +210,7 @@ public class CloudQueue {
 		final CloudQueue queue = this;
 		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
 			public Void execute() throws Exception {
-				HttpPost request = QueueRequest.addMessage(queue.getUri(), timeToLiveInSeconds, message);
+				HttpPost request = QueueRequest.addMessage(queue.getUri(), timeToLiveInSeconds, message, m_EncodeMessage);
 				m_ServiceClient.getCredentials().signRequest(request, request.getEntity().getContentLength());
 				this.processRequest(request);
 
@@ -271,7 +273,7 @@ public class CloudQueue {
 				switch (result.statusCode)
 				{
 					case HttpStatus.SC_OK:
-						return QueueResponse.getMessagesList(result.httpResponse.getEntity().getContent());
+						return QueueResponse.getMessagesList(result.httpResponse.getEntity().getContent(), m_EncodeMessage);
 					default:
 						throw new StorageInnerException("Couldn't peek queue messages");
 				}
