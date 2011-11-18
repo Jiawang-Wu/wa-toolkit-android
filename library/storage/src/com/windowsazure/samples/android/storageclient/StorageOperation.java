@@ -34,8 +34,7 @@ abstract class StorageOperation<T> {
 		HttpResponse httpResponse = httpClient.execute(request);
 		result.startDate = new Date();
 		result.statusCode = httpResponse.getStatusLine().getStatusCode();
-		result.statusMessage = httpResponse.getStatusLine()
-				.getReasonPhrase();
+		result.statusMessage = httpResponse.getStatusLine().getReasonPhrase();
 		result.stopDate = new Date();
 		result.serviceRequestID = BaseResponse.getRequestId(httpResponse);
 		result.eTag = BaseResponse.getEtag(httpResponse);

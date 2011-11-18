@@ -128,8 +128,7 @@ abstract class Canonicalizer {
 		String xMsDateString = Utility.getFirstHeaderValueOrEmpty(request, "x-ms-date");
 		appendCanonicalizedElement(stringBuilder, xMsDateString.equals("") ? defaultDate : xMsDateString);
 		appendCanonicalizedElement(stringBuilder, getCanonicalizedResource(url, accountName, false));
-		String result = stringBuilder.toString();
-		return result;		
+		return stringBuilder.toString();
 	}
 	
 	private static String getCanonicalizedResource(URL url, String accountName) throws StorageException {

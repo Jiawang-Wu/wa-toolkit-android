@@ -193,16 +193,21 @@ public class CloudTableClient {
 		
 		final String tableName = type.getSimpleName();		
 		CloudTableClient client = new CloudTableClient(new URI(baseAddress), credentials);
-		//TODO: change it for createTable
-		client.createTableIfNotExist(tableName);		
+		client.createTable(tableName);		
 
 		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
 			public Void execute() throws Exception {
-				HttpPost request = TableRequest.createFromModel(new URI(baseAddress), tableName, properties);
+				HttpPost request = TableRequest.insertEntity(new URI(baseAddress), tableName, properties);
 				credentials.signTableRequest(request);
 				this.processRequest(request);
 				if (result.statusCode != HttpStatus.SC_CREATED) {
 					throw new StorageInnerException(String.format("Couldn't create table '%s'", tableName));
+				} else {
+					HttpDelete deleteRequest = TableRequest.deleteEntity(new URI(baseAddress), tableName, properties);
+					credentials.signTableRequest(deleteRequest);
+					this.processRequest(deleteRequest);
+					if (result.statusCode != HttpStatus.SC_NO_CONTENT)
+						throw new StorageInnerException(String.format("Couldn't create table '%s'", tableName));
 				}
 				return null;
 			}
