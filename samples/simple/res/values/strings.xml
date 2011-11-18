@@ -54,7 +54,7 @@
     <string name="cloud_ready_acs_namespace">{the namespace of the ACS service you are using}</string>
     <string name="cloud_ready_acs_realm">uri:wazmobiletoolkit</string>
     <string name="cloud_ready_acs_proxy_service">{the service name where the ACS Cloud Ready package is deployed}</string>
-    <string name="cloud_ready_acs_proxy_service">{the symmetric key defined in ACS}</string>
+    <string name="cloud_ready_acs_symmetric_key">{the symmetric key defined in ACS}</string>
     
     <string name="cloud_ready_simple_proxy_service">{the service name where the Membership Cloud Ready package is deployed}</string>
     
