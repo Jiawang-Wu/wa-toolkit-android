@@ -2,15 +2,13 @@ package com.windowsazure.samples.android.storageclient;
 
 import java.sql.Timestamp;
 
-import android.util.Base64;
-
 public class CloudQueueMessage {
 	public static final long MaxMessageSize = 8 * 1024; // 8 kb
 	public static final int MaxTimeToLiveInSeconds = 7 * 24 * 60 * 60; //7 Days;
 	public static final int MaxNumberOfMessagesToPeek = 32;
 
 	private String m_MessageId;
-	private String m_RawContent;
+	private byte[] m_RawContent;
 	private Timestamp m_InsertionTime;
 	private Timestamp m_ExpirationTime;
 	private int m_DequeueCount;
@@ -18,19 +16,19 @@ public class CloudQueueMessage {
 	private Timestamp m_NextVisibleTime;
 
 	public CloudQueueMessage(byte[] content) {
-		this(null, Base64.encodeToString(content, Base64.DEFAULT), null, null, 0);
+		this(null, content, null, null, 0);
 	}
 
 	public CloudQueueMessage(String content) {
 		this(content.getBytes());
 	}
 
-	public CloudQueueMessage(String messageId, String rawContent,
+	public CloudQueueMessage(String messageId, byte[] rawContent,
 			Timestamp insertionTime, Timestamp expirationTime, int dequeueCount) {
 		this(messageId, rawContent, insertionTime, expirationTime, dequeueCount, null, null);
 	}
 
-	public CloudQueueMessage(String messageId, String rawContent,
+	public CloudQueueMessage(String messageId, byte[] rawContent,
 			Timestamp insertionTime, Timestamp expirationTime, int dequeueCount, String popReceipt, Timestamp nextVisibleTime) {
 		m_MessageId = messageId;
 		m_RawContent = rawContent;
@@ -42,7 +40,7 @@ public class CloudQueueMessage {
 	}
 
 	public byte[] getAsBytes() {
-		return Base64.decode(m_RawContent, Base64.DEFAULT);
+		return m_RawContent;
 	}
 
 	public String getId() {
@@ -77,15 +75,11 @@ public class CloudQueueMessage {
 	{
 		return String.format("Id: %s\nContent: %s\nInsertion Time: %s\nExpiration Time: %s\nDequeue Count: %s\nPop Receipt: %s\nNext Visible Time: %s\n",
 				m_MessageId,
-				m_RawContent,
+				this.getAsString(),
 				m_InsertionTime,
 				m_ExpirationTime,
 				m_DequeueCount,
 				m_PopReceipt,
 				m_NextVisibleTime);
-	}
-
-	public Object getRawContent() {
-		return m_RawContent;
 	}
 }

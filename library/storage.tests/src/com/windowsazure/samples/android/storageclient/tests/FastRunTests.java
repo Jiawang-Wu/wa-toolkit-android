@@ -8,8 +8,10 @@ public class FastRunTests {
 	public static Test suite() {
 		TestSuite suite = new TestSuite(FastRunTests.class.getName());
 		// $JUnit-BEGIN$
-		suite.addTestSuite(CloudBlobContainerUsingAccountAndKeyTests.class);
-		suite.addTestSuite(CloudBlockBlobUsingAccountAndKeyTests.class);
+		suite.addTestSuite(CloudQueueMessagesUsingWAZServiceByHttpTests.class);
+		suite.addTestSuite(CloudQueueUsingWAZServiceByHttpTests.class);
+		suite.addTestSuite(CloudQueueUsingAccountAndKeyTests.class);
+		suite.addTestSuite(CloudQueueMessagesUsingAccountAndKeyTests.class);
 		// $JUnit-END$
 		return suite;
 	}

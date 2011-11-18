@@ -63,9 +63,7 @@ public class WAZServiceAccount implements CloudClientAccount {
 
 		String loginXmlString = stringwriter.toString();
 
-		String path = this.m_WazServiceBaseUri.getPath() + LOGIN_PATH;
-		
-		HttpPost request = new HttpPost("https://" + this.m_WazServiceBaseUri.getHost() + path);
+		HttpPost request = new HttpPost(PathUtility.appendPathToUri(this.m_WazServiceBaseUri, LOGIN_PATH));
 		request.setEntity(new ByteArrayEntity(loginXmlString.getBytes()));
 		request.setHeader("Content-Type", "text/xml");
 		HttpClient client = new DefaultHttpClient();
@@ -99,13 +97,15 @@ public class WAZServiceAccount implements CloudClientAccount {
 	}
 
 	private URI getTableEndpoint() throws URISyntaxException {
-	 	return PathUtility.appendPathToUri(this.m_WazServiceBaseUri, SHARED_ACCESS_SIGNATURE_SERVICE_PATH);
+	 	return PathUtility.appendPathToUri(this.m_WazServiceBaseUri, TABLES_PROXY_SERVICE_PATH);
 	}
 	
 	private URI getQueueEndpoint() throws URISyntaxException {
-	    	return PathUtility.appendPathToUri(this.m_WazServiceBaseUri, SHARED_ACCESS_SIGNATURE_SERVICE_PATH);
+	    	return PathUtility.appendPathToUri(this.m_WazServiceBaseUri, QUEUES_PROXY_SERVICE_PATH);
 	}	
 	
 	private static final String LOGIN_PATH = "/AuthenticationService/login";
 	private static final String SHARED_ACCESS_SIGNATURE_SERVICE_PATH = "/SharedAccessSignatureService";
+	private static final String QUEUES_PROXY_SERVICE_PATH = "/AzureQueuesProxy.axd";
+	private static final String TABLES_PROXY_SERVICE_PATH = "/AzureTablesProxy.axd";
 }
