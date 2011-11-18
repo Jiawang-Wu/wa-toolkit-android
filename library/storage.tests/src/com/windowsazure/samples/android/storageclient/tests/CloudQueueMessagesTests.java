@@ -24,7 +24,7 @@ import com.windowsazure.samples.android.storageclient.CloudQueueMessage;
 import com.windowsazure.samples.android.storageclient.NotImplementedException;
 import com.windowsazure.samples.android.storageclient.StorageException;
 
-public class CloudQueueMessagesTests extends CloudQueueClientBasedTest<CloudStorageAccountProvider> {
+public abstract class CloudQueueMessagesTests<T extends CloudClientAccountProvider> extends CloudQueueClientBasedTest<T> {
 
 		@Override
 		protected void setUp() {
