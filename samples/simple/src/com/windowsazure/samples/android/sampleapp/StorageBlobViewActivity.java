@@ -21,7 +21,7 @@ import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-public class StorageBlobViewActivity extends Activity {
+public class StorageBlobViewActivity extends SecuredActivity {
 	
 	static final String TYPE_NAMESPACE = "com.windowsazure.samples.android.sampleapp.storage_blob_view.type";
 	static final String LOCATION_NAMESPACE = "com.windowsazure.samples.android.sampleapp.storage_blob_view.location";
