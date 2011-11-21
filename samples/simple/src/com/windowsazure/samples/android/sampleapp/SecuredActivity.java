@@ -1,0 +1,227 @@
+package com.windowsazure.samples.android.sampleapp;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+
+import com.microsoft.samples.windowsazure.android.accesscontrol.core.IAccessToken;
+import com.microsoft.samples.windowsazure.android.accesscontrol.core.IdentityProvidersRepository;
+import com.microsoft.samples.windowsazure.android.accesscontrol.login.AccessControlLoginActivity;
+import com.microsoft.samples.windowsazure.android.accesscontrol.login.AccessControlLoginContext;
+import com.microsoft.samples.windowsazure.android.accesscontrol.swt.SimpleWebToken;
+import com.microsoft.samples.windowsazure.android.accesscontrol.swt.SimpleWebTokenHandler;
+import com.microsoft.windowsazure.samples.SuccessfulLoginActivity;
+import com.microsoft.windowsazure.samples.UnsuccessfulLoginActivity;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.util.Base64;
+import android.view.Window;
+
+public class SecuredActivity extends Activity {
+
+	static final int MISSING_CONNECTION_TYPE = 0;
+	static final int MISSING_DIRECT_PARAMETERS = 1;
+	static final int MISSING_CLOUDREADY_ACS_PARAMETERS = 2;
+	static final int MISSING_CLOUDREADY_SIMPLE_PARAMETERS = 3;
+
+	static final String PREFERENCE_FILENAME = "simple.preferences";
+
+	protected Boolean hasValidCredentials;
+
+	public enum ConnectionType {
+		DIRECT, CLOUDREADYACS, CLOUDREADYSIMPLE, NOVALUE;
+
+		public static ConnectionType toConnectionType(String str) {
+			try {
+				return valueOf(str.toUpperCase());
+			} catch (Exception ex) {
+				return NOVALUE;
+			}
+		}
+	}
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		
+		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+		String connectionType = getString(R.string.toolkit_connection_type);
+
+		if (!isValidConfigurationValue(connectionType)) {
+			showDialog(MISSING_CONNECTION_TYPE);
+			return;
+		}
+
+		switch (ConnectionType.toConnectionType(connectionType)) {
+			case DIRECT:
+				String accountName = getString(R.string.direct_account_name);
+				String accessKey = getString(R.string.direct_access_key);
+	
+				if (!isValidConfigurationValue(accountName) || !isValidConfigurationValue(accessKey)) {
+					showDialog(MISSING_DIRECT_PARAMETERS);
+				}
+				break;
+			case CLOUDREADYACS:
+				String namespace = getString(R.string.cloud_ready_acs_namespace);
+				String realm = getString(R.string.cloud_ready_acs_realm);
+				String proxyService = getString(R.string.cloud_ready_acs_proxy_service);
+				String symmetricKey = getString(R.string.cloud_ready_acs_symmetric_key);
+	
+				if (!isValidConfigurationValue(namespace)
+						|| !isValidConfigurationValue(realm)
+						|| !isValidConfigurationValue(proxyService)
+						|| !isValidConfigurationValue(symmetricKey)) {
+					showDialog(MISSING_CLOUDREADY_ACS_PARAMETERS);
+				}
+				
+				IAccessToken token = getAccessControlToken();
+				if (token == null || token.isExpired()) {
+					doLogin();
+				} else {
+					launchBootStrapActivity();
+				}
+				
+				return;
+			case CLOUDREADYSIMPLE:
+				String service = getString(R.string.cloud_ready_simple_proxy_service);
+	
+				if (!isValidConfigurationValue(service)) {
+					showDialog(MISSING_CLOUDREADY_SIMPLE_PARAMETERS);
+				}
+				break;
+		}
+	}
+	
+	private void launchBootStrapActivity(){
+		// If current activity is this class it launches the MainWindow bootstrap activity		
+		if (this.getComponentName().getClassName().equals(getCurrentClassName())){
+	    	Intent mainActivity = new Intent(this, MainWindowActivity.class);
+	    	startActivity (mainActivity);			
+		}
+	}
+	
+	public static String getCurrentClassName(){
+		 return (new CurClassNameGetter()).getClassName();
+	}
+
+	//Static Nested Class doing the trick
+	public static class CurClassNameGetter extends SecurityManager{
+		public String getClassName(){
+		return getClassContext()[1].getName();
+		}
+	}
+	
+	protected Dialog onCreateDialog(int id) {
+		AlertDialog dialog = new AlertDialog.Builder(this).create();
+		dialog.setTitle(getString(R.string.configuration_error_title));
+
+		switch (id) {
+		case MISSING_CONNECTION_TYPE:
+			dialog.setMessage(getString(R.string.error_missing_connection_type));
+			break;
+		case MISSING_DIRECT_PARAMETERS:
+			dialog.setMessage(getString(R.string.error_missing_direct_parameters));
+			break;
+		case MISSING_CLOUDREADY_ACS_PARAMETERS:
+			dialog.setMessage(getString(R.string.error_missing_cloud_ready_acs_parameters));
+			break;
+		case MISSING_CLOUDREADY_SIMPLE_PARAMETERS:
+			dialog.setMessage(getString(R.string.error_missing_cloud_ready_simple_parameters));
+			break;
+		}
+
+		final Activity activity = this;
+
+		dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "OK",
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int whichButton) {
+						activity.finish();
+					}
+				});
+
+		return dialog;
+	}
+
+	private boolean isValidConfigurationValue(String value) {
+		return !(value.startsWith("{") || value.trim() == "");
+	}
+
+	private void doLogin() {
+		Intent intent = new Intent(this, AccessControlLoginActivity.class);
+
+		// TODO: Remove hard-coded values and get those from configuration
+		AccessControlLoginContext loginContext = new AccessControlLoginContext();
+		loginContext.IdentityProviderRepository = new IdentityProvidersRepository("https://margiestravel.accesscontrol.windows.net/v2/metadata/IdentityProviders.js?protocol=javascriptnotify&realm=urn:bouncerservicelocal&version=1.0");
+		loginContext.AccessTokenHandler = new SimpleWebTokenHandler("urn:bouncerservicelocal", "uPWmd0dF2c3vXsPWV7NIPhk3WgZglSHyqXNoI1+dc5I=");
+		loginContext.SuccessLoginActivity = SuccessfulLoginActivity.class;
+		loginContext.ErrorLoginActivity = SecuredActivity.class;
+		intent.putExtra(AccessControlLoginActivity.AccessControlLoginContextKey, loginContext);
+
+		startActivity(intent);
+	}
+
+	private IAccessToken getAccessControlToken() {
+		SharedPreferences settings = getSharedPreferences(PREFERENCE_FILENAME, 0);
+		IAccessToken accessToken = null;
+		
+		Bundle optionSet = getIntent().getExtras();
+		if (optionSet != null) {
+			accessToken = (IAccessToken) optionSet.getSerializable(AccessControlLoginActivity.AuthenticationTokenKey);
+			
+			SharedPreferences.Editor editor = settings.edit();
+			try {
+				editor.putString("access_token", toString(accessToken));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			editor.commit();
+			
+			return accessToken;
+		}
+
+		String serializedToken = settings.getString("access_token", "");
+
+		if (serializedToken == "")
+			return null;
+
+		try {
+			accessToken = (IAccessToken) fromString(serializedToken);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return accessToken;
+	}
+
+	private static Object fromString(String object) 
+			throws IOException, ClassNotFoundException {
+		byte[] data = Base64.decode(object, Base64.DEFAULT);
+		ObjectInputStream stream = new ObjectInputStream(new ByteArrayInputStream(data));
+		Object objectInstance = stream.readObject();
+		stream.close();
+		return objectInstance;
+	}
+
+	private static String toString( Serializable object ) throws IOException {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ObjectOutputStream outputStream = new ObjectOutputStream( byteArrayOutputStream );
+        outputStream.writeObject( object );
+        outputStream.close();
+        return new String(Base64.encode(byteArrayOutputStream.toByteArray(), Base64.DEFAULT));
+    }
+}

@@ -8,10 +8,18 @@
     <uses-sdk android:minSdkVersion="10" />
 
     <application android:icon="@drawable/ic_launcher" android:label="@string/app_name" >
-        <activity android:name=".MainWindowActivity" android:label="@string/app_name">
+        
+		<activity android:name=".SecuredActivity" android:label="@string/app_name">
             <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
+        <activity android:name=".MainWindowActivity" android:label="@string/app_name">
+            <intent-filter >
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         
@@ -55,7 +63,14 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-        </activity>       
+        </activity>      
+        
+        <activity android:name="com.microsoft.samples.windowsazure.android.accesscontrol.login.AccessControlLoginActivity"></activity>
+        
+        <activity android:name="com.microsoft.samples.windowsazure.android.accesscontrol.login.AccessControlWebAuthActivity"></activity>
+        
+        <activity android:name=".SuccessfulLoginActivity"></activity>
+            
     </application>
 
 </manifest>

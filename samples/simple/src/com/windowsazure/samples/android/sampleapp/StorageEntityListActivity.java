@@ -17,7 +17,7 @@ import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 import android.widget.ExpandableListView.OnChildClickListener;
 
-public class StorageEntityListActivity extends Activity implements OnChildClickListener {
+public class StorageEntityListActivity extends SecuredActivity implements OnChildClickListener {
 	
 	static final String TYPE_NAMESPACE = "com.windowsazure.samples.android.sampleapp.storage_entity_list.type";
 	static final String TITLE_NAMESPACE = "com.windowsazure.samples.android.sampleapp.storage_entity_list.title";

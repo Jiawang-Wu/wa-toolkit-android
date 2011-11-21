@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 
-public class StorageTypeSelectorActivity extends Activity {
+public class StorageTypeSelectorActivity extends SecuredActivity {
 
 	@Override
     public void onCreate(Bundle savedInstanceState) {
