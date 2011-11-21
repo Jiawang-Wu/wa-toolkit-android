@@ -8,6 +8,8 @@ public class AllTests {
 	public static Test suite() {
 		TestSuite suite = new TestSuite(AllTests.class.getName());
 		// $JUnit-BEGIN$
+		suite.addTestSuite(CloudQueueTests.class);
+		suite.addTestSuite(CloudQueueMessagesTests.class);
 		suite.addTestSuite(CloudBlobContainerUsingAccountAndKeyTests.class);
 		suite.addTestSuite(CloudBlockBlobUsingAccountAndKeyTests.class);
 		suite.addTestSuite(CloudBlobContainerUsingSASServiceByHttpTests.class);

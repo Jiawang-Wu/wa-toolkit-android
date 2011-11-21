@@ -12,6 +12,8 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.ByteArrayEntity;
 
+import android.util.Base64;
+
 public class QueueRequest {
 
 	public static HttpPut create(URI uri) throws IllegalArgumentException, IOException, URISyntaxException, StorageException {
@@ -51,13 +53,15 @@ public class QueueRequest {
 		return BaseRequest.setMetadata(uri, null);
 	}
 
-	public static HttpPost addMessage(URI uri, int timeToLiveInMilliseconds, CloudQueueMessage message) throws IOException, URISyntaxException, StorageException {
+	public static HttpPost addMessage(URI uri, int timeToLiveInMilliseconds, CloudQueueMessage message, boolean encodeMessage) throws IOException, URISyntaxException, StorageException {
 		UriQueryBuilder uriQueryBuilder = new UriQueryBuilder();
 		uriQueryBuilder.add("messagettl", "" + timeToLiveInMilliseconds);
 		
 		HttpPost request = BaseRequest.setURIAndHeaders(new HttpPost(), queueMessagesUri(uri), uriQueryBuilder);
 		
-		String requestBody = String.format("<QueueMessage>\n<MessageText>%s</MessageText>\n</QueueMessage>", message.getRawContent());
+		String content = encodeMessage ? Base64.encodeToString(message.getAsBytes(), Base64.DEFAULT) : message.getAsString();
+		
+		String requestBody = String.format("<QueueMessage>\n<MessageText>%s</MessageText>\n</QueueMessage>", content);
 		request.setEntity(new ByteArrayEntity(requestBody.getBytes()));
 		
 		return request;
@@ -87,9 +91,14 @@ public class QueueRequest {
 		return BaseRequest.setURIAndHeaders(new HttpGet(), queueMessagesUri(uri), uriQueryBuilder);
 	}
 
-	public static HttpDelete deleteMessage(URI uri, String popReceipt) throws IOException, URISyntaxException, StorageException {
+	public static HttpDelete deleteMessage(URI uri, String messageId, String popReceipt) throws IOException, URISyntaxException, StorageException {
 		UriQueryBuilder uriQueryBuilder = new UriQueryBuilder();
 		uriQueryBuilder.add("popreceipt", popReceipt);
-		return BaseRequest.delete(queueMessagesUri(uri), uriQueryBuilder);
+		URI deleteMessageUri = PathUtility.appendPathToUri(queueMessagesUri(uri), messageId);
+		return BaseRequest.delete(deleteMessageUri, uriQueryBuilder);
+	}
+
+	public static HttpDelete clear(URI uri) throws IOException, URISyntaxException, StorageException {
+		return BaseRequest.delete(queueMessagesUri(uri), null);
 	}
 }

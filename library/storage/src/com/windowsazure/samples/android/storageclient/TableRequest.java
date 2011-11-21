@@ -12,6 +12,7 @@ import java.util.TimeZone;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 
 final class TableRequest {
@@ -47,8 +48,15 @@ final class TableRequest {
 		return result;
 	}
 	
-	public static HttpPost createFromModel(URI endpoint, String tableName, TableProperty<?>[] properties) throws IOException, URISyntaxException, StorageException {
-		String requestUri = endpoint.toASCIIString() + "/Tables/" + tableName;
+	public static HttpDelete delete(URI endpoint, String tableName) throws IOException, URISyntaxException, StorageException {
+		String requestUri = endpoint.toASCIIString() + String.format("/Tables('%s')", tableName);
+		HttpDelete result = BaseRequest.setURIAndHeaders(new HttpDelete(), new URI(requestUri), new UriQueryBuilder());
+		result.addHeader("Content-Type", "application/atom+xml");
+		return result;		
+	}
+
+	public static HttpPost insertEntity(URI endpoint, String tableName, TableProperty<?>[] properties) throws IOException, URISyntaxException, StorageException {
+		String requestUri = endpoint.toASCIIString() + "/" + tableName;
 		HttpPost result = BaseRequest.setURIAndHeaders(new HttpPost(), new URI(requestUri), new UriQueryBuilder());
 		String body = buildEntity(properties);
 		result.addHeader("Content-Type", "application/atom+xml");
@@ -56,10 +64,46 @@ final class TableRequest {
 		return result;
 	}
 	
-	public static HttpDelete delete(URI endpoint, String tableName) throws IOException, URISyntaxException, StorageException {
-		String requestUri = endpoint.toASCIIString() + String.format("/Tables('%s')", tableName);
+	public static HttpPut updateEntity(URI endpoint, String tableName, TableProperty<?>[] properties) throws IOException, URISyntaxException, StorageException {
+		TableProperty<?> partitionKey = null, rowKey = null;		
+		for (int i = 0; i < properties.length; i++) {
+			if (properties[i].getName().equals("PartitionKey")) {
+				partitionKey = properties[i];
+				continue;
+			} else if (properties[i].getName().equals("RowKey")) {
+				rowKey = properties[i];
+			}
+		}
+		Utility.assertNotNull("PartitionKey property not found", partitionKey);
+		Utility.assertNotNull("RowKey property not found", rowKey);	
+		
+		String requestUri = endpoint.toASCIIString() + String.format("/%s(PartitionKey='%s',RowKey='%s')", tableName, partitionKey.getRepresentation(), rowKey.getRepresentation());
+		HttpPut result = BaseRequest.setURIAndHeaders(new HttpPut(), new URI(requestUri), new UriQueryBuilder());
+		String body = buildEntity(properties);
+		result.addHeader("Content-Type", "application/atom+xml");
+		result.addHeader("If-Match", "*");
+		result.setEntity(new StringEntity(body));
+		return result;
+	}
+	
+	public static HttpDelete deleteEntity(URI endpoint, String tableName, TableProperty<?>[] properties) throws IOException, URISyntaxException, StorageException {
+		TableProperty<?> partitionKey = null, rowKey = null;		
+		for (int i = 0; i < properties.length; i++) {
+			if (properties[i].getName().equals("PartitionKey")) {
+				partitionKey = properties[i];
+				continue;
+			} else if (properties[i].getName().equals("RowKey")) {
+				rowKey = properties[i];
+			}
+		}
+		Utility.assertNotNull("PartitionKey property not found", partitionKey);
+		Utility.assertNotNull("RowKey property not found", rowKey);	
+		
+		String requestUri = endpoint.toASCIIString() + String.format("/%s(PartitionKey='%s',RowKey='%s')", tableName, partitionKey.getRepresentation(), rowKey.getRepresentation());
 		HttpDelete result = BaseRequest.setURIAndHeaders(new HttpDelete(), new URI(requestUri), new UriQueryBuilder());
 		result.addHeader("Content-Type", "application/atom+xml");
+		result.addHeader("Content-Length", "0");
+		result.addHeader("If-Match", "*");
 		return result;		
 	}
 
@@ -77,7 +121,7 @@ final class TableRequest {
 		StringWriter result = new StringWriter();
 		result.append("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>\n");
 		result.append(String.format("<entry xmlns:d=\"%s\" xmlns:m=\"%s\" xmlns=\"%s\">\n", DATA_SERVICES_NS, METADATA_NS, ATOM_NS));
-	    result.append(String.format("<title /> <updated>%s</updated> <author> <name /> </author> <id />\n", getISO8601Time()));
+	    result.append(String.format("<title /> <updated>%s</updated> <author> <name /> </author> <id />\n", getXmlTimeWithTZ()));
 	    result.append("<content type=\"application/xml\"> <m:properties>\n");
 	    for (int i = 0; i < properties.length; i++) {
 	    	TableProperty<?> property = properties[i];
@@ -98,5 +142,13 @@ final class TableRequest {
 	    sdf.setTimeZone(GMT_ZONE);
 	    return sdf.format (new Date());
 	}
+	
+	private static final String XML_FORMAT_TZ = "yyyy-MM-dd'T'HH:mm:ssZ";
+	private static String getXmlTimeWithTZ() {
+		SimpleDateFormat sdf = new SimpleDateFormat(XML_FORMAT_TZ); 
+		sdf.setTimeZone(GMT_ZONE);
+        return sdf.format(new Date());
+	}
+
 	
 }

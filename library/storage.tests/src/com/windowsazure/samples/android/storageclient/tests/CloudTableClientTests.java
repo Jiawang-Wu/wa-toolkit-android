@@ -1,9 +1,6 @@
 package com.windowsazure.samples.android.storageclient.tests;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
-import java.util.Date;
 import java.util.Iterator;
 
 import org.apache.http.HttpStatus;
@@ -12,6 +9,7 @@ import junit.framework.Assert;
 
 import com.windowsazure.samples.android.storageclient.CloudStorageAccount;
 import com.windowsazure.samples.android.storageclient.CloudTableClient;
+import com.windowsazure.samples.android.storageclient.CloudTableObject;
 import com.windowsazure.samples.android.storageclient.StorageException;
 
 import android.test.AndroidTestCase;
@@ -154,17 +152,49 @@ public class CloudTableClientTests extends AndroidTestCase {
 		Assert.assertFalse(client.doesTableExist(testTableName));
 	}
 
-	public void testWhenCreateFromModelShouldDefineTableColumns() throws URISyntaxException, UnsupportedEncodingException, StorageException, IOException {
+	public void testWhenCreateFromModelShouldCreateTableWithTypeName() throws Exception {
 		CloudStorageAccountProvider accountProvider = new CloudStorageAccountProvider();
+		
+		String testTableName = "TableClientTestsCreateFromModel";
+		CloudTableClient client = accountProvider.getAccount().createCloudTableClient();
+		client.deleteTableIfExist(testTableName);
+		Assert.assertFalse(client.doesTableExist(testTableName));
+
 		CloudStorageAccount account = (CloudStorageAccount)accountProvider.getAccount();
-		CloudTableClient.CreateTableFromModel(TestTableEntity.class, account.getTableEndpoint().toASCIIString(), account.getCredentials());
+		CloudTableClient.CreateTableFromModel(TableClientTestsCreateFromModel.class, account.getTableEndpoint().toASCIIString(), account.getCredentials());
+		Assert.assertTrue(client.doesTableExist(testTableName));				
+		
+		client.deleteTable(testTableName);
+	}
+	
+	public void testWhenInsertEntityShouldBeAdded() throws Exception {
+		CloudStorageAccountProvider accountProvider = new CloudStorageAccountProvider();
+		
+		String testTableName = "TableClientTestsEntityUpdate";
+		CloudTableClient client = accountProvider.getAccount().createCloudTableClient();
+		client.createTableIfNotExist(testTableName);
+		
+		CloudStorageAccount account = (CloudStorageAccount)accountProvider.getAccount();
+		CloudTableObject<TableClientTestsCreateFromModel> tableObject = 
+				new CloudTableObject<TableClientTestsCreateFromModel>(testTableName, 
+						account.getTableEndpoint(), account.getCredentials());
+		
+		TableClientTestsCreateFromModel obj = new TableClientTestsCreateFromModel();
+		obj.PartitionKey = "test_partition";
+		obj.RowKey = "test_rowkey";
+		obj.Description = "test_description";
+		tableObject.insertEntity(obj);
+		
+		//TODO: move next stuff to other test methods when query already implemented
+		obj.Flag = true;
+		tableObject.updateEntity(obj);
+		
+		tableObject.deleteEntity(obj);
 	}
 
-	final class TestTableEntity {
+	final class TableClientTestsCreateFromModel {
 		public String PartitionKey;
 		public String RowKey;
-		public Date TimeStamp;
-
 		public String Description;
 		public boolean Flag;
 		public int Count;		

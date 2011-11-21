@@ -101,8 +101,80 @@ public class TableProperty<T> {
 		return new TableProperty<String>(name, string);
 	}
 	
-	public static TableProperty<?> newProperty(String name, Class<?> type) {		
-		return new TableProperty<Object>(name, type);
+	public static TableProperty<?> newProperty(String name, Class<?> type) {				
+		TableProperty<?> result = null;
+		
+		if (type.equals(ByteBuffer.class)) {
+			result = newProperty(name, (ByteBuffer)null);
+		}
+		
+		if (type.equals(Boolean.class) || type.equals(boolean.class)) {
+			result = newProperty(name, false);
+		}
+
+		if (type.equals(Date.class)) {
+			result = newProperty(name, new Date());
+		}
+
+		if (type.equals(Double.class) || type.equals(double.class)) {
+			result = newProperty(name, 0.0);
+		}
+		
+		if (type.equals(UUID.class)) {
+			result = newProperty(name, UUID.randomUUID());
+		}
+		
+		if (type.equals(Integer.class) || type.equals(int.class)) {
+			result = newProperty(name, 0);
+		}
+		
+		if (type.equals(Long.class) || type.equals(long.class)) {
+			result = newProperty(name, 0l);
+		}
+		
+		if (type.equals(String.class)) {
+			result = newProperty(name, UUID.randomUUID().toString());
+		}
+		
+		return result;
+	}
+	
+	public static TableProperty<?> newProperty(String name, Class<?> type, Object value) {
+		TableProperty<?> result = null;
+		
+		if (type.equals(ByteBuffer.class)) {
+			result = newProperty(name, (ByteBuffer)value);
+		}
+		
+		if (type.equals(Boolean.class) || type.equals(boolean.class)) {
+			result = newProperty(name, (Boolean)value);
+		}
+
+		if (type.equals(Date.class)) {
+			result = newProperty(name, (Date)value);
+		}
+
+		if (type.equals(Double.class) || type.equals(double.class)) {
+			result = newProperty(name, (Double)value);
+		}
+		
+		if (type.equals(UUID.class)) {
+			result = newProperty(name, (UUID)value);
+		}
+		
+		if (type.equals(Integer.class) || type.equals(int.class)) {
+			result = newProperty(name, (Integer)value);
+		}
+		
+		if (type.equals(Long.class) || type.equals(long.class)) {
+			result = newProperty(name, (Long)value);
+		}
+		
+		if (type.equals(String.class)) {
+			result = newProperty(name, (String)value);
+		}
+		
+		return result;
 	}
 	
 	private TableProperty(String name, T value) {
@@ -158,62 +230,8 @@ public class TableProperty<T> {
 		}
 		
 		this.edmType = EdmType.EdmUnsupported;
-		this.representation = value.toString();
-	}
-	
-	private TableProperty(String name, Class<?> type) {
-		this.name = name;		
-		
-		if (type.equals(ByteBuffer.class)) {
-			this.edmType = EdmType.EdmBinary;
-			this.representation = "";
-			return;
-		}
-		
-		if (type.equals(Boolean.class) || type.equals(boolean.class)) {
-			this.edmType = EdmType.EdmBoolean;
-			this.representation = "false";
-			return;
-		}
-
-		if (type.equals(Date.class)) {
-			this.edmType = EdmType.EdmDateTime;
-			this.representation = dateToXmlStringWithoutTZ(new Date());
-			return;
-		}
-
-		if (type.equals(Double.class) || type.equals(double.class)) {
-			this.edmType = EdmType.EdmDouble;
-			this.representation = "0";
-			return;
-		}
-		
-		if (type.equals(UUID.class)) {
-			this.edmType = EdmType.EdmGuid;
-			this.representation = UUID.randomUUID().toString();
-			return;
-		}
-		
-		if (type.equals(Integer.class) || type.equals(int.class)) {
-			this.edmType = EdmType.EdmInt32;
-			this.representation = "0";
-			return;
-		}
-		
-		if (type.equals(Long.class) || type.equals(long.class)) {
-			this.edmType = EdmType.EdmInt64;
-			this.representation = "0";
-			return;
-		}
-		
-		if (type.equals(String.class)) {
-			this.edmType = EdmType.EdmString;
-			this.representation = UUID.randomUUID().toString();
-			return;
-		}
-		
-		this.edmType = EdmType.EdmUnsupported;
-	}
+		if (value != null) this.representation = value.toString();
+	}	
 	
 	private static final String GMT_TZ = "GMT";
 	private static final String XML_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";

@@ -19,6 +19,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import android.util.Base64;
+
 public class QueueResponse {
 
 	public static Iterable<CloudQueue> getList(InputStream responseStream, CloudQueueClient serviceClient) throws SAXException, IOException, ParserConfigurationException, URISyntaxException {
@@ -74,7 +76,7 @@ public class QueueResponse {
 		return metadata;
 	}
 
-	public static Iterable<CloudQueueMessage> getMessagesList(InputStream responseStream) throws SAXException, IOException, ParserConfigurationException {
+	public static Iterable<CloudQueueMessage> getMessagesList(InputStream responseStream, boolean encodeMessage) throws SAXException, IOException, ParserConfigurationException {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = factory.newDocumentBuilder();
 		Document dom = builder.parse(responseStream);
@@ -91,6 +93,8 @@ public class QueueResponse {
 			int dequeueCount = Integer.parseInt(messageElement.getElementsByTagName("DequeueCount").item(0).getTextContent());
 			String messageText = messageElement.getElementsByTagName("MessageText").item(0).getTextContent();
 			
+			byte[] content = encodeMessage ? Base64.decode(messageText, Base64.DEFAULT) : messageText.getBytes();
+			
 			String popReceipt = null;
 			NodeList popReceiptNodes = messageElement.getElementsByTagName("PopReceipt");
 			if (popReceiptNodes.getLength() != 0)
@@ -106,7 +110,7 @@ public class QueueResponse {
 			}
 
 			CloudQueueMessage message = new CloudQueueMessage(messageId, 
-					messageText, 
+					content, 
 					insertionTime, 
 					expirationTime, 
 					dequeueCount,
