@@ -163,7 +163,7 @@ public class SecuredActivity extends Activity {
 		AccessControlLoginContext loginContext = new AccessControlLoginContext();
 		loginContext.IdentityProviderRepository = new IdentityProvidersRepository("https://margiestravel.accesscontrol.windows.net/v2/metadata/IdentityProviders.js?protocol=javascriptnotify&realm=urn:bouncerservicelocal&version=1.0");
 		loginContext.AccessTokenHandler = new SimpleWebTokenHandler("urn:bouncerservicelocal", "uPWmd0dF2c3vXsPWV7NIPhk3WgZglSHyqXNoI1+dc5I=");
-		loginContext.SuccessLoginActivity = SuccessfulLoginActivity.class;
+		loginContext.SuccessLoginActivity = SecuredActivity.class;
 		loginContext.ErrorLoginActivity = SecuredActivity.class;
 		intent.putExtra(AccessControlLoginActivity.AccessControlLoginContextKey, loginContext);
 
