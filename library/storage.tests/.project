@@ -3,7 +3,7 @@
 	<name>Windows Azure Storage for Android Tests</name>
 	<comment></comment>
 	<projects>
-		<project>Android Storage Client Library</project>
+		<project>Windows Azure Storage for Android</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
