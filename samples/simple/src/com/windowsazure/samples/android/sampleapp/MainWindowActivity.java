@@ -1,5 +1,13 @@
 package com.windowsazure.samples.android.sampleapp;
 
+import java.net.URI;
+
+import com.windowsazure.samples.android.storageclient.CloudClientAccount;
+import com.windowsazure.samples.android.storageclient.CloudStorageAccount;
+import com.windowsazure.samples.android.storageclient.StorageCredentialsAccountAndKey;
+import com.windowsazure.samples.android.storageclient.wazservice.WAZServiceAccount;
+import com.windowsazure.samples.android.storageclient.wazservice.WAZServiceUsernameAndPassword;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -31,12 +39,6 @@ public class MainWindowActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     	this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-    	
-        // Used to avoid errors when starting-up while developing application with mock data
-        if (true) {
-        	showStorageSelector();
-        	return;
-        }
         
         String connectionType = getString(R.string.toolkit_connection_type);
 
@@ -45,36 +47,56 @@ public class MainWindowActivity extends Activity {
         	return;
         }
         
-    	switch(ConnectionType.toConnectionType(connectionType)) {
-    		case DIRECT:
-    			String accountName = getString(R.string.direct_account_name);
-    			String accessKey = getString(R.string.direct_access_key);
-    			
-    			if (!isValidConfigurationValue(accountName) || !isValidConfigurationValue(accessKey)) {
-    				showDialog(MISSING_DIRECT_PARAMETERS);
-    			}
-    			return;    			
-    		case CLOUDREADYACS:
-    			String namespace = getString(R.string.cloud_ready_acs_namespace);
-    			String realm = getString(R.string.cloud_ready_acs_realm);
-    			String proxyService = getString(R.string.cloud_ready_acs_proxy_service);
-    			
-    			if (!isValidConfigurationValue(namespace) || !isValidConfigurationValue(realm) || !isValidConfigurationValue(proxyService)) {
-    				showDialog(MISSING_CLOUDREADY_ACS_PARAMETERS);
-    			}
-    			
-    			return;
-    		case CLOUDREADYSIMPLE:
-    			String service = getString(R.string.cloud_ready_simple_proxy_service);
-    			
-    			if (!isValidConfigurationValue(service)) {
-    				showDialog(MISSING_CLOUDREADY_SIMPLE_PARAMETERS);
-    			}
-    			
-    			return;
-    	}
-    	
-    	showStorageSelector();    	
+        CloudClientAccount cloudClientAccount = null;
+        
+        try
+        {
+	    	switch(ConnectionType.toConnectionType(connectionType)) {
+	    		case DIRECT:
+	    			String accountName = getString(R.string.direct_account_name);
+	    			String accessKey = getString(R.string.direct_access_key);
+	    			
+	    			if (!isValidConfigurationValue(accountName) || !isValidConfigurationValue(accessKey)) {
+	    				showDialog(MISSING_DIRECT_PARAMETERS);
+	    			}
+	    			
+	    			cloudClientAccount = new CloudStorageAccount(new StorageCredentialsAccountAndKey(accountName, accessKey)); 
+	    			break;
+	    			
+	    		case CLOUDREADYACS:
+	    			String namespace = getString(R.string.cloud_ready_acs_namespace);
+	    			String realm = getString(R.string.cloud_ready_acs_realm);
+	    			String proxyService = getString(R.string.cloud_ready_acs_proxy_service);
+	    			
+	    			if (!isValidConfigurationValue(namespace) || !isValidConfigurationValue(realm) || !isValidConfigurationValue(proxyService)) {
+	    				showDialog(MISSING_CLOUDREADY_ACS_PARAMETERS);
+	    			}
+	    			break;
+	    			
+	    		case CLOUDREADYSIMPLE:
+	    			String service = getString(R.string.cloud_ready_simple_proxy_service);
+	            	// TODO: Ask username and password? Add option to register?
+	    			
+	    			if (!isValidConfigurationValue(service)) {
+	    				showDialog(MISSING_CLOUDREADY_SIMPLE_PARAMETERS);
+	    			}
+	    			
+	    			cloudClientAccount = new WAZServiceAccount(new WAZServiceUsernameAndPassword("admin", "Passw0rd!"),
+	    					new URI(service)); 
+	    			break;
+	    	}
+	    	
+	    	// Configure the account we'll use to access the storage
+	        SampleApplication application = (SampleApplication) this.getApplication();
+			application.setCloudClientAccount(cloudClientAccount);
+
+			showStorageSelector();    	
+        }
+        catch (Exception exception)
+        {
+        	// TODO: Show an error message
+        	exception.printStackTrace();
+        }
     }
         
     protected Dialog onCreateDialog(int id) {	

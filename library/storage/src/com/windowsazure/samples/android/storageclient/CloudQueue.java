@@ -11,7 +11,6 @@ import java.util.Map;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 
@@ -143,7 +142,7 @@ public class CloudQueue {
 		final CloudQueue queue = this;
 		StorageOperation<Integer> storageOperation = new StorageOperation<Integer>() {
 			public Integer execute() throws Exception {
-				HttpHead request = QueueRequest.getProperties(queue.getUri());
+				HttpGet request = QueueRequest.getProperties(queue.getUri());
 				m_ServiceClient.getCredentials().signRequest(request, -1L);
 				this.processRequest(request);
 

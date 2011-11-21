@@ -32,7 +32,7 @@ public abstract class CloudQueueMessagesTests<T extends CloudClientAccountProvid
 			thisTest = this;
 		}
 
-		private CloudQueueMessagesTests thisTest;
+		private CloudQueueMessagesTests<T> thisTest;
 
 		public void testBase64Encoding() throws UnsupportedEncodingException, StorageException, NotImplementedException, URISyntaxException, IOException
 		{

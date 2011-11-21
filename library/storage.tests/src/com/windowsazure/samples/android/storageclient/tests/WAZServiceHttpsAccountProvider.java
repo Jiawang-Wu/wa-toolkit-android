@@ -5,7 +5,7 @@ import java.net.URISyntaxException;
 
 public class WAZServiceHttpsAccountProvider extends WAZServiceAccountProvider {
 
-	public static final String PROXY_HOST_STRING = "https://wazmobiletoolkit.cloudapp.net";
+	public static final String PROXY_HOST_STRING = "https://panthro.cloudapp.net";
 
 	// public static final String PROXY_HOST_STRING = "https://192.168.129.44";
 
