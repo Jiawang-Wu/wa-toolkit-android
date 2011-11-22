@@ -6,7 +6,6 @@ import java.io.ByteArrayOutputStream;
 import com.windowsazure.samples.android.storageclient.CloudBlobContainer;
 import com.windowsazure.samples.android.storageclient.CloudBlockBlob;
 
-import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -19,7 +18,7 @@ import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-public class StorageBlobViewActivity extends Activity {
+public class StorageBlobViewActivity extends SecuredActivity {
 	
 	static final String CONTAINER_NAME_NAMESPACE = "com.windowsazure.samples.android.sampleapp.storage_blob_view.container_name";
 	static final String BLOB_NAME_NAMESPACE = "com.windowsazure.samples.android.sampleapp.storage_blob_view.blob_name";
@@ -30,7 +29,6 @@ public class StorageBlobViewActivity extends Activity {
 	String containerName;
 	String blobName;
 	int contentType;
-    SampleApplication application;
 	
 	ScrollView scrollView;
 	TextView textView;
@@ -84,8 +82,7 @@ public class StorageBlobViewActivity extends Activity {
 		@Override
 		protected Void doInBackground(StorageBlobViewActivity... params) {		
 			try {
-				application = (SampleApplication) params[0].getApplication();
-		    	CloudBlobContainer container = application.getCloudBlobClient().getContainerReference(containerName);
+		    	CloudBlobContainer container = params[0].getSampleApplication().getCloudBlobClient().getContainerReference(containerName);
 		    	CloudBlockBlob blob = container.getBlockBlobReference(blobName);
 
 		    	outputStream = new ByteArrayOutputStream();

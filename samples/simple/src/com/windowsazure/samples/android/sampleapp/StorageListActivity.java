@@ -8,7 +8,6 @@ import com.windowsazure.samples.android.sampleapp.R;
 import com.windowsazure.samples.android.storageclient.CloudBlob;
 import com.windowsazure.samples.android.storageclient.CloudBlobContainer;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -21,7 +20,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class StorageListActivity extends Activity implements OnItemClickListener {
+public class StorageListActivity extends SecuredActivity implements OnItemClickListener {
 	
 	static final String TYPE_NAMESPACE = "com.windowsazure.samples.android.sampleapp.storage_list.type";
 	static final String TITLE_NAMESPACE = "com.windowsazure.samples.android.sampleapp.storage_list.title";
@@ -33,7 +32,6 @@ public class StorageListActivity extends Activity implements OnItemClickListener
 	
 	List<String> items;
 	int listType = 0;
-    SampleApplication application;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -71,7 +69,6 @@ public class StorageListActivity extends Activity implements OnItemClickListener
 	}
     
 	public void onStart() {
-		application = (SampleApplication) this.getApplication();
 		super.onStart();
         final StorageListActivity thisActivity = this;
        
@@ -86,7 +83,7 @@ public class StorageListActivity extends Activity implements OnItemClickListener
 			    			listedItems = Arrays.asList(new String[] { "table-1",  "table-2", "table-3" });	 
 			    			break;
 			    		case LIST_TYPE_CONTAINER:
-			    	        for (CloudBlobContainer container : application.getCloudBlobClient().listContainers())
+			    	        for (CloudBlobContainer container : thisActivity.getSampleApplication().getCloudBlobClient().listContainers())
 			    	        {
 			    	        	listedItems.add(container.getName());
 			    	        }
@@ -94,7 +91,7 @@ public class StorageListActivity extends Activity implements OnItemClickListener
 			    			
 			    		case LIST_TYPE_BLOB:
 			    	        String containerName = thisActivity.optionSet().getString(StorageListActivity.TITLE_NAMESPACE);
-			    	        CloudBlobContainer container = application.getCloudBlobClient().getContainerReference(containerName);
+			    	        CloudBlobContainer container = thisActivity.getSampleApplication().getCloudBlobClient().getContainerReference(containerName);
 			    	        for (CloudBlob blob : container.listBlobs())
 			    	        {
 			    	        	listedItems.add(blob.getName());

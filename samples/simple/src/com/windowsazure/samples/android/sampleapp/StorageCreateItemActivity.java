@@ -12,7 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-public class StorageCreateItemActivity extends Activity {
+public class StorageCreateItemActivity extends SecuredActivity {
 	
 	static final String TYPE_NAMESPACE = "com.windowsazure.samples.android.sampleapp.create_item.type";
 	static final String TITLE_NAMESPACE = "com.windowsazure.samples.android.sampleapp.create_item.title";

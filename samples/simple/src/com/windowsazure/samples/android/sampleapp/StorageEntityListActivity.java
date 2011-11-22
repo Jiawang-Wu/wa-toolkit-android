@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -17,7 +16,7 @@ import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 import android.widget.ExpandableListView.OnChildClickListener;
 
-public class StorageEntityListActivity extends Activity implements OnChildClickListener {
+public class StorageEntityListActivity extends SecuredActivity implements OnChildClickListener {
 	
 	static final String TYPE_NAMESPACE = "com.windowsazure.samples.android.sampleapp.storage_entity_list.type";
 	static final String TITLE_NAMESPACE = "com.windowsazure.samples.android.sampleapp.storage_entity_list.title";
