@@ -72,84 +72,63 @@ public abstract class SecuredActivity extends Activity {
 			return;
 		}
 
-	       CloudClientAccount cloudClientAccount = null;
-	        try {
-				switch (ConnectionType.toConnectionType(connectionType)) {
-					case DIRECT:
-						String accountName = getString(R.string.direct_account_name);
-						String accessKey = getString(R.string.direct_access_key);
+       CloudClientAccount cloudClientAccount = null;
+       
+       try {
+			switch (ConnectionType.toConnectionType(connectionType)) {
+				case DIRECT:
+					String accountName = getString(R.string.direct_account_name);
+					String accessKey = getString(R.string.direct_access_key);
 			
-						if (!isValidConfigurationValue(accountName) || !isValidConfigurationValue(accessKey)) {
-							showDialog(MISSING_DIRECT_PARAMETERS);
-						}
-
-						cloudClientAccount = new CloudStorageAccount(new StorageCredentialsAccountAndKey(accountName, accessKey)); 
-						break;
-					case CLOUDREADYACS:
-						String namespace = getString(R.string.cloud_ready_acs_namespace);
-						String realm = getString(R.string.cloud_ready_acs_realm);
-						String proxyService = getString(R.string.cloud_ready_acs_proxy_service);
-						String symmetricKey = getString(R.string.cloud_ready_acs_symmetric_key);
+					if (!isValidConfigurationValue(accountName) || !isValidConfigurationValue(accessKey)) {
+						showDialog(MISSING_DIRECT_PARAMETERS);
+					}
 			
-						if (!isValidConfigurationValue(namespace)
-								|| !isValidConfigurationValue(realm)
-								|| !isValidConfigurationValue(proxyService)
-								|| !isValidConfigurationValue(symmetricKey)) {
-							showDialog(MISSING_CLOUDREADY_ACS_PARAMETERS);
-						}
-										
-						
-						IAccessToken token = getAccessControlToken();
-						
-						if (token == null || token.isExpired()) {
-							String repository = String.format("https://%s.accesscontrol.windows.net/v2/metadata/IdentityProviders.js?protocol=javascriptnotify&realm=%s&version=1.0", namespace, realm);
-							doAcsLogin(repository, realm, symmetricKey);
-						} else {
-							launchBootStrapActivity();
-						}
-						
-						break;
-					case CLOUDREADYSIMPLE:
-						String service = getString(R.string.cloud_ready_simple_proxy_service);
-		            	// TODO: Ask username and password? Add option to register?
+					cloudClientAccount = new CloudStorageAccount(new StorageCredentialsAccountAndKey(accountName, accessKey)); 
+					break;
+				case CLOUDREADYACS:
+					String namespace = getString(R.string.cloud_ready_acs_namespace);
+					String realm = getString(R.string.cloud_ready_acs_realm);
+					String proxyService = getString(R.string.cloud_ready_acs_proxy_service);
+					String symmetricKey = getString(R.string.cloud_ready_acs_symmetric_key);
 			
-						if (!isValidConfigurationValue(service)) {
-							showDialog(MISSING_CLOUDREADY_SIMPLE_PARAMETERS);
-						}
+					if (!isValidConfigurationValue(namespace)
+							|| !isValidConfigurationValue(realm)
+							|| !isValidConfigurationValue(proxyService)
+							|| !isValidConfigurationValue(symmetricKey)) {
+						showDialog(MISSING_CLOUDREADY_ACS_PARAMETERS);
+					}
+									
+					
+					IAccessToken token = getAccessControlToken();
+					
+					if (token == null || token.isExpired()) {
+						String repository = String.format("https://%s.accesscontrol.windows.net/v2/metadata/IdentityProviders.js?protocol=javascriptnotify&realm=%s&version=1.0", namespace, realm);
+						doAcsLogin(repository, realm, symmetricKey);
+					}
+					
+					break;
+				case CLOUDREADYSIMPLE:
+					String service = getString(R.string.cloud_ready_simple_proxy_service);
+			
+					if (!isValidConfigurationValue(service)) {
+						showDialog(MISSING_CLOUDREADY_SIMPLE_PARAMETERS);
+					}
+					
+			    	// TODO: Ask user name and password? Add option to register?
+					cloudClientAccount = new WAZServiceAccount(new WAZServiceUsernameAndPassword("admin", "Passw0rd!"),	new URI(service)); 
+					break;
+			}
+			
+			// Configure the account we'll use to access the storage
+			this.getSampleApplication().setCloudClientAccount(cloudClientAccount);
+        }
+        catch (Exception exception)
+        {
+        	this.showErrorMessage("Couldn't configure a cloud client account", exception);
+        }
+    }
 
-						cloudClientAccount = new WAZServiceAccount(new WAZServiceUsernameAndPassword("admin", "Passw0rd!"),
-		    					new URI(service)); 
-						break;
-				}
-
-				// Configure the account we'll use to access the storage
-				this.getSampleApplication().setCloudClientAccount(cloudClientAccount);
-	        }
-	        catch (Exception exception)
-	        {
-	        	this.showErrorMessage("Couldn't configure a cloud client account", exception);
-	        }
-	    }
-	
-	private void launchBootStrapActivity(){
-		// If current activity is this class it launches the MainWindow bootstrap activity		
-		if (this.getComponentName().getClassName().equals(getCurrentClassName())){
-	    	Intent mainActivity = new Intent(this, MainWindowActivity.class);
-	    	startActivity (mainActivity);			
-		}
-	}
-	
-	public static String getCurrentClassName(){
-		 return (new CurClassNameGetter()).getClassName();
-	}
-
-	//Static Nested Class doing the trick
-	public static class CurClassNameGetter extends SecurityManager{
-		public String getClassName(){
-		return getClassContext()[1].getName();
-		}
-	}
-	
 	protected Dialog onCreateDialog(int id) {
 		AlertDialog dialog = new AlertDialog.Builder(this).create();
 		dialog.setTitle(getString(R.string.configuration_error_title));
@@ -194,8 +173,8 @@ public abstract class SecuredActivity extends Activity {
 		AccessControlLoginContext loginContext = new AccessControlLoginContext();
 		loginContext.IdentityProviderRepository = new IdentityProvidersRepository(identityProvidersRepository);
 		loginContext.AccessTokenHandler = new SimpleWebTokenHandler(realm, symmetricKey);
-		loginContext.SuccessLoginActivity = SecuredActivity.class;
-		loginContext.ErrorLoginActivity = SecuredActivity.class;
+		loginContext.SuccessLoginActivity = this.getClass();
+		//loginContext.ErrorLoginActivity = SecuredActivity.class; //TODO: add error activity
 		intent.putExtra(AccessControlLoginActivity.AccessControlLoginContextKey, loginContext);
 
 		startActivity(intent);
