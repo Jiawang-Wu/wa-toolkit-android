@@ -23,7 +23,7 @@ public abstract class CloudQueueTests<T extends CloudClientAccountProvider> exte
 		thisTest = this;
 	}
 
-	private CloudQueueTests thisTest;
+	private CloudQueueTests<T> thisTest;
 	public void testCreatedQueueIncludesMetadata() throws StorageException, UnsupportedEncodingException, IOException, URISyntaxException
 	{
 		Map<String, String> metadata = new HashMap<String, String>();

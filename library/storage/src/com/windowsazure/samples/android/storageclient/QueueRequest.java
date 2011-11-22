@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.ByteArrayEntity;
@@ -43,10 +42,10 @@ public class QueueRequest {
 		return BaseRequest.delete(uri, null);
 	}
 
-	public static HttpHead getProperties(URI uri) throws IllegalArgumentException, StorageException, IOException, URISyntaxException {
+	public static HttpGet getProperties(URI uri) throws IllegalArgumentException, StorageException, IOException, URISyntaxException {
 		UriQueryBuilder uriQueryBuilder = new UriQueryBuilder();
 		uriQueryBuilder.add("comp", "metadata");
-		return BaseRequest.getProperties(uri, uriQueryBuilder);
+		return BaseRequest.setURIAndHeaders(new HttpGet(), uri, uriQueryBuilder);
 	}
 
 	public static HttpPut setMetadata(URI uri) throws IOException, URISyntaxException, StorageException {

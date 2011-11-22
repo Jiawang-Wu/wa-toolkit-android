@@ -1,13 +1,17 @@
 package com.windowsazure.samples.android.sampleapp;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import android.app.Activity;
+import com.windowsazure.samples.android.storageclient.CloudQueue;
+import com.windowsazure.samples.android.storageclient.CloudQueueMessage;
+
+import android.app.AlertDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -17,7 +21,7 @@ import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 import android.widget.ExpandableListView.OnChildClickListener;
 
-public class StorageEntityListActivity extends Activity implements OnChildClickListener {
+public class StorageEntityListActivity extends SecuredActivity implements OnChildClickListener {
 	
 	static final String TYPE_NAMESPACE = "com.windowsazure.samples.android.sampleapp.storage_entity_list.type";
 	static final String TITLE_NAMESPACE = "com.windowsazure.samples.android.sampleapp.storage_entity_list.title";
@@ -42,11 +46,9 @@ public class StorageEntityListActivity extends Activity implements OnChildClickL
         addButton.setVisibility(View.VISIBLE);
         backButton.setVisibility(View.VISIBLE);
         
-        Bundle optionSet = getIntent().getExtras();  
-        String text = optionSet.getString(StorageEntityListActivity.TITLE_NAMESPACE);
-        title.setText(text);
+        title.setText(this.entityName());
               
-        entityListType = optionSet.getInt(TYPE_NAMESPACE);        
+        entityListType = optionSet().getInt(TYPE_NAMESPACE);        
         listView = (ExpandableListView)findViewById(R.id.entity_list_expandable_list_view);
         listView.setOnChildClickListener(this);
         
@@ -58,21 +60,45 @@ public class StorageEntityListActivity extends Activity implements OnChildClickL
         	public void onClick(View view) { onAddButton(view); }
         });
     }
+
+	private String entityName() {
+		return this.optionSet().getString(StorageEntityListActivity.TITLE_NAMESPACE);
+	}
         
 	public void onStart() {
 		super.onStart();
-		
-    	switch(entityListType) {
-    		case ENTITY_LIST_TYPE_TABLE:
-    			// TODO: Plug with real table services    	    	
-    	    	listView.setAdapter(getTableMockData());
-    	    	
-    			break;
-    		case ENTITY_LIST_TYPE_QUEUE:
-    			// TODO: Plug with real blob services
-    			listView.setAdapter(getQueueMockData());
-    			break;
-    	}
+			 class ListEntityItemsTask extends AsyncTask<Void, Void, AlertDialog.Builder> {
+			 SimpleExpandableListAdapter listAdapter = null;
+			     protected AlertDialog.Builder doInBackground(Void... params) {
+			        try {
+				    	switch(entityListType) {
+				    		case ENTITY_LIST_TYPE_TABLE:
+				    			// TODO: Plug with real table services
+				    			listAdapter = getTableMockData();
+				    			break;
+				    		case ENTITY_LIST_TYPE_QUEUE:
+				    			listAdapter = getQueueMessages();
+				    			break;
+				    	}
+					}
+					catch (Exception exception)
+					{
+						return dialogToShow("Couldn't list the items of the entity", exception);
+					}
+			        return null;
+			     }
+			     protected void onPostExecute(AlertDialog.Builder dialogBuilder) {
+			    	 if (dialogBuilder == null)
+			    	 {
+							listView.setAdapter(listAdapter);
+			    	 }
+			    	 else
+			    	 {
+			    		 dialogBuilder.show();
+			    	 }
+				 }
+	    	};
+	    	new ListEntityItemsTask().execute();
     }
     
 	public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
@@ -162,52 +188,65 @@ public class StorageEntityListActivity extends Activity implements OnChildClickL
 												new int[] { android.R.id.text1, android.R.id.text2 });
     }
     
-    private SimpleExpandableListAdapter getQueueMockData() {
+    private SimpleExpandableListAdapter getQueueMessages() throws URISyntaxException, Exception {
     	List<List<Map<String, String>>> items = new ArrayList<List<Map<String, String>>>();
 		List<Map<String, String>> groupData = new ArrayList<Map<String, String>>();
 		
-		for (int i = 0; i < 5; i++) {
+		CloudQueue queue = this.getSampleApplication().getCloudQueueClient().getQueueReference(this.entityName());
+		for (CloudQueueMessage message :  queue.getMessages(32, 1)) {
 			Map<String, String> groupFields = new HashMap<String, String>();
 			List<Map<String, String>> entry = new ArrayList<Map<String, String>>();
 				
 			// Mock Groups
-       		groupFields.put("Message", "message-" + i);
+       		groupFields.put("Message", message.getId());
 	    	groupData.add(groupFields);	  
 	    	
 	    	// Mock Properties
 			Map<String, String> property = new HashMap<String, String>();
-			property.put("Name", "Message");
-			property.put("Value", "message-" + i);
-   			entry.add(property);
 			
    			property = new HashMap<String, String>();
    			property.put("Name", "Message ID");
-   			property.put("Value", "messsageId-" + i);
+   			property.put("Value", message.getId());
    			entry.add(property);
    			
    			property = new HashMap<String, String>();
    			property.put("Name", "Insetion Time");
-   			property.put("Value", new Date().toString());
+   			property.put("Value", message.getInsertionTime().toString());
    			entry.add(property);
    			
    			property = new HashMap<String, String>();
    			property.put("Name", "Expiration Time");
-   			property.put("Value", new Date().toString());
+   			property.put("Value", message.getExpirationTime().toString());
    			entry.add(property);
    			
-   			property = new HashMap<String, String>();
-   			property.put("Name", "Pop Receipt");
-   			property.put("Value", "AAAAzADAASDASDOQIIIIQAKA==");
-   			entry.add(property);
+   			// The pop receipt will always be null unless we use a get to list the messages
+	   			property = new HashMap<String, String>();
+	   			property.put("Name", "Pop Receipt");
+	   			if (message.getPopReceipt() != null)
+	   			{
+	   				property.put("Value", message.getPopReceipt().toString());
+	   			}
+	   			else
+	   			{
+	   				property.put("Value", "<none>");
+	   			}
+	   			entry.add(property);
 
    			property = new HashMap<String, String>();
    			property.put("Name", "Time Next Visible");
-   			property.put("Value", new Date().toString());
+   			if (message.getNextVisibleTime() != null)
+   			{
+   	   			property.put("Value", message.getNextVisibleTime().toString());
+   			}
+   			else
+   			{
+   				property.put("Value", "<none>");
+   			}
    			entry.add(property);
    			
    			property = new HashMap<String, String>();
    			property.put("Name", "Dequeue Count");
-   			property.put("Value", "2");
+   			property.put("Value", "" + message.getDequeueCount());
    			entry.add(property);
    			
 	    	items.add(entry);     			

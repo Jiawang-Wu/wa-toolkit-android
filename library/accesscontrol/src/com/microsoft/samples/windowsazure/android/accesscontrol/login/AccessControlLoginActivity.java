@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.Window;
 
 public class AccessControlLoginActivity extends Activity {
 		
@@ -16,9 +17,10 @@ public class AccessControlLoginActivity extends Activity {
 	public static final int IPLISTEMPTY = 2;
 	
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-    	
+    public void onCreate(Bundle savedInstanceState) {    	
     	super.onCreate(savedInstanceState);
+    	
+		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
     	
     	AccessControlLoginContext loginContext = null;
 		Bundle extras = getIntent().getExtras(); 

@@ -1,8 +1,16 @@
 package com.windowsazure.samples.android.sampleapp;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import com.windowsazure.samples.android.sampleapp.R;
-import android.app.Activity;
+import com.windowsazure.samples.android.storageclient.CloudBlob;
+import com.windowsazure.samples.android.storageclient.CloudBlobContainer;
+import com.windowsazure.samples.android.storageclient.CloudQueue;
+
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -13,7 +21,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class StorageListActivity extends Activity implements OnItemClickListener {
+public class StorageListActivity extends SecuredActivity implements OnItemClickListener {
 	
 	static final String TYPE_NAMESPACE = "com.windowsazure.samples.android.sampleapp.storage_list.type";
 	static final String TITLE_NAMESPACE = "com.windowsazure.samples.android.sampleapp.storage_list.title";
@@ -23,7 +31,7 @@ public class StorageListActivity extends Activity implements OnItemClickListener
 	static final int LIST_TYPE_BLOB = 3;
 	static final int LIST_TYPE_QUEUE = 4;
 	
-	String[] items;
+	List<String> items;
 	int listType = 0;
 	
     @Override
@@ -40,7 +48,7 @@ public class StorageListActivity extends Activity implements OnItemClickListener
         addButton.setVisibility(View.VISIBLE);
         backButton.setVisibility(View.VISIBLE);
 
-        Bundle optionSet = getIntent().getExtras();  
+        Bundle optionSet = optionSet();  
         String text = optionSet.getString(StorageListActivity.TITLE_NAMESPACE);
         title.setText(text);
               
@@ -56,36 +64,63 @@ public class StorageListActivity extends Activity implements OnItemClickListener
         	public void onClick(View view) { onAddButton(view); }
         });
     }
-    
+
 	public void onStart() {
 		super.onStart();
-		
-        try {
-        	switch(listType) {
-	    		case LIST_TYPE_TABLE:
-	    			// TODO: Plug with real table services
-	    			items = new String[] { "table-1",  "table-2", "table-3" };	 
-	    			break;
-	    		case LIST_TYPE_CONTAINER:
-	    			// TODO: Plug with real blob services
-	    			items = new String[] { "container-1",  "container-2", "container-3" };
-	    			break;
-	    		case LIST_TYPE_BLOB:
-	    			// TODO: Plug with real blob services
-	    			items = new String[] { "blob-1",  "blob-2", "blob-3" };	 
-	    			break;
-	    		case LIST_TYPE_QUEUE:
-	    			// TODO: Plug with real queue services
-	    			items = new String[] { "queue-1",  "queue-2", "queue-3" };
-	    			break;
-        	}
-	        
-	    	ListView listView = (ListView)findViewById(R.id.storage_list_list_view);
-	    	listView.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items));
-        }
-        catch (Exception e) {
-        	System.out.println(e.toString());
-        }
+        final StorageListActivity thisActivity = this;
+       
+		 class ListItemsTask extends AsyncTask<Integer, Integer, List<String>> {
+		     protected List<String> doInBackground(Integer... listTypes) {
+		    	List<String> listedItems = new ArrayList<String>();
+		        try {
+			        listedItems = new ArrayList<String>();
+		        	switch(listType) {
+			    		case LIST_TYPE_TABLE:
+			    			// TODO: Plug with real table services
+			    			listedItems = Arrays.asList(new String[] { "table-1",  "table-2", "table-3" });	 
+			    			break;
+			    		case LIST_TYPE_CONTAINER:
+			    	        for (CloudBlobContainer container : thisActivity.getSampleApplication().getCloudBlobClient().listContainers())
+			    	        {
+			    	        	listedItems.add(container.getName());
+			    	        }
+			    			break;
+			    			
+			    		case LIST_TYPE_BLOB:
+			    	        String containerName = thisActivity.getContainerListedName();
+			    	        CloudBlobContainer container = thisActivity.getSampleApplication().getCloudBlobClient().getContainerReference(containerName);
+			    	        for (CloudBlob blob : container.listBlobs("", true))
+			    	        {
+			    	        	listedItems.add(blob.getName());
+			    	        }
+			    			break;
+			    		case LIST_TYPE_QUEUE:
+			    	        for (CloudQueue queue : thisActivity.getSampleApplication().getCloudQueueClient().listQueues())
+			    	        {
+			    	        	listedItems.add(queue.getName());
+			    	        }
+			    			break;
+		        	}
+		        }
+		        catch (Exception exception) {
+		        	thisActivity.showErrorMessage("Couldn't execute the list operation", exception);
+		        }
+				return listedItems;
+		     }
+
+		     protected void onProgressUpdate(Integer... progress) {
+					//scrollView.setVisibility(View.GONE);
+		    	 //textView.setVisibility(View.GONE);
+		    	 //progressBar.setVisibility(View.VISIBLE);
+		     }
+
+		     protected void onPostExecute(List<String> listedItems) {
+		    	items = listedItems;
+			    ListView listView = (ListView)findViewById(R.id.storage_list_list_view);
+			    listView.setAdapter(new ArrayAdapter<String>(thisActivity, android.R.layout.simple_list_item_1, items));
+		     }
+		 };
+		 new ListItemsTask().execute(listType);
 	}
 
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
@@ -93,39 +128,38 @@ public class StorageListActivity extends Activity implements OnItemClickListener
 		Intent storageListIntent = new Intent(this, StorageListActivity.class);
 		Intent blobViewIntent = new Intent(this, StorageBlobViewActivity.class);
 		
-    	switch (listType) {			
-			case LIST_TYPE_TABLE:
-				// TODO: Show table rows
-				storageEntityListIntent.putExtra(StorageEntityListActivity.TYPE_NAMESPACE, StorageEntityListActivity.ENTITY_LIST_TYPE_TABLE);
-				storageEntityListIntent.putExtra(StorageEntityListActivity.TITLE_NAMESPACE, items[arg2]);
-		    	startActivity (storageEntityListIntent);
-				break;
-			case LIST_TYPE_BLOB:
-				// TODO: Set real url and content-type and remove the even/odd hack to show both contentTypes			
-				if (arg2 % 2 == 0) {
-					String mockImageLocation = "http://blog.toggle.com/wp-content/uploads/2011/05/android-apps-iphone-apps.jpg";
-					blobViewIntent.putExtra(StorageBlobViewActivity.TYPE_NAMESPACE, StorageBlobViewActivity.CONTENT_TYPE_IMAGE);
-					blobViewIntent.putExtra(StorageBlobViewActivity.LOCATION_NAMESPACE, mockImageLocation);
-				} else {
-					String mockTextLocation = "http://generator.lorem-ipsum.info/lorem-ipsum-copy";
-					blobViewIntent.putExtra(StorageBlobViewActivity.TYPE_NAMESPACE, StorageBlobViewActivity.CONTENT_TYPE_TEXT);
-					blobViewIntent.putExtra(StorageBlobViewActivity.LOCATION_NAMESPACE, mockTextLocation);
-				}				
-				
-		    	startActivity (blobViewIntent);		    	
-				break;    			
-			case LIST_TYPE_CONTAINER:				
-				storageListIntent.putExtra(StorageListActivity.TYPE_NAMESPACE, StorageListActivity.LIST_TYPE_BLOB);
-				storageListIntent.putExtra(StorageListActivity.TITLE_NAMESPACE, items[arg2]);
-		    	startActivity (storageListIntent);
-		    	break;
-			case LIST_TYPE_QUEUE:
-				// TODO: Show queue messages
-				storageEntityListIntent.putExtra(StorageEntityListActivity.TYPE_NAMESPACE, StorageEntityListActivity.ENTITY_LIST_TYPE_QUEUE);
-				storageEntityListIntent.putExtra(StorageEntityListActivity.TITLE_NAMESPACE, items[arg2]);
-		    	startActivity (storageEntityListIntent);
-				break;
+		try
+		{
+	    	switch (listType) {			
+				case LIST_TYPE_TABLE:
+					// TODO: Show table rows
+					storageEntityListIntent.putExtra(StorageEntityListActivity.TYPE_NAMESPACE, StorageEntityListActivity.ENTITY_LIST_TYPE_TABLE);
+					storageEntityListIntent.putExtra(StorageEntityListActivity.TITLE_NAMESPACE, items.get(arg2));
+			    	startActivity (storageEntityListIntent);
+					break;
+				case LIST_TYPE_BLOB:
+		    	    String containerName = this.optionSet().getString(StorageListActivity.TITLE_NAMESPACE);
+					blobViewIntent.putExtra(StorageBlobViewActivity.CONTAINER_NAME_NAMESPACE, containerName);
+					blobViewIntent.putExtra(StorageBlobViewActivity.BLOB_NAME_NAMESPACE, items.get(arg2));
+					
+			    	startActivity (blobViewIntent);		    	
+					break;    			
+				case LIST_TYPE_CONTAINER:				
+					storageListIntent.putExtra(StorageListActivity.TYPE_NAMESPACE, StorageListActivity.LIST_TYPE_BLOB);
+					storageListIntent.putExtra(StorageListActivity.TITLE_NAMESPACE, items.get(arg2));
+			    	startActivity (storageListIntent);
+			    	break;
+				case LIST_TYPE_QUEUE:
+					// TODO: Show queue messages
+					storageEntityListIntent.putExtra(StorageEntityListActivity.TYPE_NAMESPACE, StorageEntityListActivity.ENTITY_LIST_TYPE_QUEUE);
+					storageEntityListIntent.putExtra(StorageEntityListActivity.TITLE_NAMESPACE, items.get(arg2));
+			    	startActivity (storageEntityListIntent);
+					break;
+			}
 		}
+        catch (Exception exception) {
+        	this.showErrorMessage("Couldn't view the details of the item", exception);
+        }
 	}    
 	
     private void onBackButton(View v) {
@@ -145,6 +179,7 @@ public class StorageListActivity extends Activity implements OnItemClickListener
     	    	intent.putExtra(StorageCreateItemActivity.TYPE_NAMESPACE, StorageCreateItemActivity.CREATE_ITEM_TYPE_BLOB);
     	    	intent.putExtra(StorageCreateItemActivity.TITLE_NAMESPACE, getString(R.string.create_blob));
     	    	intent.putExtra(StorageCreateItemActivity.LABEL_TEXT_NAMESPACE, getString(R.string.create_blob_label));
+    	    	intent.putExtra(StorageCreateItemActivity.CONTAINER_NAME_NAMESPACE, this.getContainerListedName());
     			break;    			
     		case LIST_TYPE_CONTAINER:
     	    	intent.putExtra(StorageCreateItemActivity.TYPE_NAMESPACE, StorageCreateItemActivity.CREATE_ITEM_TYPE_CONTAINER);
@@ -159,6 +194,10 @@ public class StorageListActivity extends Activity implements OnItemClickListener
     	}
     	
     	startActivity(intent);
+	}
+
+	private String getContainerListedName() {
+		return this.optionSet().getString(StorageListActivity.TITLE_NAMESPACE);
 	}
 
 }

@@ -10,6 +10,8 @@ public class AllTests {
 		// $JUnit-BEGIN$
 		suite.addTestSuite(CloudQueueTests.class);
 		suite.addTestSuite(CloudQueueMessagesTests.class);
+		suite.addTestSuite(CloudQueueUsingWAZServiceByHttpTests.class);
+		suite.addTestSuite(CloudQueueMessagesUsingWAZServiceByHttpTests.class);
 		suite.addTestSuite(CloudBlobContainerUsingAccountAndKeyTests.class);
 		suite.addTestSuite(CloudBlockBlobUsingAccountAndKeyTests.class);
 		suite.addTestSuite(CloudBlobContainerUsingSASServiceByHttpTests.class);

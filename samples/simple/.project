@@ -3,6 +3,8 @@
 	<name>Windows Azure Storage For Android Sample App</name>
 	<comment></comment>
 	<projects>
+		<project>Access Control for Android</project>
+		<project>Windows Azure Storage for Android</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
