@@ -4,11 +4,25 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.net.URI;
+import java.util.ArrayList;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.w3c.dom.DOMException;
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class CloudTableObject<E> {
 	
@@ -29,11 +43,44 @@ public class CloudTableObject<E> {
 		m_TableName = tableName;
 	}
 	
-	public Iterable<E> query(String filter) {
-		return null;
+	public Iterable<E> queryEntities(Class<E> clazz) throws Exception {
+		return queryEntities(clazz, null);
 	}
 	
-	public void insertEntity(E entity) throws UnsupportedEncodingException, StorageException, IOException {
+	public Iterable<E> queryEntities(Class<E> clazz, String filter) throws Exception {
+		final String thatFilter = filter;
+		final Class<E> thatClazz = clazz; 
+		StorageOperation<Iterable<E>> storageOperation = new StorageOperation<Iterable<E>>() {
+			public Iterable<E> execute() throws Exception {
+				ArrayList<E> entities = new ArrayList<E>();
+				HttpGet request = TableRequest.queryEntity(m_Endpoint, m_TableName, thatFilter);
+				m_Credentials.signTableRequest(request);
+				this.processRequest(request);
+				if (result.statusCode != HttpStatus.SC_OK) {
+					throw new StorageInnerException(String.format("Couldn't query entities on table '%s'", m_TableName));
+				} else { 
+					DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+					DocumentBuilder builder = factory.newDocumentBuilder();
+					Document document = builder.parse(result.httpResponse.getEntity().getContent());
+					
+					XPath xpath = XPathFactory.newInstance().newXPath();
+					String expression = "/feed/entry";
+					NodeList entitiesData = (NodeList) xpath.evaluate(expression, document, XPathConstants.NODESET);
+					
+					expression = "content/properties";
+					for (int i = 0; i < entitiesData.getLength(); i++) {
+						E entity = thatClazz.newInstance();
+						Node properties = (Node) xpath.evaluate(expression, entitiesData.item(i), XPathConstants.NODE);
+						applyProperties(entity, properties.getChildNodes());
+						}
+				}
+				return entities;
+			}
+		};
+		return storageOperation.executeTranslatingExceptions();
+	}
+	
+	public void insertEntity(E entity) throws UnsupportedEncodingException, StorageException, IOException {		
 		final E thatEntity = entity;
 		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
 			public Void execute() throws Exception {
@@ -49,6 +96,38 @@ public class CloudTableObject<E> {
 		storageOperation.executeTranslatingExceptions();
 	}
 	
+	public void insertOrReplaceEntity(E entity) throws UnsupportedEncodingException, StorageException, IOException {		
+		final E thatEntity = entity;
+		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
+			public Void execute() throws Exception {
+				HttpPut request = TableRequest.insertOrReplaceEntity(m_Endpoint, m_TableName, getEntityProperties(thatEntity));
+				m_Credentials.signTableRequest(request);
+				this.processRequest(request);
+				if (result.statusCode != HttpStatus.SC_NO_CONTENT) {
+					throw new StorageInnerException(String.format("Couldn't insert/replace entity on table '%s'", m_TableName));
+				} 
+				return null;
+			}
+		};
+		storageOperation.executeTranslatingExceptions();
+	}
+
+	public void insertOrMergeEntity(E entity) throws UnsupportedEncodingException, StorageException, IOException {		
+		final E thatEntity = entity;
+		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
+			public Void execute() throws Exception {
+				HttpRequestBase request = TableRequest.insertOrMergeEntity(m_Endpoint, m_TableName, getEntityProperties(thatEntity));
+				m_Credentials.signTableRequest(request);
+				this.processRequest(request);
+				if (result.statusCode != HttpStatus.SC_NO_CONTENT) {
+					throw new StorageInnerException(String.format("Couldn't insert/merge entity on table '%s'", m_TableName));
+				} 
+				return null;
+			}
+		};
+		storageOperation.executeTranslatingExceptions();
+	}
+
 	public void updateEntity(E entity) throws UnsupportedEncodingException, StorageException, IOException {
 		final E thatEntity = entity;
 		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
@@ -64,7 +143,23 @@ public class CloudTableObject<E> {
 		};
 		storageOperation.executeTranslatingExceptions();
 	}
-	
+
+	public void mergeEntity(E entity) throws UnsupportedEncodingException, StorageException, IOException {
+		final E thatEntity = entity;
+		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
+			public Void execute() throws Exception {
+				HttpRequestBase request = TableRequest.mergeEntity(m_Endpoint, m_TableName, getEntityProperties(thatEntity));
+				m_Credentials.signTableRequest(request);
+				this.processRequest(request);
+				if (result.statusCode != HttpStatus.SC_NO_CONTENT) {
+					throw new StorageInnerException(String.format("Couldn't merge entity on table '%s'", m_TableName));
+				} 
+				return null;
+			}
+		};
+		storageOperation.executeTranslatingExceptions();		
+	}
+
 	public void deleteEntity(E entity) throws UnsupportedEncodingException, StorageException, IOException {
 		final E thatEntity = entity;
 		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
@@ -80,7 +175,7 @@ public class CloudTableObject<E> {
 		};
 		storageOperation.executeTranslatingExceptions();
 	}
-	
+
 	private TableProperty<?>[] getEntityProperties(E entity) throws IllegalArgumentException, IllegalAccessException {
 		Field[] fields = entity.getClass().getFields();
 		TableProperty<?>[] properties = new TableProperty<?>[fields.length];
@@ -89,5 +184,26 @@ public class CloudTableObject<E> {
 		}
 		return properties;
 	}
+	
+    /*@SuppressWarnings ("unchecked")
+    private Class<E> getTypeParameterClass()
+    {
+        Type type = getClass().getGenericSuperclass();
+        ParameterizedType paramType = (ParameterizedType) type;
+        return (Class<E>) paramType.getActualTypeArguments()[0];
+    }*/
+
+    private void applyProperties(E entity, NodeList properties) throws DOMException, Exception {
+    	Field[] fields = entity.getClass().getFields();
+    	for (int i = 0; i < properties.getLength(); i++) {
+    		Node property = properties.item(i);
+    		Node attrib = property.getAttributes().getNamedItem("type");
+    		if (attrib != null) {
+    			//String attribValue = attrib.getNodeValue();
+    		}
+    		//String edmRepresentation = property.getAttributes().getNamedItem("type").getNodeName();
+    		//TableProperty<?> convertedProperty = TableProperty.fromRepresentation(property.getNodeName(), EdmType.fromRepresentation(edmRepresentation), property.getNodeValue());
+    	}
+    }
 	
 }
