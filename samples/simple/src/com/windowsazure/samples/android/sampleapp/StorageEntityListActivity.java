@@ -1,19 +1,17 @@
 package com.windowsazure.samples.android.sampleapp;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.windowsazure.samples.android.storageclient.CloudQueue;
 import com.windowsazure.samples.android.storageclient.CloudQueueMessage;
-import com.windowsazure.samples.android.storageclient.StorageException;
 
+import android.app.AlertDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -69,24 +67,38 @@ public class StorageEntityListActivity extends SecuredActivity implements OnChil
         
 	public void onStart() {
 		super.onStart();
-		try
-		{
-	    	switch(entityListType) {
-	    		case ENTITY_LIST_TYPE_TABLE:
-	    			// TODO: Plug with real table services    	    	
-	    	    	listView.setAdapter(getTableMockData());
-	    	    	
-	    			break;
-	    		case ENTITY_LIST_TYPE_QUEUE:
-	    			// TODO: Plug with real blob services
-	    			listView.setAdapter(getQueueMessages());
-	    			break;
-	    	}
-		}
-		catch (Exception exception)
-		{
-			this.showErrorMessage("Couldn't list the items of the entity", exception);
-		}
+			 class ListEntityItemsTask extends AsyncTask<Void, Void, AlertDialog.Builder> {
+			 SimpleExpandableListAdapter listAdapter = null;
+			     protected AlertDialog.Builder doInBackground(Void... params) {
+			        try {
+				    	switch(entityListType) {
+				    		case ENTITY_LIST_TYPE_TABLE:
+				    			// TODO: Plug with real table services
+				    			listAdapter = getTableMockData();
+				    			break;
+				    		case ENTITY_LIST_TYPE_QUEUE:
+				    			listAdapter = getQueueMessages();
+				    			break;
+				    	}
+					}
+					catch (Exception exception)
+					{
+						return dialogToShow("Couldn't list the items of the entity", exception);
+					}
+			        return null;
+			     }
+			     protected void onPostExecute(AlertDialog.Builder dialogBuilder) {
+			    	 if (dialogBuilder == null)
+			    	 {
+							listView.setAdapter(listAdapter);
+			    	 }
+			    	 else
+			    	 {
+			    		 dialogBuilder.show();
+			    	 }
+				 }
+	    	};
+	    	new ListEntityItemsTask().execute();
     }
     
 	public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {

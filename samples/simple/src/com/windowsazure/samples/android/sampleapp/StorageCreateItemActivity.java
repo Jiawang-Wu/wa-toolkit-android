@@ -1,6 +1,5 @@
 package com.windowsazure.samples.android.sampleapp;
 
-import java.io.FileInputStream;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
 
