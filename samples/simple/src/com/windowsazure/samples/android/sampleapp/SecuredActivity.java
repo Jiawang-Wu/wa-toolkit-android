@@ -258,6 +258,9 @@ public abstract class SecuredActivity extends Activity {
         return new String(Base64.encode(byteArrayOutputStream.toByteArray(), Base64.DEFAULT));
     }
 	
+	protected Bundle optionSet() {
+		return getIntent().getExtras();
+	}
 	void showErrorMessageIfAny(String title, Exception exception)
 	{
 		if (exception != null)
@@ -269,13 +272,16 @@ public abstract class SecuredActivity extends Activity {
 	{
 		exception.printStackTrace();
     	System.out.println(exception.toString());
+		AlertDialog dialog = dialogToShow(title, exception).create();
+		dialog.setCanceledOnTouchOutside(true);
+		dialog.show();
+	}
+
+	AlertDialog.Builder dialogToShow(String title, Exception exception) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setTitle(title);
 		builder.setMessage(exception.getLocalizedMessage());
 		builder.setCancelable(true);
-
-		AlertDialog dialog = builder.create();
-		dialog.setCanceledOnTouchOutside(true);
-		dialog.show();
+		return builder;
 	}
 }

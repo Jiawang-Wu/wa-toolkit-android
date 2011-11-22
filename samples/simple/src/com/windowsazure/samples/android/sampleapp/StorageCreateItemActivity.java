@@ -1,12 +1,26 @@
 package com.windowsazure.samples.android.sampleapp;
 
+import java.io.FileInputStream;
+import java.io.OutputStream;
+import java.net.URISyntaxException;
+
+import com.windowsazure.samples.android.storageclient.CloudBlobContainer;
+import com.windowsazure.samples.android.storageclient.CloudBlockBlob;
+import com.windowsazure.samples.android.storageclient.NotImplementedException;
+import com.windowsazure.samples.android.storageclient.StorageException;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -18,6 +32,7 @@ public class StorageCreateItemActivity extends SecuredActivity {
 	static final String TYPE_NAMESPACE = "com.windowsazure.samples.android.sampleapp.create_item.type";
 	static final String TITLE_NAMESPACE = "com.windowsazure.samples.android.sampleapp.create_item.title";
 	static final String LABEL_TEXT_NAMESPACE = "com.windowsazure.samples.android.sampleapp.create_item.label_text";	
+	static final String CONTAINER_NAME_NAMESPACE = "com.windowsazure.samples.android.sampleapp.create_item.container_name";	
 	
 	static final int CREATE_ITEM_TYPE_TABLE = 1;
 	static final int CREATE_ITEM_TYPE_CONTAINER = 2;
@@ -40,7 +55,7 @@ public class StorageCreateItemActivity extends SecuredActivity {
     	this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.storage_create_item);
         
-        Bundle optionSet = getIntent().getExtras();
+        Bundle optionSet = optionSet();  
         
         createItemType = optionSet.getInt(TYPE_NAMESPACE);
         
@@ -90,20 +105,24 @@ public class StorageCreateItemActivity extends SecuredActivity {
 	}
     
 	protected Dialog onCreateDialog(int id)	{	
-		AlertDialog dialog = new AlertDialog.Builder(this).create();    
+		AlertDialog.Builder dialogBuilder = createDialogBuilder(id);
+		return dialogBuilder.create();
+	}
+
+	private AlertDialog.Builder createDialogBuilder(int id) {
+		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);    
 		
 		switch(id) {
 			case MISSING_NAME_FIELD:	
-				dialog.setTitle(getString(R.string.create_item_failed_title));
-				dialog.setMessage(getString(R.string.error_missing_title));
+				dialogBuilder.setTitle(getString(R.string.create_item_failed_title));
+				dialogBuilder.setMessage(getString(R.string.error_missing_title));
 		    	break;
 			case MISSING_IMAGE_FIELD:
-				dialog.setTitle(getString(R.string.create_item_failed_title));
-				dialog.setMessage(getString(R.string.error_missing_image));
+				dialogBuilder.setTitle(getString(R.string.create_item_failed_title));
+				dialogBuilder.setMessage(getString(R.string.error_missing_image));
 				break;
 		}
-	
-		return dialog;
+		return dialogBuilder;
 	}
 
     private void onBackButton(View v) {
@@ -120,16 +139,27 @@ public class StorageCreateItemActivity extends SecuredActivity {
     	// TODO: Validate names according to the API.
     	
 		final String name = nameView.getText().toString().trim();
-		
+		final String containerName = createItemType == CREATE_ITEM_TYPE_BLOB 
+				? this.optionSet().getString(CONTAINER_NAME_NAMESPACE)
+				: null;
+
 		if (name.length() == 0) {
         	showDialog(MISSING_NAME_FIELD);
         	return;	
 		}
 
 		final StorageCreateItemActivity thisActivity = this;
-		class CreateItemTask extends AsyncTask<Void, Void, Exception> {
+		class CreateItemTask extends AsyncTask<Void, Void, AlertDialog.Builder> {
+			public String getFilePath(Uri uri) {
+			    String[] projection = { MediaStore.Images.Media.DATA };
+			    Cursor cursor = managedQuery(uri, projection, null, null, null);
+			    int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+			    cursor.moveToFirst();
+			    return cursor.getString(column_index);
+			}
+
 			@Override
-			protected Exception doInBackground(Void... params) {
+			protected AlertDialog.Builder doInBackground(Void... params) {
 				try
 				{
 			    	switch(createItemType){
@@ -137,14 +167,20 @@ public class StorageCreateItemActivity extends SecuredActivity {
 			    			// TODO: Create a new table 
 			    			break;
 			    		case CREATE_ITEM_TYPE_BLOB:
-			    			// TODO: Store image
 			    			if (imageLocation == null) {
-			    	        	showDialog(MISSING_IMAGE_FIELD);
+			    				return createDialogBuilder(MISSING_IMAGE_FIELD);
 			    			}
-			    				
+			    			CloudBlockBlob blob = getContainerReference(containerName).getBlockBlobReference(name);
+			    			String filePath = getFilePath(imageLocation);
+			    			Bitmap bitmap = BitmapFactory.decodeFile(filePath);
+			    			OutputStream stream = blob.openOutputStream();
+			    			bitmap.compress(CompressFormat.JPEG, 75, stream);
+			    			stream.close();
+			    			blob.getProperties().contentType = "image/jpeg";
+			    			blob.uploadProperties();
 			    			break;
 			    		case CREATE_ITEM_TYPE_CONTAINER:
-			    			thisActivity.getSampleApplication().getCloudBlobClient().getContainerReference(name).create();
+			    			getContainerReference(name).create();
 			    			break;
 			    		case CREATE_ITEM_TYPE_QUEUE:
 			    			// TODO: Create a new queue
@@ -156,24 +192,33 @@ public class StorageCreateItemActivity extends SecuredActivity {
 				}
 				catch (Exception exception)
 				{
-					return exception;
+					return dialogToShow("Couldn't create the item", exception);
 				}
 		    	return null;
 			}
 
-			protected void onPostExecute(Exception exception) {
-				if (exception == null)
+			protected void onPostExecute(AlertDialog.Builder dialogToShow) {
+				if (dialogToShow == null)
 				{
 					thisActivity.finish();
 				}
 				else
 				{
-					thisActivity.showErrorMessage("Couldn't create the item", exception);
+					AlertDialog dialog = dialogToShow.create();
+					dialog.setCanceledOnTouchOutside(true);
+					dialog.show();
+
 				}
 			}
 		};
 		
 		new CreateItemTask().execute();
     }
+
+	private CloudBlobContainer getContainerReference(final String containerName)
+			throws NotImplementedException, URISyntaxException,
+			StorageException, Exception {
+		return this.getSampleApplication().getCloudBlobClient().getContainerReference(containerName);
+	}
 
 }

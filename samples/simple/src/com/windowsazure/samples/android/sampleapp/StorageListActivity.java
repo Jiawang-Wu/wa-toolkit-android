@@ -7,6 +7,7 @@ import java.util.List;
 import com.windowsazure.samples.android.sampleapp.R;
 import com.windowsazure.samples.android.storageclient.CloudBlob;
 import com.windowsazure.samples.android.storageclient.CloudBlobContainer;
+import com.windowsazure.samples.android.storageclient.CloudQueue;
 
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -64,10 +65,6 @@ public class StorageListActivity extends SecuredActivity implements OnItemClickL
         });
     }
 
-	private Bundle optionSet() {
-		return getIntent().getExtras();
-	}
-    
 	public void onStart() {
 		super.onStart();
         final StorageListActivity thisActivity = this;
@@ -90,7 +87,7 @@ public class StorageListActivity extends SecuredActivity implements OnItemClickL
 			    			break;
 			    			
 			    		case LIST_TYPE_BLOB:
-			    	        String containerName = thisActivity.optionSet().getString(StorageListActivity.TITLE_NAMESPACE);
+			    	        String containerName = thisActivity.getContainerListedName();
 			    	        CloudBlobContainer container = thisActivity.getSampleApplication().getCloudBlobClient().getContainerReference(containerName);
 			    	        for (CloudBlob blob : container.listBlobs("", true))
 			    	        {
@@ -98,8 +95,10 @@ public class StorageListActivity extends SecuredActivity implements OnItemClickL
 			    	        }
 			    			break;
 			    		case LIST_TYPE_QUEUE:
-			    			// TODO: Plug with real queue services
-			    			listedItems = Arrays.asList(new String[] { "queue-1",  "queue-2", "queue-3" });
+			    	        for (CloudQueue queue : thisActivity.getSampleApplication().getCloudQueueClient().listQueues())
+			    	        {
+			    	        	listedItems.add(queue.getName());
+			    	        }
 			    			break;
 		        	}
 		        }
@@ -180,6 +179,7 @@ public class StorageListActivity extends SecuredActivity implements OnItemClickL
     	    	intent.putExtra(StorageCreateItemActivity.TYPE_NAMESPACE, StorageCreateItemActivity.CREATE_ITEM_TYPE_BLOB);
     	    	intent.putExtra(StorageCreateItemActivity.TITLE_NAMESPACE, getString(R.string.create_blob));
     	    	intent.putExtra(StorageCreateItemActivity.LABEL_TEXT_NAMESPACE, getString(R.string.create_blob_label));
+    	    	intent.putExtra(StorageCreateItemActivity.CONTAINER_NAME_NAMESPACE, this.getContainerListedName());
     			break;    			
     		case LIST_TYPE_CONTAINER:
     	    	intent.putExtra(StorageCreateItemActivity.TYPE_NAMESPACE, StorageCreateItemActivity.CREATE_ITEM_TYPE_CONTAINER);
@@ -194,6 +194,10 @@ public class StorageListActivity extends SecuredActivity implements OnItemClickL
     	}
     	
     	startActivity(intent);
+	}
+
+	private String getContainerListedName() {
+		return this.optionSet().getString(StorageListActivity.TITLE_NAMESPACE);
 	}
 
 }

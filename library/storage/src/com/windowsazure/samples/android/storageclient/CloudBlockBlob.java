@@ -118,7 +118,13 @@ public final class CloudBlockBlob extends CloudBlob {
 
 	private long totalLengthOf(InputStream inputStream) throws IOException {
 		inputStream.mark(Integer.MAX_VALUE);
-		long length = inputStream.skip(Integer.MAX_VALUE);
+		long skippedLength = 0;
+		long length = 0;
+		do 
+		{
+			skippedLength = inputStream.skip(Integer.MAX_VALUE);
+			length += skippedLength; 
+		} while (skippedLength > 0);
 		inputStream.reset();
 		return length;
 	}
