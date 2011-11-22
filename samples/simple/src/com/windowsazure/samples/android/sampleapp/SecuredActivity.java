@@ -11,10 +11,7 @@ import com.microsoft.samples.windowsazure.android.accesscontrol.core.IAccessToke
 import com.microsoft.samples.windowsazure.android.accesscontrol.core.IdentityProvidersRepository;
 import com.microsoft.samples.windowsazure.android.accesscontrol.login.AccessControlLoginActivity;
 import com.microsoft.samples.windowsazure.android.accesscontrol.login.AccessControlLoginContext;
-import com.microsoft.samples.windowsazure.android.accesscontrol.swt.SimpleWebToken;
 import com.microsoft.samples.windowsazure.android.accesscontrol.swt.SimpleWebTokenHandler;
-import com.microsoft.windowsazure.samples.SuccessfulLoginActivity;
-import com.microsoft.windowsazure.samples.UnsuccessfulLoginActivity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -34,7 +31,8 @@ public class SecuredActivity extends Activity {
 	static final int MISSING_CLOUDREADY_SIMPLE_PARAMETERS = 3;
 
 	static final String PREFERENCE_FILENAME = "simple.preferences";
-
+	static final String PREFERENCE_ACCESS_TOKEN_KEY = "access_token";
+	
 	protected Boolean hasValidCredentials;
 
 	public enum ConnectionType {
@@ -83,10 +81,13 @@ public class SecuredActivity extends Activity {
 						|| !isValidConfigurationValue(symmetricKey)) {
 					showDialog(MISSING_CLOUDREADY_ACS_PARAMETERS);
 				}
+								
 				
 				IAccessToken token = getAccessControlToken();
+				
 				if (token == null || token.isExpired()) {
-					doLogin();
+					String repository = String.format("https://%s.accesscontrol.windows.net/v2/metadata/IdentityProviders.js?protocol=javascriptnotify&realm=%s&version=1.0", namespace, realm);
+					doAcsLogin(repository, realm, symmetricKey);
 				} else {
 					launchBootStrapActivity();
 				}
@@ -156,13 +157,12 @@ public class SecuredActivity extends Activity {
 		return !(value.startsWith("{") || value.trim() == "");
 	}
 
-	private void doLogin() {
+	private void doAcsLogin(String identityProvidersRepository, String realm, String symmetricKey) {
 		Intent intent = new Intent(this, AccessControlLoginActivity.class);
 
-		// TODO: Remove hard-coded values and get those from configuration
 		AccessControlLoginContext loginContext = new AccessControlLoginContext();
-		loginContext.IdentityProviderRepository = new IdentityProvidersRepository("https://margiestravel.accesscontrol.windows.net/v2/metadata/IdentityProviders.js?protocol=javascriptnotify&realm=urn:bouncerservicelocal&version=1.0");
-		loginContext.AccessTokenHandler = new SimpleWebTokenHandler("urn:bouncerservicelocal", "uPWmd0dF2c3vXsPWV7NIPhk3WgZglSHyqXNoI1+dc5I=");
+		loginContext.IdentityProviderRepository = new IdentityProvidersRepository(identityProvidersRepository);
+		loginContext.AccessTokenHandler = new SimpleWebTokenHandler(realm, symmetricKey);
 		loginContext.SuccessLoginActivity = SecuredActivity.class;
 		loginContext.ErrorLoginActivity = SecuredActivity.class;
 		intent.putExtra(AccessControlLoginActivity.AccessControlLoginContextKey, loginContext);
@@ -177,20 +177,22 @@ public class SecuredActivity extends Activity {
 		Bundle optionSet = getIntent().getExtras();
 		if (optionSet != null) {
 			accessToken = (IAccessToken) optionSet.getSerializable(AccessControlLoginActivity.AuthenticationTokenKey);
-			
-			SharedPreferences.Editor editor = settings.edit();
-			try {
-				editor.putString("access_token", toString(accessToken));
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+
+			if (accessToken != null) {
+				SharedPreferences.Editor editor = settings.edit();
+				try {
+					editor.putString(PREFERENCE_ACCESS_TOKEN_KEY, toString(accessToken));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				editor.commit();
+				
+				return accessToken;
 			}
-			editor.commit();
-			
-			return accessToken;
 		}
 
-		String serializedToken = settings.getString("access_token", "");
+		String serializedToken = settings.getString(PREFERENCE_ACCESS_TOKEN_KEY, "");
 
 		if (serializedToken == "")
 			return null;

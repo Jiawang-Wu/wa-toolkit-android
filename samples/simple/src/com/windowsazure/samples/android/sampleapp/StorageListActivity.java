@@ -1,7 +1,6 @@
 package com.windowsazure.samples.android.sampleapp;
 
 import com.windowsazure.samples.android.sampleapp.R;
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
