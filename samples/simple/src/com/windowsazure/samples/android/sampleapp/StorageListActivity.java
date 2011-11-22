@@ -92,7 +92,7 @@ public class StorageListActivity extends SecuredActivity implements OnItemClickL
 			    		case LIST_TYPE_BLOB:
 			    	        String containerName = thisActivity.optionSet().getString(StorageListActivity.TITLE_NAMESPACE);
 			    	        CloudBlobContainer container = thisActivity.getSampleApplication().getCloudBlobClient().getContainerReference(containerName);
-			    	        for (CloudBlob blob : container.listBlobs())
+			    	        for (CloudBlob blob : container.listBlobs("", true))
 			    	        {
 			    	        	listedItems.add(blob.getName());
 			    	        }
@@ -103,9 +103,8 @@ public class StorageListActivity extends SecuredActivity implements OnItemClickL
 			    			break;
 		        	}
 		        }
-		        catch (Exception e) {
-		        	System.out.println(e.toString());
-		        	// TODO: Add error message
+		        catch (Exception exception) {
+		        	thisActivity.getSampleApplication().showErrorMessage(exception);
 		        }
 				return listedItems;
 		     }
@@ -159,9 +158,8 @@ public class StorageListActivity extends SecuredActivity implements OnItemClickL
 					break;
 			}
 		}
-        catch (Exception e) {
-        	System.out.println(e.toString());
-        	// TODO: Add error message
+        catch (Exception exception) {
+        	this.getSampleApplication().showErrorMessage(exception);
         }
 	}    
 	

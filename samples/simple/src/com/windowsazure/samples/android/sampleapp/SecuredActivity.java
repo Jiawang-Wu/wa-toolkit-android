@@ -127,8 +127,7 @@ public abstract class SecuredActivity extends Activity {
 	        }
 	        catch (Exception exception)
 	        {
-	        	// TODO: Show an error message
-	        	exception.printStackTrace();
+	        	this.getSampleApplication().showErrorMessage(exception);
 	        }
 	    }
 	
