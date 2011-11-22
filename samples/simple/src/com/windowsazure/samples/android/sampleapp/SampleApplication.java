@@ -5,11 +5,7 @@ import com.windowsazure.samples.android.storageclient.CloudClientAccount;
 import com.windowsazure.samples.android.storageclient.CloudQueueClient;
 import com.windowsazure.samples.android.storageclient.CloudTableClient;
 
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Application;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
 
 public class SampleApplication extends Application {
 
@@ -50,19 +46,5 @@ public class SampleApplication extends Application {
 			throw new Exception("You need to set a Cloud Client Account before being able to access it.");
 		}
 		return m_CloudClientAccount;
-	}
-
-	void showErrorMessage(Exception exception)
-	{
-		exception.printStackTrace();
-    	System.out.println(exception.toString());
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle(getString(R.string.configuration_error_title));
-		builder.setMessage(exception.getLocalizedMessage());
-		builder.setCancelable(true);
-
-		AlertDialog dialog = builder.create();
-		dialog.setCanceledOnTouchOutside(true);
-		dialog.show();
 	}
 }

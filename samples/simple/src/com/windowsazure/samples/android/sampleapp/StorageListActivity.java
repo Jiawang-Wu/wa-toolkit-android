@@ -104,7 +104,7 @@ public class StorageListActivity extends SecuredActivity implements OnItemClickL
 		        	}
 		        }
 		        catch (Exception exception) {
-		        	thisActivity.getSampleApplication().showErrorMessage(exception);
+		        	thisActivity.showErrorMessage("Couldn't execute the list operation", exception);
 		        }
 				return listedItems;
 		     }
@@ -159,7 +159,7 @@ public class StorageListActivity extends SecuredActivity implements OnItemClickL
 			}
 		}
         catch (Exception exception) {
-        	this.getSampleApplication().showErrorMessage(exception);
+        	this.showErrorMessage("Couldn't view the details of the item", exception);
         }
 	}    
 	

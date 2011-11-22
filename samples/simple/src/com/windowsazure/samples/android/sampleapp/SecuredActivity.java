@@ -127,7 +127,7 @@ public abstract class SecuredActivity extends Activity {
 	        }
 	        catch (Exception exception)
 	        {
-	        	this.getSampleApplication().showErrorMessage(exception);
+	        	this.showErrorMessage("Couldn't configure a cloud client account", exception);
 	        }
 	    }
 	
@@ -257,4 +257,25 @@ public abstract class SecuredActivity extends Activity {
         outputStream.close();
         return new String(Base64.encode(byteArrayOutputStream.toByteArray(), Base64.DEFAULT));
     }
+	
+	void showErrorMessageIfAny(String title, Exception exception)
+	{
+		if (exception != null)
+		{
+			this.showErrorMessage(title, exception);
+		}
+	}
+	void showErrorMessage(String title, Exception exception)
+	{
+		exception.printStackTrace();
+    	System.out.println(exception.toString());
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle(title);
+		builder.setMessage(exception.getLocalizedMessage());
+		builder.setCancelable(true);
+
+		AlertDialog dialog = builder.create();
+		dialog.setCanceledOnTouchOutside(true);
+		dialog.show();
+	}
 }

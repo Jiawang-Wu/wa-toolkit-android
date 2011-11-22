@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -114,37 +115,65 @@ public class StorageCreateItemActivity extends SecuredActivity {
     }
     
     private void onCreateButton(View v) {
-    	EditText name = (EditText)findViewById(R.id.storage_create_item_value);
+    	EditText nameView = (EditText)findViewById(R.id.storage_create_item_value);
     	
     	// TODO: Validate names according to the API.
     	
-		if (name.getText().toString().trim().length() == 0) {
+		final String name = nameView.getText().toString().trim();
+		
+		if (name.length() == 0) {
         	showDialog(MISSING_NAME_FIELD);
         	return;	
 		}
-			
-    	switch(createItemType){
-    		case CREATE_ITEM_TYPE_TABLE:
-    			// TODO: Create a new table 
-    			break;
-    		case CREATE_ITEM_TYPE_BLOB:
-    			// TODO: Store image
-    			if (imageLocation == null) {
-    	        	showDialog(MISSING_IMAGE_FIELD);
-    	        	return;	
-    			}
-    				
-    			break;
-    		case CREATE_ITEM_TYPE_CONTAINER:
-    			// TODO: Create a new container
-    			break;
-    		case CREATE_ITEM_TYPE_QUEUE:
-    			// TODO: Create a new queue
-    			break;
-    		case CREATE_ITEM_TYPE_QUEUE_MESSAGE:
-    			// TODO: Create a new message in a queue
-    			break;
-    	}
+
+		final StorageCreateItemActivity thisActivity = this;
+		class CreateItemTask extends AsyncTask<Void, Void, Exception> {
+			@Override
+			protected Exception doInBackground(Void... params) {
+				try
+				{
+			    	switch(createItemType){
+			    		case CREATE_ITEM_TYPE_TABLE:
+			    			// TODO: Create a new table 
+			    			break;
+			    		case CREATE_ITEM_TYPE_BLOB:
+			    			// TODO: Store image
+			    			if (imageLocation == null) {
+			    	        	showDialog(MISSING_IMAGE_FIELD);
+			    			}
+			    				
+			    			break;
+			    		case CREATE_ITEM_TYPE_CONTAINER:
+			    			thisActivity.getSampleApplication().getCloudBlobClient().getContainerReference(name).create();
+			    			break;
+			    		case CREATE_ITEM_TYPE_QUEUE:
+			    			// TODO: Create a new queue
+			    			break;
+			    		case CREATE_ITEM_TYPE_QUEUE_MESSAGE:
+			    			// TODO: Create a new message in a queue
+			    			break;
+			    	}
+				}
+				catch (Exception exception)
+				{
+					return exception;
+				}
+		    	return null;
+			}
+
+			protected void onPostExecute(Exception exception) {
+				if (exception == null)
+				{
+					thisActivity.finish();
+				}
+				else
+				{
+					thisActivity.showErrorMessage("Couldn't create the item", exception);
+				}
+			}
+		};
+		
+		new CreateItemTask().execute();
     }
 
 }

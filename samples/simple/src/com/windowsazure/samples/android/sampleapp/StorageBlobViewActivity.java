@@ -91,7 +91,7 @@ public class StorageBlobViewActivity extends SecuredActivity {
 		    	ByteArrayInputStream intputStream = new ByteArrayInputStream(outputStream.toByteArray());
 				bitmap = BitmapFactory.decodeStream(intputStream);
 			} catch (Exception e) {
-				params[0].getSampleApplication().showErrorMessage(e);
+				params[0].showErrorMessage("Couldn't view the Blob's contents", e);
 			}
 			return null;
 		}
