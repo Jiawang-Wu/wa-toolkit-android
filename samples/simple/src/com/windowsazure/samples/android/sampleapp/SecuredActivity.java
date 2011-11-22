@@ -17,6 +17,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -125,31 +126,34 @@ public class SecuredActivity extends Activity {
 	protected Dialog onCreateDialog(int id) {
 		AlertDialog dialog = new AlertDialog.Builder(this).create();
 		dialog.setTitle(getString(R.string.configuration_error_title));
-
+		dialog.setCanceledOnTouchOutside(true);
+		dialog.setCancelable(true);
+		
 		switch (id) {
-		case MISSING_CONNECTION_TYPE:
-			dialog.setMessage(getString(R.string.error_missing_connection_type));
-			break;
-		case MISSING_DIRECT_PARAMETERS:
-			dialog.setMessage(getString(R.string.error_missing_direct_parameters));
-			break;
-		case MISSING_CLOUDREADY_ACS_PARAMETERS:
-			dialog.setMessage(getString(R.string.error_missing_cloud_ready_acs_parameters));
-			break;
-		case MISSING_CLOUDREADY_SIMPLE_PARAMETERS:
-			dialog.setMessage(getString(R.string.error_missing_cloud_ready_simple_parameters));
-			break;
+			case MISSING_CONNECTION_TYPE:
+				dialog.setMessage(getString(R.string.error_missing_connection_type));
+				break;
+			case MISSING_DIRECT_PARAMETERS:
+				dialog.setMessage(getString(R.string.error_missing_direct_parameters));
+				break;
+			case MISSING_CLOUDREADY_ACS_PARAMETERS:
+				dialog.setMessage(getString(R.string.error_missing_cloud_ready_acs_parameters));
+				break;
+			case MISSING_CLOUDREADY_SIMPLE_PARAMETERS:
+				dialog.setMessage(getString(R.string.error_missing_cloud_ready_simple_parameters));
+				break;
 		}
 
 		final Activity activity = this;
-
-		dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "OK",
-				new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int whichButton) {
-						activity.finish();
-					}
-				});
-
+		
+		dialog.setOnCancelListener(new OnCancelListener()
+		{
+		    public void onCancel(DialogInterface dialog)
+		    {
+		    	activity.finish();
+		    }
+		});
+		
 		return dialog;
 	}
 
