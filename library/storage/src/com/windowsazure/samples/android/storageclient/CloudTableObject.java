@@ -72,6 +72,7 @@ public class CloudTableObject<E> {
 						E entity = thatClazz.newInstance();
 						Node properties = (Node) xpath.evaluate(expression, entitiesData.item(i), XPathConstants.NODE);
 						applyProperties(entity, properties.getChildNodes());
+						entities.add(entity);
 						}
 				}
 				return entities;
@@ -194,15 +195,27 @@ public class CloudTableObject<E> {
     }*/
 
     private void applyProperties(E entity, NodeList properties) throws DOMException, Exception {
-    	Field[] fields = entity.getClass().getFields();
     	for (int i = 0; i < properties.getLength(); i++) {
     		Node property = properties.item(i);
-    		Node attrib = property.getAttributes().getNamedItem("type");
-    		if (attrib != null) {
-    			//String attribValue = attrib.getNodeValue();
+    		if (property.getNodeName().startsWith("d:")) {
+        		NamedNodeMap attribs = property.getAttributes();
+        		String edmType = "Edm.String";
+        		if ((attribs != null) && (attribs.getLength() > 0))
+        		{
+	    			Node attribValue = attribs.getNamedItem("m:type");
+	    			if (attribValue != null) edmType = attribValue.getTextContent();
+        		}
+        		String propertyName = property.getNodeName().substring(2);
+        		Field field = null;
+        		try {
+        			field = entity.getClass().getField(propertyName);
+	        		TableProperty<?> convertedProperty = TableProperty.fromRepresentation(
+	        				property.getNodeName().substring(2), 
+	        				EdmType.fromRepresentation(edmType), 
+	        				property.getTextContent());
+	        		field.set(entity, convertedProperty.getValue());
+        		} catch (Exception e) { }
     		}
-    		//String edmRepresentation = property.getAttributes().getNamedItem("type").getNodeName();
-    		//TableProperty<?> convertedProperty = TableProperty.fromRepresentation(property.getNodeName(), EdmType.fromRepresentation(edmRepresentation), property.getNodeValue());
     	}
     }
 	

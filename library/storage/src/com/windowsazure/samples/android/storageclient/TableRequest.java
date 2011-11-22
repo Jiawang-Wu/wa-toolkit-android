@@ -59,8 +59,10 @@ final class TableRequest {
 	
 	public static HttpGet queryEntity(URI endpoint, String tableName, String filter) throws IOException, URISyntaxException, StorageException {
 		String requestUri = null;
-		if (filter != null) 
+		if (filter != null) {
+			filter = filter.replace(" ", "%20"); //TODO: URLEncoder doesn't work see workaround
 			requestUri = endpoint.toASCIIString() + String.format("/%s()?$filter=%s", tableName, filter);
+		}
 		else
 			requestUri = endpoint.toASCIIString() + String.format("/%s()", tableName);
 		return BaseRequest.setURIAndHeaders(new HttpGet(), new URI(requestUri), new UriQueryBuilder());		
@@ -90,8 +92,11 @@ final class TableRequest {
 		
 		String requestUri = endpoint.toASCIIString() + String.format("/%s(PartitionKey='%s',RowKey='%s')", tableName, partitionKey.getRepresentation(), rowKey.getRepresentation());
 		HttpPut result = BaseRequest.setURIAndHeaders(new HttpPut(), new URI(requestUri), new UriQueryBuilder());
-		String body = buildEntityBody(properties);
+		String body = buildEntityBody(properties, result.getURI().toASCIIString());
 		result.addHeader("Content-Type", "application/atom+xml");
+		//change version header
+		result.removeHeaders("x-ms-version");
+		result.addHeader("x-ms-version", "2011-08-18");
 		result.setEntity(new StringEntity(body));
 		return result;
 	}
@@ -111,8 +116,11 @@ final class TableRequest {
 		
 		String requestUri = endpoint.toASCIIString() + String.format("/%s(PartitionKey='%s',RowKey='%s')", tableName, partitionKey.getRepresentation(), rowKey.getRepresentation());
 		HttpMerge result = BaseRequest.setURIAndHeaders(new HttpMerge(), new URI(requestUri), new UriQueryBuilder());
-		String body = buildEntityBody(properties);
+		String body = buildEntityBody(properties, result.getURI().toASCIIString());
 		result.addHeader("Content-Type", "application/atom+xml");
+		//change version header
+		result.removeHeaders("x-ms-version");
+		result.addHeader("x-ms-version", "2011-08-18");
 		result.setEntity(new StringEntity(body));
 		return result;		
 	}
@@ -194,10 +202,17 @@ final class TableRequest {
 	}
 	
 	private static String buildEntityBody(TableProperty<?>[] properties) {
+		return buildEntityBody(properties, null);
+	}
+	
+	private static String buildEntityBody(TableProperty<?>[] properties, String id) {
 		StringWriter result = new StringWriter();
 		result.append("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>\n");
 		result.append(String.format("<entry xmlns:d=\"%s\" xmlns:m=\"%s\" xmlns=\"%s\">\n", DATA_SERVICES_NS, METADATA_NS, ATOM_NS));
-	    result.append(String.format("<title /> <updated>%s</updated> <author> <name /> </author> <id />\n", getXmlTimeWithTZ()));
+		if (id != null)
+			result.append(String.format("<title /> <updated>%s</updated> <author> <name /> </author> <id>%s</id>\n", getXmlTimeWithTZ(), id));
+		else
+			result.append(String.format("<title /> <updated>%s</updated> <author> <name /> </author> <id />\n", getXmlTimeWithTZ()));
 	    result.append("<content type=\"application/xml\"> <m:properties>\n");
 	    for (int i = 0; i < properties.length; i++) {
 	    	TableProperty<?> property = properties[i];
