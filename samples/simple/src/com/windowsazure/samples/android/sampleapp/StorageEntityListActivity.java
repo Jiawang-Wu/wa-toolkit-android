@@ -133,6 +133,7 @@ public class StorageEntityListActivity extends SecuredActivity implements OnChil
 				intent = new Intent(this, StorageEntityActivity.class);
 		    	intent.putExtra(StorageEntityActivity.TITLE_NAMESPACE, getString(R.string.add_entity_title));
 		    	intent.putExtra(StorageEntityActivity.TYPE_NAMESPACE, StorageEntityActivity.OPERATION_TYPE_ADD);
+		    	intent.putExtra(StorageEntityActivity.TABLE_NAME_NAMESPACE, this.entityName());
 		    	startActivity (intent);
 				break;
 			case ENTITY_LIST_TYPE_QUEUE:
