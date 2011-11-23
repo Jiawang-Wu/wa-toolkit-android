@@ -23,6 +23,8 @@ final class TableRequest {
 	public static final String DATA_SERVICES_NS = "http://schemas.microsoft.com/ado/2007/08/dataservices";
 	public static final String METADATA_NS = "http://schemas.microsoft.com/ado/2007/08/dataservices/metadata";
 
+	// table stuff
+	
 	public static HttpGet list(URI endpoint) throws IOException, URISyntaxException, StorageException {
 		String requestUri = endpoint.toASCIIString() + "/Tables";
 		return BaseRequest.setURIAndHeaders(new HttpGet(), new URI(requestUri), new UriQueryBuilder());
@@ -56,6 +58,8 @@ final class TableRequest {
 		result.addHeader("Content-Type", "application/atom+xml");
 		return result;		
 	}
+	
+	// entity stuff
 	
 	public static HttpGet queryEntity(URI endpoint, String tableName, String filter) throws IOException, URISyntaxException, StorageException {
 		String requestUri = null;
@@ -191,6 +195,8 @@ final class TableRequest {
 		return result;		
 	}
 
+	// help stuff
+	
 	private static String buildTableBody(String tableName) {
 		StringWriter result = new StringWriter();
 		result.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");

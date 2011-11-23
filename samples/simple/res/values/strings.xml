@@ -63,7 +63,7 @@
     
     <string name="configuration_error_title">Configuration Error</string>
     <string name="error_missing_connection_type">You must provide valid parameter for the ToolkitConnectionType in the application res/values/strings.xml file before running the first time.</string>
-    <string name="error_missing_direct_parameters">You must update valid values for Direct_AccountName and Direct_AccountKeythe in the application res/values/strings.xml file before running the first time.</string>
+    <string name="error_missing_direct_parameters">You must update valid values for Direct_AccountName and Direct_AccountKey in the application res/values/strings.xml file before running the first time.</string>
     <string name="error_missing_cloud_ready_acs_parameters">You must update valid values for CloudReadyAcs_Namespace, CloudReadyAcs_Realm and CloudReadySimple_ProxyService in the application res/values/strings.xml file before running the first time.</string>
     <string name="error_missing_cloud_ready_simple_parameters">You must update valid value for CloudReadySimple_ProxyService in the application res/values/strings.xml file before running the first time.</string>
 </resources>
