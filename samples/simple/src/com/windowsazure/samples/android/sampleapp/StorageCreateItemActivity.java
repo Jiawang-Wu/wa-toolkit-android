@@ -5,6 +5,8 @@ import java.net.URISyntaxException;
 
 import com.windowsazure.samples.android.storageclient.CloudBlobContainer;
 import com.windowsazure.samples.android.storageclient.CloudBlockBlob;
+import com.windowsazure.samples.android.storageclient.CloudQueue;
+import com.windowsazure.samples.android.storageclient.CloudQueueMessage;
 import com.windowsazure.samples.android.storageclient.NotImplementedException;
 import com.windowsazure.samples.android.storageclient.StorageException;
 
@@ -31,7 +33,7 @@ public class StorageCreateItemActivity extends SecuredActivity {
 	static final String TYPE_NAMESPACE = "com.windowsazure.samples.android.sampleapp.create_item.type";
 	static final String TITLE_NAMESPACE = "com.windowsazure.samples.android.sampleapp.create_item.title";
 	static final String LABEL_TEXT_NAMESPACE = "com.windowsazure.samples.android.sampleapp.create_item.label_text";	
-	static final String CONTAINER_NAME_NAMESPACE = "com.windowsazure.samples.android.sampleapp.create_item.container_name";	
+	static final String CONTAINER_OR_QUEUE_NAME_NAMESPACE = "com.windowsazure.samples.android.sampleapp.create_item.container_or_queue_name";	
 	
 	static final int CREATE_ITEM_TYPE_TABLE = 1;
 	static final int CREATE_ITEM_TYPE_CONTAINER = 2;
@@ -137,12 +139,12 @@ public class StorageCreateItemActivity extends SecuredActivity {
     	
     	// TODO: Validate names according to the API.
     	
-		final String name = nameView.getText().toString().trim();
-		final String containerName = createItemType == CREATE_ITEM_TYPE_BLOB 
-				? this.optionSet().getString(CONTAINER_NAME_NAMESPACE)
+		final String nameOrContent = nameView.getText().toString().trim();
+		final String containerOrQueueName = (createItemType == CREATE_ITEM_TYPE_BLOB) || (createItemType == CREATE_ITEM_TYPE_QUEUE_MESSAGE) 
+				? this.optionSet().getString(CONTAINER_OR_QUEUE_NAME_NAMESPACE)
 				: null;
 
-		if (name.length() == 0) {
+		if (nameOrContent.length() == 0) {
         	showDialog(MISSING_NAME_FIELD);
         	return;	
 		}
@@ -169,7 +171,7 @@ public class StorageCreateItemActivity extends SecuredActivity {
 			    			if (imageLocation == null) {
 			    				return createDialogBuilder(MISSING_IMAGE_FIELD);
 			    			}
-			    			CloudBlockBlob blob = getContainerReference(containerName).getBlockBlobReference(name);
+			    			CloudBlockBlob blob = getContainerReference(containerOrQueueName).getBlockBlobReference(nameOrContent);
 			    			String filePath = getFilePath(imageLocation);
 			    			Bitmap bitmap = BitmapFactory.decodeFile(filePath);
 			    			OutputStream stream = blob.openOutputStream();
@@ -179,13 +181,13 @@ public class StorageCreateItemActivity extends SecuredActivity {
 			    			blob.uploadProperties();
 			    			break;
 			    		case CREATE_ITEM_TYPE_CONTAINER:
-			    			getContainerReference(name).create();
+			    			getContainerReference(nameOrContent).create();
 			    			break;
 			    		case CREATE_ITEM_TYPE_QUEUE:
-			    			// TODO: Create a new queue
+			    			getQueueReference(nameOrContent).create();
 			    			break;
 			    		case CREATE_ITEM_TYPE_QUEUE_MESSAGE:
-			    			// TODO: Create a new message in a queue
+			    			getQueueReference(containerOrQueueName).addMessage(new CloudQueueMessage(nameOrContent));
 			    			break;
 			    	}
 				}
@@ -194,6 +196,11 @@ public class StorageCreateItemActivity extends SecuredActivity {
 					return dialogToShow("Couldn't create the item", exception);
 				}
 		    	return null;
+			}
+
+			private CloudQueue getQueueReference(final String name)
+					throws URISyntaxException, Exception {
+				return getSampleApplication().getCloudQueueClient().getQueueReference(name);
 			}
 
 			protected void onPostExecute(AlertDialog.Builder dialogToShow) {

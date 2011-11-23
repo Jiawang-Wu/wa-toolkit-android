@@ -179,7 +179,7 @@ public class StorageListActivity extends SecuredActivity implements OnItemClickL
     	    	intent.putExtra(StorageCreateItemActivity.TYPE_NAMESPACE, StorageCreateItemActivity.CREATE_ITEM_TYPE_BLOB);
     	    	intent.putExtra(StorageCreateItemActivity.TITLE_NAMESPACE, getString(R.string.create_blob));
     	    	intent.putExtra(StorageCreateItemActivity.LABEL_TEXT_NAMESPACE, getString(R.string.create_blob_label));
-    	    	intent.putExtra(StorageCreateItemActivity.CONTAINER_NAME_NAMESPACE, this.getContainerListedName());
+    	    	intent.putExtra(StorageCreateItemActivity.CONTAINER_OR_QUEUE_NAME_NAMESPACE, this.getContainerListedName());
     			break;    			
     		case LIST_TYPE_CONTAINER:
     	    	intent.putExtra(StorageCreateItemActivity.TYPE_NAMESPACE, StorageCreateItemActivity.CREATE_ITEM_TYPE_CONTAINER);

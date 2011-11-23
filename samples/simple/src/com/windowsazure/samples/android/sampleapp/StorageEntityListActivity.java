@@ -139,6 +139,7 @@ public class StorageEntityListActivity extends SecuredActivity implements OnChil
 	   	    	intent.putExtra(StorageCreateItemActivity.TYPE_NAMESPACE, StorageCreateItemActivity.CREATE_ITEM_TYPE_QUEUE_MESSAGE);
     	    	intent.putExtra(StorageCreateItemActivity.TITLE_NAMESPACE, getString(R.string.create_queue_message));
     	    	intent.putExtra(StorageCreateItemActivity.LABEL_TEXT_NAMESPACE, getString(R.string.create_queue_message_label));
+    	    	intent.putExtra(StorageCreateItemActivity.CONTAINER_OR_QUEUE_NAME_NAMESPACE, this.entityName());
     	    	startActivity(intent);
 				break;
     	}
