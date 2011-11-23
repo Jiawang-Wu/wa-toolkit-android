@@ -1,5 +1,12 @@
 package com.windowsazure.samples.android.sampleapp;
 
+import java.util.Hashtable;
+import java.util.Map.Entry;
+
+import com.windowsazure.samples.android.storageclient.CloudTableClient;
+import com.windowsazure.samples.android.storageclient.CloudTableObject;
+import com.windowsazure.samples.android.storageclient.StorageCredentials;
+
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -14,6 +21,7 @@ public class StorageEntityActivity extends SecuredActivity {
 	static final String TITLE_NAMESPACE = "com.windowsazure.samples.android.sampleapp.storage_entity.title";
 	static final String PARTITION_KEY_NAMESPACE = "com.windowsazure.samples.android.sampleapp.storage_entity.partition_key";
 	static final String ROW_KEY_NAMESPACE = "com.windowsazure.samples.android.sampleapp.storage_entity.row_key";
+	static final String TABLE_NAME_NAMESPACE = "com.windowsazure.samples.android.sampleapp.storage_entity.table_name";
 	
 	static final int OPERATION_TYPE_ADD = 1;
 	static final int OPERATION_TYPE_EDIT = 2;
@@ -60,32 +68,49 @@ public class StorageEntityActivity extends SecuredActivity {
 		super.onStart();
 		
 		final LinearLayout layout = (LinearLayout)findViewById(R.id.storage_entity);
-		
-    	switch (operationType){
-			case OPERATION_TYPE_EDIT:
-				
-				// TODO: retrieve the real row using partitionKey and rowKey and display real fields								
-	   			for (int i = 0; i < 2; i++) {
-	   				addTextView("field_" + i + "_text_view", "field-" + i, layout);
-	   				addEditView("field_" + i + "_edit_view", "field-" + i, layout);
-	   			}
-	   			
-				break;
-			case OPERATION_TYPE_ADD:
-				
-				// TODO: retrieve tables fields and show real data		
-   				addTextView("partition_key_text_view", "PartitionKey", layout);
-   				addEditView("partition_key_edit_view", "", layout);
-   				
-   				addTextView("row_key_text_view", "RownKey", layout);
-   				addEditView("row_key_edit_view", "", layout);
-   				
-	   			for (int i = 0; i < 2; i++) {
-	   				addTextView("field_" + i + "_text_view", "field-" + i, layout);
-	   				addEditView("field_" + i + "_edit_view", "", layout);
-	   			}
-	   			
-				break;
+
+		try
+		{
+	    	switch (operationType){
+				case OPERATION_TYPE_EDIT:
+					
+					// TODO: retrieve the real row using partitionKey and rowKey and display real fields								
+		   			for (int i = 0; i < 2; i++) {
+		   				addTextView("field_" + i + "_text_view", "field-" + i, layout);
+		   				addEditView("field_" + i + "_edit_view", "field-" + i, layout);
+		   			}
+		   			
+					break;
+				case OPERATION_TYPE_ADD:
+			        String tableName = optionSet().getString(StorageEntityActivity.TABLE_NAME_NAMESPACE);
+					
+					CloudTableClient tableClient = getSampleApplication().getCloudClientAccount().createCloudTableClient();
+					StorageCredentials tableCredentials = tableClient.getCredentials();
+					Iterable<Hashtable<String, Object>> entities = CloudTableObject.queryEntities(tableClient.getEndpoint(), tableCredentials, tableName, "top=1");
+					if (entities.iterator().hasNext())
+					{
+						int i = 0;
+						for (Entry<String, Object> prototypeProperty : entities.iterator().next().entrySet())
+						{
+							addTextView("field_" + i + "_text_view", prototypeProperty.getKey(), layout);
+				   			addEditView("field_" + i + "_edit_view", prototypeProperty.getValue().toString(), layout);
+				   			++i;
+						}
+					}
+					else
+					{
+		   				addTextView("partition_key_text_view", "PartitionKey", layout);
+		   				addEditView("partition_key_edit_view", "", layout);
+		   				
+		   				addTextView("row_key_text_view", "RownKey", layout);
+		   				addEditView("row_key_edit_view", "", layout);
+					}
+					break;
+			}
+		}
+		catch (Exception exception)
+		{
+			this.showErrorMessage("Couldn't complete the operation", exception);
 		}
 	}
 	

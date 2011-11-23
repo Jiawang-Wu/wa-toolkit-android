@@ -1,7 +1,6 @@
 package com.windowsazure.samples.android.sampleapp;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.windowsazure.samples.android.sampleapp.R;
@@ -76,9 +75,11 @@ public class StorageListActivity extends SecuredActivity implements OnItemClickL
 			        listedItems = new ArrayList<String>();
 		        	switch(listType) {
 			    		case LIST_TYPE_TABLE:
-			    			// TODO: Plug with real table services
-			    			listedItems = Arrays.asList(new String[] { "table-1",  "table-2", "table-3" });
+			    	        for (String tableName : thisActivity.getSampleApplication().getCloudTableClient().listTables()) {
+			    	        	listedItems.add(tableName);
+			    	        }
 			    			break;
+
 			    		case LIST_TYPE_CONTAINER:
 			    	        for (CloudBlobContainer container : thisActivity.getSampleApplication().getCloudBlobClient().listContainers()) {
 			    	        	listedItems.add(container.getName());

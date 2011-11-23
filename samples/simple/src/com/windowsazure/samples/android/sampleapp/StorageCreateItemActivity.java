@@ -163,7 +163,7 @@ public class StorageCreateItemActivity extends SecuredActivity {
 				try {
 			    	switch(createItemType){
 			    		case CREATE_ITEM_TYPE_TABLE:
-			    			// TODO: Create a new table
+			    			getSampleApplication().getCloudTableClient().createTable(nameOrContent);
 			    			break;
 			    		case CREATE_ITEM_TYPE_BLOB:
 			    			if (imageLocation == null) {

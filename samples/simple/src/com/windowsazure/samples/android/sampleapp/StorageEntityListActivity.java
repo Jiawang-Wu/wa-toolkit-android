@@ -3,11 +3,16 @@ package com.windowsazure.samples.android.sampleapp;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.windowsazure.samples.android.storageclient.CloudQueue;
 import com.windowsazure.samples.android.storageclient.CloudQueueMessage;
+import com.windowsazure.samples.android.storageclient.CloudTableClient;
+import com.windowsazure.samples.android.storageclient.CloudTableObject;
+import com.windowsazure.samples.android.storageclient.StorageCredentials;
 
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -73,8 +78,7 @@ public class StorageEntityListActivity extends SecuredActivity implements OnChil
 			        try {
 				    	switch(entityListType) {
 				    		case ENTITY_LIST_TYPE_TABLE:
-				    			// TODO: Plug with real table services
-				    			listAdapter = getTableMockData();
+				    			listAdapter = getTableRows();
 				    			break;
 				    		case ENTITY_LIST_TYPE_QUEUE:
 				    			listAdapter = getQueueMessages();
@@ -129,6 +133,7 @@ public class StorageEntityListActivity extends SecuredActivity implements OnChil
 				intent = new Intent(this, StorageEntityActivity.class);
 		    	intent.putExtra(StorageEntityActivity.TITLE_NAMESPACE, getString(R.string.add_entity_title));
 		    	intent.putExtra(StorageEntityActivity.TYPE_NAMESPACE, StorageEntityActivity.OPERATION_TYPE_ADD);
+		    	intent.putExtra(StorageEntityActivity.TABLE_NAME_NAMESPACE, this.entityName());
 		    	startActivity (intent);
 				break;
 			case ENTITY_LIST_TYPE_QUEUE:
@@ -142,33 +147,25 @@ public class StorageEntityListActivity extends SecuredActivity implements OnChil
     	}
 	}
 
-    private SimpleExpandableListAdapter getTableMockData() {
+    private SimpleExpandableListAdapter getTableRows() throws Exception {
     	List<List<Map<String, String>>> items = new ArrayList<List<Map<String, String>>>();
 		List<Map<String, String>> groupData = new ArrayList<Map<String, String>>();
 
-		for (int i = 0; i < 5; i++) {
+		CloudTableClient tableClient = getSampleApplication().getCloudClientAccount().createCloudTableClient();
+		StorageCredentials tableCredentials = tableClient.getCredentials();
+		for (Hashtable<String, Object> entity : CloudTableObject.queryEntities(tableClient.getEndpoint(), tableCredentials, this.entityName())) {
 			Map<String, String> groupFields = new HashMap<String, String>();
 			List<Map<String, String>> entry = new ArrayList<Map<String, String>>();
 
-			// Mock Groups
-       		groupFields.put("PartitionKey", "pk-" + i);
-       		groupFields.put("RowKey", "rk-" + i);
+			// Groups
+       		groupFields.put("PartitionKey", entity.get("PartitionKey").toString());
+       		groupFields.put("RowKey", entity.get("RowKey").toString());
 	    	groupData.add(groupFields);
 
-			Map<String, String> partitionKey = new HashMap<String, String>();
-			partitionKey.put("Name", "PartitionKey");
-			partitionKey.put("Value", "pk-" + i);
-   			entry.add(partitionKey);
-
-   			Map<String, String> rowKey = new HashMap<String, String>();
-   			rowKey.put("Name", "RowKey");
-   			rowKey.put("Value", "rk-" + i);
-   			entry.add(rowKey);
-
-   			for (int j = 0; j < 2; j++) {
+   			for (Entry<String, Object> property : entity.entrySet()) {
     			Map<String, String> field = new HashMap<String, String>();
-    			field.put("Name", "field-" + j);
-    			field.put("Value", "value-" + j);
+    			field.put("Name", property.getKey());
+    			field.put("Value", property.getValue().toString());
        			entry.add(field);
    			}
 
@@ -195,11 +192,10 @@ public class StorageEntityListActivity extends SecuredActivity implements OnChil
 			Map<String, String> groupFields = new HashMap<String, String>();
 			List<Map<String, String>> entry = new ArrayList<Map<String, String>>();
 
-			// Mock Groups
+			// Groups
        		groupFields.put("Message", message.getId());
 	    	groupData.add(groupFields);
 
-	    	// Mock Properties
 			Map<String, String> property = new HashMap<String, String>();
 
    			property = new HashMap<String, String>();
@@ -222,16 +218,16 @@ public class StorageEntityListActivity extends SecuredActivity implements OnChil
    			property.put("Value", message.getExpirationTime().toString());
    			entry.add(property);
 
-   			// The pop receipt will always be null unless we use a get to list the messages
-	   			property = new HashMap<String, String>();
-	   			property.put("Name", "Pop Receipt");
-	   			if (message.getPopReceipt() != null) {
-	   				property.put("Value", message.getPopReceipt().toString());
-	   			}
-	   			else {
-	   				property.put("Value", "<none>");
-	   			}
-	   			entry.add(property);
+   			// The pop receipt will be null if we use peek to list the messages
+	   		property = new HashMap<String, String>();
+	   		property.put("Name", "Pop Receipt");
+	   		if (message.getPopReceipt() != null) {
+	   			property.put("Value", message.getPopReceipt().toString());
+	   		}
+	   		else {
+	   			property.put("Value", "<none>");
+	   		}
+	   		entry.add(property);
 
    			property = new HashMap<String, String>();
    			property.put("Name", "Time Next Visible");
