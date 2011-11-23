@@ -73,8 +73,7 @@ public class StorageEntityListActivity extends SecuredActivity implements OnChil
 			        try {
 				    	switch(entityListType) {
 				    		case ENTITY_LIST_TYPE_TABLE:
-				    			// TODO: Plug with real table services
-				    			listAdapter = getTableMockData();
+				    			listAdapter = getTableRows();
 				    			break;
 				    		case ENTITY_LIST_TYPE_QUEUE:
 				    			listAdapter = getQueueMessages();
@@ -142,7 +141,7 @@ public class StorageEntityListActivity extends SecuredActivity implements OnChil
     	}
 	}
 
-    private SimpleExpandableListAdapter getTableMockData() {
+    private SimpleExpandableListAdapter getTableRows() {
     	List<List<Map<String, String>>> items = new ArrayList<List<Map<String, String>>>();
 		List<Map<String, String>> groupData = new ArrayList<Map<String, String>>();
 
