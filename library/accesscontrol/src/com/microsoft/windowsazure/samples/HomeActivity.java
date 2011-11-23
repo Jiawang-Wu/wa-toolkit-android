@@ -1,16 +1,16 @@
 package com.microsoft.windowsazure.samples;
 
-import com.microsoft.samples.windowsazure.android.accesscontrol.core.IdentityProvidersRepository;
-import com.microsoft.samples.windowsazure.android.accesscontrol.login.AccessControlLoginActivity;
-import com.microsoft.samples.windowsazure.android.accesscontrol.login.AccessControlLoginContext;
-import com.microsoft.samples.windowsazure.android.accesscontrol.swt.SimpleWebTokenHandler;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+
+import com.microsoft.samples.windowsazure.android.accesscontrol.core.IdentityProvidersRepository;
+import com.microsoft.samples.windowsazure.android.accesscontrol.login.AccessControlLoginActivity;
+import com.microsoft.samples.windowsazure.android.accesscontrol.login.AccessControlLoginContext;
+import com.microsoft.samples.windowsazure.android.accesscontrol.swt.SimpleWebTokenHandler;
 
 public class HomeActivity extends Activity {
 	
