@@ -44,12 +44,12 @@ public class CloudTableObject<E extends CloudTableEntity> {
 		return m_Credentials;
 	}
 	
-	public static Iterable<Hashtable<String, Object>> queryEntities(URI baseUri, StorageCredentials credentials, String tableName) 
+	public static Iterable<Hashtable<String, Object>> query(URI baseUri, StorageCredentials credentials, String tableName) 
 			throws UnsupportedEncodingException, StorageException, IOException {
-		return queryEntities(baseUri, credentials, tableName, null);
+		return query(baseUri, credentials, tableName, null);
 	}
 	
-	public static Iterable<Hashtable<String, Object>> queryEntities(URI baseUri, StorageCredentials credentials, String tableName, String filter) 
+	public static Iterable<Hashtable<String, Object>> query(URI baseUri, StorageCredentials credentials, String tableName, String filter) 
 			throws UnsupportedEncodingException, StorageException, IOException {
 		final URI thatUri = baseUri;
 		final StorageCredentials thatCredentials = credentials;
@@ -69,12 +69,11 @@ public class CloudTableObject<E extends CloudTableEntity> {
 		return storageOperation.executeTranslatingExceptions();		
 	}
 
-	public Iterable<E> queryEntities(Class<E> clazz) throws Exception {
-		return queryEntities(clazz, null);
+	public Iterable<E> query(Class<E> clazz) throws Exception {
+		return query(clazz, null);
 	}
 	
-	
-	public Iterable<E> queryEntities(Class<E> clazz, String filter) throws Exception {
+	public Iterable<E> query(Class<E> clazz, String filter) throws Exception {
 		final String thatFilter = filter;
 		final Class<E> thatClazz = clazz; 
 		StorageOperation<Iterable<E>> storageOperation = new StorageOperation<Iterable<E>>() {
@@ -91,7 +90,7 @@ public class CloudTableObject<E extends CloudTableEntity> {
 		return storageOperation.executeTranslatingExceptions();
 	}
 	
-	public void insertEntity(E entity) throws UnsupportedEncodingException, StorageException, IOException {		
+	public void insert(E entity) throws UnsupportedEncodingException, StorageException, IOException {		
 		final E thatEntity = entity;
 		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
 			public Void execute() throws Exception {
@@ -107,7 +106,7 @@ public class CloudTableObject<E extends CloudTableEntity> {
 		storageOperation.executeTranslatingExceptions();
 	}
 	
-	public void insertOrReplaceEntity(E entity) throws UnsupportedEncodingException, StorageException, IOException {		
+	public void insertOrReplace(E entity) throws UnsupportedEncodingException, StorageException, IOException {		
 		final E thatEntity = entity;
 		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
 			public Void execute() throws Exception {
@@ -123,7 +122,7 @@ public class CloudTableObject<E extends CloudTableEntity> {
 		storageOperation.executeTranslatingExceptions();
 	}
 
-	public void insertOrMergeEntity(E entity) throws UnsupportedEncodingException, StorageException, IOException {		
+	public void insertOrMerge(E entity) throws UnsupportedEncodingException, StorageException, IOException {		
 		final E thatEntity = entity;
 		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
 			public Void execute() throws Exception {
@@ -139,7 +138,7 @@ public class CloudTableObject<E extends CloudTableEntity> {
 		storageOperation.executeTranslatingExceptions();
 	}
 
-	public void updateEntity(E entity) throws UnsupportedEncodingException, StorageException, IOException {
+	public void update(E entity) throws UnsupportedEncodingException, StorageException, IOException {
 		final E thatEntity = entity;
 		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
 			public Void execute() throws Exception {
@@ -155,7 +154,7 @@ public class CloudTableObject<E extends CloudTableEntity> {
 		storageOperation.executeTranslatingExceptions();
 	}
 
-	public void mergeEntity(E entity) throws UnsupportedEncodingException, StorageException, IOException {
+	public void merge(E entity) throws UnsupportedEncodingException, StorageException, IOException {
 		final E thatEntity = entity;
 		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
 			public Void execute() throws Exception {
@@ -171,7 +170,7 @@ public class CloudTableObject<E extends CloudTableEntity> {
 		storageOperation.executeTranslatingExceptions();		
 	}
 
-	public void deleteEntity(E entity) throws UnsupportedEncodingException, StorageException, IOException {
+	public void delete(E entity) throws UnsupportedEncodingException, StorageException, IOException {
 		final E thatEntity = entity;
 		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
 			public Void execute() throws Exception {
@@ -187,7 +186,7 @@ public class CloudTableObject<E extends CloudTableEntity> {
 		storageOperation.executeTranslatingExceptions();
 	}
 	
-	public void deleteEntity(String partitionKey, String rowKey) throws UnsupportedEncodingException, StorageException, IOException {
+	public void delete(String partitionKey, String rowKey) throws UnsupportedEncodingException, StorageException, IOException {
 		final String thatPartitionKey =  partitionKey;
 		final String thatRowKey = rowKey;
 		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
@@ -204,7 +203,6 @@ public class CloudTableObject<E extends CloudTableEntity> {
 		storageOperation.executeTranslatingExceptions();		
 	}
 	
-
 	private TableProperty<?>[] getEntityProperties(E entity) throws IllegalArgumentException, IllegalAccessException {
 		Field[] fields = entity.getClass().getFields();
 		TableProperty<?>[] properties = new TableProperty<?>[fields.length];

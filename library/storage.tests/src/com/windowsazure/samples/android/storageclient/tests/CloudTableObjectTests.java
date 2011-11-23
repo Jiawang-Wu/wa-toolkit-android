@@ -29,14 +29,14 @@ public class CloudTableObjectTests extends AndroidTestCase {
 			obj.PartitionKey = "test_partition_q1";
 			obj.RowKey = "test_rowkey_q1";
 			obj.Description = "test_description";
-			tableObject.insertEntity(obj);	
+			tableObject.insert(obj);	
 			
 			obj.PartitionKey = "test_partition_q2";
 			obj.RowKey = "test_rowkey_q2";
-			tableObject.insertEntity(obj);
+			tableObject.insert(obj);
 
 			boolean found1 = false, found2 = false;
-			Iterable<Hashtable<String, Object>> records = CloudTableObject.queryEntities(
+			Iterable<Hashtable<String, Object>> records = CloudTableObject.query(
 					tableObject.getBaseUri(), 
 					tableObject.getCredentials(), 
 					tableObject.getTableName());
@@ -66,14 +66,14 @@ public class CloudTableObjectTests extends AndroidTestCase {
 			obj.PartitionKey = "test_partition_q1";
 			obj.RowKey = "test_rowkey_q1";
 			obj.Description = "test_description";
-			tableObject.insertEntity(obj);	
+			tableObject.insert(obj);	
 			
 			obj.PartitionKey = "test_partition_q2";
 			obj.RowKey = "test_rowkey_q2";
-			tableObject.insertEntity(obj);
+			tableObject.insert(obj);
 
 			boolean found1 = false, found2 = false;
-			Iterator<TestTableEntity> records = tableObject.queryEntities(TestTableEntity.class).iterator();
+			Iterator<TestTableEntity> records = tableObject.query(TestTableEntity.class).iterator();
 			while (records.hasNext()) {
 				TestTableEntity record = records.next();
 				found1 = found1 || record.PartitionKey.equals("test_partition_q1");
@@ -101,9 +101,9 @@ public class CloudTableObjectTests extends AndroidTestCase {
 			obj.PartitionKey = "test_partition_a";
 			obj.RowKey = "test_rowkey_a";
 			obj.Description = "test_description";
-			tableObject.insertEntity(obj);
+			tableObject.insert(obj);
 			
-			Iterator<TestTableEntity> records = tableObject.queryEntities(TestTableEntity.class, "PartitionKey eq 'test_partition_a'").iterator();
+			Iterator<TestTableEntity> records = tableObject.query(TestTableEntity.class, "PartitionKey eq 'test_partition_a'").iterator();
 			boolean found = false;
 			while (records.hasNext()) {
 				TestTableEntity record = records.next();
@@ -131,11 +131,11 @@ public class CloudTableObjectTests extends AndroidTestCase {
 			obj.PartitionKey = "test_partition_a";
 			obj.RowKey = "test_rowkey_a";
 			obj.Description = "test_description";
-			tableObject.insertEntity(obj);
+			tableObject.insert(obj);
 			
 			boolean errorThrown = false;
 			try {
-				tableObject.insertEntity(obj);
+				tableObject.insert(obj);
 			} catch (StorageException e) {
 				errorThrown = e.m_HttpStatusCode == HttpStatus.SC_CONFLICT;
 			}
@@ -161,9 +161,9 @@ public class CloudTableObjectTests extends AndroidTestCase {
 			obj.PartitionKey = "test_partition_u";
 			obj.RowKey = "test_rowkey_u";
 			obj.Description = "test_description";
-			tableObject.insertEntity(obj);
+			tableObject.insert(obj);
 
-			Iterator<TestTableEntity> records = tableObject.queryEntities(TestTableEntity.class, "PartitionKey eq 'test_partition_u'").iterator();
+			Iterator<TestTableEntity> records = tableObject.query(TestTableEntity.class, "PartitionKey eq 'test_partition_u'").iterator();
 			boolean found = false;
 			while (records.hasNext()) {
 				TestTableEntity record = records.next();
@@ -172,9 +172,9 @@ public class CloudTableObjectTests extends AndroidTestCase {
 			Assert.assertTrue(found);
 			
 			obj.Description = "entity updated";
-			tableObject.updateEntity(obj);
+			tableObject.update(obj);
 			
-			records = tableObject.queryEntities(TestTableEntity.class, "PartitionKey eq 'test_partition_u'").iterator();
+			records = tableObject.query(TestTableEntity.class, "PartitionKey eq 'test_partition_u'").iterator();
 			boolean updated = false;
 			while (records.hasNext()) {
 				TestTableEntity record = records.next();
@@ -204,7 +204,7 @@ public class CloudTableObjectTests extends AndroidTestCase {
 
 			boolean errorThrown = false;
 			try {
-				tableObject.updateEntity(obj);
+				tableObject.update(obj);
 			} catch (StorageException e) {
 				errorThrown = e.m_HttpStatusCode == HttpStatus.SC_NOT_FOUND;
 			}
@@ -230,9 +230,9 @@ public class CloudTableObjectTests extends AndroidTestCase {
 			obj.PartitionKey = "test_partition_m";
 			obj.RowKey = "test_rowkey_m";
 			obj.Description = "test_description";
-			tableObject.insertEntity(obj);
+			tableObject.insert(obj);
 
-			Iterator<TestTableEntity> records = tableObject.queryEntities(TestTableEntity.class, "PartitionKey eq 'test_partition_m'").iterator();
+			Iterator<TestTableEntity> records = tableObject.query(TestTableEntity.class, "PartitionKey eq 'test_partition_m'").iterator();
 			boolean found = false;
 			while (records.hasNext()) {
 				TestTableEntity record = records.next();
@@ -247,9 +247,9 @@ public class CloudTableObjectTests extends AndroidTestCase {
 			entityEx.Value1 = 1;
 			entityEx.Value2 = 2;
 			entityEx.ExtraInfo = "merged";
-			tableObjectEx.mergeEntity(entityEx);
+			tableObjectEx.merge(entityEx);
 			
-			Iterable<Hashtable<String, Object>> mergedRecords = CloudTableObject.queryEntities(
+			Iterable<Hashtable<String, Object>> mergedRecords = CloudTableObject.query(
 					tableObject.getBaseUri(), 
 					tableObject.getCredentials(), 
 					tableObject.getTableName(),
@@ -282,7 +282,7 @@ public class CloudTableObjectTests extends AndroidTestCase {
 
 			boolean errorThrown = false;
 			try {
-				tableObject.mergeEntity(obj);
+				tableObject.merge(obj);
 			} catch (StorageException e) {
 				errorThrown = e.m_HttpStatusCode == HttpStatus.SC_NOT_FOUND;
 			}
@@ -308,9 +308,9 @@ public class CloudTableObjectTests extends AndroidTestCase {
 			obj.PartitionKey = "test_partition_d";
 			obj.RowKey = "test_rowkey_d";
 			obj.Description = "test_description";
-			tableObject.insertEntity(obj);
+			tableObject.insert(obj);
 
-			Iterator<TestTableEntity> records = tableObject.queryEntities(TestTableEntity.class, "PartitionKey eq 'test_partition_d'").iterator();
+			Iterator<TestTableEntity> records = tableObject.query(TestTableEntity.class, "PartitionKey eq 'test_partition_d'").iterator();
 			boolean found = false;
 			while (records.hasNext()) {
 				TestTableEntity record = records.next();
@@ -318,9 +318,9 @@ public class CloudTableObjectTests extends AndroidTestCase {
 			}
 			Assert.assertTrue(found);
 			
-			tableObject.deleteEntity(obj);
+			tableObject.delete(obj);
 			
-			records = tableObject.queryEntities(TestTableEntity.class, "PartitionKey eq 'test_partition_d'").iterator();
+			records = tableObject.query(TestTableEntity.class, "PartitionKey eq 'test_partition_d'").iterator();
 			found = false;
 			while (records.hasNext()) {
 				TestTableEntity record = records.next();
@@ -350,7 +350,7 @@ public class CloudTableObjectTests extends AndroidTestCase {
 
 			boolean errorThrown = false;
 			try {
-				tableObject.deleteEntity(obj);
+				tableObject.delete(obj);
 			} catch (StorageException e) {
 				errorThrown = e.m_HttpStatusCode == HttpStatus.SC_NOT_FOUND;
 			}
@@ -376,9 +376,9 @@ public class CloudTableObjectTests extends AndroidTestCase {
 			obj.PartitionKey = "test_partition_ir";
 			obj.RowKey = "test_rowkey_ir";
 			obj.Description = "test_description";
-			tableObject.insertOrReplaceEntity(obj);		
+			tableObject.insertOrReplace(obj);		
 			
-			Iterator<TestTableEntity> records = tableObject.queryEntities(TestTableEntity.class, "PartitionKey eq 'test_partition_ir'").iterator();
+			Iterator<TestTableEntity> records = tableObject.query(TestTableEntity.class, "PartitionKey eq 'test_partition_ir'").iterator();
 			boolean found = false;
 			while (records.hasNext()) {
 				TestTableEntity record = records.next();
@@ -406,9 +406,9 @@ public class CloudTableObjectTests extends AndroidTestCase {
 			obj.PartitionKey = "test_partition_ir";
 			obj.RowKey = "test_rowkey_ir";
 			obj.Description = "test_description";
-			tableObject.insertEntity(obj);
+			tableObject.insert(obj);
 			
-			Iterator<TestTableEntity> records = tableObject.queryEntities(TestTableEntity.class, "PartitionKey eq 'test_partition_ir'").iterator();
+			Iterator<TestTableEntity> records = tableObject.query(TestTableEntity.class, "PartitionKey eq 'test_partition_ir'").iterator();
 			boolean found = false;
 			while (records.hasNext()) {
 				TestTableEntity record = records.next();
@@ -423,9 +423,9 @@ public class CloudTableObjectTests extends AndroidTestCase {
 			entityEx.copyKeys(obj);
 			entityEx.Value1 = 1;
 			entityEx.Value2 = 2;
-			tableObjectEx.insertOrReplaceEntity(entityEx);
+			tableObjectEx.insertOrReplace(entityEx);
 			
-			Iterator<TestTableOtherEntity> recordsEx = tableObjectEx.queryEntities(TestTableOtherEntity.class, "PartitionKey eq 'test_partition_ir'").iterator();
+			Iterator<TestTableOtherEntity> recordsEx = tableObjectEx.query(TestTableOtherEntity.class, "PartitionKey eq 'test_partition_ir'").iterator();
 			found = false;
 			while (recordsEx.hasNext()) {
 				TestTableOtherEntity record = recordsEx.next();
@@ -457,9 +457,9 @@ public class CloudTableObjectTests extends AndroidTestCase {
 			obj.PartitionKey = "test_partition_im";
 			obj.RowKey = "test_rowkey_im";
 			obj.Description = "test_description";
-			tableObject.insertOrMergeEntity(obj);	
+			tableObject.insertOrMerge(obj);	
 			
-			Iterator<TestTableEntity> records = tableObject.queryEntities(TestTableEntity.class, "PartitionKey eq 'test_partition_im'").iterator();
+			Iterator<TestTableEntity> records = tableObject.query(TestTableEntity.class, "PartitionKey eq 'test_partition_im'").iterator();
 			boolean found = false;
 			while (records.hasNext()) {
 				TestTableEntity record = records.next();
@@ -491,9 +491,9 @@ public class CloudTableObjectTests extends AndroidTestCase {
 			obj.PartitionKey = "test_partition_im";
 			obj.RowKey = "test_rowkey_im";
 			obj.Description = "test_description";
-			tableObject.insertEntity(obj);
+			tableObject.insert(obj);
 			
-			Iterator<TestTableEntity> records = tableObject.queryEntities(TestTableEntity.class, "PartitionKey eq 'test_partition_im'").iterator();
+			Iterator<TestTableEntity> records = tableObject.query(TestTableEntity.class, "PartitionKey eq 'test_partition_im'").iterator();
 			boolean found = false;
 			while (records.hasNext()) {
 				TestTableEntity record = records.next();
@@ -510,9 +510,9 @@ public class CloudTableObjectTests extends AndroidTestCase {
 			entityEx.copyKeys(obj);
 			entityEx.Value1 = 1;
 			entityEx.Value2 = 2;
-			tableObjectEx.insertOrMergeEntity(entityEx);
+			tableObjectEx.insertOrMerge(entityEx);
 			
-			Iterator<TestTableOtherEntity> recordsEx = tableObjectEx.queryEntities(TestTableOtherEntity.class, "PartitionKey eq 'test_partition_im'").iterator();
+			Iterator<TestTableOtherEntity> recordsEx = tableObjectEx.query(TestTableOtherEntity.class, "PartitionKey eq 'test_partition_im'").iterator();
 			found = false;
 			while (recordsEx.hasNext()) {
 				TestTableOtherEntity record = recordsEx.next();
