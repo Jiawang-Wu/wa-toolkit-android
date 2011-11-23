@@ -211,6 +211,11 @@ public class StorageEntityListActivity extends SecuredActivity implements OnChil
    			entry.add(property);
    			
    			property = new HashMap<String, String>();
+   			property.put("Name", "Message Text");
+   			property.put("Value", message.getAsString());
+   			entry.add(property);
+
+   			property = new HashMap<String, String>();
    			property.put("Name", "Insetion Time");
    			property.put("Value", message.getInsertionTime().toString());
    			entry.add(property);
