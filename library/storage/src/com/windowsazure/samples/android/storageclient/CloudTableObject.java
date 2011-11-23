@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Hashtable;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -24,7 +25,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public class CloudTableObject<E> {
+public class CloudTableObject<E extends CloudTableEntity> {
 	
 	private String m_TableName;
 	private URI m_Endpoint;
@@ -41,6 +42,60 @@ public class CloudTableObject<E> {
 		m_Endpoint = baseUri;
 		m_Credentials = credentials;
 		m_TableName = tableName;
+	}
+	
+	public String getTableName() {
+		return m_TableName;
+	}
+	
+	public URI getBaseUri() {
+		return m_Endpoint;
+	}
+	
+	public StorageCredentials getCredentials() {
+		return m_Credentials;
+	}
+	
+	public static Iterable<Hashtable<String, Object>> queryEntities(URI baseUri, StorageCredentials credentials, String tableName) 
+			throws UnsupportedEncodingException, StorageException, IOException {
+		return queryEntities(baseUri, credentials, tableName, null);
+	}
+	
+	public static Iterable<Hashtable<String, Object>> queryEntities(URI baseUri, StorageCredentials credentials, String tableName, String filter) 
+			throws UnsupportedEncodingException, StorageException, IOException {
+		final URI thatUri = baseUri;
+		final StorageCredentials thatCredentials = credentials;
+		final String thatTableName = tableName;
+		final String thatFilter = filter;
+		StorageOperation<Iterable<Hashtable<String, Object>>> storageOperation = new StorageOperation<Iterable<Hashtable<String, Object>>>() {
+			public Iterable<Hashtable<String, Object>> execute() throws Exception {
+				ArrayList<Hashtable<String, Object>> entities = new ArrayList<Hashtable<String, Object>>();
+				HttpGet request = TableRequest.queryEntity(thatUri, thatTableName, thatFilter);
+				thatCredentials.signTableRequest(request);
+				this.processRequest(request);
+				if (result.statusCode != HttpStatus.SC_OK) {
+					throw new StorageInnerException(String.format("Couldn't query entities on table '%s'", thatTableName));
+				} else { 
+					DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+					DocumentBuilder builder = factory.newDocumentBuilder();
+					Document document = builder.parse(result.httpResponse.getEntity().getContent());
+					
+					XPath xpath = XPathFactory.newInstance().newXPath();
+					String expression = "/feed/entry";
+					NodeList entitiesData = (NodeList) xpath.evaluate(expression, document, XPathConstants.NODESET);
+					
+					expression = "content/properties";
+					for (int i = 0; i < entitiesData.getLength(); i++) {
+						Hashtable<String, Object> entity = new Hashtable<String, Object>();
+						Node properties = (Node) xpath.evaluate(expression, entitiesData.item(i), XPathConstants.NODE);
+						addProperties(entity, properties.getChildNodes());
+						entities.add(entity);
+						}
+				}
+				return entities;
+			}
+		};
+		return storageOperation.executeTranslatingExceptions();		
 	}
 	
 	public Iterable<E> queryEntities(Class<E> clazz) throws Exception {
@@ -192,31 +247,47 @@ public class CloudTableObject<E> {
         Type type = getClass().getGenericSuperclass();
         ParameterizedType paramType = (ParameterizedType) type;
         return (Class<E>) paramType.getActualTypeArguments()[0];
-    }*/
-
-    private void applyProperties(E entity, NodeList properties) throws DOMException, Exception {
+    }*/	
+	
+	private static Iterable<TableProperty<?>> getNormalizedProperties(NodeList properties) throws DOMException, Exception {
+		ArrayList<TableProperty<?>> result = new ArrayList<TableProperty<?>>();
+		
     	for (int i = 0; i < properties.getLength(); i++) {
     		Node property = properties.item(i);
     		if (property.getNodeName().startsWith("d:")) {
         		NamedNodeMap attribs = property.getAttributes();
-        		String edmType = "Edm.String";
+        		String edmType = EdmType.EdmString.toString();
         		if ((attribs != null) && (attribs.getLength() > 0))
         		{
 	    			Node attribValue = attribs.getNamedItem("m:type");
 	    			if (attribValue != null) edmType = attribValue.getTextContent();
         		}
         		String propertyName = property.getNodeName().substring(2);
-        		Field field = null;
-        		try {
-        			field = entity.getClass().getField(propertyName);
-	        		TableProperty<?> convertedProperty = TableProperty.fromRepresentation(
-	        				property.getNodeName().substring(2), 
-	        				EdmType.fromRepresentation(edmType), 
-	        				property.getTextContent());
-	        		field.set(entity, convertedProperty.getValue());
-        		} catch (Exception e) { }
+        		TableProperty<?> normalizedProperty = TableProperty.fromRepresentation(
+        				propertyName, 
+        				EdmType.fromRepresentation(edmType), 
+        				property.getTextContent());
+        		result.add(normalizedProperty);
     		}
     	}
+    	
+		return result;
+	}
+
+    private static void addProperties(Hashtable<String,Object> entity, NodeList properties) throws DOMException, Exception {
+    	for (TableProperty<?> property : getNormalizedProperties(properties)) {
+    		entity.put(property.getName(), property.getValue());    	
+    	}    	
     }
-	
+
+    private void applyProperties(E entity, NodeList properties) throws DOMException, Exception {
+    	for (TableProperty<?> property : getNormalizedProperties(properties)) {
+    		Field field = null;
+    		try {
+    			field = entity.getClass().getField(property.getName());
+        		field.set(entity, property.getValue());
+    		} catch (Exception e) { }    	
+    	}
+    }
+
 }
