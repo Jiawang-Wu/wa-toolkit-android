@@ -6,21 +6,10 @@ import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathFactory;
-
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-
 import com.windowsazure.samples.android.storageclient.StorageCredentials;
 import com.windowsazure.samples.android.storageclient.Utility;
 
@@ -70,25 +59,13 @@ public class CloudTableClient {
 			throws UnsupportedEncodingException, StorageException, IOException {
 		StorageOperation<Iterable<String>>  storageOperation = new StorageOperation<Iterable<String>>() {
 			public Iterable<String> execute() throws Exception {
-				ArrayList<String> tables = new ArrayList<String>();
 				HttpGet request = TableRequest.list(m_Endpoint);						
 				m_Credentials.signTableRequest(request);
 				this.processRequest(request);
 				if (result.statusCode != HttpStatus.SC_OK) {
 					throw new StorageInnerException("Couldn't get table's list");
-				} else {
-					DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-					DocumentBuilder builder = factory.newDocumentBuilder();
-					Document document = builder.parse(result.httpResponse.getEntity().getContent());
-					
-					XPath xpath = XPathFactory.newInstance().newXPath();
-					String expression = "/feed/entry/content/properties/TableName";
-					NodeList tableNames = (NodeList) xpath.evaluate(expression, document, XPathConstants.NODESET);
-					for (int i = 0; i < tableNames.getLength(); i++) {						
-						tables.add(tableNames.item(i).getTextContent());
-					}
 				}
-				return tables;
+				return TableResponse.getTableList(result.httpResponse.getEntity().getContent());
 			}
 		};
         return storageOperation.executeTranslatingExceptions();
@@ -99,25 +76,13 @@ public class CloudTableClient {
 		final String thatPrefix = prefix;
 		StorageOperation<Iterable<String>>  storageOperation = new StorageOperation<Iterable<String>>() {
 			public Iterable<String> execute() throws Exception {
-				ArrayList<String> tables = new ArrayList<String>();
 				HttpGet request = TableRequest.list(m_Endpoint, thatPrefix);						
 				m_Credentials.signTableRequest(request);
 				this.processRequest(request);
 				if (result.statusCode != HttpStatus.SC_OK) {
 					throw new StorageInnerException("Couldn't get table's list");
-				} else {
-					DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-					DocumentBuilder builder = factory.newDocumentBuilder();
-					Document document = builder.parse(result.httpResponse.getEntity().getContent());
-					
-					XPath xpath = XPathFactory.newInstance().newXPath();
-					String expression = "/feed/entry/content/properties/TableName";
-					NodeList tableNames = (NodeList) xpath.evaluate(expression, document, XPathConstants.NODESET);
-					for (int i = 0; i < tableNames.getLength(); i++) {						
-						tables.add(tableNames.item(i).getTextContent());
-					}
 				}
-				return tables;
+				return TableResponse.getTableList(result.httpResponse.getEntity().getContent());
 			}
 		};
         return storageOperation.executeTranslatingExceptions();
@@ -215,7 +180,8 @@ public class CloudTableClient {
 		storageOperation.executeTranslatingExceptions();
 	}
 	
-	// public TableServiceContext GetDataServiceContext();
-	// public void Attach(DataServiceContext serviceContext);
-	
+	public <E extends CloudTableEntity> CloudTableObject<E> getCloudTableObject(String tableName) {
+		return new CloudTableObject<E>(tableName, m_Endpoint, m_Credentials);
+	}
+		
 }

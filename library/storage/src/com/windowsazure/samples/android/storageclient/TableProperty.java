@@ -8,13 +8,7 @@ import java.util.UUID;
 
 import android.util.Base64;
 
-class TableProperty<T> {
-	
-	public static final EdmType DEFAULT_TYPE = EdmType.EdmString;
-	public static final String PARTITION_KEY = "PartitionKey";
-	public static final String ROW_KEY = "RowKey";
-	public static final String TIMESTAMP = "Timestamp";
-	public static final String TYPE = "type";
+final class TableProperty<T> {
 	
 	public EdmType getEdmType() {
 		return edmType;
