@@ -39,7 +39,7 @@ public abstract class SecuredActivity extends Activity {
 
 	static final String PREFERENCE_FILENAME = "simple.preferences";
 	static final String PREFERENCE_ACCESS_TOKEN_KEY = "access_token";
-	
+
 	protected Boolean hasValidCredentials;
 
 	public enum ConnectionType {
@@ -54,15 +54,14 @@ public abstract class SecuredActivity extends Activity {
 		}
 	}
 
-	protected SampleApplication getSampleApplication()
-	{
-		return (SampleApplication) this.getApplication(); 
+	protected SampleApplication getSampleApplication() {
+		return (SampleApplication) this.getApplication();
 	}
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
 		String connectionType = getString(R.string.toolkit_connection_type);
@@ -73,58 +72,57 @@ public abstract class SecuredActivity extends Activity {
 		}
 
        CloudClientAccount cloudClientAccount = null;
-       
+
        try {
 			switch (ConnectionType.toConnectionType(connectionType)) {
 				case DIRECT:
 					String accountName = getString(R.string.direct_account_name);
 					String accessKey = getString(R.string.direct_access_key);
-			
+
 					if (!isValidConfigurationValue(accountName) || !isValidConfigurationValue(accessKey)) {
 						showDialog(MISSING_DIRECT_PARAMETERS);
 					}
-			
-					cloudClientAccount = new CloudStorageAccount(new StorageCredentialsAccountAndKey(accountName, accessKey)); 
+
+					cloudClientAccount = new CloudStorageAccount(new StorageCredentialsAccountAndKey(accountName, accessKey));
 					break;
 				case CLOUDREADYACS:
 					String namespace = getString(R.string.cloud_ready_acs_namespace);
 					String realm = getString(R.string.cloud_ready_acs_realm);
 					String proxyService = getString(R.string.cloud_ready_acs_proxy_service);
 					String symmetricKey = getString(R.string.cloud_ready_acs_symmetric_key);
-			
+
 					if (!isValidConfigurationValue(namespace)
 							|| !isValidConfigurationValue(realm)
 							|| !isValidConfigurationValue(proxyService)
 							|| !isValidConfigurationValue(symmetricKey)) {
 						showDialog(MISSING_CLOUDREADY_ACS_PARAMETERS);
 					}
-									
-					
+
+
 					IAccessToken token = getAccessControlToken();
-					
+
 					if (token == null || token.isExpired()) {
 						String repository = String.format("https://%s.accesscontrol.windows.net/v2/metadata/IdentityProviders.js?protocol=javascriptnotify&realm=%s&version=1.0", namespace, realm);
 						doAcsLogin(repository, realm, symmetricKey);
 					}
-					
+
 					break;
 				case CLOUDREADYSIMPLE:
 					String service = getString(R.string.cloud_ready_simple_proxy_service);
-			
+
 					if (!isValidConfigurationValue(service)) {
 						showDialog(MISSING_CLOUDREADY_SIMPLE_PARAMETERS);
 					}
-					
+
 			    	// TODO: Ask user name and password? Add option to register?
-					cloudClientAccount = new WAZServiceAccount(new WAZServiceUsernameAndPassword("admin", "Passw0rd!"),	new URI(service)); 
+					cloudClientAccount = new WAZServiceAccount(new WAZServiceUsernameAndPassword("admin", "Passw0rd!"),	new URI(service));
 					break;
 			}
-			
+
 			// Configure the account we'll use to access the storage
 			this.getSampleApplication().setCloudClientAccount(cloudClientAccount);
         }
-        catch (Exception exception)
-        {
+        catch (Exception exception) {
         	this.showErrorMessage("Couldn't configure a cloud client account", exception);
         }
     }
@@ -134,7 +132,7 @@ public abstract class SecuredActivity extends Activity {
 		dialog.setTitle(getString(R.string.configuration_error_title));
 		dialog.setCanceledOnTouchOutside(true);
 		dialog.setCancelable(true);
-		
+
 		switch (id) {
 			case MISSING_CONNECTION_TYPE:
 				dialog.setMessage(getString(R.string.error_missing_connection_type));
@@ -151,15 +149,13 @@ public abstract class SecuredActivity extends Activity {
 		}
 
 		final Activity activity = this;
-		
-		dialog.setOnCancelListener(new OnCancelListener()
-		{
-		    public void onCancel(DialogInterface dialog)
-		    {
+
+		dialog.setOnCancelListener(new OnCancelListener() {
+		    public void onCancel(DialogInterface dialog) {
 		    	activity.finish();
 		    }
 		});
-		
+
 		return dialog;
 	}
 
@@ -183,7 +179,7 @@ public abstract class SecuredActivity extends Activity {
 	private IAccessToken getAccessControlToken() {
 		SharedPreferences settings = getSharedPreferences(PREFERENCE_FILENAME, 0);
 		IAccessToken accessToken = null;
-		
+
 		Bundle optionSet = getIntent().getExtras();
 		if (optionSet != null) {
 			accessToken = (IAccessToken) optionSet.getSerializable(AccessControlLoginActivity.AuthenticationTokenKey);
@@ -197,7 +193,7 @@ public abstract class SecuredActivity extends Activity {
 					e.printStackTrace();
 				}
 				editor.commit();
-				
+
 				return accessToken;
 			}
 		}
@@ -220,7 +216,7 @@ public abstract class SecuredActivity extends Activity {
 		return accessToken;
 	}
 
-	private static Object fromString(String object) 
+	private static Object fromString(String object)
 			throws IOException, ClassNotFoundException {
 		byte[] data = Base64.decode(object, Base64.DEFAULT);
 		ObjectInputStream stream = new ObjectInputStream(new ByteArrayInputStream(data));
@@ -236,19 +232,16 @@ public abstract class SecuredActivity extends Activity {
         outputStream.close();
         return new String(Base64.encode(byteArrayOutputStream.toByteArray(), Base64.DEFAULT));
     }
-	
+
 	protected Bundle optionSet() {
 		return getIntent().getExtras();
 	}
-	void showErrorMessageIfAny(String title, Exception exception)
-	{
-		if (exception != null)
-		{
+	void showErrorMessageIfAny(String title, Exception exception) {
+		if (exception != null) {
 			this.showErrorMessage(title, exception);
 		}
 	}
-	void showErrorMessage(String title, Exception exception)
-	{
+	void showErrorMessage(String title, Exception exception) {
 		exception.printStackTrace();
     	System.out.println(exception.toString());
 		AlertDialog dialog = dialogToShow(title, exception).create();
