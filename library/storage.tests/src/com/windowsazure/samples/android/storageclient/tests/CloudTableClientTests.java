@@ -154,7 +154,7 @@ public class CloudTableClientTests extends AndroidTestCase {
 	public void testWhenCreateFromModelShouldCreateTableWithTypeName() throws Exception {
 		CloudStorageAccountProvider accountProvider = new CloudStorageAccountProvider();
 		
-		String testTableName = "TableClientTestsCreateFromModel";
+		String testTableName = "TestTableEntity";
 		CloudTableClient client = accountProvider.getAccount().createCloudTableClient();
 		client.deleteTableIfExist(testTableName);
 		Assert.assertFalse(client.doesTableExist(testTableName));

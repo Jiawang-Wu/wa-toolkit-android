@@ -84,7 +84,11 @@ public class CloudTableObjectTests extends AndroidTestCase {
 			client.deleteTableIfExist(testTableName);
 		}
 	}
-
+	
+	public void testWhenInsertDuplicatedEntityShouldThrow() {
+		
+	}
+	
 	public void testWhenUpdateEntityShouldBeChanged() throws Exception {
 		String testTableName = "TableObjectTestsUpdateEntity";
 		CloudStorageAccountProvider accountProvider = new CloudStorageAccountProvider();	
@@ -127,6 +131,10 @@ public class CloudTableObjectTests extends AndroidTestCase {
 		} finally {		
 			client.deleteTableIfExist(testTableName);
 		}
+	}
+	
+	public void testWhenUpdateNonExistentEntityShouldThrow() {
+		
 	}
 	
 	public void testWhenDeleteEntityShouldBeRemoved() throws URISyntaxException, Exception {
@@ -172,7 +180,11 @@ public class CloudTableObjectTests extends AndroidTestCase {
 		}
 	}
 	
-	public void testWhenInsertOrReplaceEntityShouldBeAdded() throws Exception {
+	public void testWhenDeleteNonExistentEntityShouldThrow() {
+		
+	}
+	
+	public void testWhenInsertOrReplaceNewEntityShouldBeAdded() throws Exception {
 		String testTableName = "TableObjectTestsAddReplaceEntity";
 		CloudStorageAccountProvider accountProvider = new CloudStorageAccountProvider();	
 		CloudTableClient client = accountProvider.getAccount().createCloudTableClient();
@@ -205,8 +217,61 @@ public class CloudTableObjectTests extends AndroidTestCase {
 			client.deleteTableIfExist(testTableName);
 		}
 	}
+
+	public void testWhenInsertOrReplaceExistentEntityShouldBeReplaced() throws URISyntaxException, Exception {
+		String testTableName = "TableObjectTestsAddReplaceEntity2";
+		CloudStorageAccountProvider accountProvider = new CloudStorageAccountProvider();	
+		CloudTableClient client = accountProvider.getAccount().createCloudTableClient();
+		
+		try {
+			client.createTableIfNotExist(testTableName);
+			
+			CloudStorageAccount account = (CloudStorageAccount)accountProvider.getAccount();
+			CloudTableObject<TestTableEntity> tableObject = 
+					new CloudTableObject<TestTableEntity>(testTableName, 
+							account.getTableEndpoint(), account.getCredentials());
+			
+			TestTableEntity obj = new TestTableEntity();
+			obj.PartitionKey = "test_partition_ir";
+			obj.RowKey = "test_rowkey_ir";
+			obj.Description = "test_description";
+			tableObject.insertEntity(obj);
+			
+			Iterator<TestTableEntity> records = tableObject.queryEntities(TestTableEntity.class, "PartitionKey eq 'test_partition_ir'").iterator();
+			boolean found = false;
+			while (records.hasNext()) {
+				TestTableEntity record = records.next();
+				found = found || record.PartitionKey.equals("test_partition_ir");
+			}
+			
+			Assert.assertTrue(found);
+			
+			CloudTableObject<TestTableEntityEx> tableObjectEx = 
+					new CloudTableObject<TestTableEntityEx>(testTableName, 
+							account.getTableEndpoint(), account.getCredentials());
+			
+			TestTableEntityEx entityEx = new TestTableEntityEx();
+			entityEx.copy(obj);
+			entityEx.Value1 = 1;
+			entityEx.Value1 = 2;
+			tableObjectEx.insertOrReplaceEntity(entityEx);
+			
+			Iterator<TestTableEntityEx> recordsEx = tableObjectEx.queryEntities(TestTableEntityEx.class, "PartitionKey eq 'test_partition_ir'").iterator();
+			found = false;
+			while (records.hasNext()) {
+				TestTableEntityEx record = recordsEx.next();
+				found = found || record.PartitionKey.equals("test_partition_ir");
+			}
+			
+			Assert.assertTrue(found);	
+		} catch (Exception e) {
+			throw e;
+		} finally {		
+			client.deleteTableIfExist(testTableName);
+		}		
+	}
 	
-	public void testWhenInsertOrMergeEntityShouldBeAdded() throws Exception {
+	public void testWhenInsertOrMergeNewEntityShouldBeAdded() throws Exception {
 		String testTableName = "TableObjectTestsAddMergeEntity";
 		CloudStorageAccountProvider accountProvider = new CloudStorageAccountProvider();	
 		CloudTableClient client = accountProvider.getAccount().createCloudTableClient();
@@ -238,6 +303,10 @@ public class CloudTableObjectTests extends AndroidTestCase {
 		} finally {		
 			client.deleteTableIfExist(testTableName);
 		}
+	}
+	
+	public void testWhenInsertOrMergeEXistentEntityShouldBeMerged() {
+		
 	}
 	
 }
