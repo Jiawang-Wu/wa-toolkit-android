@@ -16,7 +16,6 @@ import com.microsoft.samples.windowsazure.android.accesscontrol.swt.SimpleWebTok
 import com.windowsazure.samples.android.storageclient.CloudClientAccount;
 import com.windowsazure.samples.android.storageclient.CloudStorageAccount;
 import com.windowsazure.samples.android.storageclient.StorageCredentialsAccountAndKey;
-import com.windowsazure.samples.android.storageclient.StorageCredentialsAcs;
 import com.windowsazure.samples.android.storageclient.wazservice.WAZServiceAccount;
 import com.windowsazure.samples.android.storageclient.wazservice.WAZServiceAccountAcs;
 import com.windowsazure.samples.android.storageclient.wazservice.WAZServiceUsernameAndPassword;
@@ -33,7 +32,8 @@ public abstract class SecuredActivity extends Activity {
 
 	static final String PREFERENCE_FILENAME = "simple.preferences";
 	static final String PREFERENCE_ACCESS_TOKEN_KEY = "access_token";
-		
+	static final String CLAIM_TYPE_NAME_IDENTIFIER = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier";
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -64,7 +64,8 @@ public abstract class SecuredActivity extends Activity {
 						return;
 					}
 					
-					cloudClientAccount = new WAZServiceAccountAcs(new StorageCredentialsAcs(token.getRawToken()), new URI(proxyService)); 	
+					String userName = token.getClaimValue(CLAIM_TYPE_NAME_IDENTIFIER);
+					cloudClientAccount = new WAZServiceAccountAcs(userName, "foo@bar.com", token.getRawToken(), new URI(proxyService)); 	
 					
 					break;
 				case CLOUDREADYSIMPLE:
@@ -114,6 +115,9 @@ public abstract class SecuredActivity extends Activity {
 					e.printStackTrace();
 				}
 				editor.commit();
+				
+				// TODO: Move the registration to a better place
+				
 				
 				return accessToken;
 			}

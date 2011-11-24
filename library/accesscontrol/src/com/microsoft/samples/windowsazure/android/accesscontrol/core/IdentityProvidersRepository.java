@@ -31,8 +31,7 @@ public class IdentityProvidersRepository implements IIdentityProviderRepository,
 		try {
 	    	HttpGet request = new HttpGet(mIdentityProvidersUri);
 	    	HttpClient client = new DefaultHttpClient();
-	    	HttpResponse response;
-				response = client.execute(request);
+	    	HttpResponse response = client.execute(request);
 	    	
 	    	BufferedReader r = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
 	    	StringBuilder total = new StringBuilder();

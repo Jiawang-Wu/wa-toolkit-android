@@ -23,6 +23,10 @@ public class MainWindowActivity extends Activity {
         super.onCreate(savedInstanceState);
     	this.requestWindowFeature(Window.FEATURE_NO_TITLE);
     	
+    	// TODO: Remove this, maybe we should have a log off button for ACS stuff. 
+    	// We've added this line to expire the token when the app starts.
+    	getSampleApplication().expireAccessToken();
+    	    	
 		if (this.getSampleApplication().getConnectionType() == ConnectionType.NOVALUE) {
 			showDialog(MISSING_CONNECTION_TYPE);
 			return;

@@ -6,9 +6,13 @@ import com.windowsazure.samples.android.storageclient.CloudQueueClient;
 import com.windowsazure.samples.android.storageclient.CloudTableClient;
 
 import android.app.Application;
+import android.content.SharedPreferences;
 
 public class SampleApplication extends Application {
 
+	private static final String PREFERENCE_FILENAME = "simple.preferences";
+	private static final String PREFERENCE_ACCESS_TOKEN_KEY = "access_token";
+	
 	private CloudBlobClient m_CloudBlobClient;
 	private CloudClientAccount m_CloudClientAccount;
 	private CloudQueueClient m_CloudQueueClient;
@@ -71,4 +75,10 @@ public class SampleApplication extends Application {
 		m_CloudClientAccount = cloudClientAccount;
 	}	
 	
+	public void expireAccessToken(){
+		SharedPreferences settings = getSharedPreferences(PREFERENCE_FILENAME, 0);
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putString(PREFERENCE_ACCESS_TOKEN_KEY, "");
+		editor.commit();
+	}
 }

@@ -104,7 +104,6 @@ public final class StorageCredentialsAcs extends StorageCredentials {
 
 	@Override
 	public String toString(boolean showSignature) {
-		// TODO Auto-generated method stub
 		return m_Token;
 	}
 
