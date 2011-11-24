@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ExpandableListView;
+import android.widget.ProgressBar;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 import android.widget.ExpandableListView.OnChildClickListener;
@@ -36,6 +37,7 @@ public class StorageEntityListActivity extends SecuredActivity implements OnChil
 	ExpandableListView listView;
 
 	int entityListType = 0;
+	private ProgressBar progressBar;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +48,7 @@ public class StorageEntityListActivity extends SecuredActivity implements OnChil
         Button addButton = (Button)findViewById(R.id.header_add_button);
         Button backButton = (Button)findViewById(R.id.header_back_button);
         TextView title = (TextView)findViewById(R.id.header_title);
+	    progressBar = (ProgressBar) findViewById(R.id.storage_entity_list_progress);
 
         addButton.setVisibility(View.VISIBLE);
         backButton.setVisibility(View.VISIBLE);
@@ -89,6 +92,10 @@ public class StorageEntityListActivity extends SecuredActivity implements OnChil
 					}
 			        return null;
 			     }
+				protected void onPreExecute() {
+					listView.setVisibility(View.GONE);
+					progressBar.setVisibility(View.VISIBLE);
+				}
 			     protected void onPostExecute(AlertDialog.Builder dialogBuilder) {
 			    	 if (dialogBuilder == null) {
 							listView.setAdapter(listAdapter);
@@ -96,6 +103,8 @@ public class StorageEntityListActivity extends SecuredActivity implements OnChil
 			    	 else {
 			    		 dialogBuilder.show();
 			    	 }
+					progressBar.setVisibility(View.GONE);
+					listView.setVisibility(View.VISIBLE);
 				 }
 	    	};
 	    	new ListEntityItemsTask().execute();

@@ -26,6 +26,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class StorageCreateItemActivity extends SecuredActivity {
@@ -48,6 +49,11 @@ public class StorageCreateItemActivity extends SecuredActivity {
 
 	int createItemType = 0;
 	Uri imageLocation;
+	private ProgressBar progressBar;
+	private Button createButton;
+	private Button pickImageButton;
+	private TextView imageSelectedLabel;
+	private TextView label;
 
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -61,18 +67,20 @@ public class StorageCreateItemActivity extends SecuredActivity {
         createItemType = optionSet.getInt(TYPE_NAMESPACE);
 
         Button backButton = (Button)findViewById(R.id.header_back_button);
-        Button createButton = (Button)findViewById(R.id.storage_create_item_button);
+        createButton = (Button)findViewById(R.id.storage_create_item_button);
+	    progressBar = (ProgressBar) findViewById(R.id.storage_create_item_progress);
 
         TextView title = (TextView)findViewById(R.id.header_title);
 
         backButton.setVisibility(View.VISIBLE);
         title.setText(optionSet.getString(TITLE_NAMESPACE));
 
-        TextView label = (TextView)findViewById(R.id.storage_create_item_title);
+        label = (TextView)findViewById(R.id.storage_create_item_title);
         label.setText(optionSet.getString(LABEL_TEXT_NAMESPACE));
 
+        imageSelectedLabel = (TextView)findViewById(R.id.storage_create_item_image_selected);
+        pickImageButton = (Button)findViewById(R.id.pick_image_button);
         if (createItemType == CREATE_ITEM_TYPE_BLOB) {
-            Button pickImageButton = (Button)findViewById(R.id.pick_image_button);
             pickImageButton.setVisibility(View.VISIBLE);
 
             pickImageButton.setOnClickListener(new View.OnClickListener( ) {
@@ -97,7 +105,6 @@ public class StorageCreateItemActivity extends SecuredActivity {
 			if (resultCode == Activity.RESULT_OK) {
 				imageLocation = data.getData();
 
-		        TextView imageSelectedLabel = (TextView)findViewById(R.id.storage_create_item_image_selected);
 		        imageSelectedLabel.setText(imageLocation.toString());
 		        imageSelectedLabel.setVisibility(View.VISIBLE);
 			}
@@ -134,7 +141,7 @@ public class StorageCreateItemActivity extends SecuredActivity {
     }
 
     private void onCreateButton(View v) {
-    	EditText nameView = (EditText)findViewById(R.id.storage_create_item_value);
+    	final EditText nameView = (EditText)findViewById(R.id.storage_create_item_value);
 
     	// TODO: Validate names according to the API.
 
@@ -156,6 +163,15 @@ public class StorageCreateItemActivity extends SecuredActivity {
 			    int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
 			    cursor.moveToFirst();
 			    return cursor.getString(column_index);
+			}
+
+			protected void onPreExecute() {
+				label.setVisibility(View.GONE);
+				nameView.setVisibility(View.GONE);
+				createButton.setVisibility(View.GONE);
+				pickImageButton.setVisibility(View.GONE);
+				imageSelectedLabel.setVisibility(View.GONE);
+				progressBar.setVisibility(View.VISIBLE);
 			}
 
 			@Override
@@ -205,10 +221,17 @@ public class StorageCreateItemActivity extends SecuredActivity {
 					thisActivity.finish();
 				}
 				else {
+					progressBar.setVisibility(View.GONE);
+					nameView.setVisibility(View.VISIBLE);
+					label.setVisibility(View.VISIBLE);
+					createButton.setVisibility(View.VISIBLE);
+			        if (createItemType == CREATE_ITEM_TYPE_BLOB) {
+						pickImageButton.setVisibility(View.VISIBLE);
+						imageSelectedLabel.setVisibility(View.VISIBLE);
+			        }
 					AlertDialog dialog = dialogToShow.create();
 					dialog.setCanceledOnTouchOutside(true);
 					dialog.show();
-
 				}
 			}
 		};
