@@ -3,7 +3,6 @@ package com.windowsazure.samples.android.sampleapp;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -115,6 +114,7 @@ public class StorageEntityListActivity extends SecuredActivity implements OnChil
 		    	intent.putExtra(StorageEntityActivity.TYPE_NAMESPACE, StorageEntityActivity.OPERATION_TYPE_EDIT);
 		    	intent.putExtra(StorageEntityActivity.PARTITION_KEY_NAMESPACE, identifier.get("PartitionKey"));
 		    	intent.putExtra(StorageEntityActivity.ROW_KEY_NAMESPACE, identifier.get("RowKey"));
+		    	intent.putExtra(StorageEntityActivity.TABLE_NAME_NAMESPACE, this.entityName());
 		    	startActivity (intent);
     	}
 
@@ -149,18 +149,14 @@ public class StorageEntityListActivity extends SecuredActivity implements OnChil
 
     private SimpleExpandableListAdapter getTableRows() throws Exception {
     	List<List<Map<String, String>>> items = new ArrayList<List<Map<String, String>>>();
-		List<Map<String, String>> groupData = new ArrayList<Map<String, String>>();
+		List<Map<String, Object>> groupData = new ArrayList<Map<String, Object>>();
 
 		CloudTableClient tableClient = getSampleApplication().getCloudClientAccount().createCloudTableClient();
 		StorageCredentials tableCredentials = tableClient.getCredentials();
-		for (Hashtable<String, Object> entity : CloudTableObject.query(tableClient.getEndpoint(), tableCredentials, this.entityName())) {
-			Map<String, String> groupFields = new HashMap<String, String>();
+		for (Map<String, Object> entity : CloudTableObject.query(tableClient.getEndpoint(), tableCredentials, this.entityName())) {
 			List<Map<String, String>> entry = new ArrayList<Map<String, String>>();
 
-			// Groups
-       		groupFields.put("PartitionKey", entity.get("PartitionKey").toString());
-       		groupFields.put("RowKey", entity.get("RowKey").toString());
-	    	groupData.add(groupFields);
+			groupData.add(entity);
 
    			for (Entry<String, Object> property : entity.entrySet()) {
     			Map<String, String> field = new HashMap<String, String>();
@@ -175,7 +171,7 @@ public class StorageEntityListActivity extends SecuredActivity implements OnChil
 		return new SimpleExpandableListAdapter(this,
 												groupData,
 												android.R.layout.simple_expandable_list_item_1,
-												new String[] {"PartitionKey", "RowKey"},
+												new String[] {"RowKey"},
 												new int[] { android.R.id.text1, android.R.id.text2 },
 												items,
 												android.R.layout.simple_expandable_list_item_2,

@@ -4,7 +4,8 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.net.URI;
-import java.util.Hashtable;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpDelete;
@@ -44,19 +45,19 @@ public class CloudTableObject<E extends CloudTableEntity> {
 		return m_Credentials;
 	}
 	
-	public static Iterable<Hashtable<String, Object>> query(URI baseUri, StorageCredentials credentials, String tableName) 
+	public static Iterable<Map<String, Object>> query(URI baseUri, StorageCredentials credentials, String tableName) 
 			throws UnsupportedEncodingException, StorageException, IOException {
 		return query(baseUri, credentials, tableName, null);
 	}
 	
-	public static Iterable<Hashtable<String, Object>> query(URI baseUri, StorageCredentials credentials, String tableName, String filter) 
+	public static Iterable<Map<String, Object>> query(URI baseUri, StorageCredentials credentials, String tableName, String filter) 
 			throws UnsupportedEncodingException, StorageException, IOException {
 		final URI thatUri = baseUri;
 		final StorageCredentials thatCredentials = credentials;
 		final String thatTableName = tableName;
 		final String thatFilter = filter;
-		StorageOperation<Iterable<Hashtable<String, Object>>> storageOperation = new StorageOperation<Iterable<Hashtable<String, Object>>>() {
-			public Iterable<Hashtable<String, Object>> execute() throws Exception {
+		StorageOperation<Iterable<Map<String, Object>>> storageOperation = new StorageOperation<Iterable<Map<String, Object>>>() {
+			public Iterable<Map<String, Object>> execute() throws Exception {
 				HttpGet request = TableRequest.queryEntity(thatUri, thatTableName, thatFilter);
 				thatCredentials.signTableRequest(request);
 				this.processRequest(request);
@@ -212,4 +213,46 @@ public class CloudTableObject<E extends CloudTableEntity> {
 		return properties;
 	}
 
+	private static TableProperty<?>[] getUnknownEntityProperties(Map<String, Object> entity) throws IllegalArgumentException, IllegalAccessException {
+		TableProperty<?>[] properties = new TableProperty<?>[entity.size()];
+		int i = 0;
+		for (Entry<String, Object> property : entity.entrySet()) {
+			properties[i++] = TableProperty.newProperty(property.getKey(), property.getValue().getClass(), property.getValue());
+		}
+		return properties;
+	}
+
+	public static void insert(final URI endpoint,
+			final StorageCredentials tableCredentials, final String tableName,
+			final Map<String, Object> entity) throws UnsupportedEncodingException, StorageException, IOException {
+		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
+			public Void execute() throws Exception {
+				HttpPost request = TableRequest.insertEntity(endpoint, tableName, getUnknownEntityProperties(entity));
+				tableCredentials.signTableRequest(request);
+				this.processRequest(request);
+				if (result.statusCode != HttpStatus.SC_CREATED) {
+					throw new StorageInnerException(String.format("Couldn't insert entity on table '%s'", tableName));
+				} 
+				return null;
+			}
+		};
+		storageOperation.executeTranslatingExceptions();
+	}
+	
+	public static void update(final URI endpoint,
+			final StorageCredentials tableCredentials, final String tableName,
+			final Map<String, Object> entity) throws UnsupportedEncodingException, StorageException, IOException {
+		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
+			public Void execute() throws Exception {
+				HttpPut request = TableRequest.updateEntity(endpoint, tableName, getUnknownEntityProperties(entity));
+				tableCredentials.signTableRequest(request);
+				this.processRequest(request);
+				if (result.statusCode != HttpStatus.SC_NO_CONTENT) {
+					throw new StorageInnerException(String.format("Couldn't update entity on table '%s'", tableName));
+				} 
+				return null;
+			}
+		};
+		storageOperation.executeTranslatingExceptions();
+	}
 }

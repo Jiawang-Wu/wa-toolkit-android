@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -43,9 +44,9 @@ final class TableResponse {
 	
 	// entity stuff
 	
-	public static Iterable<Hashtable<String, Object>> getUnknownEntities(InputStream input) 
+	public static Iterable<Map<String, Object>> getUnknownEntities(InputStream input) 
 			throws DOMException, Exception {
-		ArrayList<Hashtable<String, Object>> entities = new ArrayList<Hashtable<String, Object>>();
+		ArrayList<Map<String, Object>> entities = new ArrayList<Map<String, Object>>();
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = factory.newDocumentBuilder();
 		Document document = builder.parse(input);

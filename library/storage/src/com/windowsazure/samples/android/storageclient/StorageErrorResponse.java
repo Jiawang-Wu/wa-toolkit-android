@@ -53,6 +53,13 @@ final class StorageErrorResponse {
 						"Code").item(0);
 				Element messageElement = (Element) root.getElementsByTagName(
 						"Message").item(0);
+				if (codeElement == null)
+				{
+					codeElement = (Element) root.getElementsByTagName(
+							"code").item(0);
+					messageElement = (Element) root.getElementsByTagName(
+						"message").item(0);
+			    }
 				m_ErrorInfo.errorCode = codeElement.getTextContent();
 				m_ErrorInfo.errorMessage = messageElement.getTextContent();
 			}
