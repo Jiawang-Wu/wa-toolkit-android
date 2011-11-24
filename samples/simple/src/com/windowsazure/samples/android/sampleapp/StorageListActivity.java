@@ -18,6 +18,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class StorageListActivity extends SecuredActivity implements OnItemClickListener {
@@ -32,6 +33,8 @@ public class StorageListActivity extends SecuredActivity implements OnItemClickL
 
 	List<String> items;
 	int listType = 0;
+	ProgressBar progressBar;
+	private ListView listView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,6 +46,7 @@ public class StorageListActivity extends SecuredActivity implements OnItemClickL
         Button addButton = (Button)findViewById(R.id.header_add_button);
         Button backButton = (Button)findViewById(R.id.header_back_button);
         TextView title = (TextView)findViewById(R.id.header_title);
+	    progressBar = (ProgressBar) findViewById(R.id.storage_list_progress);
 
         addButton.setVisibility(View.VISIBLE);
         backButton.setVisibility(View.VISIBLE);
@@ -52,7 +56,7 @@ public class StorageListActivity extends SecuredActivity implements OnItemClickL
         title.setText(text);
 
         listType = optionSet.getInt(TYPE_NAMESPACE);
-        ListView listView = (ListView)findViewById(R.id.storage_list_list_view);
+        listView = (ListView)findViewById(R.id.storage_list_list_view);
         listView.setOnItemClickListener((OnItemClickListener) this);
 
         backButton.setOnClickListener(new View.OnClickListener( ) {
@@ -106,16 +110,16 @@ public class StorageListActivity extends SecuredActivity implements OnItemClickL
 				return listedItems;
 		     }
 
-		     protected void onProgressUpdate(Integer... progress) {
-					//scrollView.setVisibility(View.GONE);
-		    	 //textView.setVisibility(View.GONE);
-		    	 //progressBar.setVisibility(View.VISIBLE);
+		     protected void onPreExecute() {
+		    	 listView.setVisibility(View.GONE);
+		    	 progressBar.setVisibility(View.VISIBLE);
 		     }
 
 		     protected void onPostExecute(List<String> listedItems) {
 		    	items = listedItems;
-			    ListView listView = (ListView)findViewById(R.id.storage_list_list_view);
 			    listView.setAdapter(new ArrayAdapter<String>(thisActivity, android.R.layout.simple_list_item_1, items));
+		    	progressBar.setVisibility(View.GONE);
+		    	listView.setVisibility(View.VISIBLE);
 		     }
 		 };
 		 new ListItemsTask().execute(listType);

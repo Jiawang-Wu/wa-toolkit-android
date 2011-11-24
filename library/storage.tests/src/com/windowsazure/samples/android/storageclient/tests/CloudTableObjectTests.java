@@ -1,8 +1,8 @@
 package com.windowsazure.samples.android.storageclient.tests;
 
 import java.net.URISyntaxException;
-import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.apache.http.HttpStatus;
 
@@ -36,11 +36,11 @@ public class CloudTableObjectTests extends AndroidTestCase {
 			tableObject.insert(obj);
 
 			boolean found1 = false, found2 = false;
-			Iterable<Hashtable<String, Object>> records = CloudTableObject.query(
+			Iterable<Map<String, Object>> records = CloudTableObject.query(
 					tableObject.getBaseUri(), 
 					tableObject.getCredentials(), 
 					tableObject.getTableName());
-			for (Hashtable<String,Object> record : records) {
+			for (Map<String,Object> record : records) {
 				found1 = found1 || record.get("PartitionKey").equals("test_partition_q1");
 				found2 = found2 || record.get("PartitionKey").equals("test_partition_q2");
 			}
@@ -249,12 +249,12 @@ public class CloudTableObjectTests extends AndroidTestCase {
 			entityEx.ExtraInfo = "merged";
 			tableObjectEx.merge(entityEx);
 			
-			Iterable<Hashtable<String, Object>> mergedRecords = CloudTableObject.query(
+			Iterable<Map<String, Object>> mergedRecords = CloudTableObject.query(
 					tableObject.getBaseUri(), 
 					tableObject.getCredentials(), 
 					tableObject.getTableName(),
 					"PartitionKey eq 'test_partition_m'");
-			for(Hashtable<String, Object> record : mergedRecords) {
+			for(Map<String, Object> record : mergedRecords) {
 				Assert.assertTrue(record.get("PartitionKey").equals("test_partition_m"));
 				Assert.assertTrue(record.get("Description").equals("test_description"));
 				Assert.assertTrue(record.get("ExtraInfo").equals("merged"));

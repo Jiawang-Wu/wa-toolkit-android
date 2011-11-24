@@ -7,4 +7,14 @@
 	
 	<include android:id="@+id/header" layout="@layout/navigation_header"/>
 	
+    <ProgressBar
+        android:id="@+id/storage_entity_progress"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_height="64dp"
+        android:layout_width="64dp"
+		android:layout_marginTop="170dp"
+	    android:gravity="center_vertical|center_horizontal"    	
+		android:layout_gravity="center_vertical|center_horizontal|center"
+		android:visibility="gone" />
+
 </LinearLayout>
