@@ -23,6 +23,8 @@ final class TableRequest {
 	public static final String DATA_SERVICES_NS = "http://schemas.microsoft.com/ado/2007/08/dataservices";
 	public static final String METADATA_NS = "http://schemas.microsoft.com/ado/2007/08/dataservices/metadata";
 
+	// table stuff
+	
 	public static HttpGet list(URI endpoint) throws IOException, URISyntaxException, StorageException {
 		String requestUri = endpoint.toASCIIString() + "/Tables";
 		return BaseRequest.setURIAndHeaders(new HttpGet(), new URI(requestUri), new UriQueryBuilder());
@@ -44,23 +46,24 @@ final class TableRequest {
 	public static HttpPost create(URI endpoint, String tableName) throws IOException, URISyntaxException, StorageException {
 		String requestUri = endpoint.toASCIIString() + "/Tables";
 		HttpPost result = BaseRequest.setURIAndHeaders(new HttpPost(), new URI(requestUri), new UriQueryBuilder());
-		String body = buildTableBody(tableName);
-		result.addHeader("Content-Type", "application/atom+xml");
-		result.setEntity(new StringEntity(body));
+		result.setEntity(new StringEntity(buildTableBody(tableName)));
+		addRequiredHeaders(result);
 		return result;
 	}
 	
 	public static HttpDelete delete(URI endpoint, String tableName) throws IOException, URISyntaxException, StorageException {
 		String requestUri = endpoint.toASCIIString() + String.format("/Tables('%s')", tableName);
 		HttpDelete result = BaseRequest.setURIAndHeaders(new HttpDelete(), new URI(requestUri), new UriQueryBuilder());
-		result.addHeader("Content-Type", "application/atom+xml");
+		addRequiredHeaders(result);
 		return result;		
 	}
+	
+	// entity stuff
 	
 	public static HttpGet queryEntity(URI endpoint, String tableName, String filter) throws IOException, URISyntaxException, StorageException {
 		String requestUri = null;
 		if (filter != null) {
-			filter = filter.replace(" ", "%20"); //TODO: URLEncoder doesn't work see workaround
+			filter = filter.replace(" ", "%20"); //TODO: URLEncoder doesn't work - see workaround
 			requestUri = endpoint.toASCIIString() + String.format("/%s()?$filter=%s", tableName, filter);
 		}
 		else
@@ -71,126 +74,75 @@ final class TableRequest {
 	public static HttpPost insertEntity(URI endpoint, String tableName, TableProperty<?>[] properties) throws IOException, URISyntaxException, StorageException {
 		String requestUri = endpoint.toASCIIString() + "/" + tableName;
 		HttpPost result = BaseRequest.setURIAndHeaders(new HttpPost(), new URI(requestUri), new UriQueryBuilder());
-		String body = buildEntityBody(properties);
-		result.addHeader("Content-Type", "application/atom+xml");
-		result.setEntity(new StringEntity(body));
+		result.setEntity(new StringEntity(buildEntityBody(properties)));
+		addRequiredHeaders(result);
 		return result;
 	}
 	
 	public static HttpPut insertOrReplaceEntity(URI endpoint, String tableName, TableProperty<?>[] properties) throws IOException, URISyntaxException, StorageException {
-		TableProperty<?> partitionKey = null, rowKey = null;		
-		for (int i = 0; i < properties.length; i++) {
-			if (properties[i].getName().equals("PartitionKey")) {
-				partitionKey = properties[i];
-				continue;
-			} else if (properties[i].getName().equals("RowKey")) {
-				rowKey = properties[i];
-			}
-		}
-		Utility.assertNotNull("PartitionKey property not found", partitionKey);
-		Utility.assertNotNull("RowKey property not found", rowKey);	
-		
-		String requestUri = endpoint.toASCIIString() + String.format("/%s(PartitionKey='%s',RowKey='%s')", tableName, partitionKey.getRepresentation(), rowKey.getRepresentation());
+		CloudTableEntity keys = getEntitiyKeys(properties);						
+		String requestUri = endpoint.toASCIIString() + String.format("/%s(PartitionKey='%s',RowKey='%s')", tableName, keys.PartitionKey, keys.RowKey);
 		HttpPut result = BaseRequest.setURIAndHeaders(new HttpPut(), new URI(requestUri), new UriQueryBuilder());
-		String body = buildEntityBody(properties, result.getURI().toASCIIString());
-		result.addHeader("Content-Type", "application/atom+xml");
-		//change version header
-		result.removeHeaders("x-ms-version");
-		result.addHeader("x-ms-version", "2011-08-18");
-		result.setEntity(new StringEntity(body));
+		result.setEntity(new StringEntity(buildEntityBody(properties, result.getURI().toASCIIString())));
+		addRequiredHeaders(result, null, null, true);
 		return result;
 	}
 	
 	public static HttpRequestBase insertOrMergeEntity(URI endpoint, String tableName, TableProperty<?>[] properties) throws IOException, URISyntaxException, StorageException {
-		TableProperty<?> partitionKey = null, rowKey = null;		
-		for (int i = 0; i < properties.length; i++) {
-			if (properties[i].getName().equals("PartitionKey")) {
-				partitionKey = properties[i];
-				continue;
-			} else if (properties[i].getName().equals("RowKey")) {
-				rowKey = properties[i];
-			}
-		}
-		Utility.assertNotNull("PartitionKey property not found", partitionKey);
-		Utility.assertNotNull("RowKey property not found", rowKey);	
-		
-		String requestUri = endpoint.toASCIIString() + String.format("/%s(PartitionKey='%s',RowKey='%s')", tableName, partitionKey.getRepresentation(), rowKey.getRepresentation());
+		CloudTableEntity keys = getEntitiyKeys(properties);						
+		String requestUri = endpoint.toASCIIString() + String.format("/%s(PartitionKey='%s',RowKey='%s')", tableName, keys.PartitionKey, keys.RowKey);
 		HttpMerge result = BaseRequest.setURIAndHeaders(new HttpMerge(), new URI(requestUri), new UriQueryBuilder());
-		String body = buildEntityBody(properties, result.getURI().toASCIIString());
-		result.addHeader("Content-Type", "application/atom+xml");
-		//change version header
-		result.removeHeaders("x-ms-version");
-		result.addHeader("x-ms-version", "2011-08-18");
-		result.setEntity(new StringEntity(body));
+		result.setEntity(new StringEntity(buildEntityBody(properties, result.getURI().toASCIIString())));
+		addRequiredHeaders(result, null, null, true);
 		return result;		
 	}
 	
 	public static HttpPut updateEntity(URI endpoint, String tableName, TableProperty<?>[] properties) throws IOException, URISyntaxException, StorageException {
-		TableProperty<?> partitionKey = null, rowKey = null;		
-		for (int i = 0; i < properties.length; i++) {
-			if (properties[i].getName().equals("PartitionKey")) {
-				partitionKey = properties[i];
-				continue;
-			} else if (properties[i].getName().equals("RowKey")) {
-				rowKey = properties[i];
-			}
-		}
-		Utility.assertNotNull("PartitionKey property not found", partitionKey);
-		Utility.assertNotNull("RowKey property not found", rowKey);	
-		
-		String requestUri = endpoint.toASCIIString() + String.format("/%s(PartitionKey='%s',RowKey='%s')", tableName, partitionKey.getRepresentation(), rowKey.getRepresentation());
+		CloudTableEntity keys = getEntitiyKeys(properties);						
+		String requestUri = endpoint.toASCIIString() + String.format("/%s(PartitionKey='%s',RowKey='%s')", tableName, keys.PartitionKey, keys.RowKey);
 		HttpPut result = BaseRequest.setURIAndHeaders(new HttpPut(), new URI(requestUri), new UriQueryBuilder());
-		String body = buildEntityBody(properties);
-		result.addHeader("Content-Type", "application/atom+xml");
-		result.addHeader("If-Match", "*");
-		result.setEntity(new StringEntity(body));
+		result.setEntity(new StringEntity(buildEntityBody(properties)));
+		addRequiredHeaders(result, null, "*", false);
 		return result;
 	}	
 
-	//TODO: refactor/reuse update logic (return different VERB)
 	public static HttpRequestBase mergeEntity(URI endpoint, String tableName, TableProperty<?>[] properties) throws IOException, URISyntaxException, StorageException {
-		TableProperty<?> partitionKey = null, rowKey = null;		
-		for (int i = 0; i < properties.length; i++) {
-			if (properties[i].getName().equals("PartitionKey")) {
-				partitionKey = properties[i];
-				continue;
-			} else if (properties[i].getName().equals("RowKey")) {
-				rowKey = properties[i];
-			}
-		}
-		Utility.assertNotNull("PartitionKey property not found", partitionKey);
-		Utility.assertNotNull("RowKey property not found", rowKey);	
-		
-		String requestUri = endpoint.toASCIIString() + String.format("/%s(PartitionKey='%s',RowKey='%s')", tableName, partitionKey.getRepresentation(), rowKey.getRepresentation());
+		CloudTableEntity keys = getEntitiyKeys(properties);					
+		String requestUri = endpoint.toASCIIString() + String.format("/%s(PartitionKey='%s',RowKey='%s')", tableName, keys.PartitionKey, keys.RowKey);
 		HttpMerge result = BaseRequest.setURIAndHeaders(new HttpMerge(), new URI(requestUri), new UriQueryBuilder());
-		String body = buildEntityBody(properties);
-		result.addHeader("Content-Type", "application/atom+xml");
-		result.addHeader("If-Match", "*");
-		result.setEntity(new StringEntity(body));
+		result.setEntity(new StringEntity(buildEntityBody(properties)));
+		addRequiredHeaders(result, null, "*", false);
 		return result;		
 	}
 
 	public static HttpDelete deleteEntity(URI endpoint, String tableName, TableProperty<?>[] properties) throws IOException, URISyntaxException, StorageException {
-		TableProperty<?> partitionKey = null, rowKey = null;		
-		for (int i = 0; i < properties.length; i++) {
-			if (properties[i].getName().equals("PartitionKey")) {
-				partitionKey = properties[i];
-				continue;
-			} else if (properties[i].getName().equals("RowKey")) {
-				rowKey = properties[i];
-			}
-		}
-		Utility.assertNotNull("PartitionKey property not found", partitionKey);
-		Utility.assertNotNull("RowKey property not found", rowKey);	
-		
-		String requestUri = endpoint.toASCIIString() + String.format("/%s(PartitionKey='%s',RowKey='%s')", tableName, partitionKey.getRepresentation(), rowKey.getRepresentation());
+		CloudTableEntity keys = getEntitiyKeys(properties);				
+		return deleteEntity(endpoint, tableName, keys.PartitionKey, keys.RowKey);
+	}
+	
+	public static HttpDelete deleteEntity(URI endpoint, String tableName, String partitionKey, String rowKey) throws IOException, URISyntaxException, StorageException {
+		String requestUri = endpoint.toASCIIString() + String.format("/%s(PartitionKey='%s',RowKey='%s')", tableName, partitionKey, rowKey);
 		HttpDelete result = BaseRequest.setURIAndHeaders(new HttpDelete(), new URI(requestUri), new UriQueryBuilder());
-		result.addHeader("Content-Type", "application/atom+xml");
-		result.addHeader("Content-Length", "0");
-		result.addHeader("If-Match", "*");
-		return result;		
+		addRequiredHeaders(result, "0", "*", false);
+		return result;				
 	}
 
+	// help stuff
+	
+	private static void addRequiredHeaders(HttpRequestBase request) {
+		addRequiredHeaders(request, null, null, false);
+	}
+	
+	private static void addRequiredHeaders(HttpRequestBase request, String contentLength, String ifMatch, boolean replaceVersion) {		
+		request.addHeader("Content-Type", "application/atom+xml");
+		if (contentLength != null) request.addHeader("Content-Length", contentLength);
+		if (ifMatch != null) request.addHeader("If-Match", ifMatch);
+		if (replaceVersion) {
+			request.removeHeaders("x-ms-version");
+			request.addHeader("x-ms-version", "2011-08-18");
+		}
+	}
+	
 	private static String buildTableBody(String tableName) {
 		StringWriter result = new StringWriter();
 		result.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
@@ -225,6 +177,21 @@ final class TableRequest {
 	    result.append("</entry>");
 		return result.toString();
 	}
+	
+	private static CloudTableEntity getEntitiyKeys(TableProperty<?>[] properties) {
+		CloudTableEntity result = new CloudTableEntityKey();
+		for (int i = 0; i < properties.length; i++) {
+			if (properties[i].getName().equals("PartitionKey")) {
+				result.PartitionKey = properties[i].getRepresentation();
+				continue;
+			} else if (properties[i].getName().equals("RowKey")) {
+				result.RowKey = properties[i].getRepresentation();
+			}
+		}
+		Utility.assertNotNull("PartitionKey property not found", result.PartitionKey);
+		Utility.assertNotNull("RowKey property not found", result.RowKey);
+		return result;
+	}
 
 	private static final String ISO8601 = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSSZ";
 	private static final TimeZone GMT_ZONE = TimeZone.getTimeZone("GMT");
@@ -240,6 +207,8 @@ final class TableRequest {
 		sdf.setTimeZone(GMT_ZONE);
         return sdf.format(new Date());
 	}
+	
+	private static class CloudTableEntityKey extends CloudTableEntity { }
 
 	private static class HttpMerge extends HttpEntityEnclosingRequestBase {
 
@@ -250,7 +219,7 @@ final class TableRequest {
 			return "MERGE";
 		}
 		
-	}
+	}	
 	
 }
 
