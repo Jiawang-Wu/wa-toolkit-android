@@ -86,7 +86,7 @@ public class StorageEntityActivity extends SecuredActivity {
 					
 					CloudTableClient tableClient = getSampleApplication().getCloudClientAccount().createCloudTableClient();
 					StorageCredentials tableCredentials = tableClient.getCredentials();
-					Iterable<Hashtable<String, Object>> entities = CloudTableObject.queryEntities(tableClient.getEndpoint(), tableCredentials, tableName, "top=1");
+					Iterable<Hashtable<String, Object>> entities = CloudTableObject.query(tableClient.getEndpoint(), tableCredentials, tableName, "top=1");
 					if (entities.iterator().hasNext())
 					{
 						int i = 0;

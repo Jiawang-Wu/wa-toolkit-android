@@ -153,7 +153,7 @@ public class StorageEntityListActivity extends SecuredActivity implements OnChil
 
 		CloudTableClient tableClient = getSampleApplication().getCloudClientAccount().createCloudTableClient();
 		StorageCredentials tableCredentials = tableClient.getCredentials();
-		for (Hashtable<String, Object> entity : CloudTableObject.queryEntities(tableClient.getEndpoint(), tableCredentials, this.entityName())) {
+		for (Hashtable<String, Object> entity : CloudTableObject.query(tableClient.getEndpoint(), tableCredentials, this.entityName())) {
 			Map<String, String> groupFields = new HashMap<String, String>();
 			List<Map<String, String>> entry = new ArrayList<Map<String, String>>();
 
