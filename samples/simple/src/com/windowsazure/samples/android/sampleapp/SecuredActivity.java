@@ -33,6 +33,7 @@ public abstract class SecuredActivity extends Activity {
 	static final String PREFERENCE_FILENAME = "simple.preferences";
 	static final String PREFERENCE_ACCESS_TOKEN_KEY = "access_token";
 	static final String CLAIM_TYPE_NAME_IDENTIFIER = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier";
+	static final String CLAIM_TYPE_IDENTITY_PROVIDER = "http://schemas.microsoft.com/accesscontrolservice/2010/07/claims/identityprovider";
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -64,8 +65,14 @@ public abstract class SecuredActivity extends Activity {
 						return;
 					}
 					
+					// HACK: Right now the ACS proxy service requires the user to be registered before.
+					// This will be removed in vNext, so right now we're generating an email based on the
+					// nameidentifier and idp claims					
 					String userName = token.getClaimValue(CLAIM_TYPE_NAME_IDENTIFIER);
-					cloudClientAccount = new WAZServiceAccountAcs(userName, "foo@bar.com", token.getRawToken(), new URI(proxyService)); 	
+					String identityProvider = token.getClaimValue(CLAIM_TYPE_IDENTITY_PROVIDER);
+					String email = String.format("%s@%s.com", userName, identityProvider);
+					
+					cloudClientAccount = new WAZServiceAccountAcs(userName, email, token.getRawToken(), new URI(proxyService)); 	
 					
 					break;
 				case CLOUDREADYSIMPLE:
