@@ -128,7 +128,6 @@ public final class StorageCredentialsAccountAndKey extends StorageCredentials {
 	@Override
 	public void signTableRequest(HttpRequestBase request) 
 			throws InvalidKeyException, MalformedURLException, IllegalArgumentException, StorageException {
-		// TODO Auto-generated method stub
 		BaseRequest.signRequestForTable(request, m_Credentials);
 	}
 	

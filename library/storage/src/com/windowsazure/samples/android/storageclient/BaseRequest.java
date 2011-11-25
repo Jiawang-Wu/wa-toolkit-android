@@ -113,6 +113,17 @@ final class BaseRequest {
 		// request.addHeader("Content-Type", "");
 		return request;
 	}
+	
+	public static <T extends HttpRequestBase> T setTableURIAndHeaders(T request, URI endpoint, UriQueryBuilder uriQueryBuilder)					
+			throws IOException,	URISyntaxException, StorageException {
+		if (uriQueryBuilder == null)uriQueryBuilder = new UriQueryBuilder();
+		request.setURI(uriQueryBuilder.addToURI(endpoint));
+		request.addHeader("x-ms-version", "2009-09-19");
+		request.addHeader("User-Agent", getUserAgent());
+		request.setHeader("DataServiceVersion", "1.0;NetFx");
+		request.setHeader("MaxDataServiceVersion", "2.0;NetFx");
+		return request;
+	}
 
 	protected static final TimeZone GMT_ZONE = TimeZone.getTimeZone("GMT");
 
@@ -136,22 +147,16 @@ final class BaseRequest {
 		String canonicalizedRequest = canonicalizer.canonicalize(request,
 				credentials.getAccountName(), contentLength);
 		String signature = StorageKey.computeMacSha256(credentials.getKey(), canonicalizedRequest);
-		request.setHeader(
-				"Authorization",
-				String.format("%s %s:%s", "SharedKey",
-						credentials.getAccountName(), signature));
+		request.setHeader("Authorization", String.format("%s %s:%s", "SharedKey", credentials.getAccountName(), signature));
 	}
 	
 	public static void signRequestForTable(HttpRequestBase request, Credentials credentials) 
 			throws MalformedURLException, StorageException, InvalidKeyException, IllegalArgumentException {
 		request.setHeader("x-ms-date", getGMTTime());
-		//Beginning with version 2009-09-19 
-		request.setHeader("DataServiceVersion", "1.0;NetFx");
-		request.setHeader("MaxDataServiceVersion", "2.0;NetFx");
 		Canonicalizer canonicalizer = CanonicalizerFactory.getTableFullCanonicalizer(request);
 		String canonicalizedRequest = canonicalizer.canonicalize(request, credentials.getAccountName(), -1l);
 		String signature = StorageKey.computeMacSha256(credentials.getKey(), canonicalizedRequest);
-		request.setHeader("Authorization", String.format("%s %s:%s", "SharedKey", credentials.getAccountName(), signature));		
+		request.setHeader("Authorization", String.format("%s %s:%s", "SharedKey", credentials.getAccountName(), signature));
 	}
 	
 }

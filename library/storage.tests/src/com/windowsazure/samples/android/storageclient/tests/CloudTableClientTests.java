@@ -7,18 +7,12 @@ import org.apache.http.HttpStatus;
 
 import junit.framework.Assert;
 
-import com.windowsazure.samples.android.storageclient.CloudStorageAccount;
 import com.windowsazure.samples.android.storageclient.CloudTableClient;
 import com.windowsazure.samples.android.storageclient.StorageException;
 
-import android.test.AndroidTestCase;
-
-public class CloudTableClientTests extends AndroidTestCase {
+public abstract class CloudTableClientTests<T extends CloudClientAccountProvider> extends CloudTableClientBasedTest<T> {
 
 	public void testWhenQueryTablesShouldReturnTableList() throws Exception {
-		CloudStorageAccountProvider accountProvider = new CloudStorageAccountProvider();
-		CloudTableClient client = accountProvider.getAccount().createCloudTableClient();
-
 		try {
 			client.createTableIfNotExist("TableClientTestsList1");
 			client.createTableIfNotExist("TableClientTestsList2");
@@ -44,9 +38,6 @@ public class CloudTableClientTests extends AndroidTestCase {
 	}
 
 	public void testWhenQueryPrefixTablesShouldReturnTableList() throws Exception {
-		CloudStorageAccountProvider accountProvider = new CloudStorageAccountProvider();
-		CloudTableClient client = accountProvider.getAccount().createCloudTableClient();
-
 		try {
 			client.createTableIfNotExist("PreTableClientTestsList1");
 			client.createTableIfNotExist("PreTableClientTestsList2");
@@ -73,8 +64,6 @@ public class CloudTableClientTests extends AndroidTestCase {
 
 	public void testWhenCreateTableShouldBeAdded() throws Exception {
 		String testTableName = "TableClientTestsAdd";
-		CloudStorageAccountProvider accountProvider = new CloudStorageAccountProvider();
-		CloudTableClient client = accountProvider.getAccount().createCloudTableClient();
 		
 		try {
 			client.deleteTableIfExist(testTableName);		
@@ -91,8 +80,6 @@ public class CloudTableClientTests extends AndroidTestCase {
 
 	public void testWhenCreateDuplicatedTableShouldThrow() throws Exception {
 		String testTableName = "TableClientTestsDupAdd";
-		CloudStorageAccountProvider accountProvider = new CloudStorageAccountProvider();
-		CloudTableClient client = accountProvider.getAccount().createCloudTableClient();
 
 		try {
 			client.deleteTableIfExist(testTableName);
@@ -116,8 +103,6 @@ public class CloudTableClientTests extends AndroidTestCase {
 
 	public void testWhenDeleteTableShouldBeRemoved() throws Exception {
 		String testTableName = "TableClientTestsDelete";
-		CloudStorageAccountProvider accountProvider = new CloudStorageAccountProvider();
-		CloudTableClient client = accountProvider.getAccount().createCloudTableClient();
 
 		try {
 			client.createTable(testTableName);
@@ -136,8 +121,6 @@ public class CloudTableClientTests extends AndroidTestCase {
 
 	public void testWhenDeleteNonExistentTableShouldThrow() throws Exception {
 		String testTableName = "TableClientTestsDeleteNotExist";
-		CloudStorageAccountProvider accountProvider = new CloudStorageAccountProvider();
-		CloudTableClient client = accountProvider.getAccount().createCloudTableClient();
 
 		Assert.assertFalse(client.doesTableExist(testTableName));
 
@@ -153,8 +136,6 @@ public class CloudTableClientTests extends AndroidTestCase {
 	
 	public void testWhenFindExistentShouldReturnTrue() throws URISyntaxException, Exception {
 		String testTableName = "TableClientTestsFindExist";
-		CloudStorageAccountProvider accountProvider = new CloudStorageAccountProvider();
-		CloudTableClient client = accountProvider.getAccount().createCloudTableClient();
 
 		try {
 		client.createTableIfNotExist(testTableName);		
@@ -168,23 +149,18 @@ public class CloudTableClientTests extends AndroidTestCase {
 
 	public void testWhenFindNotExistentShouldReturnFalse() throws URISyntaxException, Exception {
 		String testTableName = "TableClientTestsFindNotExist";
-		CloudStorageAccountProvider accountProvider = new CloudStorageAccountProvider();
-		CloudTableClient client = accountProvider.getAccount().createCloudTableClient();
 			
 		Assert.assertFalse(client.doesTableExist(testTableName));
 	}
 
 	public void testWhenCreateFromModelShouldCreateTableWithTypeName() throws Exception {
 		String testTableName = "TestTableEntity";
-		CloudStorageAccountProvider accountProvider = new CloudStorageAccountProvider();
-		CloudTableClient client = accountProvider.getAccount().createCloudTableClient();
 
 		try {
 			client.deleteTableIfExist(testTableName);
 			Assert.assertFalse(client.doesTableExist(testTableName));
 	
-			CloudStorageAccount account = (CloudStorageAccount)accountProvider.getAccount();
-			CloudTableClient.CreateTableFromModel(TestTableEntity.class, account.getTableEndpoint().toASCIIString(), account.getCredentials());
+			CloudTableClient.CreateTableFromModel(TestTableEntity.class, client.getEndpoint().toASCIIString(), client.getCredentials());
 			Assert.assertTrue(client.doesTableExist(testTableName));				
 		} catch (Exception e) {
 			throw e;
