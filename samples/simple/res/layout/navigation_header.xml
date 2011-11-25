@@ -70,6 +70,17 @@
 		    android:gravity="center_vertical|center_horizontal"    	
 			android:layout_gravity="center_vertical|center_horizontal|center"
 		    android:text="@string/save_button_text" 
+		    android:visibility="gone"/>
+		  		
+		  <!-- register button -->
+		  <Button
+		    android:id="@+id/header_register_button"
+		    android:layout_width="83dp"
+		    android:layout_height="43dp"
+		    android:layout_marginTop="2dp"
+		    android:gravity="center_vertical|center_horizontal"    	
+			android:layout_gravity="center_vertical|center_horizontal|center"
+		    android:text="@string/register_button_text" 
 		    android:visibility="gone"/>		
 		</LinearLayout>
 

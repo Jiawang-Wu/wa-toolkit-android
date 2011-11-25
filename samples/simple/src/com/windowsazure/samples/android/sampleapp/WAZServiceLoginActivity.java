@@ -27,7 +27,8 @@ public class WAZServiceLoginActivity extends Activity
 	private ProgressBar progressBar;
 	private TextView usernameLabel;
 	private TextView passwordLabel;
-	private TextView wasServicesBaseUrlLabel;
+	//private TextView wasServicesBaseUrlLabel;
+	private Button registerButton;
 
 	public void onCreate(Bundle savedInstanceState)
     {
@@ -36,8 +37,12 @@ public class WAZServiceLoginActivity extends Activity
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
     	setContentView(R.layout.waz_service_login);
     	
+        TextView title = (TextView)findViewById(R.id.header_title);
+        title.setText(getString(R.string.was_service_login_title));
+
         loginButton = (Button)findViewById(R.id.login_button);
-    	wasServicesBaseUrlLabel = (TextView)findViewById(R.id.waz_services_base_url_label);
+        registerButton = (Button)findViewById(R.id.header_register_button);
+    	//wasServicesBaseUrlLabel = (TextView)findViewById(R.id.waz_services_base_url_label);
     	wasServicesBaseUrlText = (EditText)findViewById(R.id.waz_services_base_url_value);
     	usernameLabel = (TextView)findViewById(R.id.username_label);
     	usernameText = (EditText)findViewById(R.id.username_value);
@@ -48,6 +53,10 @@ public class WAZServiceLoginActivity extends Activity
         loginButton.setOnClickListener(new View.OnClickListener() {
         	public void onClick(View view) { onLoginButton(view); }
         	});
+        registerButton.setOnClickListener(new View.OnClickListener() {
+        	public void onClick(View view) { onRegisterButton(view); }
+        	});
+        registerButton.setVisibility(View.VISIBLE);
     }
 
 	private void onLoginButton(View view) {
@@ -108,5 +117,11 @@ public class WAZServiceLoginActivity extends Activity
 			}
 		}
 		new LoginTask().execute();
+	}
+	
+	protected void onRegisterButton(View view) {
+    	Intent storageTypeSelector = new Intent(this, WAZServiceRegisterActivity.class);
+    	startActivity (storageTypeSelector);
+    	finish();
 	}
 }

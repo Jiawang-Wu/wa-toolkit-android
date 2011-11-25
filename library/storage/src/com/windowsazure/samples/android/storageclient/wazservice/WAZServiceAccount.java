@@ -1,5 +1,6 @@
 package com.windowsazure.samples.android.storageclient.wazservice;
 
+import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -7,14 +8,17 @@ import java.net.URISyntaxException;
 import javax.security.auth.login.LoginException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
 import com.windowsazure.samples.android.storageclient.CloudClientAccount;
 import com.windowsazure.samples.android.storageclient.CloudTableClient;
@@ -105,7 +109,49 @@ public class WAZServiceAccount implements CloudClientAccount {
 	}	
 	
 	private static final String LOGIN_PATH = "/AuthenticationService/login";
+	private static final String REGISTER_PATH = "/AuthenticationService/register";
 	private static final String SHARED_ACCESS_SIGNATURE_SERVICE_PATH = "/SharedAccessSignatureService";
 	private static final String QUEUES_PROXY_SERVICE_PATH = "/AzureQueuesProxy.axd";
 	private static final String TABLES_PROXY_SERVICE_PATH = "/AzureTablesProxy.axd";
+
+	public void register(String email) throws ClientProtocolException, IOException, LoginException, ParserConfigurationException, IllegalStateException, SAXException, URISyntaxException {
+		final String CREDENTIAL_NS = "http://schemas.datacontract.org/2004/07/Microsoft.Samples.WindowsPhoneCloud.StorageClient.Credentials";
+		final String INSTANCE_NS = "http://www.w3.org/2001/XMLSchema-instance";
+		final String REGISTER_NODE_NAME = "RegistrationUser";
+		final String USERNAME_NODE_NAME = "Name";
+		final String EMAIL_NODE_NAME = "EMail";
+		final String PASSWORD_NODE_NAME = "Password";
+
+		StringWriter stringwriter = new StringWriter();
+		stringwriter.append(String.format("<%s xmlns:i=\"%s\" xmlns=\"%s\">\n", REGISTER_NODE_NAME, INSTANCE_NS, CREDENTIAL_NS));
+		stringwriter.append(String.format("<%s>%s</%s>\n", EMAIL_NODE_NAME, email, EMAIL_NODE_NAME));
+		stringwriter.append(String.format("<%s>%s</%s>\n", USERNAME_NODE_NAME, m_WazServiceData.getUsername(), USERNAME_NODE_NAME));
+		stringwriter.append(String.format("<%s>%s</%s>\n", PASSWORD_NODE_NAME, m_WazServiceData.getPassword(), PASSWORD_NODE_NAME));
+		stringwriter.append(String.format("</%s>\n", REGISTER_NODE_NAME));
+
+		String registerXmlString = stringwriter.toString();
+
+		HttpPost request = new HttpPost(PathUtility.appendPathToUri(this.m_WazServiceBaseUri, REGISTER_PATH));
+		request.setEntity(new ByteArrayEntity(registerXmlString.getBytes()));
+		request.setHeader("Content-Type", "text/xml");
+		HttpClient client = new DefaultHttpClient();
+		HttpResponse httpResponse = client.execute(request);
+		
+		if (httpResponse.getStatusLine().getStatusCode() == 200)
+		{
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			Document dom = builder.parse(httpResponse.getEntity().getContent());
+			Element root = dom.getDocumentElement();
+			String response = root.getTextContent();
+			if (!response.equals("Success"))
+			{
+				throw new LoginException(String.format("Couldn't register in the WAZ Service: %s", response));
+			}
+		}
+		else
+		{
+			throw 	new LoginException("Couldn't register in the WAZ Service: The register request returned " + httpResponse.getStatusLine().getReasonPhrase());
+		}
+	}
 }
