@@ -13,7 +13,6 @@ public class WAZServiceUsernameAndPasswordProvider {
 	}
 
 	public static WAZServiceUsernameAndPassword getDifferentUsernameAndPassword() {
-		return new WAZServiceUsernameAndPassword(PROXY_OTHER_USERNAME,
-				PROXY_OTHER_PASSWORD);
+		return new WAZServiceUsernameAndPassword(PROXY_OTHER_USERNAME, PROXY_OTHER_PASSWORD);
 	}
 }
