@@ -37,7 +37,7 @@ public abstract class CloudTableClientTests<T extends CloudClientAccountProvider
 		}
 	}
 
-	/*public void testWhenQueryPrefixTablesShouldReturnTableList() throws Exception {
+	public void testWhenQueryPrefixTablesShouldReturnTableList() throws Exception {
 		try {
 			client.createTableIfNotExist("PreTableClientTestsList1");
 			client.createTableIfNotExist("PreTableClientTestsList2");
@@ -167,6 +167,6 @@ public abstract class CloudTableClientTests<T extends CloudClientAccountProvider
 		} finally {
 			client.deleteTableIfExist(testTableName);
 		}
-	}*/
+	}
 	
 }
