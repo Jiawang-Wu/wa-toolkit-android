@@ -70,7 +70,7 @@ public class WAZServiceAccount implements CloudClientAccount {
 		HttpPost request = new HttpPost(PathUtility.appendPathToUri(this.m_WazServiceBaseUri, LOGIN_PATH));
 		request.setEntity(new ByteArrayEntity(loginXmlString.getBytes()));
 		request.setHeader("Content-Type", "text/xml");
-		HttpClient client = new DefaultHttpClient();
+		HttpClient client = WAZServiceAccountAcs.getFullTrustedHttpClient();
 		HttpResponse httpResponse = client.execute(request);
 		
 		if (httpResponse.getStatusLine().getStatusCode() == 200)

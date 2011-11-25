@@ -128,6 +128,7 @@ public class WAZServiceAccountAcs implements CloudClientAccount {
             return new DefaultHttpClient();
         }
     }
+    
 	private static final String REGISTRATION_PATH = "/RegistrationService/register";
 	private static final String SHARED_ACCESS_SIGNATURE_SERVICE_PATH = "/SharedAccessSignatureService";
 	private static final String QUEUES_PROXY_SERVICE_PATH = "/AzureQueuesProxy.axd";

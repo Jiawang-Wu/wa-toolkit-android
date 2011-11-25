@@ -44,7 +44,7 @@ public final class StorageCredentialsAcs extends StorageCredentials {
 
 	@Override
 	public String containerEndpointPostfix() {
-		return "";
+		return "container/";
 	}
 
 	@Override
@@ -65,14 +65,12 @@ public final class StorageCredentialsAcs extends StorageCredentials {
 
 	@Override
 	AbstractBlobRequest getBlobRequest() {
-		// TODO Auto-generated method stub
-		return new BlobRequest();
+		return new BlobWASServiceRequest();
 	}
 
 	@Override
 	AbstractContainerRequest getContainerRequest() {
-		// TODO Auto-generated method stub
-		return new ContainerRequest();
+		return new ContainerWASServiceRequest();
 	}
 
 	@Override
