@@ -13,14 +13,12 @@ public class WAZServiceAccountCredentials extends StorageCredentials {
 
 	private String m_AuthorizationToken;
 
-	boolean equals(StorageCredentials rightCredentials)
-	{
+	boolean equals(StorageCredentials rightCredentials)	{
 		return rightCredentials instanceof WAZServiceAccountCredentials
 				&& this.equals((WAZServiceAccountCredentials) rightCredentials);
 	}
 
-	boolean equals(WAZServiceAccountCredentials rightCredentials)
-	{
+	boolean equals(WAZServiceAccountCredentials rightCredentials) {
 		return this.m_AuthorizationToken.equals(rightCredentials.m_AuthorizationToken);
 	}
 
@@ -29,32 +27,27 @@ public class WAZServiceAccountCredentials extends StorageCredentials {
 	}
 
 	@Override
-	protected boolean canCredentialsComputeHmac()
-			throws NotImplementedException {
+	protected boolean canCredentialsComputeHmac() throws NotImplementedException {
 		return false;
 	}
 
 	@Override
-	protected boolean canCredentialsSignRequest()
-			throws NotImplementedException {
+	protected boolean canCredentialsSignRequest() throws NotImplementedException {
 		return false;
 	}
 
 	@Override
-	protected boolean canCredentialsSignRequestLite()
-			throws NotImplementedException {
+	protected boolean canCredentialsSignRequestLite() throws NotImplementedException {
 		return false;
 	}
 
 	@Override
-	public String computeHmac256(String s) throws NotImplementedException,
-			InvalidKeyException {
+	public String computeHmac256(String s) throws NotImplementedException, InvalidKeyException {
 		return null;
 	}
 
 	@Override
-	public String computeHmac512(String s) throws NotImplementedException,
-			InvalidKeyException {
+	public String computeHmac512(String s) throws NotImplementedException, InvalidKeyException {
 		return null;
 	}
 
@@ -64,21 +57,21 @@ public class WAZServiceAccountCredentials extends StorageCredentials {
 	}
 
 	@Override
-	StorageCredentials credentialsForBlobOf(
-			CloudBlobContainer cloudBlobContainer)
-			throws IllegalArgumentException, UnsupportedEncodingException,
-			URISyntaxException, StorageException,
-			IOException {
+	StorageCredentials credentialsForBlobOf(CloudBlobContainer cloudBlobContainer)
+			throws	IllegalArgumentException, 
+					UnsupportedEncodingException,
+					URISyntaxException, 
+					StorageException,
+					IOException {		
 		URI uri = cloudBlobContainer.getTransformedAddress();
 		String decoded = uri.toString().replace("&amp;", "&");
-		HashMap<String, String[]> arguments = PathUtility
-				.parseQueryString(decoded);
+		HashMap<String, String[]> arguments = PathUtility.parseQueryString(decoded);
+		
 		return SharedAccessSignatureHelper.parseQuery(arguments);
 	}
 
 	@Override
-	protected boolean doCredentialsNeedTransformUri()
-	{
+	protected boolean doCredentialsNeedTransformUri() {
 		return false;
 	}
 
@@ -126,7 +119,6 @@ public class WAZServiceAccountCredentials extends StorageCredentials {
 
 	@Override
 	public void signTableRequestLite(HttpRequestBase request) {
-		// TODO Auto-generated method stub
-		
+		// TODO Auto-generated method stub		
 	}
 }

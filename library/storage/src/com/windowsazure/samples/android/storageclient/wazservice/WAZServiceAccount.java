@@ -26,6 +26,7 @@ import com.windowsazure.samples.android.storageclient.CloudQueueClient;
 import com.windowsazure.samples.android.storageclient.PathUtility;
 import com.windowsazure.samples.android.storageclient.StorageCredentials;
 import com.windowsazure.samples.android.storageclient.CloudBlobClient;
+import com.windowsazure.samples.android.storageclient.Utility;
 import com.windowsazure.samples.android.storageclient.WAZServiceAccountCredentials;
 
 public class WAZServiceAccount implements CloudClientAccount {
@@ -70,25 +71,23 @@ public class WAZServiceAccount implements CloudClientAccount {
 		HttpPost request = new HttpPost(PathUtility.appendPathToUri(this.m_WazServiceBaseUri, LOGIN_PATH));
 		request.setEntity(new ByteArrayEntity(loginXmlString.getBytes()));
 		request.setHeader("Content-Type", "text/xml");
-		HttpClient client = WAZServiceAccountAcs.getFullTrustedHttpClient();
+		HttpClient client = Utility.getFullTrustedHttpClient();
 		HttpResponse httpResponse = client.execute(request);
 		
-		if (httpResponse.getStatusLine().getStatusCode() == 200)
-		{
+		if (httpResponse.getStatusLine().getStatusCode() == 200) {
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder builder = factory.newDocumentBuilder();
 			Document dom = builder.parse(httpResponse.getEntity().getContent());
 			Element root = dom.getDocumentElement();
 			String token = root.getTextContent();
-			if (token != null)
-			{
+			if (token != null) {
 				return token;
 			}
-			else
-			{
+			else {
 				throw new LoginException("Couldn't log-in to the WAZ Service: Invalid username or password");
 			}
 		}
+		
 		throw new LoginException("Couldn't log-in to the WAZ Service: The login request returned " + httpResponse.getStatusLine().getReasonPhrase());
 	}
 
@@ -105,7 +104,7 @@ public class WAZServiceAccount implements CloudClientAccount {
 	}
 	
 	private URI getQueueEndpoint() throws URISyntaxException {
-	    	return PathUtility.appendPathToUri(this.m_WazServiceBaseUri, QUEUES_PROXY_SERVICE_PATH);
+		return PathUtility.appendPathToUri(this.m_WazServiceBaseUri, QUEUES_PROXY_SERVICE_PATH);
 	}	
 	
 	private static final String LOGIN_PATH = "/AuthenticationService/login";
@@ -137,20 +136,17 @@ public class WAZServiceAccount implements CloudClientAccount {
 		HttpClient client = new DefaultHttpClient();
 		HttpResponse httpResponse = client.execute(request);
 		
-		if (httpResponse.getStatusLine().getStatusCode() == 200)
-		{
+		if (httpResponse.getStatusLine().getStatusCode() == 200) {
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder builder = factory.newDocumentBuilder();
 			Document dom = builder.parse(httpResponse.getEntity().getContent());
 			Element root = dom.getDocumentElement();
 			String response = root.getTextContent();
-			if (!response.equals("Success"))
-			{
+			if (!response.equals("Success")) {
 				throw new LoginException(String.format("Couldn't register in the WAZ Service: %s", response));
 			}
 		}
-		else
-		{
+		else {
 			throw 	new LoginException("Couldn't register in the WAZ Service: The register request returned " + httpResponse.getStatusLine().getReasonPhrase());
 		}
 	}

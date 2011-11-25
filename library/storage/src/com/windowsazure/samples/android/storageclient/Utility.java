@@ -12,17 +12,29 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.security.KeyStore;
 import java.util.Locale;
 import java.util.TimeZone;
 
 import org.apache.http.Header;
+import org.apache.http.HttpVersion;
+import org.apache.http.client.HttpClient;
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.scheme.PlainSocketFactory;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.message.AbstractHttpMessage;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpParams;
+import org.apache.http.params.HttpProtocolParams;
+import org.apache.http.protocol.HTTP;
 
 public class Utility {
 	protected static final TimeZone GMT_ZONE = TimeZone.getTimeZone("GMT");
-
 	protected static final TimeZone UTC_ZONE = TimeZone.getTimeZone("UTC");
-
 	protected static final Locale LOCALE_US = Locale.US;
 
 	protected static void assertNotNull(String description, Object object) {
@@ -48,20 +60,6 @@ public class Utility {
 
 	protected static boolean isNullOrEmpty(String string) {
 		return string == null || string.length() == 0;
-	}
-
-	public static String readStringFromStream(InputStream inputStream)
-			throws UnsupportedEncodingException, IOException {
-		Utility.assertNotNull("inputStream", inputStream);
-		Writer writer = new StringWriter();
-		Reader reader = new BufferedReader(new InputStreamReader(inputStream,
-				"UTF-8"));
-		char[] buffer = new char[1024];
-		int bytesRead;
-		while ((bytesRead = reader.read(buffer)) != -1) {
-			writer.write(buffer, 0, bytesRead);
-		}
-		return writer.toString();
 	}
 
 	protected static String safeDecode(String encodedString) throws StorageException {
@@ -131,16 +129,19 @@ public class Utility {
 		}
 		return stringAsUtf8;
 	}
-	protected static String safeRelativize(URI baseUri, URI uriToRelativize)
-			throws URISyntaxException {
+	
+	protected static String safeRelativize(URI baseUri, URI uriToRelativize) throws URISyntaxException {
 		if (!baseUri.getHost().equals(uriToRelativize.getHost())
 				|| !baseUri.getScheme().equals(uriToRelativize.getScheme()))
 			return uriToRelativize.toString();
+		
 		String baseUriPath = baseUri.getPath();
 		String uriToRelativizePath = uriToRelativize.getPath();
+		
 		int i = 1;
 		int baseUriPathIndex = 0;
 		int directoriesCount = 0;
+		
 		for (; baseUriPathIndex < baseUriPath.length(); baseUriPathIndex++) {
 			if (baseUriPathIndex >= uriToRelativizePath.length()) {
 				if (baseUriPath.charAt(baseUriPathIndex) == '/')
@@ -154,37 +155,77 @@ public class Utility {
 		}
 
 		if (baseUriPathIndex == uriToRelativizePath.length())
-			return (new URI(null, null, null, uriToRelativize.getQuery(),
-					uriToRelativize.getFragment())).toString();
+			return (new URI(null, null, null, uriToRelativize.getQuery(), uriToRelativize.getFragment())).toString();
+		
 		uriToRelativizePath = uriToRelativizePath.substring(i);
 		StringBuilder stringbuilder = new StringBuilder();
+		
 		for (; directoriesCount > 0; directoriesCount--)
 			stringbuilder.append("../");
 
 		if (!isNullOrEmpty(uriToRelativizePath))
 			stringbuilder.append(uriToRelativizePath);
+		
 		if (!isNullOrEmpty(uriToRelativize.getQuery())) {
 			stringbuilder.append("?");
 			stringbuilder.append(uriToRelativize.getQuery());
 		}
+		
 		if (!isNullOrEmpty(uriToRelativize.getFragment())) {
 			stringbuilder.append("#");
 			stringbuilder.append(uriToRelativize.getRawFragment());
 		}
+		
 		return stringbuilder.toString();
 	}
 
 	protected static String trimEnd(String string, char characterToTrim) {
 		int i;
-		for (i = string.length() - 1; i > 0 && string.charAt(i) == characterToTrim; i--)
-			;
+		for (i = string.length() - 1; i > 0 && string.charAt(i) == characterToTrim; i--);
 		return i != string.length() - 1 ? string.substring(i) : string;
 	}
 
 	protected static String trimStart(String string) {
 		int i;
-		for (i = 0; i < string.length() && string.charAt(i) == ' '; i++)
-			;
+		for (i = 0; i < string.length() && string.charAt(i) == ' '; i++);
 		return string.substring(i);
+	}
+	
+	public static HttpClient getFullTrustedHttpClient() {
+        try {
+            KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            trustStore.load(null, null);
+
+            SSLSocketFactory sf = new EasySSLSocketFactory(trustStore);
+            sf.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+
+            HttpParams params = new BasicHttpParams();
+            HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
+            HttpProtocolParams.setContentCharset(params, HTTP.UTF_8);
+
+            SchemeRegistry registry = new SchemeRegistry();
+            registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+            registry.register(new Scheme("https", sf, 443));
+
+            ClientConnectionManager ccm = new ThreadSafeClientConnManager(params, registry);
+
+            return new DefaultHttpClient(ccm, params);
+        } catch (Exception e) {
+            return new DefaultHttpClient();
+        }
+    }
+
+	public static String readStringFromStream(InputStream inputStream) throws UnsupportedEncodingException, IOException {
+		Utility.assertNotNull("inputStream", inputStream);
+		Writer writer = new StringWriter();
+		Reader reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+		char[] buffer = new char[1024];
+		int bytesRead;
+		
+		while ((bytesRead = reader.read(buffer)) != -1) {
+			writer.write(buffer, 0, bytesRead);
+		}
+		
+		return writer.toString();
 	}
 }

@@ -2,7 +2,6 @@ package com.windowsazure.samples.android.sampleapp;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 

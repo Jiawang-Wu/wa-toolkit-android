@@ -3,35 +3,22 @@ package com.windowsazure.samples.android.storageclient.wazservice;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.security.KeyStore;
 
 import javax.security.auth.login.LoginException;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.HttpVersion;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.scheme.PlainSocketFactory;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpParams;
-import org.apache.http.params.HttpProtocolParams;
-import org.apache.http.protocol.HTTP;
 
 import com.windowsazure.samples.android.storageclient.CloudBlobClient;
 import com.windowsazure.samples.android.storageclient.CloudClientAccount;
 import com.windowsazure.samples.android.storageclient.CloudQueueClient;
 import com.windowsazure.samples.android.storageclient.CloudTableClient;
-import com.windowsazure.samples.android.storageclient.EasySSLSocketFactory;
 import com.windowsazure.samples.android.storageclient.PathUtility;
 import com.windowsazure.samples.android.storageclient.StorageCredentials;
 import com.windowsazure.samples.android.storageclient.StorageCredentialsAcs;
+import com.windowsazure.samples.android.storageclient.Utility;
 
 public class WAZServiceAccountAcs implements CloudClientAccount {
 
@@ -98,36 +85,12 @@ public class WAZServiceAccountAcs implements CloudClientAccount {
 		request.setEntity(new ByteArrayEntity(loginXmlString.getBytes()));
 		request.setHeader("Content-Type", "text/xml");
 		request.addHeader("Authorization", "OAuth " + this.m_Token);
-		HttpClient client = getFullTrustedHttpClient();
+		HttpClient client = Utility.getFullTrustedHttpClient();
 		HttpResponse httpResponse = client.execute(request);
 		
 		if (httpResponse.getStatusLine().getStatusCode() != 200)
 			throw new LoginException("Couldn't register to the WAZ Service: The registration service request returned " + httpResponse.getStatusLine().getReasonPhrase());
 	}
-	
-    public static HttpClient getFullTrustedHttpClient() {
-        try {
-            KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
-            trustStore.load(null, null);
-
-            SSLSocketFactory sf = new EasySSLSocketFactory(trustStore);
-            sf.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-
-            HttpParams params = new BasicHttpParams();
-            HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
-            HttpProtocolParams.setContentCharset(params, HTTP.UTF_8);
-
-            SchemeRegistry registry = new SchemeRegistry();
-            registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-            registry.register(new Scheme("https", sf, 443));
-
-            ClientConnectionManager ccm = new ThreadSafeClientConnManager(params, registry);
-
-            return new DefaultHttpClient(ccm, params);
-        } catch (Exception e) {
-            return new DefaultHttpClient();
-        }
-    }
     
 	private static final String REGISTRATION_PATH = "/RegistrationService/register";
 	private static final String SHARED_ACCESS_SIGNATURE_SERVICE_PATH = "/SharedAccessSignatureService";
