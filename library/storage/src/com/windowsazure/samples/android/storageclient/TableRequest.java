@@ -60,7 +60,7 @@ final class TableRequest {
 	
 	// entity stuff
 	
-	public static HttpGet queryEntity(URI endpoint, String tableName, String filter) throws IOException, URISyntaxException, StorageException {
+	public static HttpGet queryEntity(URI endpoint, String tableName, String filter, int top) throws IOException, URISyntaxException, StorageException {
 		String requestUri = null;
 		if (filter != null) {
 			filter = filter.replace(" ", "%20"); //TODO: URLEncoder doesn't work - see workaround
@@ -68,6 +68,9 @@ final class TableRequest {
 		}
 		else
 			requestUri = endpoint.toASCIIString() + String.format("/%s()", tableName);
+		if (top > 0) {
+			requestUri += ((filter != null) ? '&' : '?') + String.format("$top=%d", top);  
+		}
 		return BaseRequest.setURIAndHeaders(new HttpGet(), new URI(requestUri), new UriQueryBuilder());		
 	}
 
