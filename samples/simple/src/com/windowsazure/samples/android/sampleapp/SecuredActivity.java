@@ -79,8 +79,7 @@ public abstract class SecuredActivity extends Activity {
 			// Configure the account we'll use to access the storage
 			this.getSampleApplication().setCloudClientAccount(cloudClientAccount);
         }
-        catch (Exception exception)
-        {
+        catch (Exception exception) {
         	this.showErrorMessage("Couldn't configure a cloud client account", exception);
         }
     }
@@ -114,11 +113,8 @@ public abstract class SecuredActivity extends Activity {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				editor.commit();
 				
-				// TODO: Move the registration to a better place
-				
-				
+				editor.commit();				
 				return accessToken;
 			}
 		}
