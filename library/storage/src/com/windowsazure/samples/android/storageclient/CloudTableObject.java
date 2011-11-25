@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.net.URI;
+import java.security.InvalidKeyException;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -52,39 +53,74 @@ public class CloudTableObject<E extends CloudTableEntity> {
 	
 	public static Iterable<Map<String, Object>> query(URI baseUri, StorageCredentials credentials, String tableName, String filter) 
 			throws UnsupportedEncodingException, StorageException, IOException {
+		return query(baseUri, credentials, tableName, filter, 0);
+	}
+
+	public static Iterable<Map<String, Object>> query(URI baseUri, StorageCredentials credentials, String tableName, String filter, int top) 
+			throws UnsupportedEncodingException, StorageException, IOException {
 		final URI thatUri = baseUri;
 		final StorageCredentials thatCredentials = credentials;
 		final String thatTableName = tableName;
 		final String thatFilter = filter;
+		final int thatTop = top;
 		StorageOperation<Iterable<Map<String, Object>>> storageOperation = new StorageOperation<Iterable<Map<String, Object>>>() {
 			public Iterable<Map<String, Object>> execute() throws Exception {
-				HttpGet request = TableRequest.queryEntity(thatUri, thatTableName, thatFilter);
-				thatCredentials.signTableRequest(request);
-				this.processRequest(request);
-				if (result.statusCode != HttpStatus.SC_OK) {
-					throw new StorageInnerException(String.format("Couldn't query entities on table '%s'", thatTableName));
-				} 
+				HttpGet request = TableRequest.queryEntity(thatUri, thatTableName, thatFilter, thatTop);
+				signCallNValidate(request, this, thatCredentials, HttpStatus.SC_OK, String.format("Couldn't query entities on table '%s'", thatTableName));												
 				return TableResponse.getUnknownEntities(result.httpResponse.getEntity().getContent());
 			}
 		};
 		return storageOperation.executeTranslatingExceptions();		
 	}
 
+	public static void insert(URI baseUri, StorageCredentials credentials, String tableName, Map<String, Object> properties) 
+			throws UnsupportedEncodingException, StorageException, IOException {
+		final URI thatUri = baseUri;
+		final StorageCredentials thatCredentials = credentials;
+		final String thatTableName = tableName;
+		final Map<String, Object> thatProperties = properties;
+		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
+			public Void execute() throws Exception {
+				HttpPost request = TableRequest.insertEntity(thatUri, thatTableName, getUnknownEntityProperties(thatProperties));
+				signCallNValidate(request, this, thatCredentials, HttpStatus.SC_CREATED, String.format("Couldn't insert entity on table '%s'", thatTableName));								
+				return null;
+			}
+		};
+		storageOperation.executeTranslatingExceptions();
+	}
+	
+	public static void update(URI baseUri, StorageCredentials credentials, String tableName, Map<String, Object> properties) 
+			throws UnsupportedEncodingException, StorageException, IOException {
+		final URI thatUri = baseUri;
+		final StorageCredentials thatCredentials = credentials;
+		final String thatTableName = tableName;
+		final Map<String, Object> thatProperties = properties;
+		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
+			public Void execute() throws Exception {
+				HttpPut request = TableRequest.updateEntity(thatUri, thatTableName, getUnknownEntityProperties(thatProperties));
+				signCallNValidate(request, this, thatCredentials, HttpStatus.SC_NO_CONTENT, String.format("Couldn't update entity on table '%s'", thatTableName));								
+				return null;
+			}
+		};
+		storageOperation.executeTranslatingExceptions();
+	}
+	
 	public Iterable<E> query(Class<E> clazz) throws Exception {
 		return query(clazz, null);
 	}
 	
 	public Iterable<E> query(Class<E> clazz, String filter) throws Exception {
+		return query(clazz, filter, 0);
+	}
+	
+	public Iterable<E> query(Class<E> clazz, String filter, int top) throws Exception {
 		final String thatFilter = filter;
 		final Class<E> thatClazz = clazz; 
+		final int thatTop = top;
 		StorageOperation<Iterable<E>> storageOperation = new StorageOperation<Iterable<E>>() {
 			public Iterable<E> execute() throws Exception {
-				HttpGet request = TableRequest.queryEntity(m_Endpoint, m_TableName, thatFilter);
-				m_Credentials.signTableRequest(request);
-				this.processRequest(request);
-				if (result.statusCode != HttpStatus.SC_OK) {
-					throw new StorageInnerException(String.format("Couldn't query entities on table '%s'", m_TableName));
-				} 
+				HttpGet request = TableRequest.queryEntity(m_Endpoint, m_TableName, thatFilter, thatTop);
+				signCallNValidate(request, this, m_Credentials, HttpStatus.SC_OK, String.format("Couldn't query entities on table '%s'", m_TableName));								
 				return TableResponse.getEntities(thatClazz, result.httpResponse.getEntity().getContent());
 			}
 		};
@@ -96,11 +132,7 @@ public class CloudTableObject<E extends CloudTableEntity> {
 		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
 			public Void execute() throws Exception {
 				HttpPost request = TableRequest.insertEntity(m_Endpoint, m_TableName, getEntityProperties(thatEntity));
-				m_Credentials.signTableRequest(request);
-				this.processRequest(request);
-				if (result.statusCode != HttpStatus.SC_CREATED) {
-					throw new StorageInnerException(String.format("Couldn't insert entity on table '%s'", m_TableName));
-				} 
+				signCallNValidate(request, this, m_Credentials, HttpStatus.SC_CREATED, String.format("Couldn't insert entity on table '%s'", m_TableName));								
 				return null;
 			}
 		};
@@ -112,11 +144,7 @@ public class CloudTableObject<E extends CloudTableEntity> {
 		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
 			public Void execute() throws Exception {
 				HttpPut request = TableRequest.insertOrReplaceEntity(m_Endpoint, m_TableName, getEntityProperties(thatEntity));
-				m_Credentials.signTableRequest(request);
-				this.processRequest(request);
-				if (result.statusCode != HttpStatus.SC_NO_CONTENT) {
-					throw new StorageInnerException(String.format("Couldn't insert/replace entity on table '%s'", m_TableName));
-				} 
+				signCallNValidate(request, this, m_Credentials, HttpStatus.SC_NO_CONTENT, String.format("Couldn't insert/replace entity on table '%s'", m_TableName));								
 				return null;
 			}
 		};
@@ -128,11 +156,7 @@ public class CloudTableObject<E extends CloudTableEntity> {
 		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
 			public Void execute() throws Exception {
 				HttpRequestBase request = TableRequest.insertOrMergeEntity(m_Endpoint, m_TableName, getEntityProperties(thatEntity));
-				m_Credentials.signTableRequest(request);
-				this.processRequest(request);
-				if (result.statusCode != HttpStatus.SC_NO_CONTENT) {
-					throw new StorageInnerException(String.format("Couldn't insert/merge entity on table '%s'", m_TableName));
-				} 
+				signCallNValidate(request, this, m_Credentials, HttpStatus.SC_NO_CONTENT, String.format("Couldn't insert/merge entity on table '%s'", m_TableName));				
 				return null;
 			}
 		};
@@ -144,11 +168,7 @@ public class CloudTableObject<E extends CloudTableEntity> {
 		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
 			public Void execute() throws Exception {
 				HttpPut request = TableRequest.updateEntity(m_Endpoint, m_TableName, getEntityProperties(thatEntity));
-				m_Credentials.signTableRequest(request);
-				this.processRequest(request);
-				if (result.statusCode != HttpStatus.SC_NO_CONTENT) {
-					throw new StorageInnerException(String.format("Couldn't update entity on table '%s'", m_TableName));
-				} 
+				signCallNValidate(request, this, m_Credentials, HttpStatus.SC_NO_CONTENT, String.format("Couldn't update entity on table '%s'", m_TableName));				
 				return null;
 			}
 		};
@@ -160,11 +180,7 @@ public class CloudTableObject<E extends CloudTableEntity> {
 		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
 			public Void execute() throws Exception {
 				HttpRequestBase request = TableRequest.mergeEntity(m_Endpoint, m_TableName, getEntityProperties(thatEntity));
-				m_Credentials.signTableRequest(request);
-				this.processRequest(request);
-				if (result.statusCode != HttpStatus.SC_NO_CONTENT) {
-					throw new StorageInnerException(String.format("Couldn't merge entity on table '%s'", m_TableName));
-				} 
+				signCallNValidate(request, this, m_Credentials, HttpStatus.SC_NO_CONTENT, String.format("Couldn't merge entity on table '%s'", m_TableName));
 				return null;
 			}
 		};
@@ -176,11 +192,7 @@ public class CloudTableObject<E extends CloudTableEntity> {
 		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
 			public Void execute() throws Exception {
 				HttpDelete request = TableRequest.deleteEntity(m_Endpoint, m_TableName, getEntityProperties(thatEntity));
-				m_Credentials.signTableRequest(request);
-				this.processRequest(request);
-				if (result.statusCode != HttpStatus.SC_NO_CONTENT) {
-					throw new StorageInnerException(String.format("Couldn't delete entity on table '%s'", m_TableName));
-				} 
+				signCallNValidate(request, this, m_Credentials, HttpStatus.SC_NO_CONTENT, String.format("Couldn't delete entity on table '%s'", m_TableName));
 				return null;
 			}
 		};
@@ -193,11 +205,7 @@ public class CloudTableObject<E extends CloudTableEntity> {
 		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
 			public Void execute() throws Exception {
 				HttpDelete request = TableRequest.deleteEntity(m_Endpoint, m_TableName, thatPartitionKey, thatRowKey);
-				m_Credentials.signTableRequest(request);
-				this.processRequest(request);
-				if (result.statusCode != HttpStatus.SC_NO_CONTENT) {
-					throw new StorageInnerException(String.format("Couldn't delete entity on table '%s'", m_TableName));
-				} 
+				signCallNValidate(request, this, m_Credentials, HttpStatus.SC_NO_CONTENT, String.format("Couldn't delete entity on table '%s'", m_TableName));
 				return null;
 			}
 		};
@@ -221,38 +229,15 @@ public class CloudTableObject<E extends CloudTableEntity> {
 		}
 		return properties;
 	}
-
-	public static void insert(final URI endpoint,
-			final StorageCredentials tableCredentials, final String tableName,
-			final Map<String, Object> entity) throws UnsupportedEncodingException, StorageException, IOException {
-		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
-			public Void execute() throws Exception {
-				HttpPost request = TableRequest.insertEntity(endpoint, tableName, getUnknownEntityProperties(entity));
-				tableCredentials.signTableRequest(request);
-				this.processRequest(request);
-				if (result.statusCode != HttpStatus.SC_CREATED) {
-					throw new StorageInnerException(String.format("Couldn't insert entity on table '%s'", tableName));
-				} 
-				return null;
-			}
-		};
-		storageOperation.executeTranslatingExceptions();
-	}
 	
-	public static void update(final URI endpoint,
-			final StorageCredentials tableCredentials, final String tableName,
-			final Map<String, Object> entity) throws UnsupportedEncodingException, StorageException, IOException {
-		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
-			public Void execute() throws Exception {
-				HttpPut request = TableRequest.updateEntity(endpoint, tableName, getUnknownEntityProperties(entity));
-				tableCredentials.signTableRequest(request);
-				this.processRequest(request);
-				if (result.statusCode != HttpStatus.SC_NO_CONTENT) {
-					throw new StorageInnerException(String.format("Couldn't update entity on table '%s'", tableName));
-				} 
-				return null;
-			}
-		};
-		storageOperation.executeTranslatingExceptions();
+	private static void signCallNValidate(HttpRequestBase request, StorageOperation<?> operation, StorageCredentials credentials, int expectedStatus, String errorMessage) 
+			throws InvalidKeyException, IllegalArgumentException, StorageException, IOException, StorageInnerException {
+		credentials.signTableRequest(request);
+		operation.processRequest(request);
+		if (operation.getResult().statusCode != expectedStatus) {
+			throw new StorageInnerException(String.format(errorMessage));
+		} 
+		
 	}
+
 }

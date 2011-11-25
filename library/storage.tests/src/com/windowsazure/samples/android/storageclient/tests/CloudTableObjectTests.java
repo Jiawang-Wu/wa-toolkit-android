@@ -8,21 +8,16 @@ import org.apache.http.HttpStatus;
 
 import junit.framework.Assert;
 
-import android.test.AndroidTestCase;
-import com.windowsazure.samples.android.storageclient.CloudStorageAccount;
-import com.windowsazure.samples.android.storageclient.CloudTableClient;
 import com.windowsazure.samples.android.storageclient.CloudTableObject;
 import com.windowsazure.samples.android.storageclient.StorageException;
 
-public class CloudTableObjectTests extends AndroidTestCase {
+public abstract class CloudTableObjectTests <T extends CloudClientAccountProvider> extends CloudTableObjectBasedTest<T> {
 
 	public void testWhenQueryUnknownEntitiesShouldRetrieveRecords() throws Exception {
 		String testTableName = "TableObjectTestsUnknownEntity";
-		CloudStorageAccountProvider accountProvider = new CloudStorageAccountProvider();
-		CloudTableClient client = accountProvider.getAccount().createCloudTableClient();
 		CloudTableObject<TestTableEntity> tableObject = client.getCloudTableObject(testTableName); 
 		
-		try{
+		try {
 			client.createTableIfNotExist(testTableName);
 
 			TestTableEntity obj = new TestTableEntity();
@@ -53,10 +48,48 @@ public class CloudTableObjectTests extends AndroidTestCase {
 		}		
 	}
 	
+	public void testWhenQueryUnknownEntitiesTop1ShouldRetrieve1Record() throws Exception {
+		String testTableName = "TableObjectTestsUnknownEntityTop";
+		CloudTableObject<TestTableEntity> tableObject = client.getCloudTableObject(testTableName); 
+		
+		try{
+			client.createTableIfNotExist(testTableName);
+
+			TestTableEntity obj = new TestTableEntity();
+			obj.PartitionKey = "test_partition_q1";
+			obj.RowKey = "test_rowkey_q1";
+			obj.Description = "test_description";
+			tableObject.insert(obj);	
+			
+			obj.PartitionKey = "test_partition_q2";
+			obj.RowKey = "test_rowkey_q2";
+			tableObject.insert(obj);
+
+			int recordCount = 0;
+			boolean found1 = false, found2 = false;
+			Iterable<Map<String, Object>> records = CloudTableObject.query(
+					tableObject.getBaseUri(), 
+					tableObject.getCredentials(), 
+					tableObject.getTableName(),
+					null,
+					1);
+			for (Map<String,Object> record : records) {
+				found1 = found1 || record.get("PartitionKey").equals("test_partition_q1");
+				found2 = found2 || record.get("PartitionKey").equals("test_partition_q2");
+				recordCount++;
+			}
+			
+			Assert.assertTrue(found1 && !found2);
+			Assert.assertEquals(recordCount, 1);
+		} catch (Exception e) {
+			throw e;
+		} finally {
+			client.deleteTableIfExist(testTableName);			
+		}		
+	}
+	
 	public void testWhenQueryEntitiesShouldRetrieveRecords() throws Exception {
 		String testTableName = "TableObjectTestsQueryEntity";
-		CloudStorageAccountProvider accountProvider = new CloudStorageAccountProvider();
-		CloudTableClient client = accountProvider.getAccount().createCloudTableClient();
 		CloudTableObject<TestTableEntity> tableObject = client.getCloudTableObject(testTableName); 
 
 		try{
@@ -87,11 +120,45 @@ public class CloudTableObjectTests extends AndroidTestCase {
 			client.deleteTableIfExist(testTableName);			
 		}		
 	}
+
+	public void testWhenQueryEntitiesTop1ShouldRetrieve1Record() throws Exception {
+		String testTableName = "TableObjectTestsQueryEntityTop";
+		CloudTableObject<TestTableEntity> tableObject = client.getCloudTableObject(testTableName); 
 	
+		try{
+			client.createTableIfNotExist(testTableName);
+	
+			TestTableEntity obj = new TestTableEntity();
+			obj.PartitionKey = "test_partition_q1";
+			obj.RowKey = "test_rowkey_q1";
+			obj.Description = "test_description";
+			tableObject.insert(obj);	
+			
+			obj.PartitionKey = "test_partition_q2";
+			obj.RowKey = "test_rowkey_q2";
+			tableObject.insert(obj);
+
+			int recordCount = 0;
+			boolean found1 = false, found2 = false;
+			Iterator<TestTableEntity> records = tableObject.query(TestTableEntity.class, "PartitionKey gt 'test_partition'", 1).iterator();
+			while (records.hasNext()) {
+				TestTableEntity record = records.next();
+				found1 = found1 || record.PartitionKey.equals("test_partition_q1");
+				found2 = found2 || record.PartitionKey.equals("test_partition_q2");
+				recordCount++;
+			}
+			
+			Assert.assertTrue(found1 && !found2);						
+			Assert.assertEquals(recordCount, 1);
+		} catch (Exception e) {
+			throw e;
+		} finally {
+			client.deleteTableIfExist(testTableName);			
+		}		
+	}
+
 	public void testWhenInsertNewEntityShouldBeAdded() throws Exception {
 		String testTableName = "TableObjectTestsAddEntity";
-		CloudStorageAccountProvider accountProvider = new CloudStorageAccountProvider();	
-		CloudTableClient client = accountProvider.getAccount().createCloudTableClient();
 		CloudTableObject<TestTableEntity> tableObject = client.getCloudTableObject(testTableName); 
 		
 		try {
@@ -120,8 +187,6 @@ public class CloudTableObjectTests extends AndroidTestCase {
 	
 	public void testWhenInsertDuplicatedEntityShouldThrow() throws Exception {
 		String testTableName = "TableObjectTestsAddDupEntity";
-		CloudStorageAccountProvider accountProvider = new CloudStorageAccountProvider();	
-		CloudTableClient client = accountProvider.getAccount().createCloudTableClient();
 		CloudTableObject<TestTableEntity> tableObject = client.getCloudTableObject(testTableName); 
 		
 		try {
@@ -150,8 +215,6 @@ public class CloudTableObjectTests extends AndroidTestCase {
 	
 	public void testWhenUpdateEntityShouldBeChanged() throws Exception {
 		String testTableName = "TableObjectTestsUpdateEntity";
-		CloudStorageAccountProvider accountProvider = new CloudStorageAccountProvider();	
-		CloudTableClient client = accountProvider.getAccount().createCloudTableClient();
 		CloudTableObject<TestTableEntity> tableObject = client.getCloudTableObject(testTableName); 
 		
 		try {
@@ -190,8 +253,6 @@ public class CloudTableObjectTests extends AndroidTestCase {
 	
 	public void testWhenUpdateNonExistentEntityShouldThrow() throws Exception {
 		String testTableName = "TableObjectTestsUpdateNotExEntity";
-		CloudStorageAccountProvider accountProvider = new CloudStorageAccountProvider();	
-		CloudTableClient client = accountProvider.getAccount().createCloudTableClient();
 		CloudTableObject<TestTableEntity> tableObject = client.getCloudTableObject(testTableName); 
 		
 		try {
@@ -219,8 +280,6 @@ public class CloudTableObjectTests extends AndroidTestCase {
 	
 	public void testWhenMergeEntityShouldBeChanged() throws URISyntaxException, Exception {
 		String testTableName = "TableObjectTestsMergeEntity";
-		CloudStorageAccountProvider accountProvider = new CloudStorageAccountProvider();	
-		CloudTableClient client = accountProvider.getAccount().createCloudTableClient();
 		CloudTableObject<TestTableEntity> tableObject = client.getCloudTableObject(testTableName); 
 		
 		try {
@@ -268,8 +327,6 @@ public class CloudTableObjectTests extends AndroidTestCase {
 	
 	public void testWhenMergeNonExistentEntityShouldThrow() throws Exception {
 		String testTableName = "TableObjectTestsMergeNotExEntity";
-		CloudStorageAccountProvider accountProvider = new CloudStorageAccountProvider();	
-		CloudTableClient client = accountProvider.getAccount().createCloudTableClient();
 		CloudTableObject<TestTableEntity> tableObject = client.getCloudTableObject(testTableName); 
 		
 		try {
@@ -297,8 +354,6 @@ public class CloudTableObjectTests extends AndroidTestCase {
 	
 	public void testWhenDeleteEntityShouldBeRemoved() throws URISyntaxException, Exception {
 		String testTableName = "TableObjectTestsDeleteEntity";
-		CloudStorageAccountProvider accountProvider = new CloudStorageAccountProvider();	
-		CloudTableClient client = accountProvider.getAccount().createCloudTableClient();
 		CloudTableObject<TestTableEntity> tableObject = client.getCloudTableObject(testTableName); 
 		
 		try {
@@ -336,8 +391,6 @@ public class CloudTableObjectTests extends AndroidTestCase {
 	
 	public void testWhenDeleteNonExistentEntityShouldThrow() throws Exception {
 		String testTableName = "TableObjectTestsDeleteNotExEntity";
-		CloudStorageAccountProvider accountProvider = new CloudStorageAccountProvider();	
-		CloudTableClient client = accountProvider.getAccount().createCloudTableClient();
 		CloudTableObject<TestTableEntity> tableObject = client.getCloudTableObject(testTableName); 
 		
 		try {
@@ -365,8 +418,6 @@ public class CloudTableObjectTests extends AndroidTestCase {
 	
 	public void testWhenInsertOrReplaceNewEntityShouldBeAdded() throws Exception {
 		String testTableName = "TableObjectTestsAddReplaceEntity";
-		CloudStorageAccountProvider accountProvider = new CloudStorageAccountProvider();	
-		CloudTableClient client = accountProvider.getAccount().createCloudTableClient();
 		CloudTableObject<TestTableEntity> tableObject = client.getCloudTableObject(testTableName); 
 		
 		try {
@@ -395,8 +446,6 @@ public class CloudTableObjectTests extends AndroidTestCase {
 
 	public void testWhenInsertOrReplaceExistentEntityShouldBeReplaced() throws URISyntaxException, Exception {
 		String testTableName = "TableObjectTestsAddReplaceExEntity";
-		CloudStorageAccountProvider accountProvider = new CloudStorageAccountProvider();	
-		CloudTableClient client = accountProvider.getAccount().createCloudTableClient();
 		CloudTableObject<TestTableEntity> tableObject = client.getCloudTableObject(testTableName); 
 		
 		try {
@@ -442,16 +491,11 @@ public class CloudTableObjectTests extends AndroidTestCase {
 	
 	public void testWhenInsertOrMergeNewEntityShouldBeAdded() throws Exception {
 		String testTableName = "TableObjectTestsAddMergeEntity";
-		CloudStorageAccountProvider accountProvider = new CloudStorageAccountProvider();	
-		CloudTableClient client = accountProvider.getAccount().createCloudTableClient();
 		
 		try {
 			client.createTableIfNotExist(testTableName);
 			
-			CloudStorageAccount account = (CloudStorageAccount)accountProvider.getAccount();
-			CloudTableObject<TestTableEntity> tableObject = 
-					new CloudTableObject<TestTableEntity>(testTableName, 
-							account.getTableEndpoint(), account.getCredentials());
+			CloudTableObject<TestTableEntity> tableObject = client.getCloudTableObject(testTableName);
 			
 			TestTableEntity obj = new TestTableEntity();
 			obj.PartitionKey = "test_partition_im";
@@ -476,16 +520,11 @@ public class CloudTableObjectTests extends AndroidTestCase {
 	
 	public void testWhenInsertOrMergeExistentEntityShouldBeMerged() throws Exception {
 		String testTableName = "TableObjectTestsAddMergeExEntity";
-		CloudStorageAccountProvider accountProvider = new CloudStorageAccountProvider();	
-		CloudTableClient client = accountProvider.getAccount().createCloudTableClient();
 		
 		try {
 			client.createTableIfNotExist(testTableName);
 			
-			CloudStorageAccount account = (CloudStorageAccount)accountProvider.getAccount();
-			CloudTableObject<TestTableEntity> tableObject = 
-					new CloudTableObject<TestTableEntity>(testTableName, 
-							account.getTableEndpoint(), account.getCredentials());
+			CloudTableObject<TestTableEntity> tableObject = client.getCloudTableObject(testTableName);
 			
 			TestTableEntity obj = new TestTableEntity();
 			obj.PartitionKey = "test_partition_im";
@@ -502,9 +541,7 @@ public class CloudTableObjectTests extends AndroidTestCase {
 			
 			Assert.assertTrue(found);
 			
-			CloudTableObject<TestTableOtherEntity> tableObjectEx = 
-					new CloudTableObject<TestTableOtherEntity>(testTableName, 
-							account.getTableEndpoint(), account.getCredentials());
+			CloudTableObject<TestTableOtherEntity> tableObjectEx = client.getCloudTableObject(testTableName);
 			
 			TestTableOtherEntity entityEx = new TestTableOtherEntity();
 			entityEx.copyKeys(obj);

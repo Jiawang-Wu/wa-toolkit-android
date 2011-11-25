@@ -27,7 +27,7 @@ final class TableRequest {
 	
 	public static HttpGet list(URI endpoint) throws IOException, URISyntaxException, StorageException {
 		String requestUri = endpoint.toASCIIString() + "/Tables";
-		return BaseRequest.setURIAndHeaders(new HttpGet(), new URI(requestUri), new UriQueryBuilder());
+		return BaseRequest.setTableURIAndHeaders(new HttpGet(), new URI(requestUri), new UriQueryBuilder());
 	}
 
 	public static HttpGet list(URI endpoint, String prefix) throws IOException, URISyntaxException, StorageException {
@@ -35,17 +35,17 @@ final class TableRequest {
 		char lastChar = prefix.charAt(prefix.length() - 1);				
 		String endPrefix = String.format("%s%s", prefix.substring(0, prefix.length() - 1), (char)(lastChar + 1)); 
 		String requestUri = endpoint.toASCIIString() + "/Tables?$filter=TableName%20ge%20'" + prefix + "'%20and%20TableName%20le%20'" + endPrefix + "'";
-		return BaseRequest.setURIAndHeaders(new HttpGet(), new URI(requestUri), new UriQueryBuilder());
+		return BaseRequest.setTableURIAndHeaders(new HttpGet(), new URI(requestUri), new UriQueryBuilder());
 	}
 
 	public static HttpGet exist(URI endpoint, String tableName) throws IOException, URISyntaxException, StorageException {
 		String requestUri = endpoint.toASCIIString() + String.format("/Tables('%s')", tableName);
-		return BaseRequest.setURIAndHeaders(new HttpGet(), new URI(requestUri), new UriQueryBuilder());		
+		return BaseRequest.setTableURIAndHeaders(new HttpGet(), new URI(requestUri), new UriQueryBuilder());		
 	}
 	
 	public static HttpPost create(URI endpoint, String tableName) throws IOException, URISyntaxException, StorageException {
 		String requestUri = endpoint.toASCIIString() + "/Tables";
-		HttpPost result = BaseRequest.setURIAndHeaders(new HttpPost(), new URI(requestUri), new UriQueryBuilder());
+		HttpPost result = BaseRequest.setTableURIAndHeaders(new HttpPost(), new URI(requestUri), new UriQueryBuilder());
 		result.setEntity(new StringEntity(buildTableBody(tableName)));
 		addRequiredHeaders(result);
 		return result;
@@ -53,27 +53,22 @@ final class TableRequest {
 	
 	public static HttpDelete delete(URI endpoint, String tableName) throws IOException, URISyntaxException, StorageException {
 		String requestUri = endpoint.toASCIIString() + String.format("/Tables('%s')", tableName);
-		HttpDelete result = BaseRequest.setURIAndHeaders(new HttpDelete(), new URI(requestUri), new UriQueryBuilder());
+		HttpDelete result = BaseRequest.setTableURIAndHeaders(new HttpDelete(), new URI(requestUri), new UriQueryBuilder());
 		addRequiredHeaders(result);
 		return result;		
 	}
 	
 	// entity stuff
 	
-	public static HttpGet queryEntity(URI endpoint, String tableName, String filter) throws IOException, URISyntaxException, StorageException {
-		String requestUri = null;
-		if (filter != null) {
-			filter = filter.replace(" ", "%20"); //TODO: URLEncoder doesn't work - see workaround
-			requestUri = endpoint.toASCIIString() + String.format("/%s()?$filter=%s", tableName, filter);
-		}
-		else
-			requestUri = endpoint.toASCIIString() + String.format("/%s()", tableName);
-		return BaseRequest.setURIAndHeaders(new HttpGet(), new URI(requestUri), new UriQueryBuilder());		
+	public static HttpGet queryEntity(URI endpoint, String tableName, String filter, int top) throws IOException, URISyntaxException, StorageException {
+		String requestUri = endpoint.toASCIIString() + ((filter != null) ? String.format("/%s()?$filter=%s", tableName, Utility.safeEncode(filter)) : String.format("/%s()", tableName));
+		requestUri += (top > 0 ? ((filter != null) ? '&' : '?') + String.format("$top=%d", top) : "");  
+		return BaseRequest.setTableURIAndHeaders(new HttpGet(), new URI(requestUri), new UriQueryBuilder());		
 	}
 
 	public static HttpPost insertEntity(URI endpoint, String tableName, TableProperty<?>[] properties) throws IOException, URISyntaxException, StorageException {
 		String requestUri = endpoint.toASCIIString() + "/" + tableName;
-		HttpPost result = BaseRequest.setURIAndHeaders(new HttpPost(), new URI(requestUri), new UriQueryBuilder());
+		HttpPost result = BaseRequest.setTableURIAndHeaders(new HttpPost(), new URI(requestUri), new UriQueryBuilder());
 		result.setEntity(new StringEntity(buildEntityBody(properties)));
 		addRequiredHeaders(result);
 		return result;
@@ -82,7 +77,7 @@ final class TableRequest {
 	public static HttpPut insertOrReplaceEntity(URI endpoint, String tableName, TableProperty<?>[] properties) throws IOException, URISyntaxException, StorageException {
 		CloudTableEntity keys = getEntitiyKeys(properties);						
 		String requestUri = endpoint.toASCIIString() + String.format("/%s(PartitionKey='%s',RowKey='%s')", tableName, keys.PartitionKey, keys.RowKey);
-		HttpPut result = BaseRequest.setURIAndHeaders(new HttpPut(), new URI(requestUri), new UriQueryBuilder());
+		HttpPut result = BaseRequest.setTableURIAndHeaders(new HttpPut(), new URI(requestUri), new UriQueryBuilder());
 		result.setEntity(new StringEntity(buildEntityBody(properties, result.getURI().toASCIIString())));
 		addRequiredHeaders(result, null, null, true);
 		return result;
@@ -91,7 +86,7 @@ final class TableRequest {
 	public static HttpRequestBase insertOrMergeEntity(URI endpoint, String tableName, TableProperty<?>[] properties) throws IOException, URISyntaxException, StorageException {
 		CloudTableEntity keys = getEntitiyKeys(properties);						
 		String requestUri = endpoint.toASCIIString() + String.format("/%s(PartitionKey='%s',RowKey='%s')", tableName, keys.PartitionKey, keys.RowKey);
-		HttpMerge result = BaseRequest.setURIAndHeaders(new HttpMerge(), new URI(requestUri), new UriQueryBuilder());
+		HttpMerge result = BaseRequest.setTableURIAndHeaders(new HttpMerge(), new URI(requestUri), new UriQueryBuilder());
 		result.setEntity(new StringEntity(buildEntityBody(properties, result.getURI().toASCIIString())));
 		addRequiredHeaders(result, null, null, true);
 		return result;		
@@ -100,7 +95,7 @@ final class TableRequest {
 	public static HttpPut updateEntity(URI endpoint, String tableName, TableProperty<?>[] properties) throws IOException, URISyntaxException, StorageException {
 		CloudTableEntity keys = getEntitiyKeys(properties);						
 		String requestUri = endpoint.toASCIIString() + String.format("/%s(PartitionKey='%s',RowKey='%s')", tableName, keys.PartitionKey, keys.RowKey);
-		HttpPut result = BaseRequest.setURIAndHeaders(new HttpPut(), new URI(requestUri), new UriQueryBuilder());
+		HttpPut result = BaseRequest.setTableURIAndHeaders(new HttpPut(), new URI(requestUri), new UriQueryBuilder());
 		result.setEntity(new StringEntity(buildEntityBody(properties)));
 		addRequiredHeaders(result, null, "*", false);
 		return result;
@@ -109,7 +104,7 @@ final class TableRequest {
 	public static HttpRequestBase mergeEntity(URI endpoint, String tableName, TableProperty<?>[] properties) throws IOException, URISyntaxException, StorageException {
 		CloudTableEntity keys = getEntitiyKeys(properties);					
 		String requestUri = endpoint.toASCIIString() + String.format("/%s(PartitionKey='%s',RowKey='%s')", tableName, keys.PartitionKey, keys.RowKey);
-		HttpMerge result = BaseRequest.setURIAndHeaders(new HttpMerge(), new URI(requestUri), new UriQueryBuilder());
+		HttpMerge result = BaseRequest.setTableURIAndHeaders(new HttpMerge(), new URI(requestUri), new UriQueryBuilder());
 		result.setEntity(new StringEntity(buildEntityBody(properties)));
 		addRequiredHeaders(result, null, "*", false);
 		return result;		
@@ -122,7 +117,7 @@ final class TableRequest {
 	
 	public static HttpDelete deleteEntity(URI endpoint, String tableName, String partitionKey, String rowKey) throws IOException, URISyntaxException, StorageException {
 		String requestUri = endpoint.toASCIIString() + String.format("/%s(PartitionKey='%s',RowKey='%s')", tableName, partitionKey, rowKey);
-		HttpDelete result = BaseRequest.setURIAndHeaders(new HttpDelete(), new URI(requestUri), new UriQueryBuilder());
+		HttpDelete result = BaseRequest.setTableURIAndHeaders(new HttpDelete(), new URI(requestUri), new UriQueryBuilder());
 		addRequiredHeaders(result, "0", "*", false);
 		return result;				
 	}
