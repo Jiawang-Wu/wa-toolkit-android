@@ -11,7 +11,7 @@ import junit.framework.Assert;
 import com.windowsazure.samples.android.storageclient.CloudTableObject;
 import com.windowsazure.samples.android.storageclient.StorageException;
 
-public abstract class CloudTableObjectTests <T extends CloudClientAccountProvider> extends CloudTableObjectBasedTest<T> {
+public abstract class CloudTableObjectTests <T extends CloudClientAccountProvider> extends CloudTableClientBasedTest<T> {
 
 	public void testWhenQueryUnknownEntitiesShouldRetrieveRecords() throws Exception {
 		String testTableName = "TableObjectTestsUnknownEntity";
