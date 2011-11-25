@@ -34,9 +34,9 @@ public class StorageEntityListActivity extends SecuredActivity implements OnChil
 	static final int ENTITY_LIST_TYPE_TABLE = 1;
 	static final int ENTITY_LIST_TYPE_QUEUE = 2;
 
-	ExpandableListView listView;
+	private ExpandableListView listView;
 
-	int entityListType = 0;
+	private int entityListType = 0;
 	private ProgressBar progressBar;
 
     public void onCreate(Bundle savedInstanceState) {

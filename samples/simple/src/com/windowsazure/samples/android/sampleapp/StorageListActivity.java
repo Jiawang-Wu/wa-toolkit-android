@@ -31,9 +31,9 @@ public class StorageListActivity extends SecuredActivity implements OnItemClickL
 	static final int LIST_TYPE_BLOB = 3;
 	static final int LIST_TYPE_QUEUE = 4;
 
-	List<String> items;
-	int listType = 0;
-	ProgressBar progressBar;
+	private List<String> items;
+	private int listType = 0;
+	private ProgressBar progressBar;
 	private ListView listView;
 
     @Override

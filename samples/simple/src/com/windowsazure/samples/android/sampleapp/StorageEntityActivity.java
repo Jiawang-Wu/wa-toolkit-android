@@ -203,8 +203,6 @@ public class StorageEntityActivity extends SecuredActivity {
 
     private void onSaveButton(View v) {
 		class SaveEntityDataTask extends AsyncTask<Void, Void, AlertDialog.Builder> {
-		     private Iterable<Map<String, Object>> entities;
-
 		     protected void onPreExecute() {
 			 	for (View view : entityViews)
 				{

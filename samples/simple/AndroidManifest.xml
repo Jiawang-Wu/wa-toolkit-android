@@ -25,7 +25,8 @@
 		<activity android:name=".StorageEntityListActivity" android:label="@string/app_name" /> 
 		<activity android:name=".StorageEntityActivity" android:label="@string/app_name" />
 		<activity android:name=".StorageBlobViewActivity" android:label="@string/app_name" /> 
-		      
+		<activity android:name=".WAZServiceLoginActivity" android:label="@string/app_name" /> 
+				      
 		<activity android:name="com.microsoft.samples.windowsazure.android.accesscontrol.login.AccessControlLoginActivity" />        
 		<activity android:name="com.microsoft.samples.windowsazure.android.accesscontrol.login.AccessControlWebAuthActivity" />
             
