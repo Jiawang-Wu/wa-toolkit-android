@@ -26,6 +26,10 @@ abstract class StorageOperation<T> {
 	protected StorageException exceptionReference;
 
 	protected RequestResult result;
+	
+	public RequestResult getResult() {
+		return result;
+	}
 
 	public abstract T execute() throws Exception;
 	
@@ -41,7 +45,7 @@ abstract class StorageOperation<T> {
 		}
 	}
 
-	protected RequestResult processRequest(HttpRequestBase request)
+	public RequestResult processRequest(HttpRequestBase request)
 			throws IOException {
 		HttpClient httpClient = getFullTrustedHttpClient();
 		HttpResponse httpResponse = httpClient.execute(request);
