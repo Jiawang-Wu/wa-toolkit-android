@@ -26,14 +26,13 @@ public class StorageBlobViewActivity extends SecuredActivity {
 	static final int CONTENT_TYPE_IMAGE = 1;
 	static final int CONTENT_TYPE_TEXT = 2;
 
-	String containerName;
-	String blobName;
-	int contentType;
+	private String containerName;
+	private String blobName;
 
-	ScrollView scrollView;
-	TextView textView;
-	ImageView imageView;
-	ProgressBar progressBar;
+	private ScrollView scrollView;
+	private TextView textView;
+	private ImageView imageView;
+	private ProgressBar progressBar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

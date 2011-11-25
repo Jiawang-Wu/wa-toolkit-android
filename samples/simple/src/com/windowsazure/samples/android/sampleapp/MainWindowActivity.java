@@ -32,7 +32,9 @@ public class MainWindowActivity extends Activity {
 			return;
 		}
     	
-		switch (this.getSampleApplication().getConnectionType()) {
+    	Intent nextActivityIntent = new Intent(this, StorageTypeSelectorActivity.class);
+
+    	switch (this.getSampleApplication().getConnectionType()) {
 			case DIRECT:
 				String accountName = getString(R.string.direct_account_name);
 				String accessKey = getString(R.string.direct_access_key);
@@ -42,6 +44,7 @@ public class MainWindowActivity extends Activity {
 					return;
 				}
 				
+		    	nextActivityIntent = new Intent(this, StorageTypeSelectorActivity.class);
 				break;
 			case CLOUDREADYACS:
 				String namespace = getString(R.string.cloud_ready_acs_namespace);
@@ -57,6 +60,7 @@ public class MainWindowActivity extends Activity {
 					return;
 				}
 				
+		    	nextActivityIntent = new Intent(this, StorageTypeSelectorActivity.class);
 				break;
 			case CLOUDREADYSIMPLE:
 				String service = getString(R.string.cloud_ready_simple_proxy_service);
@@ -66,11 +70,12 @@ public class MainWindowActivity extends Activity {
 					return;
 				}
 				
+		    	nextActivityIntent = new Intent(this, WAZServiceLoginActivity.class);
 				break;
 		}
 		
-    	Intent storageTypeSelector = new Intent(this, StorageTypeSelectorActivity.class);
-    	startActivity (storageTypeSelector);
+    	startActivity (nextActivityIntent);
+    	this.finish();
     }
 
 	protected Dialog onCreateDialog(int id) {

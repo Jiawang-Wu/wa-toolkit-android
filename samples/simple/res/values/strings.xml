@@ -47,23 +47,38 @@
     <!-- storage_blob_view view --> 
     <string name="blob_view_title">Blob Viewer</string>
     
-	<!-- configuration -->      
-	
-    <string name="toolkit_connection_type">{set to Direct or CloudReadySimple or CloudReadyACS}</string>
-    
-    <string name="cloud_ready_acs_namespace">{the namespace of the ACS service you are using}</string>
-    <string name="cloud_ready_acs_realm">uri:wazmobiletoolkit</string>
-    <string name="cloud_ready_acs_proxy_service">{the service name where the ACS Cloud Ready package is deployed}</string>
-    <string name="cloud_ready_acs_symmetric_key">{symmetric key}</string>
+    <!-- waz_service_login and waz_service_registration view -->    
+    <string name="was_service_login_title">Login</string>
+    <string name="was_service_registration_title">Registration</string>
+    <string name="login_button_text">Login</string>
+    <string name="waz_services_base_url_label_text">WAZ Services Base URL:</string>
+    <string name="username_label_text">Username:</string>
+    <string name="email_label_text">Email:</string>
+    <string name="password_label_text">Password:</string>
+    <string name="confirm_password_label_text">Confirm:</string>
+    <string name="register_button_text">Register</string>
         
-    <string name="cloud_ready_simple_proxy_service">{the service name where the Membership Cloud Ready package is deployed}</string>
-    
-    <string name="direct_account_name">{the name of the Windows Azure storage account}</string>
-    <string name="direct_access_key">{the access key for the storage account}</string>  
-    
+    <!-- configuration messages -->      
     <string name="configuration_error_title">Configuration Error</string>
     <string name="error_missing_connection_type">You must provide valid parameter for the ToolkitConnectionType in the application res/values/strings.xml file before running the first time.</string>
     <string name="error_missing_direct_parameters">You must update valid values for Direct_AccountName and Direct_AccountKey in the application res/values/strings.xml file before running the first time.</string>
     <string name="error_missing_cloud_ready_acs_parameters">You must update valid values for CloudReadyAcs_Namespace, CloudReadyAcs_Realm and CloudReadySimple_ProxyService in the application res/values/strings.xml file before running the first time.</string>
     <string name="error_missing_cloud_ready_simple_parameters">You must update valid value for CloudReadySimple_ProxyService in the application res/values/strings.xml file before running the first time.</string>
+    
+    <!-- configuration -->      
+    <string name="toolkit_connection_type">{set to Direct or CloudReadySimple or CloudReadyACS}</string>
+    
+    <!-- configuration acs -->      
+    <string name="cloud_ready_acs_namespace">{the namespace of the ACS service you are using}</string>
+    <string name="cloud_ready_acs_realm">uri:wazmobiletoolkit</string>
+    <string name="cloud_ready_acs_proxy_service">{the service name where the ACS Cloud Ready package is deployed}</string>
+    <string name="cloud_ready_acs_symmetric_key">{symmetric key}</string>
+        
+    <!-- configuration waz services -->      
+    <string name="cloud_ready_simple_proxy_service">{the service name where the Membership Cloud Ready package is deployed}</string>
+    
+    <!-- configuration direct -->      
+    <string name="direct_account_name">{the name of the Windows Azure storage account}</string>
+    <string name="direct_access_key">{the access key for the storage account}</string>  
+    
 </resources>

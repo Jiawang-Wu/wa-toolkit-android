@@ -6,7 +6,7 @@ import android.test.AndroidTestCase;
 
 import com.windowsazure.samples.android.storageclient.CloudTableClient;
 
-public class CloudTableClientBasedTest<T extends CloudClientAccountProvider> extends AndroidTestCase {
+public abstract class CloudTableClientBasedTest<T extends CloudClientAccountProvider> extends AndroidTestCase {
 	
 	protected void setUp() {
 		try {

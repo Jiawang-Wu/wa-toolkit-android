@@ -99,8 +99,7 @@ public class WAZServiceAccountCredentials extends StorageCredentials {
 	
 	@Override
 	public void signRequest(HttpRequestBase request, long l)
-			throws NotImplementedException, InvalidKeyException,
-			StorageException {
+			throws NotImplementedException, InvalidKeyException, StorageException {
 		request.addHeader("AuthToken", m_AuthorizationToken);
 	}
 
@@ -122,8 +121,7 @@ public class WAZServiceAccountCredentials extends StorageCredentials {
 
 	@Override
 	public void signTableRequest(HttpRequestBase request) {
-		// TODO Auto-generated method stub
-		
+		request.addHeader("AuthToken", m_AuthorizationToken);		
 	}
 
 	@Override

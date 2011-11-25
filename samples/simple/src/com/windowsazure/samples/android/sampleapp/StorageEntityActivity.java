@@ -2,6 +2,7 @@ package com.windowsazure.samples.android.sampleapp;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -104,7 +105,7 @@ public class StorageEntityActivity extends SecuredActivity {
 						}
 						case OPERATION_TYPE_ADD:
 						{
-							entities = CloudTableObject.query(tableClient.getEndpoint(), tableCredentials, tableName);
+							entities = CloudTableObject.query(tableClient.getEndpoint(), tableCredentials, tableName, null, 1);
 							break;
 						}
 					}
@@ -203,8 +204,6 @@ public class StorageEntityActivity extends SecuredActivity {
 
     private void onSaveButton(View v) {
 		class SaveEntityDataTask extends AsyncTask<Void, Void, AlertDialog.Builder> {
-		     private Iterable<Map<String, Object>> entities;
-
 		     protected void onPreExecute() {
 			 	for (View view : entityViews)
 				{

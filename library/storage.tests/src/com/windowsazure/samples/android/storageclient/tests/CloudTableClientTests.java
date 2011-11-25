@@ -128,7 +128,7 @@ public abstract class CloudTableClientTests<T extends CloudClientAccountProvider
 		try {
 			client.deleteTable(testTableName);
 		} catch (StorageException e) {
-			errorThrown = e.m_HttpStatusCode == HttpStatus.SC_NOT_FOUND;
+			errorThrown = e.m_HttpStatusCode == HttpStatus.SC_NOT_FOUND || e.m_HttpStatusCode == HttpStatus.SC_UNAUTHORIZED;
 		}
 
 		Assert.assertTrue(errorThrown);

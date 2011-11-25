@@ -16,9 +16,7 @@ import com.microsoft.samples.windowsazure.android.accesscontrol.swt.SimpleWebTok
 import com.windowsazure.samples.android.storageclient.CloudClientAccount;
 import com.windowsazure.samples.android.storageclient.CloudStorageAccount;
 import com.windowsazure.samples.android.storageclient.StorageCredentialsAccountAndKey;
-import com.windowsazure.samples.android.storageclient.wazservice.WAZServiceAccount;
 import com.windowsazure.samples.android.storageclient.wazservice.WAZServiceAccountAcs;
-import com.windowsazure.samples.android.storageclient.wazservice.WAZServiceUsernameAndPassword;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -76,10 +74,8 @@ public abstract class SecuredActivity extends Activity {
 					
 					break;
 				case CLOUDREADYSIMPLE:
-					String service = getString(R.string.cloud_ready_simple_proxy_service);
-			
-			    	// TODO: Ask user name and password? Add option to register?
-					cloudClientAccount = new WAZServiceAccount(new WAZServiceUsernameAndPassword("admin", "Passw0rd!"),	new URI(service)); 
+					// We don't do anything. The account should've been configured when the application started
+					cloudClientAccount = this.getSampleApplication().getCloudClientAccount();
 					break;
 			}
 			

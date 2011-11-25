@@ -47,8 +47,8 @@ public class StorageCreateItemActivity extends SecuredActivity {
 
 	static final int PICK_IMAGE_REQUEST = 0;
 
-	int createItemType = 0;
-	Uri imageLocation;
+	private int createItemType = 0;
+	private Uri imageLocation;
 	private ProgressBar progressBar;
 	private Button createButton;
 	private Button pickImageButton;
