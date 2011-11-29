@@ -63,8 +63,7 @@ public abstract class SecuritableActivity extends AccessControlSecuredActivity {
 				// Configure the account we'll use to access the storage
 				this.getSampleApplication().setCloudClientAccount(cloudClientAccount);
 			} catch (Exception exception) {
-				this.showErrorMessage(
-						"Couldn't configure a cloud client account", exception);
+				this.showErrorMessage("Couldn't configure a cloud client account", exception);
 			}
 		}
 	}
