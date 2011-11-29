@@ -165,13 +165,13 @@ public abstract class SecuredActivity extends Activity {
 		return getIntent().getExtras();
 	}
 	
-	void showErrorMessageIfAny(String title, Exception exception) {
+	void showErrorMessageIfAny(String title, Throwable exception) {
 		if (exception != null) {
 			this.showErrorMessage(title, exception);
 		}
 	}
 	
-	void showErrorMessage(String title, Exception exception) {
+	void showErrorMessage(String title, Throwable exception) {
 		exception.printStackTrace();
     	System.out.println(exception.toString());
 		AlertDialog dialog = dialogToShow(title, exception).create();
@@ -179,7 +179,7 @@ public abstract class SecuredActivity extends Activity {
 		dialog.show();
 	}
 
-	AlertDialog.Builder dialogToShow(String title, Exception exception) {
+	AlertDialog.Builder dialogToShow(String title, Throwable exception) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setTitle(title);
 		builder.setMessage(exception.getLocalizedMessage());

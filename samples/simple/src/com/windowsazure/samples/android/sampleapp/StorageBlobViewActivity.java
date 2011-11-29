@@ -8,6 +8,7 @@ import com.windowsazure.samples.android.storageclient.CloudBlockBlob;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -78,6 +79,8 @@ public class StorageBlobViewActivity extends SecuredActivity {
 	public class DownloadContentTask extends AsyncTask<StorageBlobViewActivity, Void, Void> {
 		ByteArrayOutputStream outputStream;
 		Bitmap bitmap;
+		boolean imageIsTooBig = false;
+		
 		@Override
 		protected Void doInBackground(StorageBlobViewActivity... params) {
 			try {
@@ -87,9 +90,34 @@ public class StorageBlobViewActivity extends SecuredActivity {
 		    	outputStream = new ByteArrayOutputStream();
 		    	blob.download(outputStream);
 
-		    	ByteArrayInputStream intputStream = new ByteArrayInputStream(outputStream.toByteArray());
-				bitmap = BitmapFactory.decodeStream(intputStream);
+		    	byte[] contentBytes = outputStream.toByteArray();
+		    	ByteArrayInputStream intputStream = new ByteArrayInputStream(contentBytes);
+
+		    	// First we check the size, as images too big crashes the application
+				BitmapFactory.Options options = new BitmapFactory.Options();
+				options.inJustDecodeBounds = true;
+				bitmap = BitmapFactory.decodeStream(intputStream, null, options);
+				intputStream.close();
+				
+				if (options.outHeight * options.outWidth > 512 * 512)
+				{
+					imageIsTooBig = true;
+				}
+				else
+				{
+					intputStream = new ByteArrayInputStream(contentBytes);
+					bitmap = BitmapFactory.decodeStream(intputStream);
+					intputStream.close();
+				}
+				
 			} catch (Exception e) {
+				params[0].showErrorMessage("Couldn't view the Blob's contents", e);
+			} catch (OutOfMemoryError e) {
+				if (bitmap != null)
+				{
+					bitmap.recycle();
+					bitmap = null;
+				}
 				params[0].showErrorMessage("Couldn't view the Blob's contents", e);
 			}
 			return null;
@@ -103,7 +131,13 @@ public class StorageBlobViewActivity extends SecuredActivity {
 		}
 
 		protected void onPostExecute(Void dummy) {
-			if (bitmap != null) {
+			if (imageIsTooBig)
+			{
+				textView.setText("The image is too big and can't be shown. Only images smaller than 512px x 512px are supported.");
+				textView.setVisibility(View.VISIBLE);
+				scrollView.setVisibility(View.VISIBLE);
+			}
+			else if (bitmap != null) {
 				imageView.setImageBitmap(bitmap);
 				imageView.setVisibility(View.VISIBLE);
 			}
