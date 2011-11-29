@@ -141,8 +141,9 @@ public class StorageCreateItemActivity extends SecuredActivity {
     }
 
     private void onCreateButton(View v) {
+    	createButton.setEnabled(false);
+    	
     	final EditText nameView = (EditText)findViewById(R.id.storage_create_item_value);
-
     	// TODO: Validate names according to the API.
 
 		final String nameOrContent = nameView.getText().toString().trim();
@@ -225,6 +226,7 @@ public class StorageCreateItemActivity extends SecuredActivity {
 					nameView.setVisibility(View.VISIBLE);
 					label.setVisibility(View.VISIBLE);
 					createButton.setVisibility(View.VISIBLE);
+			    	createButton.setEnabled(true);
 			        if (createItemType == CREATE_ITEM_TYPE_BLOB) {
 						pickImageButton.setVisibility(View.VISIBLE);
 						imageSelectedLabel.setVisibility(View.VISIBLE);

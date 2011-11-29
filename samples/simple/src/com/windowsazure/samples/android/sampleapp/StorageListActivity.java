@@ -35,6 +35,8 @@ public class StorageListActivity extends SecuredActivity implements OnItemClickL
 	private int listType = 0;
 	private ProgressBar progressBar;
 	private ListView listView;
+	private Button addButton;
+	private Button backButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,8 +45,8 @@ public class StorageListActivity extends SecuredActivity implements OnItemClickL
     	this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.storage_list);
 
-        Button addButton = (Button)findViewById(R.id.header_add_button);
-        Button backButton = (Button)findViewById(R.id.header_back_button);
+        addButton = (Button)findViewById(R.id.header_add_button);
+        backButton = (Button)findViewById(R.id.header_back_button);
         TextView title = (TextView)findViewById(R.id.header_title);
 	    progressBar = (ProgressBar) findViewById(R.id.storage_list_progress);
 
@@ -164,10 +166,18 @@ public class StorageListActivity extends SecuredActivity implements OnItemClickL
 	}
 
     private void onBackButton(View v) {
+    	addButton.setEnabled(false);
     	finish();
 	}
 
+    protected void onResume()
+    {
+    	super.onResume();
+    	addButton.setEnabled(true);
+    }
+
     private void onAddButton(View v) {
+    	addButton.setEnabled(false);
     	Intent intent = new Intent(this, StorageCreateItemActivity.class);
 
     	switch (listType){

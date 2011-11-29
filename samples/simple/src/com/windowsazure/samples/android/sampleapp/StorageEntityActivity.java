@@ -42,6 +42,7 @@ public class StorageEntityActivity extends SecuredActivity {
 	private String tableName;
 	private ProgressBar progressBar;
 	private ArrayList<View> entityViews = new ArrayList<View>();
+	private Button saveButton;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -50,7 +51,7 @@ public class StorageEntityActivity extends SecuredActivity {
     	this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.storage_entity);
         
-        Button saveButton = (Button)findViewById(R.id.header_save_button);
+        saveButton = (Button)findViewById(R.id.header_save_button);
         Button backButton = (Button)findViewById(R.id.header_back_button);
         TextView title = (TextView)findViewById(R.id.header_title);
 	    progressBar = (ProgressBar) findViewById(R.id.storage_entity_progress);
@@ -202,6 +203,7 @@ public class StorageEntityActivity extends SecuredActivity {
 	}
 
     private void onSaveButton(View v) {
+    	saveButton.setEnabled(false);
 		class SaveEntityDataTask extends AsyncTask<Void, Void, AlertDialog.Builder> {
 		     protected void onPreExecute() {
 			 	for (View view : entityViews)
@@ -243,9 +245,9 @@ public class StorageEntityActivity extends SecuredActivity {
 		    	 else
 		    	 {
 					 for (View view : entityViews)
-					{
+					 {
 						 view.setVisibility(View.VISIBLE);
-					}
+					 }
 			    	 progressBar.setVisibility(View.GONE);
 		    		 Dialog dialog = dialogBuilder.create();
 				     dialog.setCanceledOnTouchOutside(true);

@@ -60,6 +60,9 @@ public class WAZServiceLoginActivity extends Activity
     }
 
 	private void onLoginButton(View view) {
+		loginButton.setEnabled(false);
+		registerButton.setEnabled(false);
+		
 		final WAZServiceLoginActivity thisActivity = this;
 		class LoginTask extends AsyncTask<Void, Void, AlertDialog.Builder> {
 			protected AlertDialog.Builder doInBackground(Void... params) {
@@ -120,6 +123,8 @@ public class WAZServiceLoginActivity extends Activity
 	}
 	
 	protected void onRegisterButton(View view) {
+		loginButton.setEnabled(false);
+		registerButton.setEnabled(false);
     	Intent storageTypeSelector = new Intent(this, WAZServiceRegisterActivity.class);
     	startActivity (storageTypeSelector);
     	finish();

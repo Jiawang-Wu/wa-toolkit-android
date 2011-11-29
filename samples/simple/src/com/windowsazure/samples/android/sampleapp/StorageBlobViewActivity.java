@@ -8,7 +8,6 @@ import com.windowsazure.samples.android.storageclient.CloudBlockBlob;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;

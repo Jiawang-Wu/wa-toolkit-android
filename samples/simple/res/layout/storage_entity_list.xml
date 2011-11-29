@@ -21,5 +21,4 @@
 	    android:id="@+id/entity_list_expandable_list_view" 
 	    android:layout_height="wrap_content" 
 	    android:layout_width="fill_parent" />    
-
 </LinearLayout>

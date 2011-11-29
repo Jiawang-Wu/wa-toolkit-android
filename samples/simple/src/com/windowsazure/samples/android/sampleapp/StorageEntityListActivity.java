@@ -38,6 +38,7 @@ public class StorageEntityListActivity extends SecuredActivity implements OnChil
 
 	private int entityListType = 0;
 	private ProgressBar progressBar;
+	private Button addButton;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,7 +46,7 @@ public class StorageEntityListActivity extends SecuredActivity implements OnChil
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.storage_entity_list);
 
-        Button addButton = (Button)findViewById(R.id.header_add_button);
+        addButton = (Button)findViewById(R.id.header_add_button);
         Button backButton = (Button)findViewById(R.id.header_back_button);
         TextView title = (TextView)findViewById(R.id.header_title);
 	    progressBar = (ProgressBar) findViewById(R.id.storage_entity_list_progress);
@@ -134,7 +135,14 @@ public class StorageEntityListActivity extends SecuredActivity implements OnChil
     	finish();
 	}
 
+    protected void onResume()
+    {
+    	super.onResume();
+    	addButton.setEnabled(true);
+    }
+    
     private void onAddButton(View v) {
+    	addButton.setEnabled(false);
 		Intent intent;
 
     	switch(entityListType) {
@@ -252,14 +260,15 @@ public class StorageEntityListActivity extends SecuredActivity implements OnChil
 	    	items.add(entry);
 		}
 
-		return new SimpleExpandableListAdapter(this,
-												groupData,
-												android.R.layout.simple_expandable_list_item_1,
-												new String[] {"Message"},
-												new int[] { android.R.id.text1, android.R.id.text2 },
-												items,
-												android.R.layout.simple_expandable_list_item_2,
-												new String[] {"Name", "Value"},
-												new int[] { android.R.id.text1, android.R.id.text2 });
+		return new SimpleExpandableListAdapter(this, //context
+												groupData, //groupData
+												//android.R.layout.simple_expandable_list_item_1, //groupLayout
+												R.layout.custom_expandable_group_item, //groupLayout
+												new String[] {"Message"}, //groupFrom
+												new int[] { R.id.groupText }, //groupTo
+												items, //childData
+												R.layout.custom_expandable_list_item, //custom childLayout
+												new String[] {"Name", "Value"}, //childFrom
+												new int[] { R.id.text1, R.id.text2 }); //childTo
     }
 }
