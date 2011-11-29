@@ -39,6 +39,7 @@ public class StorageEntityListActivity extends SecuritableActivity implements On
 	private int entityListType = 0;
 	private ProgressBar progressBar;
 
+	@Override
     public void onCreateCompleted(Bundle savedInstanceState) {
         super.onCreateCompleted(savedInstanceState);
 
