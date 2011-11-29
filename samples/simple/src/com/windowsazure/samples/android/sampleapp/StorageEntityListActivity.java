@@ -26,7 +26,7 @@ import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 import android.widget.ExpandableListView.OnChildClickListener;
 
-public class StorageEntityListActivity extends SecuredActivity implements OnChildClickListener {
+public class StorageEntityListActivity extends SecuritableActivity implements OnChildClickListener {
 
 	static final String TYPE_NAMESPACE = "com.windowsazure.samples.android.sampleapp.storage_entity_list.type";
 	static final String TITLE_NAMESPACE = "com.windowsazure.samples.android.sampleapp.storage_entity_list.title";
@@ -39,8 +39,8 @@ public class StorageEntityListActivity extends SecuredActivity implements OnChil
 	private int entityListType = 0;
 	private ProgressBar progressBar;
 
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onCreateCompleted(Bundle savedInstanceState) {
+        super.onCreateCompleted(savedInstanceState);
 
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.storage_entity_list);

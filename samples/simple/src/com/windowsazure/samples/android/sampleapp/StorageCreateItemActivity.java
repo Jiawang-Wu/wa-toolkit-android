@@ -29,7 +29,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-public class StorageCreateItemActivity extends SecuredActivity {
+public class StorageCreateItemActivity extends SecuritableActivity {
 
 	static final String TYPE_NAMESPACE = "com.windowsazure.samples.android.sampleapp.create_item.type";
 	static final String TITLE_NAMESPACE = "com.windowsazure.samples.android.sampleapp.create_item.title";
@@ -56,8 +56,8 @@ public class StorageCreateItemActivity extends SecuredActivity {
 	private TextView label;
 
 	@Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onCreateCompleted(Bundle savedInstanceState) {
+        super.onCreateCompleted(savedInstanceState);
 
     	this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.storage_create_item);

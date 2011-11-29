@@ -21,7 +21,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-public class StorageEntityActivity extends SecuredActivity {
+public class StorageEntityActivity extends SecuritableActivity {
 	
 	static final String TYPE_NAMESPACE = "com.windowsazure.samples.android.sampleapp.storage_entity.type";
 	static final String TITLE_NAMESPACE = "com.windowsazure.samples.android.sampleapp.storage_entity.title";
@@ -44,8 +44,8 @@ public class StorageEntityActivity extends SecuredActivity {
 	private ArrayList<View> entityViews = new ArrayList<View>();
 	
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-    	super.onCreate(savedInstanceState);    	
+    public void onCreateCompleted(Bundle savedInstanceState) {
+    	super.onCreateCompleted(savedInstanceState);    	
     	
     	this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.storage_entity);
