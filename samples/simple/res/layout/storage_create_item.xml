@@ -44,6 +44,7 @@
 	<Button  
 	    android:id="@+id/pick_image_button"  
 	    android:text="@string/pick_image_text"
+	    android:textColor = "#000000"
 	    android:background="@drawable/gradient"	    
 	    android:layout_height="35dp"
 	    android:layout_marginTop="5dp"
@@ -54,6 +55,7 @@
 	<Button  
 	    android:id="@+id/storage_create_item_button"  
 	    android:text="@string/create_button_text"
+	    android:textColor = "#000000"
 	    android:background="@drawable/gradient"	    
 	    android:layout_height="35dp"
 	    android:layout_marginTop="5dp"
