@@ -25,7 +25,7 @@ public abstract class AccessControlSecuredActivity extends Activity {
 			IAccessToken token = getAccessControlToken();
 
 			if (token == null || token.isExpired()) {				
-				onTokenExpiredWarning();
+				if (token != null) onTokenExpiredWarning();
 				doAcsLogin();
 				return;
 			}
