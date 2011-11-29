@@ -116,7 +116,7 @@ final class TableRequest {
 	}
 	
 	public static HttpDelete deleteEntity(URI endpoint, String tableName, String partitionKey, String rowKey) throws IOException, URISyntaxException, StorageException {
-		String requestUri = endpoint.toASCIIString() + String.format("/%s(PartitionKey='%s',RowKey='%s')", tableName, partitionKey, rowKey);
+		String requestUri = endpoint.toASCIIString() + String.format("/%s(PartitionKey='%s',RowKey='%s')", tableName, Utility.safeEncode(partitionKey), Utility.safeEncode(rowKey));
 		HttpDelete result = BaseRequest.setTableURIAndHeaders(new HttpDelete(), new URI(requestUri), new UriQueryBuilder());
 		addRequiredHeaders(result, "0", "*", false);
 		return result;				
@@ -173,14 +173,14 @@ final class TableRequest {
 		return result.toString();
 	}
 	
-	private static CloudTableEntity getEntitiyKeys(TableProperty<?>[] properties) {
+	private static CloudTableEntity getEntitiyKeys(TableProperty<?>[] properties) throws StorageException {
 		CloudTableEntity result = new CloudTableEntityKey();
 		for (int i = 0; i < properties.length; i++) {
 			if (properties[i].getName().equals("PartitionKey")) {
-				result.PartitionKey = properties[i].getRepresentation();
+				result.PartitionKey = Utility.safeEncode(properties[i].getRepresentation());
 				continue;
 			} else if (properties[i].getName().equals("RowKey")) {
-				result.RowKey = properties[i].getRepresentation();
+				result.RowKey = Utility.safeEncode(properties[i].getRepresentation());
 			}
 		}
 		Utility.assertNotNull("PartitionKey property not found", result.PartitionKey);

@@ -51,7 +51,7 @@ public class AccessControlLoginView extends LinearLayout {
         addView(mIdentityProviders, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
        
         mCancel = new Button(mContext);
-        mCancel.setText("cancel");
+        mCancel.setText("Cancel");
         mCancel.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {	
