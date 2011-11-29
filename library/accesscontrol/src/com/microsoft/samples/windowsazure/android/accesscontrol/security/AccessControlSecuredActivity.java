@@ -40,8 +40,7 @@ public abstract class AccessControlSecuredActivity extends Activity {
 
 		Bundle optionSet = getIntent().getExtras();
 		if (optionSet != null) {
-			accessToken = (IAccessToken) optionSet
-					.getSerializable(AccessControlLoginActivity.AuthenticationTokenKey);
+			accessToken = (IAccessToken) optionSet.getSerializable(AccessControlLoginActivity.AuthenticationTokenKey);
 
 			if (accessToken != null) {
 				SharedPreferences.Editor editor = settings.edit();
