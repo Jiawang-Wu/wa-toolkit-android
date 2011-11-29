@@ -18,7 +18,7 @@ import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-public class StorageBlobViewActivity extends SecuredActivity {
+public class StorageBlobViewActivity extends SecuritableActivity {
 
 	static final String CONTAINER_NAME_NAMESPACE = "com.windowsazure.samples.android.sampleapp.storage_blob_view.container_name";
 	static final String BLOB_NAME_NAMESPACE = "com.windowsazure.samples.android.sampleapp.storage_blob_view.blob_name";
@@ -35,8 +35,8 @@ public class StorageBlobViewActivity extends SecuredActivity {
 	private ProgressBar progressBar;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-    	super.onCreate(savedInstanceState);
+    public void onCreateCompleted(Bundle savedInstanceState) {
+    	super.onCreateCompleted(savedInstanceState);
 
     	this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.storage_blob_view);

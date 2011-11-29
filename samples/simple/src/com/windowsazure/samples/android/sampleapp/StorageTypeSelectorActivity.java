@@ -7,15 +7,15 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 
-public class StorageTypeSelectorActivity extends SecuredActivity {
+public class StorageTypeSelectorActivity extends SecuritableActivity {
 
 	private Button tableButton;
 	private Button blobButton;
 	private Button queueButton;
 
 	@Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);      
+    public void onCreateCompleted(Bundle savedInstanceState) {
+        super.onCreateCompleted(savedInstanceState);      
 
     	this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.storage_type_selector);

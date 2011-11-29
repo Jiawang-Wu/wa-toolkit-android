@@ -10,8 +10,8 @@ import android.content.SharedPreferences;
 
 public class SampleApplication extends Application {
 
-	private static final String PREFERENCE_FILENAME = "simple.preferences";
-	private static final String PREFERENCE_ACCESS_TOKEN_KEY = "access_token";
+	public static final String PREFERENCE_FILENAME = "simple.preferences";
+	public static final String PREFERENCE_ACCESS_TOKEN_KEY = "access_token";
 	
 	private CloudBlobClient m_CloudBlobClient;
 	private CloudClientAccount m_CloudClientAccount;

@@ -21,7 +21,7 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-public class StorageListActivity extends SecuredActivity implements OnItemClickListener {
+public class StorageListActivity extends SecuritableActivity implements OnItemClickListener {
 
 	static final String TYPE_NAMESPACE = "com.windowsazure.samples.android.sampleapp.storage_list.type";
 	static final String TITLE_NAMESPACE = "com.windowsazure.samples.android.sampleapp.storage_list.title";
@@ -39,8 +39,8 @@ public class StorageListActivity extends SecuredActivity implements OnItemClickL
 	private Button backButton;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-    	super.onCreate(savedInstanceState);
+    public void onCreateCompleted(Bundle savedInstanceState) {
+    	super.onCreateCompleted(savedInstanceState);
 
     	this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.storage_list);
@@ -135,7 +135,6 @@ public class StorageListActivity extends SecuredActivity implements OnItemClickL
 		try {
 	    	switch (listType) {
 				case LIST_TYPE_TABLE:
-					// TODO: Show table rows
 					storageEntityListIntent.putExtra(StorageEntityListActivity.TYPE_NAMESPACE, StorageEntityListActivity.ENTITY_LIST_TYPE_TABLE);
 					storageEntityListIntent.putExtra(StorageEntityListActivity.TITLE_NAMESPACE, items.get(arg2));
 			    	startActivity (storageEntityListIntent);
@@ -144,7 +143,6 @@ public class StorageListActivity extends SecuredActivity implements OnItemClickL
 		    	    String containerName = this.optionSet().getString(StorageListActivity.TITLE_NAMESPACE);
 					blobViewIntent.putExtra(StorageBlobViewActivity.CONTAINER_NAME_NAMESPACE, containerName);
 					blobViewIntent.putExtra(StorageBlobViewActivity.BLOB_NAME_NAMESPACE, items.get(arg2));
-
 			    	startActivity (blobViewIntent);
 					break;
 				case LIST_TYPE_CONTAINER:
@@ -153,7 +151,6 @@ public class StorageListActivity extends SecuredActivity implements OnItemClickL
 			    	startActivity (storageListIntent);
 			    	break;
 				case LIST_TYPE_QUEUE:
-					// TODO: Show queue messages
 					storageEntityListIntent.putExtra(StorageEntityListActivity.TYPE_NAMESPACE, StorageEntityListActivity.ENTITY_LIST_TYPE_QUEUE);
 					storageEntityListIntent.putExtra(StorageEntityListActivity.TITLE_NAMESPACE, items.get(arg2));
 			    	startActivity (storageEntityListIntent);

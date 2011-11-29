@@ -18,7 +18,7 @@
 			</intent-filter>
 		</activity> 
 		
-		<activity android:name=".SecuredActivity" android:label="@string/app_name" />            
+		<activity android:name=".SecuritableActivity" android:label="@string/app_name" />            
 		<activity android:name=".StorageTypeSelectorActivity" android:label="@string/app_name" />        
 		<activity android:name=".StorageListActivity" android:label="@string/app_name" />        
 		<activity android:name=".StorageCreateItemActivity" android:label="@string/app_name" /> 
