@@ -3,30 +3,30 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-
+
     <TextView
-        android:id="@+id/endText"
+        android:id="@+id/okText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:text="@string/login_ok"
         android:textAppearance="?android:attr/textAppearanceLarge" />
-
+
     <TextView
-        android:id="@+id/textView1"
+        android:id="@+id/tokenBelowText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="30dp"
         android:text="@string/acs_token"
         android:textAppearance="?android:attr/textAppearanceMedium" />
-
+
     <TextView
-        android:id="@+id/textViewToken"
+        android:id="@+id/viewTokenText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="25dp"
         android:text="TextView" />
 
 </LinearLayout>

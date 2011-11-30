@@ -12,7 +12,7 @@ public class UnsuccessfulLoginActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		setContentView(R.layout.errormain);
+		setContentView(R.layout.loginerror);
 		
 		Integer tokenStatus = -1;
     	Bundle extras = getIntent().getExtras(); 
@@ -20,7 +20,7 @@ public class UnsuccessfulLoginActivity extends Activity {
 			tokenStatus = extras.getInt(AccessControlLoginActivity.AuthenticationTokenStatusKey);
 		}  	
 
-		TextView text = (TextView) findViewById(R.id.textViewError);
+		TextView text = (TextView) findViewById(R.id.viewErrorText);
 		text.setText("token error status: " + tokenStatus.toString());
     }
     
