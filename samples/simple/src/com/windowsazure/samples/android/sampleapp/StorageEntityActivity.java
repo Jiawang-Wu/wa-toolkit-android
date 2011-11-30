@@ -249,6 +249,7 @@ public class StorageEntityActivity extends SecuritableActivity {
 						 view.setVisibility(View.VISIBLE);
 					 }
 			    	 progressBar.setVisibility(View.GONE);
+					 saveButton.setEnabled(true);
 		    		 Dialog dialog = dialogBuilder.create();
 				     dialog.setCanceledOnTouchOutside(true);
 				     dialog.show();
