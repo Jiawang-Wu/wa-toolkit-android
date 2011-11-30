@@ -221,7 +221,7 @@ public class StorageEntityListActivity extends SecuritableActivity implements On
    			entry.add(property);
 
    			property = new HashMap<String, String>();
-   			property.put("Name", "Insetion Time");
+   			property.put("Name", "Insertion Time");
    			property.put("Value", message.getInsertionTime().toString());
    			entry.add(property);
 
