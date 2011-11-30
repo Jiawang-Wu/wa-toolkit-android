@@ -1,11 +1,11 @@
-package com.microsoft.windowsazure.samples;
-
-import com.microsoft.samples.windowsazure.android.accesscontrol.core.IAccessToken;
-import com.microsoft.samples.windowsazure.android.accesscontrol.login.AccessControlLoginActivity;
+package com.microsoft.samples.windowsazure.android.accesscontrol.sampleapp;
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.widget.TextView;
+
+import com.microsoft.samples.windowsazure.android.accesscontrol.core.IAccessToken;
+import com.microsoft.samples.windowsazure.android.accesscontrol.login.AccessControlLoginActivity;
 
 public class SuccessfulLoginActivity extends Activity {
 	

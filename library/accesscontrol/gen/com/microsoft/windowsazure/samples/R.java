@@ -13,27 +13,4 @@ public final class R {
     public static final class drawable {
         public static int ic_launcher=0x7f020000;
     }
-    public static final class id {
-        public static int endText=0x7f050000;
-        public static int errorText=0x7f050003;
-        public static int homeButton=0x7f050005;
-        public static int textView1=0x7f050001;
-        public static int textViewError=0x7f050004;
-        public static int textViewToken=0x7f050002;
-    }
-    public static final class layout {
-        public static int endmain=0x7f030000;
-        public static int errormain=0x7f030001;
-        public static int main=0x7f030002;
-    }
-    public static final class string {
-        public static int acs_token=0x7f040006;
-        public static int app_name=0x7f040001;
-        public static int cancel=0x7f040003;
-        public static int hello=0x7f040000;
-        public static int identityproviders=0x7f040002;
-        public static int login=0x7f040004;
-        public static int login_error=0x7f040007;
-        public static int login_ok=0x7f040005;
-    }
 }
