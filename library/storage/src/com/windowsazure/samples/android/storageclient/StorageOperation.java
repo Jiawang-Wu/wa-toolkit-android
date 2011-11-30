@@ -24,6 +24,8 @@ abstract class StorageOperation<T> {
 		try {
 			result = new RequestResult();
 			return this.execute();
+		} catch (StorageException exception) {
+			throw exception;
 		} catch (Exception exception) {
 			exception.printStackTrace();
 			this.exceptionReference = StorageException.translateException(this.result.httpResponse, exception);
