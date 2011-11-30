@@ -3,6 +3,7 @@ package com.microsoft.samples.windowsazure.android.accesscontrol.swt;
 import java.net.URLDecoder;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.Map;
 
 import com.microsoft.samples.windowsazure.android.accesscontrol.core.AccessTokenConstants;
 import com.microsoft.samples.windowsazure.android.accesscontrol.core.IAccessToken;
@@ -20,6 +21,10 @@ public class SimpleWebToken implements IAccessToken {
 	public SimpleWebToken(String rawToken) {
 		this.mRawToken = rawToken;
 		this.parse();
+	}
+	
+	public Map<String, String> getClaims() {
+		return mClaims;
 	}
 	
 	public String getClaimValue(String claimName) {

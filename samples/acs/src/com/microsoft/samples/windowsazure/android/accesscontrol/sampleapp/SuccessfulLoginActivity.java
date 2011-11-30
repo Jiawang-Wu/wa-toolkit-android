@@ -13,7 +13,7 @@ public class SuccessfulLoginActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		setContentView(R.layout.endmain);
+		setContentView(R.layout.loginok);
 		
     	IAccessToken accessToken = null;
 		Bundle extras = getIntent().getExtras(); 
@@ -21,7 +21,7 @@ public class SuccessfulLoginActivity extends Activity {
 			accessToken = (IAccessToken)extras.getSerializable(AccessControlLoginActivity.AuthenticationTokenKey);
 		}  	
 
-		TextView text = (TextView) findViewById(R.id.textViewToken);
+		TextView text = (TextView) findViewById(R.id.viewTokenText);
 		text.setText(accessToken.getRawToken());
     }
 

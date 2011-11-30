@@ -1,18 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="hello">This is a sample for the ACS login activity!</string>
     <string name="app_name">ACS Login sample</string>
-    <string name="identityproviders">Identity Providers</string>
-    <string name="cancel">Cancel</string>
-    <string name="login">Start login process</string>
-    <string name="login_ok">Succesfull login!</string>
+    <string name="hello">This sample shows how to use the ACS library for Android</string>
+    <string name="manual_detail">This flow demonstrates how to use the login control to obtain an access token used when validating authenticated users or consuming other services</string>
+    <string name="auto_detail">This flow demonstrates how to secure an activity [view] with the AccessControlSecuredActivity class performing an automatic login process if the user is not logged previously</string>
+    <string name="manual_login">Start manual login process</string>
+    <string name="auto_login">Navigate to secured view</string>
+    <string name="reset">[reset token to unauthenticate]</string>
+    <string name="login_ok">Succesful login!</string>
     <string name="acs_token">Below is your token</string>
-    <string name="login_error">Unsuccesfull login!</string>
+    <string name="login_error">Unsuccesful login!</string>
+    <string name="secured">This view is secured using the AccessControlSecuredActivity as super class</string>
+    <string name="claim_detail">Below are your claims</string>
     
     <!-- configuration acs -->      
-	<string name="cloud_ready_acs_namespace">{the namespace of the ACS service you are using}</string>
+	<string name="cloud_ready_acs_namespace">the namespace of the ACS service you are using}</string>
 	<string name="cloud_ready_acs_realm">{acs realm}</string>
-	<string name="cloud_ready_acs_symmetric_key">{symmetric key}</string>    
+	<string name="cloud_ready_acs_symmetric_key">{symmetric key}</string>
 
 </resources>
