@@ -108,6 +108,8 @@ public class WAZServiceLoginActivity extends Activity
 					Dialog dialog = dialogBuilder.create();
 					dialog.setCanceledOnTouchOutside(true);
 					dialog.show();
+					loginButton.setEnabled(true);
+					registerButton.setEnabled(true);
 					progressBar.setVisibility(View.GONE);
 				    loginButton.setVisibility(View.VISIBLE);
 				    //wasServicesBaseUrlLabel.setVisibility(View.VISIBLE);
