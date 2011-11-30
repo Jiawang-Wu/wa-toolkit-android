@@ -170,7 +170,7 @@ public class StorageListActivity extends SecuritableActivity implements OnItemCl
     protected void onResume()
     {
     	super.onResume();
-    	addButton.setEnabled(true);
+    	if (addButton != null) addButton.setEnabled(true);
     }
 
     private void onAddButton(View v) {
