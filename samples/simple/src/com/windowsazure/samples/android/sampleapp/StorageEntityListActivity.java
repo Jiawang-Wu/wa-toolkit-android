@@ -35,6 +35,7 @@ public class StorageEntityListActivity extends SecuritableActivity implements On
 	static final int ENTITY_LIST_TYPE_QUEUE = 2;
 
 	private ExpandableListView listView;
+    private SimpleExpandableListAdapter listAdapter;
 
 	private int entityListType = 0;
 	private ProgressBar progressBar;
@@ -77,8 +78,7 @@ public class StorageEntityListActivity extends SecuritableActivity implements On
 	public void onStart() {
 		super.onStart();
 			 class ListEntityItemsTask extends AsyncTask<Void, Void, AlertDialog.Builder> {
-			 SimpleExpandableListAdapter listAdapter = null;
-			     protected AlertDialog.Builder doInBackground(Void... params) {
+				protected AlertDialog.Builder doInBackground(Void... params) {
 			        try {
 				    	switch(entityListType) {
 				    		case ENTITY_LIST_TYPE_TABLE:
@@ -115,10 +115,8 @@ public class StorageEntityListActivity extends SecuritableActivity implements On
 	public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
     	switch(entityListType) {
 			case ENTITY_LIST_TYPE_TABLE:
-				// TODO: Plug with real table services
-
 				@SuppressWarnings("unchecked")
-				Map<String, String> identifier = (Map<String, String>) parent.getItemAtPosition(groupPosition);
+				Map<String, String> identifier = (Map<String, String>) listAdapter.getGroup(groupPosition);
 
 				Intent intent = new Intent(this, StorageEntityActivity.class);
 		    	intent.putExtra(StorageEntityActivity.TITLE_NAMESPACE, getString(R.string.edit_entity_title));

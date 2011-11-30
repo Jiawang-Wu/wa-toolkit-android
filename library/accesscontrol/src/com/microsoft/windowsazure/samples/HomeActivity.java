@@ -34,8 +34,8 @@ public class HomeActivity extends Activity {
 		Intent intent = new Intent(this, AccessControlLoginActivity.class);
 
 		AccessControlLoginContext loginContext = new AccessControlLoginContext();
-    	loginContext.IdentityProviderRepository = new IdentityProvidersRepository("https://margiestravel.accesscontrol.windows.net/v2/metadata/IdentityProviders.js?protocol=javascriptnotify&realm=urn:bouncerservicelocal&version=1.0");
-    	loginContext.AccessTokenHandler = new SimpleWebTokenHandler("urn:bouncerservicelocal", "uPWmd0dF2c3vXsPWV7NIPhk3WgZglSHyqXNoI1+dc5I=");
+    	loginContext.IdentityProviderRepository = new IdentityProvidersRepository("https://wazmobiletoolkitdev.accesscontrol.windows.net/v2/metadata/IdentityProviders.js?protocol=javascriptnotify&realm=uri:windowsazure.storage.phone&version=1.0");
+    	loginContext.AccessTokenHandler = new SimpleWebTokenHandler("uri:windowsazure.storage.phone", "WeB19TTI3qalIhMfDuAwjowtTvsnmNFQvQqQzc6YoVI=");
     	loginContext.SuccessLoginActivity = SuccessfulLoginActivity.class;
     	loginContext.ErrorLoginActivity = UnsuccessfulLoginActivity.class;
     	intent.putExtra(AccessControlLoginActivity.AccessControlLoginContextKey, loginContext);	
