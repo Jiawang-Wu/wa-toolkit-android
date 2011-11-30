@@ -6,6 +6,8 @@ import java.io.ByteArrayOutputStream;
 import com.windowsazure.samples.android.storageclient.CloudBlobContainer;
 import com.windowsazure.samples.android.storageclient.CloudBlockBlob;
 
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -75,13 +77,13 @@ public class StorageBlobViewActivity extends SecuritableActivity {
     	finish();
 	}
 
-	public class DownloadContentTask extends AsyncTask<StorageBlobViewActivity, Void, Void> {
+	public class DownloadContentTask extends AsyncTask<StorageBlobViewActivity, Void, AlertDialog.Builder> {
 		ByteArrayOutputStream outputStream;
 		Bitmap bitmap;
 		boolean imageIsTooBig = false;
 		
 		@Override
-		protected Void doInBackground(StorageBlobViewActivity... params) {
+		protected AlertDialog.Builder doInBackground(StorageBlobViewActivity... params) {
 			try {
 		    	CloudBlobContainer container = params[0].getSampleApplication().getCloudBlobClient().getContainerReference(containerName);
 		    	CloudBlockBlob blob = container.getBlockBlobReference(blobName);
@@ -110,14 +112,14 @@ public class StorageBlobViewActivity extends SecuritableActivity {
 				}
 				
 			} catch (Exception e) {
-				params[0].showErrorMessage("Couldn't view the Blob's contents", e);
+				return params[0].dialogToShow("Couldn't view the Blob's contents", e);
 			} catch (OutOfMemoryError e) {
 				if (bitmap != null)
 				{
 					bitmap.recycle();
 					bitmap = null;
 				}
-				params[0].showErrorMessage("Couldn't view the Blob's contents", e);
+				return params[0].dialogToShow("Couldn't view the Blob's contents", e);
 			}
 			return null;
 		}
@@ -129,12 +131,18 @@ public class StorageBlobViewActivity extends SecuritableActivity {
 			progressBar.setVisibility(View.VISIBLE);
 		}
 
-		protected void onPostExecute(Void dummy) {
+		protected void onPostExecute(AlertDialog.Builder dialogBuilder) {
 			if (imageIsTooBig)
 			{
 				textView.setText("The image is too big and can't be shown. Only images smaller than 512px x 512px are supported.");
 				textView.setVisibility(View.VISIBLE);
 				scrollView.setVisibility(View.VISIBLE);
+			}
+			else if (dialogBuilder != null)
+			{
+				AlertDialog dialog = dialogBuilder.create();
+				dialog.setCanceledOnTouchOutside(true);
+				dialog.show();
 			}
 			else if (bitmap != null) {
 				imageView.setImageBitmap(bitmap);
