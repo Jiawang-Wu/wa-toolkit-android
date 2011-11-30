@@ -44,6 +44,7 @@ public class AccessControlWebAuthActivity extends Activity implements IAccessTok
 		intent.putExtra(AccessControlLoginActivity.AuthenticationTokenKey, token);
 		intent.putExtra(AccessControlLoginActivity.AuthenticationTokenStatusKey, tokenStatus);
 		startActivity(intent);
+		finish();
 	}
 	
     private class AuthWebViewClient extends WebViewClient { }
