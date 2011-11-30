@@ -8,6 +8,8 @@ import com.windowsazure.samples.android.storageclient.CloudBlob;
 import com.windowsazure.samples.android.storageclient.CloudBlobContainer;
 import com.windowsazure.samples.android.storageclient.CloudQueue;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -74,9 +76,11 @@ public class StorageListActivity extends SecuritableActivity implements OnItemCl
 		super.onStart();
         final StorageListActivity thisActivity = this;
 
-		 class ListItemsTask extends AsyncTask<Integer, Integer, List<String>> {
-		     protected List<String> doInBackground(Integer... listTypes) {
-		    	List<String> listedItems = new ArrayList<String>();
+		 class ListItemsTask extends AsyncTask<Integer, Integer, AlertDialog.Builder> {
+		     private ArrayList<String> listedItems;
+
+			protected AlertDialog.Builder doInBackground(Integer... listTypes) {
+		    	listedItems = new ArrayList<String>();
 		        try {
 			        listedItems = new ArrayList<String>();
 		        	switch(listType) {
@@ -107,9 +111,9 @@ public class StorageListActivity extends SecuritableActivity implements OnItemCl
 		        	}
 		        }
 		        catch (Exception exception) {
-		        	thisActivity.showErrorMessage("Couldn't execute the list operation", exception);
+		        	return dialogToShow("Couldn't execute the list operation", exception);
 		        }
-				return listedItems;
+				return null;
 		     }
 
 		     protected void onPreExecute() {
@@ -117,11 +121,20 @@ public class StorageListActivity extends SecuritableActivity implements OnItemCl
 		    	 progressBar.setVisibility(View.VISIBLE);
 		     }
 
-		     protected void onPostExecute(List<String> listedItems) {
-		    	items = listedItems;
-			    listView.setAdapter(new ArrayAdapter<String>(thisActivity, android.R.layout.simple_list_item_1, items));
-		    	progressBar.setVisibility(View.GONE);
-		    	listView.setVisibility(View.VISIBLE);
+		     protected void onPostExecute(AlertDialog.Builder dialogBuilder) {
+		    	 if (dialogBuilder == null)
+		    	 {
+			    	items = listedItems;
+				    listView.setAdapter(new ArrayAdapter<String>(thisActivity, android.R.layout.simple_list_item_1, items));
+			    	listView.setVisibility(View.VISIBLE);
+		    	 }
+		    	 else
+		    	 {
+		    		 Dialog dialog = dialogBuilder.create();
+		    		 dialog.setCanceledOnTouchOutside(true);
+		    		 dialog.show();
+		    	 }
+			    progressBar.setVisibility(View.GONE);
 		     }
 		 };
 		 new ListItemsTask().execute(listType);

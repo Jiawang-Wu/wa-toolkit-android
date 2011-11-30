@@ -33,7 +33,7 @@ abstract class StorageOperation<T> {
 
 	public RequestResult processRequest(HttpRequestBase request)
 			throws IOException {
-		HttpClient httpClient = Utility.getFullTrustedHttpClient();
+		HttpClient httpClient = Utility.getDefaultHttpClient();
 		HttpResponse httpResponse = httpClient.execute(request);
 		result.startDate = new Date();
 		result.statusCode = httpResponse.getStatusLine().getStatusCode();

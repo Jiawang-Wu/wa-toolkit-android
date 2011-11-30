@@ -191,6 +191,10 @@ public class Utility {
 		return string.substring(i);
 	}
 	
+	public static HttpClient getDefaultHttpClient() {
+		return getFullTrustedHttpClient();
+	}
+	
 	public static HttpClient getFullTrustedHttpClient() {
         try {
             KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
