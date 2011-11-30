@@ -66,19 +66,19 @@
     <string name="error_missing_cloud_ready_simple_parameters">You must update valid value for CloudReadySimple_ProxyService in the application res/values/strings.xml file before running the first time.</string>
     
     <!-- configuration -->      
-    <string name="toolkit_connection_type">{set to Direct or CloudReadySimple or CloudReadyACS}</string>
+	<string name="toolkit_connection_type">CLOUDREADYSIMPLE</string>
     
     <!-- configuration acs -->      
-    <string name="cloud_ready_acs_namespace">{the namespace of the ACS service you are using}</string>
-    <string name="cloud_ready_acs_realm">uri:wazmobiletoolkit</string>
-    <string name="cloud_ready_acs_proxy_service">{the service name where the ACS Cloud Ready package is deployed}</string>
-    <string name="cloud_ready_acs_symmetric_key">{symmetric key}</string>
+	<string name="cloud_ready_acs_namespace">wazmobiletoolkitdev</string>
+	<string name="cloud_ready_acs_realm">uri:wazmobiletoolkit</string>
+	<string name="cloud_ready_acs_proxy_service">https://panthroacs.cloudapp.net</string>
+	<string name="cloud_ready_acs_symmetric_key">y3xy8I94QdKT/fuX72W/IhpwM+0TqcQEfYeDTs/vzlo=</string>
         
     <!-- configuration waz services -->      
-    <string name="cloud_ready_simple_proxy_service">{the service name where the Membership Cloud Ready package is deployed}</string>
+    <string name="cloud_ready_simple_proxy_service">http://192.168.129.40:10080</string>
     
     <!-- configuration direct -->      
-    <string name="direct_account_name">{the name of the Windows Azure storage account}</string>
-    <string name="direct_access_key">{the access key for the storage account}</string>  
+    <string name="direct_account_name">panthro</string>
+    <string name="direct_access_key">9r3qbPdSzEzp/CQsVm64eY3ntmgJoeVkdeGuI1qJH4xv+JcJiFDFo5aKcinaA9oPdoUzwsHEO17IA8lwZZHGMA==</string>  
     
 </resources>
