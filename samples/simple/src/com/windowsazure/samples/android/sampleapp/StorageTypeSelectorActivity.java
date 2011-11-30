@@ -39,9 +39,9 @@ public class StorageTypeSelectorActivity extends SecuritableActivity {
 
 	protected void onResume() {
 		super.onResume();
-		tableButton.setEnabled(true);
-		blobButton.setEnabled(true);
-		queueButton.setEnabled(true);
+		if (tableButton != null) tableButton.setEnabled(true);
+		if (blobButton != null) blobButton.setEnabled(true);
+		if (queueButton != null) queueButton.setEnabled(true);
 	}
     
 	private void disableButtons()

@@ -1,4 +1,4 @@
-package com.microsoft.windowsazure.samples;
+package com.microsoft.samples.windowsazure.android.accesscontrol.sampleapp;
 
 import android.app.Activity;
 import android.os.Bundle;
