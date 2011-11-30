@@ -15,7 +15,6 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
@@ -71,7 +70,7 @@ public class WAZServiceAccount implements CloudClientAccount {
 		HttpPost request = new HttpPost(PathUtility.appendPathToUri(this.m_WazServiceBaseUri, LOGIN_PATH));
 		request.setEntity(new ByteArrayEntity(loginXmlString.getBytes()));
 		request.setHeader("Content-Type", "text/xml");
-		HttpClient client = Utility.getFullTrustedHttpClient();
+		HttpClient client = Utility.getDefaultHttpClient();
 		HttpResponse httpResponse = client.execute(request);
 		
 		if (httpResponse.getStatusLine().getStatusCode() == 200) {
@@ -133,7 +132,7 @@ public class WAZServiceAccount implements CloudClientAccount {
 		HttpPost request = new HttpPost(PathUtility.appendPathToUri(this.m_WazServiceBaseUri, REGISTER_PATH));
 		request.setEntity(new ByteArrayEntity(registerXmlString.getBytes()));
 		request.setHeader("Content-Type", "text/xml");
-		HttpClient client = new DefaultHttpClient();
+		HttpClient client = Utility.getDefaultHttpClient();
 		HttpResponse httpResponse = client.execute(request);
 		
 		if (httpResponse.getStatusLine().getStatusCode() == 200) {

@@ -43,10 +43,7 @@ final class StorageErrorResponse {
 
 			// SAS Service error <string></string>
 			if (root.getNodeName().equals("string")) {
-				Element stringElement = (Element) root.getElementsByTagName(
-						"string").item(0);
-				m_ErrorInfo.errorCode = m_ErrorInfo.errorMessage = stringElement
-						.getTextContent();
+				m_ErrorInfo.errorCode = m_ErrorInfo.errorMessage = ((Element) root).getTextContent();
 			} else // WA error <Code></Code><Message></Message>
 			{
 				Element codeElement = (Element) root.getElementsByTagName(

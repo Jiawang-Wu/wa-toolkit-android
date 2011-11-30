@@ -85,7 +85,7 @@ public class WAZServiceAccountAcs implements CloudClientAccount {
 		request.setEntity(new ByteArrayEntity(loginXmlString.getBytes()));
 		request.setHeader("Content-Type", "text/xml");
 		request.addHeader("Authorization", "OAuth " + this.m_Token);
-		HttpClient client = Utility.getFullTrustedHttpClient();
+		HttpClient client = Utility.getDefaultHttpClient();
 		HttpResponse httpResponse = client.execute(request);
 		
 		if (httpResponse.getStatusLine().getStatusCode() != 200)
