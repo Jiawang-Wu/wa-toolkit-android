@@ -21,8 +21,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-public class WAZServiceRegisterActivity extends Activity
-{
+public class WAZServiceRegisterActivity extends Activity {
     private Button registerButton;
 	private EditText wasServicesBaseUrlText;
 	private EditText usernameText;
@@ -38,13 +37,12 @@ public class WAZServiceRegisterActivity extends Activity
 	private EditText confirmPasswordText;
 	private AsyncTask<Void, Void, AlertDialog.Builder> currentTask;
 
-	public void onCreate(Bundle savedInstanceState)
-    {
+	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
     	setContentView(R.layout.waz_service_registration);
-    	
+
         TextView title = (TextView)findViewById(R.id.header_title);
         title.setText(getString(R.string.was_service_registration_title));
 
@@ -61,7 +59,7 @@ public class WAZServiceRegisterActivity extends Activity
     	confirmPasswordLabel = (TextView)findViewById(R.id.confirm_password_label);
     	confirmPasswordText = (EditText)findViewById(R.id.confirm_password_value);
     	progressBar = (ProgressBar)findViewById(R.id.waz_service_login_progress);
-        
+
     	TextWatcher passwordTextWatcher = new TextWatcher() {
 			public void afterTextChanged(Editable s) {
 				onPasswordChange();
@@ -94,33 +92,30 @@ public class WAZServiceRegisterActivity extends Activity
 		finish();
 	}
 
-	protected void onPause()
-	{
+	protected void onPause() {
 		super.onPause();
-		AsyncTask<Void, Void, Builder> task = currentTask; 
-		if (task != null)
-		{
+		AsyncTask<Void, Void, Builder> task = currentTask;
+		if (task != null) {
 			task.cancel(true);
 			currentTask = null;
 		}
 	}
 
 	private void onRegisterButton(View view) {
-		if (this.arePasswordsEqual())
-		{
+		if (this.arePasswordsEqual()) {
 			final WAZServiceRegisterActivity thisActivity = this;
 			class RegisterTask extends AsyncTask<Void, Void, AlertDialog.Builder> {
 				protected AlertDialog.Builder doInBackground(Void... params) {
 					try {
 						WAZServiceAccount account = new WAZServiceAccount(
-								new WAZServiceUsernameAndPassword(usernameText.getText().toString(), passwordText.getText().toString()), 
+								new WAZServiceUsernameAndPassword(usernameText.getText().toString(), passwordText.getText().toString()),
 								new URI(wasServicesBaseUrlText.getText().toString()));
-						
+
 						account.register(emailText.getText().toString());
-						
+
 						// Just in case, we force a log-in to check our new account
 						account.getCredentials();
-						
+
 						((SampleApplication) getApplication()).setCloudClientAccount(account);
 					}
 			    	catch (Exception exception) {
@@ -132,7 +127,7 @@ public class WAZServiceRegisterActivity extends Activity
 					}
 					return null;
 			    }
-				
+
 				protected void onPreExecute() {
 				    registerButton.setVisibility(View.GONE);
 					wasServicesBaseUrlText.setVisibility(View.GONE);
@@ -148,7 +143,7 @@ public class WAZServiceRegisterActivity extends Activity
 					confirmPasswordText.setVisibility(View.GONE);
 					progressBar.setVisibility(View.VISIBLE);
 				}
-				
+
 				protected void onPostExecute(AlertDialog.Builder dialogBuilder) {
 					if (dialogBuilder == null) {
 				    	Intent storageTypeSelector = new Intent(thisActivity, StorageTypeSelectorActivity.class);
@@ -178,8 +173,7 @@ public class WAZServiceRegisterActivity extends Activity
 			currentTask = new RegisterTask();
 			currentTask.execute();
 		}
-		else
-		{
+		else {
 			AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
 			dialogBuilder.setTitle("Can't complete registration");
 			dialogBuilder.setMessage("The password and the confirmation password don't match");

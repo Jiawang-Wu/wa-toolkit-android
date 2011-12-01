@@ -23,16 +23,16 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class StorageEntityActivity extends SecuritableActivity {
-	
+
 	static final String TYPE_NAMESPACE = "com.windowsazure.samples.android.sampleapp.storage_entity.type";
 	static final String TITLE_NAMESPACE = "com.windowsazure.samples.android.sampleapp.storage_entity.title";
 	static final String PARTITION_KEY_NAMESPACE = "com.windowsazure.samples.android.sampleapp.storage_entity.partition_key";
 	static final String ROW_KEY_NAMESPACE = "com.windowsazure.samples.android.sampleapp.storage_entity.row_key";
 	static final String TABLE_NAME_NAMESPACE = "com.windowsazure.samples.android.sampleapp.storage_entity.table_name";
-	
+
 	static final int OPERATION_TYPE_ADD = 1;
 	static final int OPERATION_TYPE_EDIT = 2;
-	
+
 	private static final String PARTITION_KEY_FIELD_NAME = "PartitionKey";
 	private static final String ROW_KEY_FIELD_NAME = "RowKey";
 	private static final String TIMESTAMP_FIELD_NAME = "Timestamp";
@@ -45,50 +45,48 @@ public class StorageEntityActivity extends SecuritableActivity {
 	private ArrayList<View> entityViews = new ArrayList<View>();
 	private Button saveButton;
 	private AsyncTask<Void, Void, AlertDialog.Builder> currentTask;
-	
+
     @Override
     public void onCreateCompleted(Bundle savedInstanceState) {
-    	super.onCreateCompleted(savedInstanceState);    	
-    	
+    	super.onCreateCompleted(savedInstanceState);
+
     	this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.storage_entity);
-        
+
         saveButton = (Button)findViewById(R.id.header_save_button);
         Button backButton = (Button)findViewById(R.id.header_back_button);
         TextView title = (TextView)findViewById(R.id.header_title);
 	    progressBar = (ProgressBar) findViewById(R.id.storage_entity_progress);
-        
+
         saveButton.setVisibility(View.VISIBLE);
         backButton.setVisibility(View.VISIBLE);
 
-        Bundle optionSet = getIntent().getExtras();  
+        Bundle optionSet = getIntent().getExtras();
         String text = optionSet.getString(StorageEntityActivity.TITLE_NAMESPACE);
         title.setText(text);
-        
-        operationType = optionSet.getInt(TYPE_NAMESPACE);  
+
+        operationType = optionSet.getInt(TYPE_NAMESPACE);
 
         tableName = optionSet().getString(StorageEntityActivity.TABLE_NAME_NAMESPACE);
-        
+
         if (operationType == StorageEntityActivity.OPERATION_TYPE_EDIT) {
 	        partitionKey = optionSet.getString(StorageEntityActivity.PARTITION_KEY_NAMESPACE);
 	        rowKey = optionSet.getString(StorageEntityActivity.ROW_KEY_NAMESPACE);
         }
-        
+
         backButton.setOnClickListener(new View.OnClickListener( ) {
         	public void onClick(View view) { onBackButton(view); }
         });
-        
+
         saveButton.setOnClickListener(new View.OnClickListener( ) {
         	public void onClick(View view) { onSaveButton(view); }
         });
     }
-	
-	protected void onPause()
-	{
+
+	protected void onPause() {
 		super.onPause();
-		AsyncTask<Void, Void, Builder> task = currentTask; 
-		if (task != null)
-		{
+		AsyncTask<Void, Void, Builder> task = currentTask;
+		if (task != null) {
 			task.cancel(true);
 			currentTask = null;
 		}
@@ -96,7 +94,7 @@ public class StorageEntityActivity extends SecuritableActivity {
 
 	public void onStart() {
 		super.onStart();
-		
+
 		final LinearLayout layout = getLayout();
 		final StorageEntityActivity thisActivity = this;
 
@@ -104,27 +102,23 @@ public class StorageEntityActivity extends SecuritableActivity {
 		     private Iterable<Map<String, Object>> entities;
 
 			protected AlertDialog.Builder doInBackground(Void... dummy) {
-		 		try
-				{
+		 		try {
 					CloudTableClient tableClient = getSampleApplication().getCloudClientAccount().createCloudTableClient();
 					StorageCredentials tableCredentials = tableClient.getCredentials();
 
 					switch (operationType){
-						case OPERATION_TYPE_EDIT:
-						{
+						case OPERATION_TYPE_EDIT: {
 							String filter = String.format("PartitionKey eq '%s' and RowKey eq '%s'", partitionKey, rowKey);
 							entities = CloudTableObject.query(tableClient.getEndpoint(), tableCredentials, tableName, filter);
 							break;
 						}
-						case OPERATION_TYPE_ADD:
-						{
+						case OPERATION_TYPE_ADD: {
 							entities = CloudTableObject.query(tableClient.getEndpoint(), tableCredentials, tableName, null, 1);
 							break;
 						}
 					}
 				}
-				catch (Exception exception)
-				{
+				catch (Exception exception) {
 					return dialogToShow("Couldn't complete the operation", exception);
 				}
 		 		return null;
@@ -133,26 +127,21 @@ public class StorageEntityActivity extends SecuritableActivity {
 		     protected void onPreExecute() {
 		    	progressBar.setVisibility(View.VISIBLE);
 		     }
-		     
+
 		     protected void onPostExecute(AlertDialog.Builder dialogBuilder) {
-		    	 if (dialogBuilder == null)
-		    	 {
+		    	 if (dialogBuilder == null) {
 						switch (operationType){
-						case OPERATION_TYPE_EDIT:
-						{
-							if (entities.iterator().hasNext())
-							{
+						case OPERATION_TYPE_EDIT: {
+							if (entities.iterator().hasNext()) {
 								int i = 0;
-								for (Entry<String, Object> prototypeProperty : entities.iterator().next().entrySet())
-								{
+								for (Entry<String, Object> prototypeProperty : entities.iterator().next().entrySet()) {
 									addTextView("field_" + i + "_text_view", prototypeProperty.getKey(), layout);
 							   		addEditView(prototypeProperty.getKey(), prototypeProperty.getValue().toString(),
 							   				layout, isEditableField(prototypeProperty.getKey()));
 						   			++i;
 								}
 							}
-							else
-							{
+							else {
 								AlertDialog.Builder unexpectedDialogBuilder = new AlertDialog.Builder(thisActivity);
 								unexpectedDialogBuilder.setTitle("Couldn't obtain the entity to edit");
 								unexpectedDialogBuilder.setMessage("The entity doesn't appear to exist any more");
@@ -162,26 +151,21 @@ public class StorageEntityActivity extends SecuritableActivity {
 							}
 							break;
 						}
-						case OPERATION_TYPE_ADD:
-						{
-							if (entities.iterator().hasNext())
-							{
+						case OPERATION_TYPE_ADD: {
+							if (entities.iterator().hasNext()) {
 								int i = 0;
-								for (Entry<String, Object> prototypeProperty : entities.iterator().next().entrySet())
-								{
-									if (!prototypeProperty.getKey().equals(TIMESTAMP_FIELD_NAME))
-									{
+								for (Entry<String, Object> prototypeProperty : entities.iterator().next().entrySet()) {
+									if (!prototypeProperty.getKey().equals(TIMESTAMP_FIELD_NAME)) {
 										addTextView("field_" + i + "_text_view", prototypeProperty.getKey(), layout);
 							   			addEditView(prototypeProperty.getKey(), "", layout, true);
 									}
 						   			++i;
 								}
 							}
-							else
-							{
+							else {
 				   				addTextView("partition_key_text_view", PARTITION_KEY_FIELD_NAME, layout);
 				   				addEditView(PARTITION_KEY_FIELD_NAME, "", layout, true);
-				   				
+
 				   				addTextView("row_key_text_view", ROW_KEY_FIELD_NAME, layout);
 				   				addEditView(ROW_KEY_FIELD_NAME, "", layout, true);
 							}
@@ -189,8 +173,7 @@ public class StorageEntityActivity extends SecuritableActivity {
 						}
 					}
 				}
-		    	else
-		    	{
+		    	else {
 			    	Dialog dialog = dialogBuilder.create();
 			    	dialog.setCanceledOnTouchOutside(true);
 			    	dialog.show();
@@ -212,7 +195,7 @@ public class StorageEntityActivity extends SecuritableActivity {
 	private LinearLayout getLayout() {
 		return (LinearLayout)findViewById(R.id.storage_entity);
 	}
-	
+
     private void onBackButton(View v) {
     	finish();
 	}
@@ -221,21 +204,18 @@ public class StorageEntityActivity extends SecuritableActivity {
     	saveButton.setEnabled(false);
 		class SaveEntityDataTask extends AsyncTask<Void, Void, AlertDialog.Builder> {
 		     protected void onPreExecute() {
-			 	for (View view : entityViews)
-				{
+			 	for (View view : entityViews) {
 			 		view.setVisibility(View.GONE);
 				}
 		    	progressBar.setVisibility(View.VISIBLE);
 		     }
 
 		     protected AlertDialog.Builder doInBackground(Void... dummy) {
-		    	try
-		    	{
+		    	try {
 					CloudTableClient tableClient = getSampleApplication().getCloudClientAccount().createCloudTableClient();
 					StorageCredentials tableCredentials = tableClient.getCredentials();
 					Map<String, Object> entity = new Hashtable<String, Object>();
-					for (EditText editText : getEditTexts())
-					{
+					for (EditText editText : getEditTexts()) {
 						entity.put((String) editText.getTag(), editText.getText().toString());
 					}
 			    	switch (operationType){
@@ -248,8 +228,7 @@ public class StorageEntityActivity extends SecuritableActivity {
 			    	}
 			    	return null;
 		    	}
-		    	catch (Exception exception)
-		    	{
+		    	catch (Exception exception) {
 		    		return dialogToShow("Couldn't save entity", exception);
 		    	}
 			}
@@ -257,10 +236,8 @@ public class StorageEntityActivity extends SecuritableActivity {
 		    	 if (dialogBuilder == null) {
 						finish();
 		    	 }
-		    	 else
-		    	 {
-					 for (View view : entityViews)
-					 {
+		    	 else {
+					 for (View view : entityViews) {
 						 view.setVisibility(View.VISIBLE);
 					 }
 			    	 progressBar.setVisibility(View.GONE);
@@ -273,19 +250,19 @@ public class StorageEntityActivity extends SecuritableActivity {
 		     }
 		}
 		currentTask = new SaveEntityDataTask();
-		currentTask.execute();	
+		currentTask.execute();
 	}
-    
+
     private void addTextView(String id, String value, LinearLayout layout) {
     	TextView label = new TextView(this);
 		label.setTag(id);
-		label.setText(value);	
+		label.setText(value);
 		label.setTextSize(20);
 		label.setPadding(0, 5, 0, 0);
 		layout.addView(label);
 		entityViews.add(label);
     }
-    
+
     private void addEditView(String id, String value, LinearLayout layout, boolean enabled) {
 		EditText field = new EditText(this);
 		field.setEnabled(enabled);
@@ -299,11 +276,9 @@ public class StorageEntityActivity extends SecuritableActivity {
     private ArrayList<EditText> getEditTexts() {
 		LinearLayout layout = getLayout();
     	ArrayList<EditText> editViews = new ArrayList<EditText>();
-		for (int i = 0; i < layout.getChildCount(); ++i)
-		{
+		for (int i = 0; i < layout.getChildCount(); ++i) {
 			View child = layout.getChildAt(i);
-			if (child instanceof EditText)
-			{
+			if (child instanceof EditText) {
 				editViews.add((EditText) child);
 			}
 		}

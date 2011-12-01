@@ -69,12 +69,10 @@ public class StorageBlobViewActivity extends SecuritableActivity {
         });
     }
 
-	protected void onPause()
-	{
+	protected void onPause() {
 		super.onPause();
-		AsyncTask<StorageBlobViewActivity, Void, Builder> task = currentTask; 
-		if (task != null)
-		{
+		AsyncTask<StorageBlobViewActivity, Void, Builder> task = currentTask;
+		if (task != null) {
 			task.cancel(true);
 			currentTask = null;
 		}
@@ -94,7 +92,7 @@ public class StorageBlobViewActivity extends SecuritableActivity {
 		ByteArrayOutputStream outputStream;
 		Bitmap bitmap;
 		boolean imageIsTooBig = false;
-		
+
 		@Override
 		protected AlertDialog.Builder doInBackground(StorageBlobViewActivity... params) {
 			try {
@@ -112,23 +110,20 @@ public class StorageBlobViewActivity extends SecuritableActivity {
 				options.inJustDecodeBounds = true;
 				bitmap = BitmapFactory.decodeStream(intputStream, null, options);
 				intputStream.close();
-				
-				if (options.outHeight * options.outWidth > 512 * 512)
-				{
+
+				if (options.outHeight * options.outWidth > 512 * 512) {
 					imageIsTooBig = true;
 				}
-				else
-				{
+				else {
 					intputStream = new ByteArrayInputStream(contentBytes);
 					bitmap = BitmapFactory.decodeStream(intputStream);
 					intputStream.close();
 				}
-				
+
 			} catch (Exception e) {
 				return params[0].dialogToShow("Couldn't view the Blob's contents", e);
 			} catch (OutOfMemoryError e) {
-				if (bitmap != null)
-				{
+				if (bitmap != null) {
 					bitmap.recycle();
 					bitmap = null;
 				}
@@ -145,14 +140,12 @@ public class StorageBlobViewActivity extends SecuritableActivity {
 		}
 
 		protected void onPostExecute(AlertDialog.Builder dialogBuilder) {
-			if (imageIsTooBig)
-			{
+			if (imageIsTooBig) {
 				textView.setText("The image is too big and can't be shown. Only images smaller than 512px x 512px are supported.");
 				textView.setVisibility(View.VISIBLE);
 				scrollView.setVisibility(View.VISIBLE);
 			}
-			else if (dialogBuilder != null)
-			{
+			else if (dialogBuilder != null) {
 				AlertDialog dialog = dialogBuilder.create();
 				dialog.setCanceledOnTouchOutside(true);
 				dialog.show();

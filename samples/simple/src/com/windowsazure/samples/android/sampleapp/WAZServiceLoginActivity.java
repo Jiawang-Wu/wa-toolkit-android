@@ -19,8 +19,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-public class WAZServiceLoginActivity extends Activity
-{
+public class WAZServiceLoginActivity extends Activity {
     private Button loginButton;
 	private EditText wasServicesBaseUrlText;
 	private EditText usernameText;
@@ -32,13 +31,12 @@ public class WAZServiceLoginActivity extends Activity
 	private Button registerButton;
 	private AsyncTask<Void, Void, AlertDialog.Builder> currentTask;
 
-	public void onCreate(Bundle savedInstanceState)
-    {
+	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
     	setContentView(R.layout.waz_service_login);
-    	
+
         TextView title = (TextView)findViewById(R.id.header_title);
         title.setText(getString(R.string.was_service_login_title));
 
@@ -51,7 +49,7 @@ public class WAZServiceLoginActivity extends Activity
     	passwordLabel = (TextView)findViewById(R.id.password_label);
     	passwordText = (EditText)findViewById(R.id.password_value);
     	progressBar = (ProgressBar)findViewById(R.id.waz_service_login_progress);
-        
+
         loginButton.setOnClickListener(new View.OnClickListener() {
         	public void onClick(View view) { onLoginButton(view); }
         	});
@@ -61,12 +59,10 @@ public class WAZServiceLoginActivity extends Activity
         registerButton.setVisibility(View.VISIBLE);
     }
 
-	protected void onPause()
-	{
+	protected void onPause() {
 		super.onPause();
-		AsyncTask<Void, Void, Builder> task = currentTask; 
-		if (task != null)
-		{
+		AsyncTask<Void, Void, Builder> task = currentTask;
+		if (task != null) {
 			task.cancel(true);
 			currentTask = null;
 		}
@@ -75,18 +71,18 @@ public class WAZServiceLoginActivity extends Activity
 	private void onLoginButton(View view) {
 		loginButton.setEnabled(false);
 		registerButton.setEnabled(false);
-		
+
 		final WAZServiceLoginActivity thisActivity = this;
 		class LoginTask extends AsyncTask<Void, Void, AlertDialog.Builder> {
 			protected AlertDialog.Builder doInBackground(Void... params) {
 				try {
 					WAZServiceAccount account = new WAZServiceAccount(
-							new WAZServiceUsernameAndPassword(usernameText.getText().toString(), passwordText.getText().toString()), 
+							new WAZServiceUsernameAndPassword(usernameText.getText().toString(), passwordText.getText().toString()),
 							new URI(wasServicesBaseUrlText.getText().toString()));
-					
+
 					// We call getCredentials to force the account to perform a login
 					account.getCredentials();
-					
+
 					((SampleApplication) getApplication()).setCloudClientAccount(account);
 				}
 		    	catch (Exception exception) {
@@ -98,7 +94,7 @@ public class WAZServiceLoginActivity extends Activity
 				}
 				return null;
 		    }
-			
+
 			protected void onPreExecute() {
 			    loginButton.setVisibility(View.GONE);
 				wasServicesBaseUrlText.setVisibility(View.GONE);
@@ -110,7 +106,7 @@ public class WAZServiceLoginActivity extends Activity
 				passwordText.setVisibility(View.GONE);
 				progressBar.setVisibility(View.VISIBLE);
 			}
-			
+
 			protected void onPostExecute(AlertDialog.Builder dialogBuilder) {
 				if (dialogBuilder == null) {
 			    	Intent storageTypeSelector = new Intent(thisActivity, StorageTypeSelectorActivity.class);
@@ -138,7 +134,7 @@ public class WAZServiceLoginActivity extends Activity
 		currentTask = new LoginTask();
 		currentTask.execute();
 	}
-	
+
 	protected void onRegisterButton(View view) {
 		loginButton.setEnabled(false);
 		registerButton.setEnabled(false);

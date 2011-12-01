@@ -73,12 +73,10 @@ public class StorageEntityListActivity extends SecuritableActivity implements On
         });
     }
 
-	protected void onPause()
-	{
+	protected void onPause() {
 		super.onPause();
-		AsyncTask<Void, Void, Builder> task = currentTask; 
-		if (task != null)
-		{
+		AsyncTask<Void, Void, Builder> task = currentTask;
+		if (task != null) {
 			task.cancel(true);
 			currentTask = null;
 		}
@@ -148,12 +146,11 @@ public class StorageEntityListActivity extends SecuritableActivity implements On
     	finish();
 	}
 
-    protected void onResume()
-    {
+    protected void onResume() {
     	super.onResume();
     	if (addButton != null) addButton.setEnabled(true);
     }
-    
+
     private void onAddButton(View v) {
     	addButton.setEnabled(false);
 		Intent intent;

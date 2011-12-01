@@ -99,12 +99,10 @@ public class StorageCreateItemActivity extends SecuritableActivity {
         });
     }
 
-	protected void onPause()
-	{
+	protected void onPause() {
 		super.onPause();
-		AsyncTask<Void, Void, Builder> task = currentTask; 
-		if (task != null)
-		{
+		AsyncTask<Void, Void, Builder> task = currentTask;
+		if (task != null) {
 			task.cancel(true);
 			currentTask = null;
 		}
@@ -155,7 +153,7 @@ public class StorageCreateItemActivity extends SecuritableActivity {
 
     private void onCreateButton(View v) {
     	createButton.setEnabled(false);
-    	
+
     	final EditText nameView = (EditText)findViewById(R.id.storage_create_item_value);
     	// TODO: Validate names according to the API.
 

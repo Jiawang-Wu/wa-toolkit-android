@@ -15,23 +15,23 @@ public class StorageTypeSelectorActivity extends SecuritableActivity {
 
 	@Override
     public void onCreateCompleted(Bundle savedInstanceState) {
-        super.onCreateCompleted(savedInstanceState);      
+        super.onCreateCompleted(savedInstanceState);
 
     	this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.storage_type_selector);
-        
+
         tableButton = (Button)findViewById(R.id.table_storage_button);
         blobButton = (Button)findViewById(R.id.blob_storage_button);
         queueButton = (Button)findViewById(R.id.queue_storage_button);
-        
+
         tableButton.setOnClickListener(new View.OnClickListener( ) {
         	public void onClick(View view) { listTables(); }
         });
-        
+
         blobButton.setOnClickListener(new View.OnClickListener( ) {
         	public void onClick(View view) { listContainers(); }
         });
-        
+
         queueButton.setOnClickListener(new View.OnClickListener( ) {
         	public void onClick(View view) { listQueues(); }
         });
@@ -43,14 +43,13 @@ public class StorageTypeSelectorActivity extends SecuritableActivity {
 		if (blobButton != null) blobButton.setEnabled(true);
 		if (queueButton != null) queueButton.setEnabled(true);
 	}
-    
-	private void disableButtons()
-	{
+
+	private void disableButtons() {
 		tableButton.setEnabled(false);
 		blobButton.setEnabled(false);
 		queueButton.setEnabled(false);
 	}
-	
+
     private void listTables() {
     	this.disableButtons();
     	Intent launchTableDisplay = new Intent(this, StorageListActivity.class);

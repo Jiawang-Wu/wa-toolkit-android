@@ -123,14 +123,12 @@ public class StorageListActivity extends SecuritableActivity implements OnItemCl
 		     }
 
 		     protected void onPostExecute(AlertDialog.Builder dialogBuilder) {
-		    	 if (dialogBuilder == null)
-		    	 {
+		    	 if (dialogBuilder == null) {
 			    	items = listedItems;
 				    listView.setAdapter(new ArrayAdapter<String>(thisActivity, android.R.layout.simple_list_item_1, items));
 			    	listView.setVisibility(View.VISIBLE);
 		    	 }
-		    	 else
-		    	 {
+		    	 else {
 		    		 Dialog dialog = dialogBuilder.create();
 		    		 dialog.setCanceledOnTouchOutside(true);
 		    		 dialog.show();
@@ -143,17 +141,15 @@ public class StorageListActivity extends SecuritableActivity implements OnItemCl
 		 currentTask.execute(listType);
 	}
 
-	protected void onPause()
-	{
+	protected void onPause() {
 		super.onPause();
-		AsyncTask<Integer, Integer, AlertDialog.Builder> task = currentTask; 
-		if (task != null)
-		{
+		AsyncTask<Integer, Integer, AlertDialog.Builder> task = currentTask;
+		if (task != null) {
 			task.cancel(true);
 			currentTask = null;
 		}
 	}
-	
+
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 		Intent storageEntityListIntent = new Intent(this, StorageEntityListActivity.class);
 		Intent storageListIntent = new Intent(this, StorageListActivity.class);
@@ -194,8 +190,7 @@ public class StorageListActivity extends SecuritableActivity implements OnItemCl
     	finish();
 	}
 
-    protected void onResume()
-    {
+    protected void onResume() {
     	super.onResume();
     	if (addButton != null) addButton.setEnabled(true);
     }
