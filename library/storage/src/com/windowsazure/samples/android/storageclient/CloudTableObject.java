@@ -240,4 +240,8 @@ public class CloudTableObject<E extends CloudTableEntity> {
 		
 	}
 
+	public static String encodeValueForFilter(String value) {
+		return value.replace("'", "''");
+	}
+
 }

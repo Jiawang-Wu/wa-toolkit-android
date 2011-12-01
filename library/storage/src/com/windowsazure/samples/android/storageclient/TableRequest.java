@@ -177,10 +177,10 @@ final class TableRequest {
 		CloudTableEntity result = new CloudTableEntityKey();
 		for (int i = 0; i < properties.length; i++) {
 			if (properties[i].getName().equals("PartitionKey")) {
-				result.PartitionKey = Utility.safeEncode(properties[i].getRepresentation());
+				result.PartitionKey = Utility.safeEncode(CloudTableObject.encodeValueForFilter(properties[i].getRepresentation()));
 				continue;
 			} else if (properties[i].getName().equals("RowKey")) {
-				result.RowKey = Utility.safeEncode(properties[i].getRepresentation());
+				result.RowKey = Utility.safeEncode(CloudTableObject.encodeValueForFilter(properties[i].getRepresentation()));
 			}
 		}
 		Utility.assertNotNull("PartitionKey property not found", result.PartitionKey);
