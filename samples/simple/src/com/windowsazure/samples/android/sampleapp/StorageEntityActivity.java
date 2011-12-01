@@ -10,6 +10,7 @@ import com.windowsazure.samples.android.storageclient.CloudTableObject;
 import com.windowsazure.samples.android.storageclient.StorageCredentials;
 
 import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.app.Dialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -43,6 +44,7 @@ public class StorageEntityActivity extends SecuritableActivity {
 	private ProgressBar progressBar;
 	private ArrayList<View> entityViews = new ArrayList<View>();
 	private Button saveButton;
+	private AsyncTask<Void, Void, AlertDialog.Builder> currentTask;
 	
     @Override
     public void onCreateCompleted(Bundle savedInstanceState) {
@@ -81,7 +83,18 @@ public class StorageEntityActivity extends SecuritableActivity {
         });
     }
 	
-    public void onStart() {
+	protected void onPause()
+	{
+		super.onPause();
+		AsyncTask<Void, Void, Builder> task = currentTask; 
+		if (task != null)
+		{
+			task.cancel(true);
+			currentTask = null;
+		}
+	}
+
+	public void onStart() {
 		super.onStart();
 		
 		final LinearLayout layout = getLayout();
@@ -183,9 +196,11 @@ public class StorageEntityActivity extends SecuritableActivity {
 			    	dialog.show();
 		    	 }
 		    	progressBar.setVisibility(View.GONE);
+				currentTask = null;
 		     }
 		}
-		new LoadEntityDataTask().execute();
+		currentTask = new LoadEntityDataTask();
+		currentTask.execute();
 	}
 
 	private boolean isEditableField(String fieldName) {
@@ -254,9 +269,11 @@ public class StorageEntityActivity extends SecuritableActivity {
 				     dialog.setCanceledOnTouchOutside(true);
 				     dialog.show();
 		    	 }
+				currentTask = null;
 		     }
 		}
-		new SaveEntityDataTask().execute();	
+		currentTask = new SaveEntityDataTask();
+		currentTask.execute();	
 	}
     
     private void addTextView(String id, String value, LinearLayout layout) {

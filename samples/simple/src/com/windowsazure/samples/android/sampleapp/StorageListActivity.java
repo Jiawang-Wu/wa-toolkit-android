@@ -39,6 +39,7 @@ public class StorageListActivity extends SecuritableActivity implements OnItemCl
 	private ListView listView;
 	private Button addButton;
 	private Button backButton;
+	private AsyncTask<Integer, Integer, AlertDialog.Builder> currentTask;
 
     @Override
     public void onCreateCompleted(Bundle savedInstanceState) {
@@ -135,11 +136,24 @@ public class StorageListActivity extends SecuritableActivity implements OnItemCl
 		    		 dialog.show();
 		    	 }
 			    progressBar.setVisibility(View.GONE);
+			    currentTask = null;
 		     }
 		 };
-		 new ListItemsTask().execute(listType);
+		 currentTask = new ListItemsTask();
+		 currentTask.execute(listType);
 	}
 
+	protected void onPause()
+	{
+		super.onPause();
+		AsyncTask<Integer, Integer, AlertDialog.Builder> task = currentTask; 
+		if (task != null)
+		{
+			task.cancel(true);
+			currentTask = null;
+		}
+	}
+	
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 		Intent storageEntityListIntent = new Intent(this, StorageEntityListActivity.class);
 		Intent storageListIntent = new Intent(this, StorageListActivity.class);

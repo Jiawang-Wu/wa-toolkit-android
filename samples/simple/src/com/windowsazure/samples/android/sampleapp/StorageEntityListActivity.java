@@ -14,6 +14,7 @@ import com.windowsazure.samples.android.storageclient.CloudTableObject;
 import com.windowsazure.samples.android.storageclient.StorageCredentials;
 
 import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -40,6 +41,7 @@ public class StorageEntityListActivity extends SecuritableActivity implements On
 	private int entityListType = 0;
 	private ProgressBar progressBar;
 	private Button addButton;
+	private AsyncTask<Void, Void, AlertDialog.Builder> currentTask;
 
 	@Override
     public void onCreateCompleted(Bundle savedInstanceState) {
@@ -70,6 +72,17 @@ public class StorageEntityListActivity extends SecuritableActivity implements On
         	public void onClick(View view) { onAddButton(view); }
         });
     }
+
+	protected void onPause()
+	{
+		super.onPause();
+		AsyncTask<Void, Void, Builder> task = currentTask; 
+		if (task != null)
+		{
+			task.cancel(true);
+			currentTask = null;
+		}
+	}
 
 	private String entityName() {
 		return this.optionSet().getString(StorageEntityListActivity.TITLE_NAMESPACE);
@@ -109,7 +122,8 @@ public class StorageEntityListActivity extends SecuritableActivity implements On
 					listView.setVisibility(View.VISIBLE);
 				 }
 	    	};
-	    	new ListEntityItemsTask().execute();
+	    	currentTask = new ListEntityItemsTask();
+	    	currentTask.execute();
     }
 
 	public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {

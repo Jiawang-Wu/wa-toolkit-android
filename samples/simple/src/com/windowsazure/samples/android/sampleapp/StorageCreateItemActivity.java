@@ -12,6 +12,7 @@ import com.windowsazure.samples.android.storageclient.StorageException;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.app.Dialog;
 import android.content.Intent;
 import android.database.Cursor;
@@ -54,6 +55,7 @@ public class StorageCreateItemActivity extends SecuritableActivity {
 	private Button pickImageButton;
 	private TextView imageSelectedLabel;
 	private TextView label;
+	private AsyncTask<Void, Void, AlertDialog.Builder> currentTask;
 
 	@Override
     public void onCreateCompleted(Bundle savedInstanceState) {
@@ -97,7 +99,18 @@ public class StorageCreateItemActivity extends SecuritableActivity {
         });
     }
 
-    @Override
+	protected void onPause()
+	{
+		super.onPause();
+		AsyncTask<Void, Void, Builder> task = currentTask; 
+		if (task != null)
+		{
+			task.cancel(true);
+			currentTask = null;
+		}
+	}
+
+	@Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 
@@ -235,10 +248,12 @@ public class StorageCreateItemActivity extends SecuritableActivity {
 					dialog.setCanceledOnTouchOutside(true);
 					dialog.show();
 				}
+				currentTask = null;
 			}
 		};
 
-		new CreateItemTask().execute();
+		currentTask = new CreateItemTask();
+		currentTask.execute();
     }
 
 	private CloudBlobContainer getContainerReference(final String containerName)

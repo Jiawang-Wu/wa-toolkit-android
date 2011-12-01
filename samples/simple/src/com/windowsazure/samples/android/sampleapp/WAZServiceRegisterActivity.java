@@ -7,6 +7,7 @@ import com.windowsazure.samples.android.storageclient.wazservice.WAZServiceUsern
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -35,6 +36,7 @@ public class WAZServiceRegisterActivity extends Activity
 	private EditText emailText;
 	private TextView confirmPasswordLabel;
 	private EditText confirmPasswordText;
+	private AsyncTask<Void, Void, AlertDialog.Builder> currentTask;
 
 	public void onCreate(Bundle savedInstanceState)
     {
@@ -90,6 +92,17 @@ public class WAZServiceRegisterActivity extends Activity
     	Intent storageTypeSelector = new Intent(this, WAZServiceLoginActivity.class);
     	startActivity (storageTypeSelector);
 		finish();
+	}
+
+	protected void onPause()
+	{
+		super.onPause();
+		AsyncTask<Void, Void, Builder> task = currentTask; 
+		if (task != null)
+		{
+			task.cancel(true);
+			currentTask = null;
+		}
 	}
 
 	private void onRegisterButton(View view) {
@@ -159,9 +172,11 @@ public class WAZServiceRegisterActivity extends Activity
 						confirmPasswordLabel.setVisibility(View.VISIBLE);
 						confirmPasswordText.setVisibility(View.VISIBLE);
 					}
+					currentTask = null;
 				}
 			}
-			new RegisterTask().execute();
+			currentTask = new RegisterTask();
+			currentTask.execute();
 		}
 		else
 		{

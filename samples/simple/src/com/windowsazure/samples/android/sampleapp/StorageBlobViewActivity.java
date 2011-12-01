@@ -7,6 +7,7 @@ import com.windowsazure.samples.android.storageclient.CloudBlobContainer;
 import com.windowsazure.samples.android.storageclient.CloudBlockBlob;
 
 import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -34,6 +35,7 @@ public class StorageBlobViewActivity extends SecuritableActivity {
 	private TextView textView;
 	private ImageView imageView;
 	private ProgressBar progressBar;
+	private DownloadContentTask currentTask;
 
     @Override
     public void onCreateCompleted(Bundle savedInstanceState) {
@@ -67,9 +69,21 @@ public class StorageBlobViewActivity extends SecuritableActivity {
         });
     }
 
-    public void onStart() {
+	protected void onPause()
+	{
+		super.onPause();
+		AsyncTask<StorageBlobViewActivity, Void, Builder> task = currentTask; 
+		if (task != null)
+		{
+			task.cancel(true);
+			currentTask = null;
+		}
+	}
+
+	public void onStart() {
     	super.onStart();
-    	new DownloadContentTask().execute(this);
+    	currentTask = new DownloadContentTask();
+    	currentTask.execute(this);
     }
 
     private void onBackButton(View v) {
@@ -153,6 +167,7 @@ public class StorageBlobViewActivity extends SecuritableActivity {
 				scrollView.setVisibility(View.VISIBLE);
 			}
 			progressBar.setVisibility(View.GONE);
+			currentTask = null;
 		}
 	}
 }
