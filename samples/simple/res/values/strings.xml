@@ -7,7 +7,7 @@
             
     <!-- storage_type_selector view -->    
     
-    <string name="storage_type_selector_title">Which type of Windows Azure® storage do you want to work with?</string>
+    <string name="storage_type_selector_title">Which type of Windows AzureÂ® storage do you want to work with?</string>
     
     <string name="table_storage_title">Table Storage</string>
     <string name="table_storage_hint">Table data similar to rows in a database.</string> 
