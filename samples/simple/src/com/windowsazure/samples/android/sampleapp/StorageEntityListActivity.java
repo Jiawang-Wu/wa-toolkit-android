@@ -41,10 +41,12 @@ public class StorageEntityListActivity extends SecuritableActivity implements On
 
 	private ExpandableListView listView;
     private SimpleExpandableListAdapter listAdapter;
+    private boolean noData = false;
 
 	private int entityListType = 0;
 	private ProgressBar progressBar;
 	private Button addButton;
+	private TextView noRecords;
 	private AsyncTask<Void, Void, AlertDialog.Builder> currentTask;
 
 	@Override
@@ -61,6 +63,8 @@ public class StorageEntityListActivity extends SecuritableActivity implements On
 
         addButton.setVisibility(View.VISIBLE);
         backButton.setVisibility(View.VISIBLE);
+        
+        noRecords = (TextView) findViewById(R.id.storage_has_no_records);
 
         title.setText(this.entityName());
 
@@ -112,16 +116,24 @@ public class StorageEntityListActivity extends SecuritableActivity implements On
 				protected void onPreExecute() {
 					listView.setVisibility(View.GONE);
 					progressBar.setVisibility(View.VISIBLE);
+			        noRecords.setVisibility(View.GONE);
 				}
 			     protected void onPostExecute(AlertDialog.Builder dialogBuilder) {
 			    	 if (dialogBuilder == null) {
-							listView.setAdapter(listAdapter);
+			    		 TextView noRecords = (TextView) findViewById(R.id.storage_has_no_records);
+			    		 if (noData) {
+				    		 noRecords.setText(R.string.storage_has_no_records);
+				    		 noRecords.setVisibility(View.VISIBLE);
+				    		 listView.setVisibility(View.GONE);
+			    		 } else {
+			    			 listView.setAdapter(listAdapter);
+			    			 listView.setVisibility(View.VISIBLE);
+			    		 }
 			    	 }
 			    	 else {
 			    		 dialogBuilder.show();
 			    	 }
 					progressBar.setVisibility(View.GONE);
-					listView.setVisibility(View.VISIBLE);
 				 }
 	    	};
 	    	currentTask = new ListEntityItemsTask();
@@ -222,6 +234,8 @@ public class StorageEntityListActivity extends SecuritableActivity implements On
 
 	    	items.add(entry);
 		}
+		
+		noData = items.isEmpty();
 
 		return new SimpleExpandableListAdapter(this,
 												groupData,
@@ -297,6 +311,8 @@ public class StorageEntityListActivity extends SecuritableActivity implements On
 
 	    	items.add(entry);
 		}
+
+		noData = items.isEmpty();
 
 		return new SimpleExpandableListAdapter(this, //context
 												groupData, //groupData
