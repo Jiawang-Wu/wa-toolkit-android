@@ -1,5 +1,6 @@
 package com.windowsazure.samples.android.storageclient;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -38,6 +39,7 @@ final class StorageErrorResponse {
 					.newInstance();
 			DocumentBuilder builder = factory.newDocumentBuilder();
 			Document dom = builder.parse(m_StreamRef);
+			
 			Element root = dom.getDocumentElement();
 
 			// SAS Service error <string></string>
