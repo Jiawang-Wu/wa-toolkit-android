@@ -3,10 +3,12 @@
     android:id="@+id/storage_list_layout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical" >    
-    
-	<include android:id="@+id/header" layout="@layout/navigation_header"/>
-    
+    android:orientation="vertical" >
+
+    <include
+        android:id="@+id/header"
+        layout="@layout/navigation_header" />
+
     <TextView
         android:id="@+id/storage_has_no_records"
         android:layout_width="wrap_content"
@@ -14,18 +16,28 @@
         android:layout_gravity="center"
         android:layout_marginTop="30dp"
         android:textAppearance="?android:attr/textAppearanceMedium" />
-    
+
     <ProgressBar
         android:id="@+id/storage_list_progress"
         style="?android:attr/progressBarStyleLarge"
-        android:layout_height="64dp"
         android:layout_width="64dp"
-		android:layout_marginTop="170dp"
-	    android:gravity="center_vertical|center_horizontal"    	
-		android:layout_gravity="center_vertical|center_horizontal|center" android:visibility="gone"/>
-	
-    	<LinearLayout android:layout_height="wrap_content" android:gravity="center" android:id="@+id/storageListButtonLayout" android:layout_width="fill_parent">
-	    <ListView android:layout_weight="1" android:id="@+id/storage_list_list_view" android:layout_height="wrap_content" android:layout_width="fill_parent"/>
-	</LinearLayout>
-		
+        android:layout_height="64dp"
+        android:layout_gravity="center_vertical|center_horizontal|center"
+        android:layout_marginTop="170dp"
+        android:gravity="center_vertical|center_horizontal"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/storageListButtonLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center" >
+
+        <ListView
+            android:id="@+id/storage_list_list_view"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+    </LinearLayout>
+
 </LinearLayout>

@@ -5,61 +5,63 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
-	<include android:id="@+id/header" layout="@layout/navigation_header"/>
+    <include
+        android:id="@+id/header"
+        layout="@layout/navigation_header" />
 
     <ProgressBar
         android:id="@+id/storage_create_item_progress"
         style="?android:attr/progressBarStyleLarge"
-        android:layout_height="64dp"
         android:layout_width="64dp"
-		android:layout_marginTop="170dp"
-	    android:gravity="center_vertical|center_horizontal"    	
-		android:layout_gravity="center_vertical|center_horizontal|center"
-		android:visibility="gone" />
-	
-	<TextView  
-	    android:id="@+id/storage_create_item_title"  
-	    android:layout_width="wrap_content"  
-	    android:layout_height="wrap_content"  
-	    android:layout_marginTop="40dp"
-	    android:textSize="10pt">  
-	</TextView>  
+        android:layout_height="64dp"
+        android:layout_gravity="center_vertical|center_horizontal|center"
+        android:layout_marginTop="170dp"
+        android:gravity="center_vertical|center_horizontal"
+        android:visibility="gone" />
 
-	<EditText  
-	    android:id="@+id/storage_create_item_value"  
-	    android:layout_height="wrap_content"
-	    android:inputType="text"  
-	    android:layout_width="fill_parent">  
-	</EditText>      
-	
-	<TextView  
-	    android:id="@+id/storage_create_item_image_selected"  
-	    android:layout_width="wrap_content"  
-	    android:layout_height="wrap_content"  
-	    android:layout_marginTop="5dp"
-	    android:textAppearance="?android:attr/textAppearanceSmall"
-	    android:visibility="gone">  
-	</TextView> 
-	
-	<Button  
-	    android:id="@+id/pick_image_button"  
-	    android:text="@string/pick_image_text"
-	    android:textColor = "#000000"
-	    android:background="@drawable/gradient"	    
-	    android:layout_height="35dp"
-	    android:layout_marginTop="5dp"
-	    android:layout_width="fill_parent"
-	    android:visibility="gone">  
-	</Button>
-	
-	<Button  
-	    android:id="@+id/storage_create_item_button"  
-	    android:text="@string/create_button_text"
-	    android:textColor = "#000000"
-	    android:background="@drawable/gradient"	    
-	    android:layout_height="35dp"
-	    android:layout_marginTop="5dp"
-	    android:layout_width="fill_parent">  
-	</Button>
+    <TextView
+        android:id="@+id/storage_create_item_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:textSize="10pt" >
+    </TextView>
+
+    <EditText
+        android:id="@+id/storage_create_item_value"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text" >
+    </EditText>
+
+    <TextView
+        android:id="@+id/storage_create_item_image_selected"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:visibility="gone" >
+    </TextView>
+
+    <Button
+        android:id="@+id/pick_image_button"
+        android:layout_width="fill_parent"
+        android:layout_height="35dp"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/gradient"
+        android:text="@string/pick_image_text"
+        android:textColor="#000000"
+        android:visibility="gone" >
+    </Button>
+
+    <Button
+        android:id="@+id/storage_create_item_button"
+        android:layout_width="fill_parent"
+        android:layout_height="35dp"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/gradient"
+        android:text="@string/create_button_text"
+        android:textColor="#000000" >
+    </Button>
 
 </LinearLayout>
