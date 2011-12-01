@@ -239,13 +239,13 @@ public class StorageEntityListActivity extends SecuritableActivity implements On
 
 		return new SimpleExpandableListAdapter(this,
 												groupData,
-												android.R.layout.simple_expandable_list_item_1,
+												R.layout.custom_wrap_content_group_item,
 												new String[] {"RowKey"},
-												new int[] { android.R.id.text1, android.R.id.text2 },
+												new int[] { R.id.wrap_content_group_text },
 												items,
-												android.R.layout.simple_expandable_list_item_2,
+												R.layout.custom_expandable_list_item, //custom childLayout
 												new String[] {"Name", "Value"},
-												new int[] { android.R.id.text1, android.R.id.text2 });
+												new int[] { R.id.text1, R.id.text2 }); //childTo
     }
 
     private SimpleExpandableListAdapter getQueueMessages() throws URISyntaxException, Exception {
