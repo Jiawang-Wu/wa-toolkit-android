@@ -98,7 +98,7 @@ public class Utility {
 		}
 	}
 
-	protected static String safeEncode(String string) throws StorageException {
+	public static String safeEncode(String string) throws StorageException {
 		if (string == null)
 			return null;
 		if (string.length() == 0)

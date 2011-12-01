@@ -35,6 +35,10 @@ public class StorageEntityListActivity extends SecuritableActivity implements On
 	static final int ENTITY_LIST_TYPE_TABLE = 1;
 	static final int ENTITY_LIST_TYPE_QUEUE = 2;
 
+	private static final String PARTITION_KEY_FIELD_NAME = "PartitionKey";
+	private static final String ROW_KEY_FIELD_NAME = "RowKey";
+	private static final String TIMESTAMP_FIELD_NAME = "Timestamp";
+
 	private ExpandableListView listView;
     private SimpleExpandableListAdapter listAdapter;
 
@@ -174,7 +178,13 @@ public class StorageEntityListActivity extends SecuritableActivity implements On
     	}
 	}
 
-    private SimpleExpandableListAdapter getTableRows() throws Exception {
+	private boolean isUserField(String fieldName) {
+		return !fieldName.equals(TIMESTAMP_FIELD_NAME)
+				&& !fieldName.equals(PARTITION_KEY_FIELD_NAME)
+				&& !fieldName.equals(ROW_KEY_FIELD_NAME);
+	}
+
+	private SimpleExpandableListAdapter getTableRows() throws Exception {
     	List<List<Map<String, String>>> items = new ArrayList<List<Map<String, String>>>();
 		List<Map<String, Object>> groupData = new ArrayList<Map<String, Object>>();
 
@@ -185,11 +195,29 @@ public class StorageEntityListActivity extends SecuritableActivity implements On
 
 			groupData.add(entity);
 
+			Map<String, String> field = new HashMap<String, String>();
+			field.put("Name", PARTITION_KEY_FIELD_NAME);
+			field.put("Value", entity.get(PARTITION_KEY_FIELD_NAME).toString());
+   			entry.add(field);
+
+			field = new HashMap<String, String>();
+			field.put("Name", ROW_KEY_FIELD_NAME);
+			field.put("Value", entity.get(ROW_KEY_FIELD_NAME).toString());
+   			entry.add(field);
+
+			field = new HashMap<String, String>();
+			field.put("Name", TIMESTAMP_FIELD_NAME);
+			field.put("Value", entity.get(TIMESTAMP_FIELD_NAME).toString());
+   			entry.add(field);
+
    			for (Entry<String, Object> property : entity.entrySet()) {
-    			Map<String, String> field = new HashMap<String, String>();
-    			field.put("Name", property.getKey());
-    			field.put("Value", property.getValue().toString());
-       			entry.add(field);
+    			if (isUserField(property.getKey()))
+    			{
+        			field = new HashMap<String, String>();
+	    			field.put("Name", property.getKey());
+	    			field.put("Value", property.getValue().toString());
+	       			entry.add(field);
+    			}
    			}
 
 	    	items.add(entry);
@@ -197,13 +225,13 @@ public class StorageEntityListActivity extends SecuritableActivity implements On
 
 		return new SimpleExpandableListAdapter(this,
 												groupData,
-												android.R.layout.simple_expandable_list_item_1,
+												R.layout.custom_wrap_content_group_item,
 												new String[] {"RowKey"},
-												new int[] { android.R.id.text1, android.R.id.text2 },
+												new int[] { R.id.wrap_content_group_text },
 												items,
-												android.R.layout.simple_expandable_list_item_2,
+												R.layout.custom_expandable_list_item, //custom childLayout
 												new String[] {"Name", "Value"},
-												new int[] { android.R.id.text1, android.R.id.text2 });
+												new int[] { R.id.text1, R.id.text2 }); //childTo
     }
 
     private SimpleExpandableListAdapter getQueueMessages() throws URISyntaxException, Exception {

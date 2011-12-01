@@ -108,7 +108,9 @@ public class StorageEntityActivity extends SecuritableActivity {
 
 					switch (operationType){
 						case OPERATION_TYPE_EDIT: {
-							String filter = String.format("PartitionKey eq '%s' and RowKey eq '%s'", partitionKey, rowKey);
+							String filter = String.format("PartitionKey eq '%s' and RowKey eq '%s'", 
+									CloudTableObject.encodeValueForFilter(partitionKey), 
+									CloudTableObject.encodeValueForFilter(rowKey));
 							entities = CloudTableObject.query(tableClient.getEndpoint(), tableCredentials, tableName, filter);
 							break;
 						}
@@ -133,12 +135,26 @@ public class StorageEntityActivity extends SecuritableActivity {
 						switch (operationType){
 						case OPERATION_TYPE_EDIT: {
 							if (entities.iterator().hasNext()) {
-								int i = 0;
-								for (Entry<String, Object> prototypeProperty : entities.iterator().next().entrySet()) {
-									addTextView("field_" + i + "_text_view", prototypeProperty.getKey(), layout);
-							   		addEditView(prototypeProperty.getKey(), prototypeProperty.getValue().toString(),
-							   				layout, isEditableField(prototypeProperty.getKey()));
-						   			++i;
+								Map<String, Object> entity = entities.iterator().next();
+				   				addTextView("partition_key_text_view", PARTITION_KEY_FIELD_NAME, layout);
+				   				addEditView(PARTITION_KEY_FIELD_NAME, entity.get(PARTITION_KEY_FIELD_NAME).toString(), layout, false);
+
+				   				addTextView("row_key_text_view", ROW_KEY_FIELD_NAME, layout);
+				   				addEditView(ROW_KEY_FIELD_NAME, entity.get(ROW_KEY_FIELD_NAME).toString(), layout, false);
+
+				   				addTextView("timestamp_key_text_view", TIMESTAMP_FIELD_NAME, layout);
+				   				addEditView(TIMESTAMP_FIELD_NAME, entity.get(TIMESTAMP_FIELD_NAME).toString(), layout, false);
+
+				   				int i = 0;
+								for (Entry<String, Object> prototypeProperty : entity.entrySet()) {
+									
+									if (isUserField(prototypeProperty.getKey()))
+									{
+										addTextView("field_" + i + "_text_view", prototypeProperty.getKey(), layout);
+								   		addEditView(prototypeProperty.getKey(), prototypeProperty.getValue().toString(),
+								   				layout, isEditableField(prototypeProperty.getKey()));
+							   			++i;
+									}
 								}
 							}
 							else {
@@ -152,22 +168,23 @@ public class StorageEntityActivity extends SecuritableActivity {
 							break;
 						}
 						case OPERATION_TYPE_ADD: {
-							if (entities.iterator().hasNext()) {
+			   				addTextView("partition_key_text_view", PARTITION_KEY_FIELD_NAME, layout);
+			   				addEditView(PARTITION_KEY_FIELD_NAME, "", layout, true);
+
+			   				addTextView("row_key_text_view", ROW_KEY_FIELD_NAME, layout);
+			   				addEditView(ROW_KEY_FIELD_NAME, "", layout, true);
+
+			   				if (entities.iterator().hasNext()) {
+								Map<String, Object> entity = entities.iterator().next();
+
 								int i = 0;
-								for (Entry<String, Object> prototypeProperty : entities.iterator().next().entrySet()) {
-									if (!prototypeProperty.getKey().equals(TIMESTAMP_FIELD_NAME)) {
+								for (Entry<String, Object> prototypeProperty : entity.entrySet()) {
+									if (isUserField(prototypeProperty.getKey())) {
 										addTextView("field_" + i + "_text_view", prototypeProperty.getKey(), layout);
 							   			addEditView(prototypeProperty.getKey(), "", layout, true);
 									}
 						   			++i;
 								}
-							}
-							else {
-				   				addTextView("partition_key_text_view", PARTITION_KEY_FIELD_NAME, layout);
-				   				addEditView(PARTITION_KEY_FIELD_NAME, "", layout, true);
-
-				   				addTextView("row_key_text_view", ROW_KEY_FIELD_NAME, layout);
-				   				addEditView(ROW_KEY_FIELD_NAME, "", layout, true);
 							}
 							break;
 						}
@@ -187,6 +204,10 @@ public class StorageEntityActivity extends SecuritableActivity {
 	}
 
 	private boolean isEditableField(String fieldName) {
+		return this.isUserField(fieldName);
+	}
+
+	private boolean isUserField(String fieldName) {
 		return !fieldName.equals(TIMESTAMP_FIELD_NAME)
 				&& !fieldName.equals(PARTITION_KEY_FIELD_NAME)
 				&& !fieldName.equals(ROW_KEY_FIELD_NAME);

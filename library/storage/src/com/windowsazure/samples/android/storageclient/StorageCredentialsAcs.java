@@ -6,6 +6,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
+import java.util.HashMap;
 
 import org.apache.http.client.methods.HttpRequestBase;
 
@@ -50,7 +51,11 @@ public final class StorageCredentialsAcs extends StorageCredentials {
 	@Override
 	StorageCredentials credentialsForBlobOf(CloudBlobContainer container)
 			throws IllegalArgumentException, UnsupportedEncodingException, URISyntaxException, StorageException, IOException {
-		return this;
+		URI uri = container.getTransformedAddress();
+		String decoded = uri.toString().replace("&amp;", "&");
+		HashMap<String, String[]> arguments = PathUtility.parseQueryString(decoded);
+		
+		return SharedAccessSignatureHelper.parseQuery(arguments);
 	}
 
 	@Override
