@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.view.Window;
 
 public class AccessControlLoginActivity extends Activity {
 
@@ -20,7 +19,7 @@ public class AccessControlLoginActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
 
-		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+    	this.setTitle("Select an Identity Provider to login");
 
     	AccessControlLoginContext loginContext = null;
 		Bundle extras = getIntent().getExtras();
