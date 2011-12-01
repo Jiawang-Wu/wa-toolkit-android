@@ -25,14 +25,14 @@
         android:layout_marginBottom="5dp"
         android:layout_marginTop="5dp"
         android:gravity="left"
-        android:textAppearance="?android:attr/textAppearanceMedium" android:visibility="gone"/>
+        android:textAppearance="?android:attr/textAppearanceMedium" android:visibility="gone" />
 
 	<EditText
 	    android:id="@+id/waz_services_base_url_value"
 	    android:layout_width="fill_parent"
 	    android:layout_height="wrap_content"
 	    android:inputType="text"
-	    android:text="@string/cloud_ready_simple_proxy_service" android:visibility="gone"/>
+	    android:text="@string/cloud_ready_simple_proxy_service" android:visibility="gone" />
 
     <TextView
         android:id="@+id/username_label"
@@ -48,7 +48,7 @@
 	    android:id="@+id/username_value"  
 	    android:layout_height="wrap_content"
 	    android:inputType="text"  
-	    android:layout_width="fill_parent"/>  
+	    android:layout_width="fill_parent" />  
                 <TextView
         android:id="@+id/email_label"
         android:layout_width="fill_parent"
@@ -95,15 +95,14 @@
 	    android:id="@+id/confirm_password_value"  
 	    android:layout_height="wrap_content"
 	    android:layout_width="fill_parent"
-        android:inputType="textPassword"/>  
-	
-		<Button
-		    android:id="@+id/register_button"
-		    android:layout_width="150dp"
-		    android:layout_height="35dp"
-		    android:layout_gravity="center_vertical|center_horizontal|center"
-		    android:background="@drawable/gradient"
-		    android:gravity="center_vertical|center_horizontal"
-		    android:text="@string/register_button_text" />
+        android:inputType="textPassword" /> 
+	<Button
+	    android:id="@+id/register_button"
+	    android:layout_width="fill_parent"
+	    android:layout_height="35dp"
+	    android:layout_gravity="center_vertical|center_horizontal|center"
+	    android:background="@drawable/gradient"
+	    android:gravity="center_vertical|center_horizontal"
+	    android:text="@string/register_button_text" />
 
 </LinearLayout>
