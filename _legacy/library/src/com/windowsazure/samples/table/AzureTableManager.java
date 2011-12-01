@@ -29,41 +29,38 @@ public class AzureTableManager extends AzureManager implements TableReader, Tabl
 
 	public AzureTableManager(AuthenticationToken token)
 		throws Exception {
-		
+
 		super(token);
 	}
-	
+
 	@Override
 	public AzureTable createTable(String title, Date updated, String authorName, String tableName) {
-		try
-		{
+		try {
 			if (updated == null)
 				updated = new Date();
-			
+
 			String httpBody = new CreateTableDOMBuilder(title, updated, authorName, tableName).getXmlString(false);
 			AzureStrategyContext context = new AzureStrategyContext()
 				.setOperation(AzureOperation.CreateTable)
 				.setDate(updated)
 				.setTableName(tableName)
 				.setHttpBody(httpBody);
-			
+
 			return strategy.execute(context, TableDOMAdapter.class);
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			AzureTable table = new AzureTable();
 			table.setException(e);
 			return table;
 		}
 	}
-	
+
 	@Override
 	public TableOperationResponse deleteEntity(String tableName, String partitionKey, String rowKey, IfMatch match) {
-		try
-		{
+		try {
 			if (match == null)
 				match = IfMatch.WILD;
-			
+
 			AzureStrategyContext context = new AzureStrategyContext()
 			    .setOperation(AzureOperation.DeleteTableEntity)
 			    .setDate(new Date())
@@ -71,21 +68,19 @@ public class AzureTableManager extends AzureManager implements TableReader, Tabl
 			    .setTableName(tableName)
 			    .setPartitionKey(partitionKey)
 			    .setRowKey(rowKey);
-			
+
 			return strategy.execute(context, TableOperationResponseAdapter.class);
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			TableOperationResponse response = new TableOperationResponse();
 			response.setException(e);
 			return response;
 		}
 	}
-	
+
 	@Override
 	public TableOperationResponse deleteTable(String tableName) {
-		try
-		{
+		try {
 			AzureStrategyContext context = new AzureStrategyContext()
 				.setOperation(AzureOperation.DeleteTable)
 				.setDate(new Date())
@@ -93,69 +88,63 @@ public class AzureTableManager extends AzureManager implements TableReader, Tabl
 
 			return strategy.execute(context, TableOperationResponseAdapter.class);
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			TableOperationResponse response = new TableOperationResponse();
 			response.setException(e);
 			return response;
 		}
 	}
-	
+
 	@Override
 	public AzureTableEntity getEntity(String tableName, String partitionKey, String rowKey) {
-		try
-		{
+		try {
 			AzureStrategyContext context = new AzureStrategyContext()
 			    .setOperation(AzureOperation.QueryTableEntities)
 			    .setDate(new Date())
 				.setTableName(tableName)
 				.setPartitionKey(partitionKey)
 				.setRowKey(rowKey);
-			
+
 			return strategy.execute(context, TableEntityDOMAdapter.class);
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			AzureTableEntity entity = new AzureTableEntity();
 			entity.setException(e);
 			return entity;
 		}
 	}
-	
+
 	@Override
 	public AzureTableEntity insertEntity(String title, Date updated, String authorName, String tableName, PropertyCollection properties) {
-		try
-		{
+		try {
 			String httpBody = new TableEntityDOMBuilder(title, updated, authorName, properties).getXmlString(false);
 			AzureStrategyContext context = new AzureStrategyContext()
 				.setOperation(AzureOperation.InsertTableEntity)
 				.setDate(updated)
 				.setTableName(tableName)
 				.setHttpBody(httpBody);
-				
+
 			return strategy.execute(context, TableEntityDOMAdapter.class);
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			AzureTableEntity entity = new AzureTableEntity();
 			entity.setException(e);
 			return entity;
 		}
 	}
-	
+
 	@Override
 	public TableOperationResponse mergeEntity(
 			String title, Date updated, String authorName, String tableName,
 			PropertyCollection properties, IfMatch match) {
-		try
-		{
+		try {
 			if (match == null)
 				match = IfMatch.WILD;
-				
+
 			String partitionKey = properties.getPartitionKey();
 			String rowKey = properties.getRowKey();
 			String httpBody = new TableEntityDOMBuilder(title, updated, authorName, properties).getXmlString(false);
-			
+
 			AzureStrategyContext context = new AzureStrategyContext()
 				.setOperation(AzureOperation.MergeTableEntity)
 				.setDate(updated)
@@ -164,87 +153,79 @@ public class AzureTableManager extends AzureManager implements TableReader, Tabl
 				.setPartitionKey(partitionKey)
 				.setRowKey(rowKey)
 				.setHttpBody(httpBody);
-			
+
 			return strategy.execute(context, TableOperationResponseAdapter.class);
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			TableOperationResponse response = new TableOperationResponse();
 			response.setException(e);
 			return response;
 		}
 	}
-	
+
 	@Override
 	public AzureTableEntityCollection queryAllEntities(String tableName) {
-		try
-		{
+		try {
 			AzureStrategyContext context = new AzureStrategyContext()
 				.setOperation(AzureOperation.QueryTableEntities)
 				.setDate(new Date())
 				.setTableName(tableName);
-				
+
 			return strategy.execute(context, TableEntityCollectionDOMAdapter.class);
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			AzureTableEntityCollection collection = new AzureTableEntityCollection();
 			collection.setException(e);
 			return collection;
 		}
 	}
-	
+
 	public AzureTableEntityCollection queryEntities(String tableName, Filter filter, Integer top) {
-		try
-		{
+		try {
 			AzureStrategyContext context = new AzureStrategyContext()
 				.setOperation(AzureOperation.QueryTableEntities)
 				.setDate(new Date())
 				.setFilter(filter)
 				.setTableName(tableName)
 				.setTop(top);
-				
+
 			return strategy.execute(context, TableEntityCollectionDOMAdapter.class);
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			AzureTableEntityCollection collection = new AzureTableEntityCollection();
 			collection.setException(e);
 			return collection;
 		}
 	}
-	
+
 	@Override
 	public AzureTableCollection queryTables() {
-		try
-		{
+		try {
 			AzureStrategyContext context = new AzureStrategyContext()
 				.setOperation(AzureOperation.QueryTables)
 				.setDate(new Date());
-				
+
 			return strategy.execute(context, TableCollectionDOMAdapter.class);
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			AzureTableCollection collection = new AzureTableCollection();
 			collection.setException(e);
 			return collection;
 		}
 	}
-	
+
 	@Override
 	public TableOperationResponse updateEntity(
 			String title, Date updated, String authorName, String tableName,
 			PropertyCollection properties, IfMatch match) {
-		try
-		{
+		try {
 			if (match == null)
 				match = IfMatch.WILD;
-			
+
 			String partitionKey = properties.getPartitionKey();
 			String rowKey = properties.getRowKey();
 			String httpBody = new TableEntityDOMBuilder(title, updated, authorName, properties).getXmlString(false);
-			
+
 			AzureStrategyContext context = new AzureStrategyContext()
 				.setOperation(AzureOperation.UpdateTableEntity)
 				.setDate(updated)
@@ -253,30 +234,29 @@ public class AzureTableManager extends AzureManager implements TableReader, Tabl
 				.setPartitionKey(partitionKey)
 				.setRowKey(rowKey)
 				.setHttpBody(httpBody);
-					
+
 			return strategy.execute(context, TableOperationResponseAdapter.class);
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			TableOperationResponse response = new TableOperationResponse();
 			response.setException(e);
 			return response;
 		}
 	}
-	
+
 	@Override
 	protected AzureStrategy<? extends AuthenticationToken> buildStrategy(AuthenticationToken token)
 		throws UnableToBuildStrategyException {
-		
+
 		if (token instanceof DirectConnectToken)
 			return new DirectConnectTableStrategy((DirectConnectToken) token);
-		
+
 		if (token instanceof ProxyToken)
 			return new ProxyTableStrategy((ProxyToken) token);
-		
+
 		if (token instanceof MockToken)
 			return new MockTableStrategy((MockToken) token);
-		
+
 		throw new UnableToBuildStrategyException();
 	}
 }

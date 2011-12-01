@@ -15,19 +15,16 @@ public final class StorageCredentialsAccountAndKey extends StorageCredentials {
 
 	private Credentials m_Credentials;
 
-	boolean equals(StorageCredentials rightCredentials)
-	{
+	boolean equals(StorageCredentials rightCredentials) {
 		return rightCredentials instanceof StorageCredentialsAccountAndKey
 				&& this.equals((StorageCredentialsAccountAndKey) rightCredentials);
 	}
 
-	boolean equals(StorageCredentialsAccountAndKey rightCredentials)
-	{
+	boolean equals(StorageCredentialsAccountAndKey rightCredentials) {
 		return this.toString(true).equals(rightCredentials.toString(true));
 	}
 
-	public StorageCredentialsAccountAndKey(String accountName, byte key[])
-	{
+	public StorageCredentialsAccountAndKey(String accountName, byte key[]) {
 		m_Credentials = new Credentials(accountName, key);
 	}
 
@@ -100,7 +97,7 @@ public final class StorageCredentialsAccountAndKey extends StorageCredentials {
 	AbstractContainerRequest getContainerRequest() {
 		return new ContainerRequest();
 	}
-	
+
 	public Credentials getCredentials() {
 		return m_Credentials;
 	}
@@ -126,15 +123,15 @@ public final class StorageCredentialsAccountAndKey extends StorageCredentials {
 	}
 
 	@Override
-	public void signTableRequest(HttpRequestBase request) 
+	public void signTableRequest(HttpRequestBase request)
 			throws InvalidKeyException, MalformedURLException, IllegalArgumentException, StorageException {
 		BaseRequest.signRequestForTable(request, m_Credentials);
 	}
-	
+
 	@Override
 	public void signTableRequestLite(HttpRequestBase request) {
 	// TODO Auto-generated method stub
-	
+
 	}
 
 	@Override

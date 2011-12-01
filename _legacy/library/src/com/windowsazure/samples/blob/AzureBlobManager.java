@@ -48,10 +48,10 @@ public final class AzureBlobManager extends AzureManager implements BlobReader, 
 
 	public AzureBlobManager(AuthenticationToken token)
 		throws Exception {
-		
+
 		super(token);
 	}
-	
+
 	@Override
 	public BlobOperationResponse copyBlob(
 			String sourceContainerName,
@@ -63,8 +63,7 @@ public final class AzureBlobManager extends AzureManager implements BlobReader, 
 			String destinationLeaseId,
 			CopyBlobCondition condition,
 			MetadataCollection metadata) {
-		try
-		{
+		try {
 			AzureStrategyContext context = new AzureStrategyContext()
 				.setOperation(AzureOperation.CopyBlob)
 				.setBlobName(sourceBlobName)
@@ -77,63 +76,58 @@ public final class AzureBlobManager extends AzureManager implements BlobReader, 
 				.setSecondaryContainerName(destinationContainerName)
 				.setSecondaryLeaseId(destinationLeaseId)
 				.setSnapshot(sourceSnapshot);
-			
+
 			return strategy.executeBlobDataOperation(context);
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			BlobOperationResponse response = new BlobOperationResponse();
 			response.setException(e);
 			return response;
 		}
 	}
-	
+
 	@Override
 	public BlobOperationResponse createContainer(String containerName, MetadataCollection metadata, ContainerAccess containerAccess) {
-		try
-		{
+		try {
 			AzureStrategyContext context = new AzureStrategyContext()
 				.setOperation(AzureOperation.CreateContainer)
 				.setContainerAccess(containerAccess)
 				.setContainerName(containerName)
 				.setDate(new Date())
 				.setMetadata(metadata);
-			
+
 			return strategy.execute(context, BlobOperationResponseAdapter.class);
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			BlobOperationResponse response = new BlobOperationResponse();
 			response.setException(e);
 			return response;
 		}
 	}
-	
+
 	@Override
 	public BlobOperationResponse deleteBlob(String containerName, String blobName, String leaseId, DeleteBlobCondition condition) {
 		return deleteSnapshotBlob(containerName, blobName, leaseId, condition, null, null);
 	}
-	
+
 	@Override
 	public BlobOperationResponse deleteContainer(String containerName, DeleteContainerCondition condition) {
-		try
-		{
+		try {
 			AzureStrategyContext context = new AzureStrategyContext()
 				.setOperation(AzureOperation.DeleteContainer)
 				.setCondition(condition)
 				.setContainerName(containerName)
 				.setDate(new Date());
-			
+
 			return strategy.execute(context, BlobOperationResponseAdapter.class);
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			BlobOperationResponse response = new BlobOperationResponse();
 			response.setException(e);
 			return response;
 		}
 	}
-	
+
 	@Override
 	public BlobOperationResponse deleteSnapshotBlob(
 			String containerName,
@@ -142,8 +136,7 @@ public final class AzureBlobManager extends AzureManager implements BlobReader, 
 			DeleteBlobCondition condition,
 			String snapshot,
 			SnapshotDeleteAction action) {
-		try
-		{
+		try {
 			AzureStrategyContext context = new AzureStrategyContext()
 				.setOperation(AzureOperation.DeleteBlob)
 				.setBlobName(blobName)
@@ -153,17 +146,16 @@ public final class AzureBlobManager extends AzureManager implements BlobReader, 
 				.setLeaseId(leaseId)
 				.setSnapshot(snapshot)
 				.setSnapshotDeleteAction(action);
-			
+
 			return strategy.executeBlobDataOperation(context);
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			BlobOperationResponse response = new BlobOperationResponse();
 			response.setException(e);
 			return response;
 		}
 	}
-	
+
 	@Override
 	public AzureBlob getBlob(
 			String containerName,
@@ -172,8 +164,7 @@ public final class AzureBlobManager extends AzureManager implements BlobReader, 
 			BlobRange range,
 			String leaseId,
 			GetBlobCondition condition) {
-		try
-		{
+		try {
 			AzureStrategyContext context = new AzureStrategyContext()
 				.setOperation(AzureOperation.GetBlob)
 				.setBlobName(blobName)
@@ -183,17 +174,16 @@ public final class AzureBlobManager extends AzureManager implements BlobReader, 
 				.setLeaseId(leaseId)
 				.setRange(range)
 				.setSnapshot(snapshot);
-			
+
 			return strategy.executeGetBlob(context);
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			AzureBlob response = new AzureBlob(null);
 			response.setException(e);
 			return response;
 		}
 	}
-	
+
 	@Override
 	public BlobOperationResponse getBlobMetadata(
 			String containerName,
@@ -201,8 +191,7 @@ public final class AzureBlobManager extends AzureManager implements BlobReader, 
 			String snapshot,
 			String leaseId,
 			GetBlobMetadataCondition condition) {
-		try
-		{
+		try {
 			AzureStrategyContext context = new AzureStrategyContext()
 				.setOperation(AzureOperation.GetBlobMetadata)
 				.setBlobName(blobName)
@@ -211,17 +200,16 @@ public final class AzureBlobManager extends AzureManager implements BlobReader, 
 				.setDate(new Date())
 				.setLeaseId(leaseId)
 				.setSnapshot(snapshot);
-			
+
 			return strategy.executeBlobDataOperation(context);
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			BlobOperationResponse response = new BlobOperationResponse();
 			response.setException(e);
 			return response;
 		}
 	}
-	
+
 	@Override
 	public BlobOperationResponse getBlobProperties(
 			String containerName,
@@ -229,8 +217,7 @@ public final class AzureBlobManager extends AzureManager implements BlobReader, 
 			String snapshot,
 			String leaseId,
 			GetBlobPropertiesCondition condition) {
-		try
-		{
+		try {
 			AzureStrategyContext context = new AzureStrategyContext()
 				.setOperation(AzureOperation.GetBlobProperties)
 				.setBlobName(blobName)
@@ -239,21 +226,19 @@ public final class AzureBlobManager extends AzureManager implements BlobReader, 
 				.setDate(new Date())
 				.setLeaseId(leaseId)
 				.setSnapshot(snapshot);
-			
+
 			return strategy.executeBlobDataOperation(context);
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			BlobOperationResponse response = new BlobOperationResponse();
 			response.setException(e);
 			return response;
 		}
 	}
-	
+
 	@Override
 	public BlockList getBlockList(String containerName, String blobName, String leaseId, String snapshot) {
-		try
-		{
+		try {
 			AzureStrategyContext context = new AzureStrategyContext()
 				.setOperation(AzureOperation.GetBlockList)
 				.setBlobName(blobName)
@@ -261,90 +246,83 @@ public final class AzureBlobManager extends AzureManager implements BlobReader, 
 				.setDate(new Date())
 				.setLeaseId(leaseId)
 				.setSnapshot(snapshot);
-			
+
 			return strategy.execute(context, BlockListDOMAdapter.class);
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			BlockList blockList = new BlockList();
 			blockList.setException(e);
 			return blockList;
 		}
 	}
-	
+
 	@Override
 	public AzureBlob getBlockBlob(String containerName, String blobName) {
 		return getBlob(containerName, blobName, null, null, null, null);
 	}
-	
+
 	@Override
 	public ACLCollection getContainerACL(String containerName) {
-		try
-		{
+		try {
 			AzureStrategyContext context = new AzureStrategyContext()
 				.setOperation(AzureOperation.GetContainerACL)
 				.setContainerName(containerName)
 				.setDate(new Date());
-			
+
 			ACLCollection collection =  strategy.execute(context, ACLCollectionDOMAdapter.class);
 			collection.setContainerName(containerName);
 			return collection;
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			ACLCollection collection = new ACLCollection();
 			collection.setException(e);
 			return collection;
 		}
 	}
-	
+
 	@Override
 	public AzureContainerMetadata getContainerMetadata(String containerName) {
-		try
-		{
+		try {
 			AzureStrategyContext context = new AzureStrategyContext()
 				.setOperation(AzureOperation.GetContainerMetadata)
 				.setContainerName(containerName)
 				.setDate(new Date());
-			
+
 			AzureContainerMetadata metadata =  strategy.execute(context, AzureContainerMetadataBuilder.class);
 			metadata.setContainerName(containerName);
 			return metadata;
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			AzureContainerMetadata metadata = new AzureContainerMetadata();
 			metadata.setException(e);
 			return metadata;
 		}
 	}
-	
+
 	@Override
 	public AzureContainerMetadata getContainerProperties(String containerName) {
-		try
-		{
+		try {
 			AzureStrategyContext context = new AzureStrategyContext()
 				.setOperation(AzureOperation.GetContainerProperties)
 				.setContainerName(containerName)
 				.setDate(new Date());
-			
+
 			AzureContainerMetadata metadata =  strategy.execute(context, AzureContainerMetadataBuilder.class);
 			metadata.setContainerName(containerName);
 			return metadata;
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			AzureContainerMetadata metadata = new AzureContainerMetadata();
 			metadata.setException(e);
 			return metadata;
 		}
 	}
-	
+
 	@Override
 	public AzureBlob getPageBlob(String containerName, String blobName, BlobRange range) {
 		return getBlob(containerName, blobName, null, range, null, null);
 	}
-	
+
 	@Override
 	public PageRangeCollection getPageRegions(
 			String containerName,
@@ -353,8 +331,7 @@ public final class AzureBlobManager extends AzureManager implements BlobReader, 
 			BlobRange range,
 			String leaseId,
 			GetPageRegionsCondition condition) {
-		try
-		{
+		try {
 			AzureStrategyContext context = new AzureStrategyContext()
 				.setOperation(AzureOperation.GetPageRegions)
 				.setBlobName(blobName)
@@ -364,17 +341,16 @@ public final class AzureBlobManager extends AzureManager implements BlobReader, 
 				.setLeaseId(leaseId)
 				.setRange(range)
 				.setSnapshot(snapshot);
-			
+
 			return strategy.execute(context, PageRangeCollectionDOMAdapter.class);
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			PageRangeCollection collection = new PageRangeCollection();
 			collection.setException(e);
 			return collection;
 		}
 	}
-	
+
 	@Override
 	public BlobOperationResponse initializePageBlob(
 			String containerName,
@@ -384,11 +360,10 @@ public final class AzureBlobManager extends AzureManager implements BlobReader, 
 			int maxPageSize,
 			Integer blobSequenceNumber,
 			PutBlobCondition condition) {
-		try
-		{
+		try {
 			if (blobSequenceNumber == null)
 				blobSequenceNumber = 0;
-			
+
 			AzureStrategyContext context = new AzureStrategyContext()
 				.setOperation(AzureOperation.PutBlob)
 				.setBlobName(blobName)
@@ -400,17 +375,16 @@ public final class AzureBlobManager extends AzureManager implements BlobReader, 
 				.setLeaseId(leaseId)
 				.setMaxPageSize(maxPageSize)
 				.setMetadata(metadata);
-			
+
 			return strategy.executeBlobDataOperation(context);
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			BlobOperationResponse response = new BlobOperationResponse();
 			response.setException(e);
 			return response;
 		}
 	}
-	
+
 	@Override
 	public BlobOperationResponse leaseBlob(
 			String containerName,
@@ -418,8 +392,7 @@ public final class AzureBlobManager extends AzureManager implements BlobReader, 
 			String leaseId,
 			LeaseAction action,
 			LeaseBlobCondition condition) {
-		try
-		{
+		try {
 			AzureStrategyContext context = new AzureStrategyContext()
 				.setOperation(AzureOperation.LeaseBlob)
 				.setBlobName(blobName)
@@ -428,22 +401,21 @@ public final class AzureBlobManager extends AzureManager implements BlobReader, 
 				.setDate(new Date())
 				.setLeaseAction(action)
 				.setLeaseId(leaseId);
-			
+
 			return strategy.executeBlobDataOperation(context);
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			BlobOperationResponse response = new BlobOperationResponse();
 			response.setException(e);
 			return response;
 		}
 	}
-	
+
 	@Override
 	public AzureBlobCollection listAllBlobs(String containerName) {
 		return listBlobs(containerName, null, null, null, null, EnumSet.of(EnumerationFilter.METADATA));
 	}
-	
+
 	@Override
 	public AzureBlobCollection listBlobs(
 			String containerName,
@@ -452,11 +424,10 @@ public final class AzureBlobManager extends AzureManager implements BlobReader, 
 			String marker,
 			Integer maxResults,
 			Set<EnumerationFilter> includes) {
-		try
-		{
+		try {
 			if (maxResults == null)
 				maxResults = MAX_RESULTS_DEFAULT;
-			
+
 			AzureStrategyContext context = new AzureStrategyContext()
 				.setOperation(AzureOperation.ListBlobs)
 				.setContainerName(containerName)
@@ -466,17 +437,16 @@ public final class AzureBlobManager extends AzureManager implements BlobReader, 
 				.setMarker(marker)
 				.setMaxResults(maxResults)
 				.setPrefix(prefix);
-			
+
 			return strategy.execute(context, BlobCollectionDOMAdapter.class);
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			AzureBlobCollection collection = new AzureBlobCollection(null);
 			collection.setException(e);
 			return collection;
 		}
 	}
-	
+
 	@Override
 	public AzureContainerCollection listAllContainers() {
 		return listContainers(null, null, null);
@@ -484,32 +454,29 @@ public final class AzureBlobManager extends AzureManager implements BlobReader, 
 
 	@Override
 	public AzureContainerCollection listContainers(String prefix, String marker, Integer maxResults) {
-		try
-		{
+		try {
 			if (maxResults == null)
 				maxResults = MAX_RESULTS_DEFAULT;
-			
+
 			AzureStrategyContext context = new AzureStrategyContext()
 				.setOperation(AzureOperation.ListContainers)
 				.setDate(new Date())
 				.setMarker(marker)
 				.setMaxResults(maxResults)
 				.setPrefix(prefix);
-			
+
 			return strategy.execute(context, ContainerCollectionDOMAdapter.class);
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			AzureContainerCollection collection = new AzureContainerCollection();
 			collection.setException(e);
 			return collection;
 		}
 	}
-	
+
 	@Override
 	public BlobOperationResponse putBlock(String containerName, String blobName, String leaseId, Block block, BlobData blobData) {
-		try
-		{
+		try {
 			AzureStrategyContext context = new AzureStrategyContext()
 				.setOperation(AzureOperation.PutBlock)
 				.setBlobData(blobData)
@@ -518,17 +485,16 @@ public final class AzureBlobManager extends AzureManager implements BlobReader, 
 				.setContainerName(containerName)
 				.setDate(new Date())
 				.setLeaseId(leaseId);
-			
+
 			return strategy.executeBlobDataOperation(context);
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			BlobOperationResponse response = new BlobOperationResponse();
 			response.setException(e);
 			return response;
 		}
 	}
-	
+
 	@Override
 	public BlobOperationResponse putBlockBlob(
 			String containerName,
@@ -537,8 +503,7 @@ public final class AzureBlobManager extends AzureManager implements BlobReader, 
 			MetadataCollection metadata,
 			BlobData blobData,
 			PutBlobCondition condition) {
-		try
-		{
+		try {
 			AzureStrategyContext context = new AzureStrategyContext()
 				.setOperation(AzureOperation.PutBlob)
 				.setBlobData(blobData)
@@ -549,17 +514,16 @@ public final class AzureBlobManager extends AzureManager implements BlobReader, 
 				.setDate(new Date())
 				.setLeaseId(leaseId)
 				.setMetadata(metadata);
-			
+
 			return strategy.executeBlobDataOperation(context);
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			BlobOperationResponse response = new BlobOperationResponse();
 			response.setException(e);
 			return response;
 		}
 	}
-	
+
 	@Override
 	public BlobOperationResponse putBlockList(String containerName, String blobName, String leaseId, BlockList blockList) {
 		return putBlockList(containerName, blobName, leaseId, null, blockList,
@@ -579,11 +543,10 @@ public final class AzureBlobManager extends AzureManager implements BlobReader, 
 			String contentEncoding,
 			String contentLanguage,
 			String contentMd5) {
-		try
-		{
+		try {
 			String httpBody = new PutBlockListDOMBuilder(blockList).getXmlString(false);
 			BlobDataContext blobData = new BlobDataContext(cacheControl, contentEncoding, contentLanguage, null, contentMd5, contentType);
-			
+
 			AzureStrategyContext context = new AzureStrategyContext()
 				.setOperation(AzureOperation.PutBlockList)
 				.setBlobName(blobName)
@@ -594,17 +557,16 @@ public final class AzureBlobManager extends AzureManager implements BlobReader, 
 				.setHttpBody(httpBody)
 				.setLeaseId(leaseId)
 				.setMetadata(metadata);
-			
+
 			return strategy.execute(context, BlobOperationResponseAdapter.class);
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			BlobOperationResponse response = new BlobOperationResponse();
 			response.setException(e);
 			return response;
 		}
 	}
-	
+
 	@Override
 	public BlobOperationResponse putPage(
 			String containerName,
@@ -614,8 +576,7 @@ public final class AzureBlobManager extends AzureManager implements BlobReader, 
 			String leaseId,
 			PutPageCondition condition,
 			BlobData blobData) {
-		try
-		{
+		try {
 			AzureStrategyContext context = new AzureStrategyContext()
 				.setOperation(AzureOperation.PutPage)
 				.setBlobData(blobData)
@@ -626,17 +587,16 @@ public final class AzureBlobManager extends AzureManager implements BlobReader, 
 				.setLeaseId(leaseId)
 				.setPutPageAction(action)
 				.setRange(range);
-			
+
 			return strategy.executeBlobDataOperation(context);
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			BlobOperationResponse response = new BlobOperationResponse();
 			response.setException(e);
 			return response;
 		}
 	}
-	
+
 	@Override
 	public BlobOperationResponse setBlobMetadata(
 			String containerName,
@@ -644,8 +604,7 @@ public final class AzureBlobManager extends AzureManager implements BlobReader, 
 			String leaseId,
 			SetBlobMetadataCondition condition,
 			MetadataCollection metadata) {
-		try
-		{
+		try {
 			AzureStrategyContext context = new AzureStrategyContext()
 				.setOperation(AzureOperation.SetBlobMetadata)
 				.setBlobName(blobName)
@@ -654,17 +613,16 @@ public final class AzureBlobManager extends AzureManager implements BlobReader, 
 				.setDate(new Date())
 				.setLeaseId(leaseId)
 				.setMetadata(metadata);
-			
+
 			return strategy.executeBlobDataOperation(context);
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			BlobOperationResponse response = new BlobOperationResponse();
 			response.setException(e);
 			return response;
 		}
 	}
-	
+
 	@Override
 	public BlobOperationResponse setBlockBlobProperties(
 			String containerName,
@@ -676,7 +634,7 @@ public final class AzureBlobManager extends AzureManager implements BlobReader, 
 			String contentMd5,
 			String contentEncoding,
 			String contentLanguage) {
-		
+
 		return setPageBlobProperties(
 				containerName,
 				blobName,
@@ -691,7 +649,7 @@ public final class AzureBlobManager extends AzureManager implements BlobReader, 
 				null,
 				null);
 	}
-	
+
 	@Override
 	public BlobOperationResponse setPageBlobProperties(
 			String containerName,
@@ -706,10 +664,9 @@ public final class AzureBlobManager extends AzureManager implements BlobReader, 
 			Integer contentLength,
 			SequenceNumberAction sequenceNumberAction,
 			Integer sequenceNumber) {
-		try
-		{
+		try {
 			BlobDataContext blobData = new BlobDataContext(cacheControl, contentEncoding, contentLanguage, contentLength, contentMd5, contentType);
-			
+
 			AzureStrategyContext context = new AzureStrategyContext()
 				.setOperation(AzureOperation.SetBlobProperties)
 				.setBlobData(blobData)
@@ -720,61 +677,56 @@ public final class AzureBlobManager extends AzureManager implements BlobReader, 
 				.setLeaseId(leaseId)
 				.setSequenceNumber(sequenceNumber)
 				.setSequenceNumberAction(sequenceNumberAction);
-			
+
 			return strategy.executeBlobDataOperation(context);
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			BlobOperationResponse response = new BlobOperationResponse();
 			response.setException(e);
 			return response;
 		}
 	}
-	
+
 	@Override
 	public BlobOperationResponse setContainerACL(String containerName, ContainerAccess containerAccess, ACLCollection acl) {
-		try
-		{
+		try {
 			String httpBody = (acl != null && acl.getAclCount() > 0) ? new ACLDOMBuilder(acl).getXmlString(false) : null;
-			
+
 			AzureStrategyContext context = new AzureStrategyContext()
 				.setOperation(AzureOperation.SetContainerACL)
 				.setContainerAccess(containerAccess)
 				.setContainerName(containerName)
 				.setDate(new Date())
 				.setHttpBody(httpBody);
-			
+
 			return strategy.execute(context, BlobOperationResponseAdapter.class);
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			BlobOperationResponse response = new BlobOperationResponse();
 			response.setException(e);
 			return response;
 		}
 	}
-	
+
 	@Override
 	public BlobOperationResponse setContainerMetadata(String containerName, MetadataCollection metadata, SetContainerMetadataCondition condition) {
-		try
-		{
+		try {
 			AzureStrategyContext context = new AzureStrategyContext()
 				.setOperation(AzureOperation.SetContainerMetadata)
 				.setCondition(condition)
 				.setContainerName(containerName)
 				.setDate(new Date())
 				.setMetadata(metadata);
-			
+
 			return strategy.execute(context, BlobOperationResponseAdapter.class);
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			BlobOperationResponse response = new BlobOperationResponse();
 			response.setException(e);
 			return response;
 		}
 	}
-	
+
 	@Override
 	public BlobOperationResponse snapshotBlob(
 			String containerName,
@@ -782,8 +734,7 @@ public final class AzureBlobManager extends AzureManager implements BlobReader, 
 			String leaseId,
 			SnapshotBlobCondition condition,
 			MetadataCollection metadata) {
-		try
-		{
+		try {
 			AzureStrategyContext context = new AzureStrategyContext()
 				.setOperation(AzureOperation.SnapshotBlob)
 				.setBlobName(blobName)
@@ -792,27 +743,26 @@ public final class AzureBlobManager extends AzureManager implements BlobReader, 
 				.setDate(new Date())
 				.setLeaseId(leaseId)
 				.setMetadata(metadata);
-			
+
 			return strategy.executeBlobDataOperation(context);
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			BlobOperationResponse response = new BlobOperationResponse();
 			response.setException(e);
 			return response;
 		}
 	}
-	
+
 	@Override
 	protected AzureStrategy<? extends AuthenticationToken> buildStrategy(AuthenticationToken token)
 		throws UnableToBuildStrategyException {
-		
+
 		if (token instanceof DirectConnectToken)
 			return new DirectConnectBlobStrategy((DirectConnectToken) token);
-		
+
 		if (token instanceof ProxyToken)
 			return new ProxyBlobStrategy((ProxyToken) token);
-		
+
 		throw new UnableToBuildStrategyException();
 	}
 

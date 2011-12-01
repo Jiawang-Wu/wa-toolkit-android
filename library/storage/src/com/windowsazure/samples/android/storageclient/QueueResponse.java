@@ -40,8 +40,7 @@ public class QueueResponse {
 			CloudQueue queue = new CloudQueue(name, serviceClient);
 
 			NodeList metadataElements = queueElement.getElementsByTagName("Metadata");
-			if (metadataElements.getLength() != 0)
-			{
+			if (metadataElements.getLength() != 0) {
 				Element metadataElement = (Element) metadataElements.item(0);
 				queue.getMetadata().putAll(QueueResponse.getMetadata(metadataElement));
 			}
@@ -56,20 +55,18 @@ public class QueueResponse {
 
 		for (int index = 0; index < items.getLength(); ++index) {
 			Element metadataEntryElement = (Element) items.item(index);
-			
+
 			metadata.put(metadataEntryElement.getNodeName(), metadataEntryElement.getTextContent());
 		}
-		
+
 		return metadata;
 	}
 
 	public static Map<String, String> getMetadata(HttpResponse response) {
 		Map<String, String> metadata = new HashMap<String, String>();
-		for (Header header : response.getAllHeaders())
-		{
-			String metadataHeaderPrefix = "x-ms-meta-"; 
-			if (header.getName().startsWith(metadataHeaderPrefix))
-			{
+		for (Header header : response.getAllHeaders()) {
+			String metadataHeaderPrefix = "x-ms-meta-";
+			if (header.getName().startsWith(metadataHeaderPrefix)) {
 				metadata.put(header.getName().substring(metadataHeaderPrefix.length()), header.getValue());
 			}
 		}
@@ -92,34 +89,32 @@ public class QueueResponse {
 			Timestamp expirationTime = new Timestamp(Timestamp.parse(messageElement.getElementsByTagName("ExpirationTime").item(0).getTextContent()));
 			int dequeueCount = Integer.parseInt(messageElement.getElementsByTagName("DequeueCount").item(0).getTextContent());
 			String messageText = messageElement.getElementsByTagName("MessageText").item(0).getTextContent();
-			
+
 			byte[] content = encodeMessage ? Base64.decode(messageText, Base64.DEFAULT) : messageText.getBytes();
-			
+
 			String popReceipt = null;
 			NodeList popReceiptNodes = messageElement.getElementsByTagName("PopReceipt");
-			if (popReceiptNodes.getLength() != 0)
-			{
+			if (popReceiptNodes.getLength() != 0) {
 				popReceipt = popReceiptNodes.item(0).getTextContent();
 			}
-			
+
 			Timestamp timeNextVisible = null;
 			NodeList timeNextVisibleNodes = messageElement.getElementsByTagName("TimeNextVisible");
-			if (timeNextVisibleNodes.getLength() != 0)
-			{
+			if (timeNextVisibleNodes.getLength() != 0) {
 				timeNextVisible = new Timestamp(Timestamp.parse(timeNextVisibleNodes.item(0).getTextContent()));
 			}
 
-			CloudQueueMessage message = new CloudQueueMessage(messageId, 
-					content, 
-					insertionTime, 
-					expirationTime, 
+			CloudQueueMessage message = new CloudQueueMessage(messageId,
+					content,
+					insertionTime,
+					expirationTime,
 					dequeueCount,
 					popReceipt,
 					timeNextVisible);
 
 			messages.add(message);
 		}
-		
+
 		return messages;
 	}
 

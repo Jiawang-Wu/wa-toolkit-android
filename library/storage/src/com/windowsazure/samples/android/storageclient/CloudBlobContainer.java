@@ -22,22 +22,17 @@ import org.w3c.dom.Element;
 public final class CloudBlobContainer {
 
     static BlobContainerPermissions getContainerAcl(String aclString)
-            throws IllegalArgumentException
-        {
+            throws IllegalArgumentException {
             BlobContainerPublicAccessType publicAccessType = BlobContainerPublicAccessType.OFF;
-            if(!Utility.isNullOrEmpty(aclString))
-            {
+            if(!Utility.isNullOrEmpty(aclString)) {
                 String aclStringAsLowerCase = aclString.toLowerCase();
-                if("container".equals(aclStringAsLowerCase))
-                {
+                if("container".equals(aclStringAsLowerCase)) {
                     publicAccessType = BlobContainerPublicAccessType.CONTAINER;
                 }
-                else if("blob".equals(aclStringAsLowerCase))
-                {
+                else if("blob".equals(aclStringAsLowerCase)) {
                     publicAccessType = BlobContainerPublicAccessType.BLOB;
                 }
-                else
-                {
+                else {
                     throw new IllegalArgumentException(String.format("Invalid acl public access type returned '%s'. Expected blob or container.", aclString));
                 }
             }
@@ -179,13 +174,11 @@ public final class CloudBlobContainer {
 		final CloudBlobContainer container = this;
         StorageOperation<BlobContainerPermissions> storageOperation = new StorageOperation<BlobContainerPermissions> () {
             public BlobContainerPermissions execute()
-                throws Exception
-            {
+                throws Exception {
             	HttpGet request = ContainerRequest.getAcl(container.getUri());
             	m_ServiceClient.getCredentials().signRequest(request, -1L);
 				this.processRequest(request);
-                if(result.statusCode != 200)
-                {
+                if(result.statusCode != 200) {
 					throw new StorageInnerException("Couldn't download container's permissions");
                 }
                 String s = ContainerResponse.getAcl((AbstractHttpMessage) result.httpResponse);
@@ -268,13 +261,11 @@ public final class CloudBlobContainer {
 		throw new NotImplementedException();
 	}
 
-	public HashMap<String, String> getMetadata()
-	{
+	public HashMap<String, String> getMetadata() {
 		return m_Metadata;
 	}
 
-	public String getName()
-	{
+	public String getName() {
 		return m_Name;
 	}
 
@@ -290,8 +281,7 @@ public final class CloudBlobContainer {
 		throw new NotImplementedException();
 	}
 
-	public BlobContainerProperties getProperties()
-	{
+	public BlobContainerProperties getProperties() {
         return m_Properties;
 	}
 
@@ -447,16 +437,13 @@ public final class CloudBlobContainer {
 			m_ServiceClient.setTimeoutInMs(serviceClient.getTimeoutInMs());
 		}
 	}
-	public void setMetadata(HashMap<String, String> metadata)
-	{
+	public void setMetadata(HashMap<String, String> metadata) {
 		m_Metadata = metadata;
 	}
-	protected void setName(String containerName)
-	{
+	protected void setName(String containerName) {
 		m_Name = containerName;
 	}
-	protected void setProperties(BlobContainerProperties properties)
-	{
+	protected void setProperties(BlobContainerProperties properties) {
 		m_Properties = properties;
 	}
 	protected void setUri(URI containerUri) throws NotImplementedException,

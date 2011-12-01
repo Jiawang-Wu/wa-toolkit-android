@@ -18,11 +18,10 @@ import com.windowsazure.samples.android.storageclient.StorageException;
 
 public class CloudBlobContainerUsingAccountAndKeyTests extends
 		CloudBlobContainerTests<CloudStorageAccountProvider> {
-	public void testContainerProperties() throws UnsupportedEncodingException, NotImplementedException, StorageException, IOException, URISyntaxException
-	{
+	public void testContainerProperties() throws UnsupportedEncodingException, NotImplementedException, StorageException, IOException, URISyntaxException {
 		CloudBlobContainer container1 = this.createQueue("testcontainerproperties-1");
 		CloudBlobContainer container2 = this.createQueue("testcontainerproperties-2");
-		
+
 		container1.downloadAttributes();
 		BlobContainerProperties properties = container1.getProperties();
 		Assert.assertNotNull(properties.eTag);
@@ -30,11 +29,11 @@ public class CloudBlobContainerUsingAccountAndKeyTests extends
 		Calendar calendar = Calendar.getInstance();
 		long difference = calendar.getTime().getTime() - properties.lastModified.getTime();
 		Assert.assertTrue(difference <= 10 * 1000); //10 seconds difference max
-		
+
 		container2.downloadAttributes();
 		Assert.assertFalse(properties.eTag.equals(container2.getProperties().eTag));
 	}
-	
+
 	public void testCreateExistingContainerReturnsFalse() throws Exception {
 		final CloudBlobContainer container = new CloudBlobContainer(
 				"testcreateexistingcontainerreturnsfalse", cloudBlobClient);
@@ -52,8 +51,7 @@ public class CloudBlobContainerUsingAccountAndKeyTests extends
 		Assert.assertTrue(container.exists());
 	}
 
-	public void testChangingContainerPermssions() throws Exception
-	{
+	public void testChangingContainerPermssions() throws Exception {
 		final CloudBlobContainer container = this.createQueue("testchangingcontainerpermssions");
 		final CloudBlobContainer sameContainer = new CloudBlobContainer(container.getName(), cloudBlobClient);
 		BlobContainerPermissions permissions = new BlobContainerPermissions();
@@ -64,56 +62,44 @@ public class CloudBlobContainerUsingAccountAndKeyTests extends
 		permissions.publicAccess = BlobContainerPublicAccessType.CONTAINER;
 		container.uploadPermissions(permissions);
 
-		this.assertEventuallyTrue( new Callable<Boolean>()
-		{
-			public Boolean call() throws Exception
-			{
+		this.assertEventuallyTrue( new Callable<Boolean>() {
+			public Boolean call() throws Exception {
 				return container.downloadPermissions().publicAccess == BlobContainerPublicAccessType.CONTAINER;
 			}
 		}, 10);
-		this.assertEventuallyTrue( new Callable<Boolean>()
-		{
-			public Boolean call() throws Exception
-			{
+		this.assertEventuallyTrue( new Callable<Boolean>() {
+			public Boolean call() throws Exception {
 				return sameContainer.downloadPermissions().publicAccess == BlobContainerPublicAccessType.CONTAINER;
 			}
 		}, 10);
 
 		permissions.publicAccess = BlobContainerPublicAccessType.BLOB;
 		container.uploadPermissions(permissions);
-		this.assertEventuallyTrue( new Callable<Boolean>()
-		{
-			public Boolean call() throws Exception
-			{
+		this.assertEventuallyTrue( new Callable<Boolean>() {
+			public Boolean call() throws Exception {
 				return container.downloadPermissions().publicAccess == BlobContainerPublicAccessType.BLOB;
 			}
 		}, 10);
-		this.assertEventuallyTrue( new Callable<Boolean>()
-		{
-			public Boolean call() throws Exception
-			{
+		this.assertEventuallyTrue( new Callable<Boolean>() {
+			public Boolean call() throws Exception {
 				return sameContainer.downloadPermissions().publicAccess == BlobContainerPublicAccessType.BLOB;
 			}
 		}, 10);
 
 		permissions.publicAccess = BlobContainerPublicAccessType.OFF;
 		container.uploadPermissions(permissions);
-		this.assertEventuallyTrue( new Callable<Boolean>()
-		{
-			public Boolean call() throws Exception
-			{
+		this.assertEventuallyTrue( new Callable<Boolean>() {
+			public Boolean call() throws Exception {
 				return container.downloadPermissions().publicAccess == BlobContainerPublicAccessType.OFF;
 			}
 		}, 10);
-		this.assertEventuallyTrue( new Callable<Boolean>()
-		{
-			public Boolean call() throws Exception
-			{
+		this.assertEventuallyTrue( new Callable<Boolean>() {
+			public Boolean call() throws Exception {
 				return sameContainer.downloadPermissions().publicAccess == BlobContainerPublicAccessType.OFF;
 			}
 		}, 10);
 	}
-	
+
 	public void testUploadingAndDownloadingMetadataWorksAsExpected()
 			throws Exception {
 		CloudBlobContainer container = this
@@ -145,7 +131,7 @@ public class CloudBlobContainerUsingAccountAndKeyTests extends
 		this.AssertHashMapsAreEquivalent(sameContainer.getMetadata(),
 				new HashMap<String, String>());
 	}
-	
+
 	public void testDeleteContainerTwiceShouldNotThrowException()
 			throws Exception {
 		final CloudBlobContainer container = this

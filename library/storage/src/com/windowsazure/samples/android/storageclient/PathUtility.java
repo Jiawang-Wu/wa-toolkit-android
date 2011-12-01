@@ -106,44 +106,39 @@ public class PathUtility {
 	public static HashMap<String, String[]> parseQueryString(String queryString)
 			throws StorageException {
 		HashMap<String, String[]> queryArguments = new HashMap<String, String[]>();
-		if (Utility.isNullOrEmpty(queryString))
-		{
+		if (Utility.isNullOrEmpty(queryString)) {
 			return queryArguments;
 		}
-		
+
 		int querySeparatorIndex = queryString.indexOf("?");
-		if (querySeparatorIndex >= 0 && queryString.length() > 0)
-		{
+		if (querySeparatorIndex >= 0 && queryString.length() > 0) {
 			queryString = queryString.substring(querySeparatorIndex + 1);
 		}
-		
+
 		String queryArgumentsAsStringsList[] = queryString.contains("&") ? queryString.split("&") : queryString.split(";");
-		
+
 		for (String queryArgument : queryArgumentsAsStringsList) {
 			int queryArgumentSeparatorIndex = queryArgument.indexOf("=");
-			if (queryArgumentSeparatorIndex < 0)
-			{
+			if (queryArgumentSeparatorIndex < 0) {
 				continue;
 			}
-			
+
 			String argumentName = queryArgument.substring(0, queryArgumentSeparatorIndex);
 			String argumentValue = queryArgument.substring(queryArgumentSeparatorIndex + 1);
 			argumentName = Utility.safeDecode(argumentName);
 			argumentValue = Utility.safeDecode(argumentValue);
-			
+
 			String queryArgumentValues[] = queryArguments.get(argumentName);
-			
+
 			if (queryArgumentValues == null) {
 				queryArgumentValues = new String[] { argumentValue };
 			}
-			else
-			{
+			else {
 				String enlargedArray[] = new String[queryArgumentValues.length + 1];
-				for (int index = 0; index < queryArgumentValues.length; index++)
-				{
+				for (int index = 0; index < queryArgumentValues.length; index++) {
 					enlargedArray[index] = queryArgumentValues[index];
 				}
-	
+
 				enlargedArray[enlargedArray.length] = argumentValue;
 				queryArgumentValues = enlargedArray;
 			}

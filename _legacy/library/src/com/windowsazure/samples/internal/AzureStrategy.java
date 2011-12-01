@@ -24,13 +24,12 @@ import com.windowsazure.samples.internal.web.XmlHttpResult;
 
 
 public abstract class AzureStrategy<T extends AuthenticationToken> {
-	
+
 	public <V extends EntityBase>
 		V execute(AzureStrategyContext context, Class<? extends Builder<V>> adapterClass)
 		throws Exception {
-		 
-		try
-		{
+
+		try {
 			Logger.verbose("AzureStrategy", context.getOperation().toString() + " begin");
 			onBeginExecute(context);
 			AzureOperation operation = context.getOperation();
@@ -39,9 +38,9 @@ public abstract class AzureStrategy<T extends AuthenticationToken> {
 			HttpUri path = getPath(context);
 			AzureHttpHeader headers = getHeaders(context);
 			String httpBody = context.getHttpBody();
-			
+
 			Builder<V> adapter = null;
-			
+
 			switch (operation.getReturnType()) {
 				case EMPTY: {
 					HttpResult httpResult = Http.RestSSL(httpMethod, host, path.toString(), headers, httpBody);
@@ -49,7 +48,7 @@ public abstract class AzureStrategy<T extends AuthenticationToken> {
 					adapter = adapterConstructor.newInstance(httpResult);
 					break;
 				}
-				
+
 				case XML_STRING: {
 					XmlHttpResult httpResult = XmlHttp.RestSSL(httpMethod, host, path.toString(), headers, httpBody);
 					Constructor<? extends Builder<V>> adapterConstructor = adapterClass.getConstructor(new Class[] {XmlHttpResult.class});
@@ -57,15 +56,14 @@ public abstract class AzureStrategy<T extends AuthenticationToken> {
 					break;
 				}
 			}
-			
+
 			V result = adapter.build();
-			
+
 			onExecuteSuccess(context);
 			Logger.verbose("AzureStrategy", "end(success)");
 			return result;
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			Method buildMethod = adapterClass.getMethod("build");
 			@SuppressWarnings("unchecked")
 				Class<V> entityClass = (Class<V>) buildMethod.getReturnType();
@@ -77,10 +75,9 @@ public abstract class AzureStrategy<T extends AuthenticationToken> {
 			return entity;
 		}
 	}
-	
+
 	public AzureBlob executeGetBlob(AzureStrategyContext context) {
-		try
-		{
+		try {
 			Logger.verbose("AzureStrategy", context.getOperation().toString() + " begin");
 			onBeginExecute(context);
 			AzureOperation operation = context.getOperation();
@@ -88,9 +85,9 @@ public abstract class AzureStrategy<T extends AuthenticationToken> {
 			String host = getHost(context);
 			HttpUri path = getPath(context);
 			AzureHttpHeader requestHeaders = getHeaders(context);
-			
+
 			HttpResult httpResult = Http.RestSSL(httpMethod, host, path.toString(), requestHeaders, null);
-			
+
 			if (context.getRange() != null) {
 				String body = httpResult.getBody();
 				int paddingIndex = body.indexOf('$');
@@ -98,15 +95,14 @@ public abstract class AzureStrategy<T extends AuthenticationToken> {
 					body = body.substring(0, paddingIndex);
 				httpResult = new HttpResult(httpResult.getMethod(), httpResult.getStatusCode(), httpResult.getHeaders(), body);
 			}
-			
+
 			BlobHeaderAdapter adapter = new BlobHeaderAdapter(httpResult);
 			AzureBlob blob = adapter.build();
 			onExecuteSuccess(context);
 			Logger.verbose("AzureStrategy", "end(success)");
 			return blob;
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			AzureBlob response = new AzureBlob(null);
 			response.setException(e);
 			onExecuteFailure(context, e);
@@ -114,12 +110,11 @@ public abstract class AzureStrategy<T extends AuthenticationToken> {
 			return response;
 		}
 	}
-	
+
 	public BlobOperationResponse executeBlobDataOperation(AzureStrategyContext context)
 		throws Exception {
-		
-		try
-		{
+
+		try {
 			Logger.verbose("AzureStrategy", context.getOperation().toString() + " begin");
 			onBeginExecute(context);
 			AzureOperation operation = context.getOperation();
@@ -129,12 +124,12 @@ public abstract class AzureStrategy<T extends AuthenticationToken> {
 			AzureHttpHeader headers = getHeaders(context);
 			BlobData blobData = context.getBlobData();
 			String httpBody = (blobData != null) ? blobData.encode() : null;
-			
+
 			if (operation == AzureOperation.PutPage) {
 				BlobRange range = context.getRange();
 				httpBody = Util.padToLength(httpBody, range.getLength(), '$');
 			}
-			
+
 			HttpResult httpResult = Http.RestSSL(httpMethod, host, path.toString(), headers, httpBody);
 			BlobOperationResponseAdapter adapter = new BlobOperationResponseAdapter(httpResult);
 			BlobOperationResponse result = adapter.build();
@@ -142,8 +137,7 @@ public abstract class AzureStrategy<T extends AuthenticationToken> {
 			Logger.verbose("AzureStrategy", "end(success)");
 			return result;
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			BlobOperationResponse result = new BlobOperationResponse();
 			result.setException(e);
 			onExecuteFailure(context, e);
@@ -151,36 +145,36 @@ public abstract class AzureStrategy<T extends AuthenticationToken> {
 			return result;
 		}
 	}
-	
+
 	protected AzureStrategy(T token) {
 		this.authenticationToken = token;
 	}
-	
+
 	protected T authenticationToken;
-	
-	protected AzureHttpHeader getHeaders(AzureStrategyContext context) 
+
+	protected AzureHttpHeader getHeaders(AzureStrategyContext context)
 		throws Exception {
-		
+
 		AzureOperation operation = context.getOperation();
 		HttpMethod httpMethod = operation.getHttpMethod();
-		
+
 		AzureHttpHeader headers = new AzureHttpHeader();
 		addCommonHeaders(context, headers);
 
 		if (httpMethod.hasContent())
 			addContentHeaders(context, headers);
-		
+
 		addOperationHeaders(context, headers);
-		
+
 		return headers;
 	}
-	
+
 	protected abstract void addCommonHeaders(AzureStrategyContext context, AzureHttpHeader headers) throws Exception;
 	protected abstract void addContentHeaders(AzureStrategyContext context, AzureHttpHeader headers) throws Exception;
 	protected abstract void addOperationHeaders(AzureStrategyContext context, AzureHttpHeader headers) throws Exception;
 	protected abstract String getHost(AzureStrategyContext context) throws Exception;
 	protected abstract HttpUri getPath(AzureStrategyContext context) throws Exception;
-	
+
 	protected void onBeginExecute(AzureStrategyContext context) throws Exception {}
 	protected void onExecuteFailure(AzureStrategyContext context, Exception e) {}
 	protected void onExecuteSuccess(AzureStrategyContext context) {}

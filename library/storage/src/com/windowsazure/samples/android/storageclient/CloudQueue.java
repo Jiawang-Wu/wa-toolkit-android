@@ -21,7 +21,7 @@ public class CloudQueue {
 	private String m_Name;
 	private int m_ApproximateMessageCount;
 	private boolean m_EncodeMessage;
-	
+
 	public CloudQueue(String queueName, StorageCredentials credentials) throws URISyntaxException {
 		this(queueName, new CloudQueueClient(credentials));
 	}
@@ -78,18 +78,15 @@ public class CloudQueue {
 				m_ServiceClient.getCredentials().signRequest(request, 0L);
 				this.processRequest(request);
 
-				switch (result.statusCode)
-				{
+				switch (result.statusCode) {
 					case HttpStatus.SC_CREATED:
 						return true;
 					case HttpStatus.SC_NO_CONTENT:
 					case HttpStatus.SC_CONFLICT:
-						if (createIfNotExist)
-						{
+						if (createIfNotExist) {
 							return  false;
 						}
-						else
-						{
+						else {
 							throw new StorageInnerException("Couldn't create a queue: a similar queue already exists");
 						}
 					default:
@@ -117,8 +114,7 @@ public class CloudQueue {
 				m_ServiceClient.getCredentials().signRequest(request, -1L);
 				this.processRequest(request);
 
-				switch (result.statusCode)
-				{
+				switch (result.statusCode) {
 					case HttpStatus.SC_NO_CONTENT:
 						return null;
 					default:
@@ -146,18 +142,15 @@ public class CloudQueue {
 				m_ServiceClient.getCredentials().signRequest(request, -1L);
 				this.processRequest(request);
 
-				if (updateMetadata)
-				{
+				if (updateMetadata) {
 					m_Metadata.clear();
 					m_Metadata.putAll(QueueResponse.getMetadata(result.httpResponse));
 				}
-				if (updateApproximateMessageCount)
-				{
+				if (updateApproximateMessageCount) {
 					String messageCount = result.httpResponse.getFirstHeader("x-ms-approximate-messages-count").getValue();
 					m_ApproximateMessageCount = Integer.parseInt(messageCount);
 				}
-				switch (result.statusCode)
-				{
+				switch (result.statusCode) {
 					case HttpStatus.SC_OK:
 						return null;
 					default:
@@ -178,8 +171,7 @@ public class CloudQueue {
 				m_ServiceClient.getCredentials().signRequest(request, 0L);
 				this.processRequest(request);
 
-				switch (result.statusCode)
-				{
+				switch (result.statusCode) {
 					case HttpStatus.SC_NO_CONTENT:
 						return null;
 					default:
@@ -213,8 +205,7 @@ public class CloudQueue {
 				m_ServiceClient.getCredentials().signRequest(request, request.getEntity().getContentLength());
 				this.processRequest(request);
 
-				switch (result.statusCode)
-				{
+				switch (result.statusCode) {
 					case HttpStatus.SC_CREATED:
 						return null;
 					default:
@@ -242,8 +233,7 @@ public class CloudQueue {
 	public CloudQueueMessage getMessage() throws UnsupportedEncodingException, StorageException, IOException {
 		Iterator<CloudQueueMessage> iterator = this.getMessages(1).iterator();
 		CloudQueueMessage message = iterator.next();
-		if (iterator.hasNext())
-		{
+		if (iterator.hasNext()) {
 			throw new StorageException("Internal error", "More than one message was get, but only one was expected", 0, null, null);
 		}
 		return message;
@@ -260,7 +250,7 @@ public class CloudQueue {
 	public Iterable<CloudQueueMessage> peekMessages(final int messageCount) throws UnsupportedEncodingException, StorageException, IOException {
 		return this.getOrPeekMessages(messageCount, true, 0);
 	}
-	
+
 	public Iterable<CloudQueueMessage> getOrPeekMessages(final int messageCount, final boolean peekMessages, final int visibilityTimeoutInSeconds) throws UnsupportedEncodingException, StorageException, IOException {
 		final CloudQueue queue = this;
 		StorageOperation<Iterable<CloudQueueMessage>> storageOperation = new StorageOperation<Iterable<CloudQueueMessage>>() {
@@ -269,8 +259,7 @@ public class CloudQueue {
 				m_ServiceClient.getCredentials().signRequest(request, -1L);
 				this.processRequest(request);
 
-				switch (result.statusCode)
-				{
+				switch (result.statusCode) {
 					case HttpStatus.SC_OK:
 						return QueueResponse.getMessagesList(result.httpResponse.getEntity().getContent(), m_EncodeMessage);
 					default:
@@ -279,7 +268,7 @@ public class CloudQueue {
 			}
 		};
 
-        return storageOperation.executeTranslatingExceptions();	
+        return storageOperation.executeTranslatingExceptions();
     }
 
 	public void deleteMessage(CloudQueueMessage message) throws UnsupportedEncodingException, StorageException, IOException {
@@ -294,8 +283,7 @@ public class CloudQueue {
 				m_ServiceClient.getCredentials().signRequest(request, -1L);
 				this.processRequest(request);
 
-				switch (result.statusCode)
-				{
+				switch (result.statusCode) {
 					case HttpStatus.SC_NO_CONTENT:
 						return null;
 					default:
@@ -304,7 +292,7 @@ public class CloudQueue {
 			}
 		};
 
-        storageOperation.executeTranslatingExceptions();	
+        storageOperation.executeTranslatingExceptions();
 	}
 
 	public void clear() throws UnsupportedEncodingException, StorageException, IOException {
@@ -315,8 +303,7 @@ public class CloudQueue {
 				m_ServiceClient.getCredentials().signRequest(request, -1L);
 				this.processRequest(request);
 
-				switch (result.statusCode)
-				{
+				switch (result.statusCode) {
 					case HttpStatus.SC_NO_CONTENT:
 						return null;
 					default:
@@ -325,6 +312,6 @@ public class CloudQueue {
 			}
 		};
 
-        storageOperation.executeTranslatingExceptions();	
+        storageOperation.executeTranslatingExceptions();
 	}
 }

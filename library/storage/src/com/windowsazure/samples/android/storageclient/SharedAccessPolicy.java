@@ -36,11 +36,10 @@ public class SharedAccessPolicy {
 	}
 
 	public static String permissionsToString(EnumSet<SharedAccessPermissions> permissions) {
-		if (permissions == null)
-		{
+		if (permissions == null) {
 			return "";
 		}
-		
+
 		StringBuilder stringBuilder = new StringBuilder();
 		if (permissions.contains(SharedAccessPermissions.READ))
 			stringBuilder.append("r");

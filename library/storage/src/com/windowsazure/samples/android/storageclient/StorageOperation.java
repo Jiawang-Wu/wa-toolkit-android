@@ -12,13 +12,13 @@ abstract class StorageOperation<T> {
 	protected StorageException exceptionReference;
 
 	protected RequestResult result;
-	
+
 	public RequestResult getResult() {
 		return result;
 	}
 
 	public abstract T execute() throws Exception;
-	
+
 	protected T executeTranslatingExceptions() throws StorageException,
 			UnsupportedEncodingException, IOException {
 		try {
@@ -48,16 +48,14 @@ abstract class StorageOperation<T> {
 		result.httpResponse = httpResponse;
 		return result;
 	}
-	
+
 	protected StorageException materializeException(HttpResponse response)
 			throws NotImplementedException, UnsupportedEncodingException,
 			IOException {
-		if (exceptionReference != null)
-		{
+		if (exceptionReference != null) {
 			return exceptionReference;
 		}
-		else
-		{
+		else {
 			return StorageException.translateException(response, null);
 		}
 	}

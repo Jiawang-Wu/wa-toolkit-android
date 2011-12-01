@@ -23,14 +23,12 @@ public final class StorageException extends Exception {
 		if (response == null)
 			return null;
 		HttpEntity responseEntity = response.getEntity();
-		if (responseEntity != null)
-		{
+		if (responseEntity != null) {
 			StorageErrorResponse storageerrorresponse = new StorageErrorResponse(
 					responseEntity.getContent());
 			return storageerrorresponse.getExtendedErrorInformation();
 		}
-		else
-		{
+		else {
 			StorageExtendedErrorInformation errorInformation = new StorageExtendedErrorInformation();
 			errorInformation.errorCode = "No further error information";
 			errorInformation.errorMessage = "The server response was " + response.getStatusLine().getReasonPhrase();

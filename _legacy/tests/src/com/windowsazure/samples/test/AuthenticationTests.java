@@ -28,8 +28,7 @@ public class AuthenticationTests extends AndroidTestCase {
 	}
 
 	public void testDirectConnect() {
-		try
-		{
+		try {
 			AuthenticationToken token = buildDirectConnectToken();
 
 			TableReader reader = new AzureTableManager(token);
@@ -37,21 +36,18 @@ public class AuthenticationTests extends AndroidTestCase {
 			tables.getTables().size();
 			// Assert: this doesn't throw any exception
 		}
-		catch(Exception e)
-		{
+		catch(Exception e) {
 			Assert.fail(e.getMessage());
 		}
 	}
 
 	public void testProxy() {
-		try
-		{
+		try {
 			ProxyToken proxy = (ProxyToken) buildProxyToken();
 			String token = proxy.getToken();
 			Assert.assertTrue(token.length() > 0);
 		}
-		catch(Exception e)
-		{
+		catch(Exception e) {
 			Assert.fail(e.getMessage());
 		}
 	}

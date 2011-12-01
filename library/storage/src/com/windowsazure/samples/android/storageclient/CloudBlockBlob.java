@@ -97,8 +97,7 @@ public final class CloudBlockBlob extends CloudBlob {
 	}
 
 	private boolean isBase64URLSafeString(String base64UrlString) {
-		try 
-		{
+		try  {
 			Base64.decode(base64UrlString, Base64.URL_SAFE | Base64.NO_WRAP
 					| Base64.NO_PADDING);
 			return true;
@@ -120,10 +119,9 @@ public final class CloudBlockBlob extends CloudBlob {
 		inputStream.mark(Integer.MAX_VALUE);
 		long skippedLength = 0;
 		long length = 0;
-		do 
-		{
+		do  {
 			skippedLength = inputStream.skip(Integer.MAX_VALUE);
-			length += skippedLength; 
+			length += skippedLength;
 		} while (skippedLength > 0);
 		inputStream.reset();
 		return length;
@@ -188,8 +186,7 @@ public final class CloudBlockBlob extends CloudBlob {
 				if (result.statusCode != 201) {
 					Log.d("Upload blob uri", request.getURI().toString());
 					Log.d("encoded block id", blockId);
-					for (Header header : request.getAllHeaders())
-					{
+					for (Header header : request.getAllHeaders()) {
 						Log.d("Upload blob header",
 								String.format("%s=%s", header.getName(), header.getValue()));
 					}
@@ -202,12 +199,10 @@ public final class CloudBlockBlob extends CloudBlob {
         storageOperation.executeTranslatingExceptions();
 	}
 
-	public static String encodedBlockId(String blockId)
-	{
+	public static String encodedBlockId(String blockId) {
 		return encodedBlockId(blockId.getBytes());
 	}
-	public static String encodedBlockId(byte[] blockIdBytes)
-	{
+	public static String encodedBlockId(byte[] blockIdBytes) {
 		return Base64.encodeToString(blockIdBytes, Base64.URL_SAFE
 				| Base64.NO_WRAP);
 	}

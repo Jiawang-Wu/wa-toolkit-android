@@ -25,86 +25,79 @@ import com.windowsazure.samples.table.AzureTableCollection;
 
 
 public class UtilTests extends AndroidTestCase {
-	
+
 	public void testBase64() {
 		// Empty
 		String encoded = new String(Base64.encode(new byte[0]));
 		String decoded = new String(Base64.decode(encoded.getBytes()));
 		Assert.assertEquals("", decoded);
-		
+
 		// One character
 		encoded = new String(Base64.encode("I".getBytes()));
 		decoded = new String(Base64.decode(encoded.getBytes()));
 		Assert.assertEquals("I", decoded);
-		
+
 		// Two characters
 		encoded = new String(Base64.encode("Or".getBytes()));
 		decoded = new String(Base64.decode(encoded.getBytes()));
 		Assert.assertEquals("Or", decoded);
-		
+
 		// Three characters
 		encoded = new String(Base64.encode("And".getBytes()));
 		decoded = new String(Base64.decode(encoded.getBytes()));
 		Assert.assertEquals("And", decoded);
-		
+
 		// Single line
 		encoded = new String(Base64.encode("How now brown cow.".getBytes()));
 		decoded = new String(Base64.decode(encoded.getBytes()));
 		Assert.assertEquals("How now brown cow.", decoded);
 	}
-	
+
 	public void testBase64MultipleLines() {
 		String message = "AAAAAAAAA+AAAAAAAAA+AAAAAAAAA+AAAAAAAAA+AAAAAAAAA+" +
-			"BBBBBBBBB+BBBBBBBBB+BBBBBBBBB+BBBBBBBBB+BBBBBBBBB+" + 
+			"BBBBBBBBB+BBBBBBBBB+BBBBBBBBB+BBBBBBBBB+BBBBBBBBB+" +
 			"CCCCCCCCC+CCCCCCCCC+CCCCCCCCC+CCCCCCCCC+CCCCCCCCC+" +
 			"DDDDDDDDD+DDDDDDDDD+DDDDDDDDD+DDDDDDDDD+DDDDDDDDD.";
 		String encoded = new String(Base64.encode(message.getBytes()));
 		String actual = new String(Base64.decode(encoded.getBytes()));
 		Assert.assertEquals(message, actual);
 	}
-	
+
 	public void testDateToGmt() {
-		try
-		{
+		try {
 			String expected = "Sun, 02 Jan 2011 03:04:05 GMT";
 			String actual = Util.dateToGmtString(Util.localDateToGmtDate(new Date(2011 - 1900, 1 - 1, 2, 3, 4, 5)));
 			Assert.assertEquals(expected, actual);
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			Assert.fail(e.getMessage());
 		}
 	}
-	
+
 	public void testDateToXmlStringWithoutTZ() {
-		try
-		{
+		try {
 			String expected = "2011-01-02T03:04:05";
 			String actual = Util.dateToXmlStringWithoutTZ(Util.localDateToGmtDate(new Date(2011 - 1900, 1 - 1, 2, 3, 4, 5)));
 			Assert.assertEquals(expected, actual);
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			Assert.fail(e.getMessage());
 		}
 	}
-	
+
 	public void testDateToXmlStringWithTZ() {
-		try
-		{
+		try {
 			String expected = "2011-01-02T03:04:05+0000";
 			String actual = Util.dateToXmlStringWithTZ(Util.localDateToGmtDate(new Date(2011 - 1900, 1 - 1, 2, 3, 4, 5)));
 			Assert.assertEquals(expected, actual);
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			Assert.fail(e.getMessage());
 		}
 	}
-	
+
 	public void testTokenizer() {
-		try
-		{
+		try {
 			String xml = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>" +
 			    "<feed xml:base=\"http://myaccount.tables.core.windows.net/\" xmlns:d=\"http://schemas.microsoft.com/ado/2007/08/dataservices\" xmlns:m=\"http://schemas.microsoft.com/ado/2007/08/dataservices/metadata\" xmlns=\"http://www.w3.org/2005/Atom\">" +
 					"<title type=\"text\">Tables</title>" +
@@ -126,43 +119,42 @@ public class UtilTests extends AndroidTestCase {
 					        "</m:properties>" +
 					    "</content>" +
 					"</entry>" +
-				"</feed>"; 
-	
+				"</feed>";
+
 			XmlHttpResult xmlHttpResult = new XmlHttpResult(HttpMethod.GET, HttpStatusCode.OK, new HttpHeader(), null);
 			xmlHttpResult.setXmlString(xml);
 			TableCollectionDOMAdapter adapter = new TableCollectionDOMAdapter(xmlHttpResult);
 			AzureTableCollection collection = adapter.build();
-			
+
 			Assert.assertEquals(1, collection.getTables().size());
-			
+
 			AzureTable table = collection.iterator().next();
 			Assert.assertEquals("Tokenizer Test", table.getTitle());
 			Assert.assertEquals("JUnit", table.getAuthorName());
 			Assert.assertEquals("mytable", table.getTableName());
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			Assert.fail(e.getMessage());
 		}
 	}
-	
+
 	public void testXpath() {
 		ACLCollection aclCollection = new ACLCollection();
 		Date start = new Date(2012 - 1900, 1 - 1, 1);
 		Date expiry = new Date(2012 - 1900, 1 - 1, 2);
 		aclCollection.add(ACL.newACL(start, expiry, EnumSet.of(Permission.READ)));
 		aclCollection.add(ACL.newACL(start, expiry, EnumSet.of(Permission.WRITE)));
-		
+
 		String xml = new ACLDOMBuilder(aclCollection).getXmlString(false);
 		XmlDOM dom = new XmlDOM();
 		dom.fromString(xml);
-		
+
 		XmlNode node = dom.getSingleNode("/");
 		Assert.assertEquals("SignedIdentifiers", node.getLocalName());
-		
+
 		node = dom.getSingleNode("/SignedIdentifiers/SignedIdentifier/AccessPolicy/Permission");
 		Assert.assertEquals("r", node.getInnerText());
-		
+
 		Collection<XmlNode> nodes = dom.getNodes("//AccessPolicy/Expiry");
 		Assert.assertEquals(2, nodes.size());
 	}

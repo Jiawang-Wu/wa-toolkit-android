@@ -29,8 +29,7 @@ final class StorageErrorResponse {
 		m_ErrorInfo = new StorageExtendedErrorInformation();
 		this.parseResponse();
 	}
-	public StorageExtendedErrorInformation getExtendedErrorInformation()
-	{
+	public StorageExtendedErrorInformation getExtendedErrorInformation() {
 		return m_ErrorInfo;
 	}
 	private void parseResponse() throws UnsupportedEncodingException, IOException {
@@ -44,14 +43,12 @@ final class StorageErrorResponse {
 			// SAS Service error <string></string>
 			if (root.getNodeName().equals("string")) {
 				m_ErrorInfo.errorCode = m_ErrorInfo.errorMessage = ((Element) root).getTextContent();
-			} else // WA error <Code></Code><Message></Message>
-			{
+			} else // WA error <Code></Code><Message></Message> {
 				Element codeElement = (Element) root.getElementsByTagName(
 						"Code").item(0);
 				Element messageElement = (Element) root.getElementsByTagName(
 						"Message").item(0);
-				if (codeElement == null)
-				{
+				if (codeElement == null) {
 					codeElement = (Element) root.getElementsByTagName(
 							"code").item(0);
 					messageElement = (Element) root.getElementsByTagName(

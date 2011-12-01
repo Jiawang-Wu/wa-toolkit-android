@@ -81,13 +81,12 @@ final class ContainerRequest implements AbstractContainerRequest {
 	}
 
     public static HttpGet getAcl(URI endpoint)
-            throws IOException, URISyntaxException, StorageException
-        {
+            throws IOException, URISyntaxException, StorageException {
             UriQueryBuilder uriQueryBuilder = getContainerUriQueryBuilder();
             uriQueryBuilder.add("comp", "acl");
             return BaseRequest.setURIAndHeaders(new HttpGet(), endpoint, uriQueryBuilder);
         }
-    
+
 	public HttpPut setAcl(URI endpoint,
 			BlobContainerPublicAccessType publicAccess)
 			throws NotImplementedException, IOException, URISyntaxException,

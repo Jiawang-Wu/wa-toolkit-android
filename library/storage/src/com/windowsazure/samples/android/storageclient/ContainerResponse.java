@@ -20,9 +20,8 @@ final class ContainerResponse extends BaseResponse {
 		attributes.metadata = getMetadata((AbstractHttpMessage) result.httpResponse);
 		return attributes;
 	}
-	
-    public static String getAcl(AbstractHttpMessage response)
-    {
+
+    public static String getAcl(AbstractHttpMessage response) {
     	return Utility.getFirstHeaderValueOrEmpty(response, "x-ms-blob-public-access");
     }
 }

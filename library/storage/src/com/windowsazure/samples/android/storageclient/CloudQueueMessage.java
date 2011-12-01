@@ -70,9 +70,8 @@ public class CloudQueueMessage {
 	public int getDequeueCount() {
 		return m_DequeueCount;
 	}
-	
-	public String toString()
-	{
+
+	public String toString() {
 		return String.format("Id: %s\nContent: %s\nInsertion Time: %s\nExpiration Time: %s\nDequeue Count: %s\nPop Receipt: %s\nNext Visible Time: %s\n",
 				m_MessageId,
 				this.getAsString(),

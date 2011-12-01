@@ -69,8 +69,7 @@ public final class BlobOutputStream extends OutputStream {
 	}
 	private void checkStreamState() throws IOException {
 		synchronized (m_LastErrorLock) {
-			if (m_StreamFaulted)
-			{
+			if (m_StreamFaulted) {
 				throw m_LastError;
 			}
 		}
@@ -84,14 +83,12 @@ public final class BlobOutputStream extends OutputStream {
 			m_StreamFaulted = true;
 			ioexception = m_LastError = new IOException("Stream is already closed.");
 		}
-		while (m_OutstandingRequests > 0)
-		{
+		while (m_OutstandingRequests > 0) {
 			waitForTaskToComplete();
 		}
 		m_ThreadExecutor.shutdown();
 		synchronized (m_LastErrorLock) {
-			if (ioexception != m_LastError)
-			{
+			if (ioexception != m_LastError) {
 				throw m_LastError;
 			}
 		}
@@ -103,30 +100,26 @@ public final class BlobOutputStream extends OutputStream {
 			throw ioException;
 		}
 	}
-	private void commit() throws StorageException, IOException
-			{
-		if (m_StreamType == BlobType.BLOCK_BLOB) 
-		{
+	private void commit() throws StorageException, IOException {
+		if (m_StreamType == BlobType.BLOCK_BLOB)  {
 			CloudBlockBlob cloudblockblob = (CloudBlockBlob) m_ParentBlobRef;
 			cloudblockblob.commitBlockList(m_BlockList);
 		}
 	}
 
 	private byte[] getBytesFromLong(long number) throws IOException {
-	    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();  
-	    DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);  
-	    dataOutputStream.writeLong(number);  
-	    dataOutputStream.flush();  
-	    return byteArrayOutputStream.toByteArray();  
+	    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+	    DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
+	    dataOutputStream.writeLong(number);
+	    dataOutputStream.flush();
+	    return byteArrayOutputStream.toByteArray();
 	}
 
 	private synchronized void dispatchWrite(final int writeLength) throws IOException {
-		if (writeLength == 0)
-		{
+		if (writeLength == 0) {
 			return;
 		}
-		if (m_OutstandingRequests > 2)
-		{
+		if (m_OutstandingRequests > 2) {
 			waitForTaskToComplete();
 		}
 		final ByteArrayInputStream bufferRef = new ByteArrayInputStream(m_OutBuffer.toByteArray());
@@ -138,13 +131,13 @@ public final class BlobOutputStream extends OutputStream {
 				public Void call() {
 					try {
 						blob.uploadBlock(blockID, bufferRef,writeLength);
-					} 
+					}
 					catch (IOException ioexception) {
 						synchronized (m_LastErrorLock) {
 							m_StreamFaulted = true;
 							m_LastError = ioexception;
 						}
-					} 
+					}
 					catch (StorageException storageexception) {
 						synchronized (m_LastErrorLock) {
 							m_StreamFaulted = true;
@@ -202,8 +195,7 @@ public final class BlobOutputStream extends OutputStream {
 		write(new byte[] { (byte) (value & 0xff) });
 	}
 	private synchronized void writeInternal(byte buffer[], int bufferOffset, int length) throws IOException {
-		while (length > 0)
-		{
+		while (length > 0) {
 			checkStreamState();
 			int bufferToFillLength = m_InternalWriteThreshold - m_CurrentBufferedBytes;
 			int nextWriteLength = Math.min(bufferToFillLength, length);
@@ -211,8 +203,7 @@ public final class BlobOutputStream extends OutputStream {
 			m_CurrentBufferedBytes += nextWriteLength;
 			bufferOffset += nextWriteLength;
 			length -= nextWriteLength;
-			if (m_CurrentBufferedBytes == m_InternalWriteThreshold)
-			{
+			if (m_CurrentBufferedBytes == m_InternalWriteThreshold) {
 				dispatchWrite(m_InternalWriteThreshold);
 			}
 		}

@@ -28,8 +28,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
-public class ListDisplay extends Activity implements OnItemClickListener
-{
+public class ListDisplay extends Activity implements OnItemClickListener {
 
 	static int FONT_SIZE = 18;
 	static int ROW_SIZE = 36;
@@ -37,8 +36,7 @@ public class ListDisplay extends Activity implements OnItemClickListener
 	List<String> items = new ArrayList<String>();
 	int listType = 0;
 
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.listdisplay);
         Button modifyButton = (Button)findViewById(R.id.ModifyButton);
@@ -52,71 +50,54 @@ public class ListDisplay extends Activity implements OnItemClickListener
         	});
     }
 
-	public void onStart()
-	{
+	public void onStart() {
 		super.onStart();
 		items.clear();
-        try
-        {
-	        if (listType == StorageTypeSelector.STORAGE_TYPE_TABLE)
-	        {
-	        	if (this.getTitle().equals("Table Storage"))
-	        	{
+        try {
+	        if (listType == StorageTypeSelector.STORAGE_TYPE_TABLE) {
+	        	if (this.getTitle().equals("Table Storage")) {
 	        		AzureTableCollection tables = new AzureTableManager(ProxySelector.credential).queryTables();
 	        		Iterator<AzureTable> iterator = tables.iterator();
-	        		while (iterator.hasNext())
-	        		{
+	        		while (iterator.hasNext()) {
 	        			AzureTable table = iterator.next();
 	        			items.add(table.getTableName());
 	        		}
 	        	}
-	        	else
-	        	{
+	        	else {
 	        		AzureTableEntityCollection entities = new AzureTableManager(ProxySelector.credential).queryAllEntities((String)this.getTitle());
 	        		Iterator<AzureTableEntity> iterator = entities.iterator();
-	        		while (iterator.hasNext())
-	        		{
+	        		while (iterator.hasNext()) {
 	        			AzureTableEntity entity = iterator.next();
 	        			items.add(entity.getTitle());
 	        		}
 	        	}
 	        }
-	        else if (listType == StorageTypeSelector.STORAGE_TYPE_BLOB)
-	        {
-	        	if (this.getTitle().equals("Blob Storage"))
-	        	{
-	        		for (CloudBlobContainer container : ProxySelector.blobClient.listContainers())
-	        		{
+	        else if (listType == StorageTypeSelector.STORAGE_TYPE_BLOB) {
+	        	if (this.getTitle().equals("Blob Storage")) {
+	        		for (CloudBlobContainer container : ProxySelector.blobClient.listContainers()) {
 	        			items.add(container.getName());
 	        		}
 	        	}
-	        	else
-	        	{
+	        	else {
 	        		CloudBlobContainer container = ProxySelector.blobClient.getContainerReference((String) this.getTitle());
-	        		for (CloudBlob blob : container.listBlobs())
-	        		{
+	        		for (CloudBlob blob : container.listBlobs()) {
 	        			items.add(blob.getName());
 	        		}
 	        	}
 	        }
-	        else if (listType == StorageTypeSelector.STORAGE_TYPE_QUEUE)
-	        {
-	        	if (this.getTitle().equals("Queue Storage"))
-	        	{
+	        else if (listType == StorageTypeSelector.STORAGE_TYPE_QUEUE) {
+	        	if (this.getTitle().equals("Queue Storage")) {
 	        		AzureQueueCollection queues = new AzureQueueManager(ProxySelector.credential).listAllQueues();
 	        		Iterator<AzureQueue> iterator = queues.iterator();
-	          		while (iterator.hasNext())
-	        		{
+	          		while (iterator.hasNext()) {
 	        			AzureQueue queue = iterator.next();
 	        			items.add(queue.getQueueName());
 	        		}
 	        	}
-	        	else
-	        	{
+	        	else {
 	        		AzureQueueMessageCollection messages = new AzureQueueManager(ProxySelector.credential).peekMessages((String)this.getTitle(), 32);
 	        		Iterator<AzureQueueMessage> iterator = messages.iterator();
-	          		while (iterator.hasNext())
-	        		{
+	          		while (iterator.hasNext()) {
 	        			AzureQueueMessage message = iterator.next();
 	        			items.add(message.getMessageText());
 	        		}
@@ -125,41 +106,34 @@ public class ListDisplay extends Activity implements OnItemClickListener
 	    	ListView table = (ListView)findViewById(R.id.ListDisplayListView);
 	        table.setAdapter(new ArrayAdapter<String>(this, android.R. layout.simple_list_item_single_choice, items));
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
         	System.out.println(e.toString());
         }
 	}
 
 	@Override
-	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3)
-	{
-        if (listType == StorageTypeSelector.STORAGE_TYPE_TABLE)
-        {
+	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+        if (listType == StorageTypeSelector.STORAGE_TYPE_TABLE) {
             Intent launchEntityListDisplay = new Intent(this, EntityList.class);
             launchEntityListDisplay.putExtra("com.windowsazure.samples.sample.entitylist.type", StorageTypeSelector.STORAGE_TYPE_TABLE);
            	launchEntityListDisplay.putExtra("com.windowsazure.samples.sample.entitylist.title", items.get(arg2));
            	startActivity (launchEntityListDisplay);
         }
-        else if (listType == StorageTypeSelector.STORAGE_TYPE_BLOB)
-        {
-        	if (this.getTitle().equals("Blob Storage"))
-        	{
+        else if (listType == StorageTypeSelector.STORAGE_TYPE_BLOB) {
+        	if (this.getTitle().equals("Blob Storage")) {
             	Intent launchBlobDisplay = new Intent(this, ListDisplay.class);
             	launchBlobDisplay.putExtra("com.windowsazure.samples.sample.listdisplay.type", StorageTypeSelector.STORAGE_TYPE_BLOB);
             	launchBlobDisplay.putExtra("com.windowsazure.samples.sample.listdisplay.title", items.get(arg2));
             	startActivity (launchBlobDisplay);
         	}
-        	else
-        	{
+        	else {
             	Intent launchBlobViewer = new Intent(this, BlobViewer.class);
             	launchBlobViewer.putExtra("com.windowsazure.samples.sample.blobviewer.container", this.getTitle());
             	launchBlobViewer.putExtra("com.windowsazure.samples.sample.blobviewer.blob", items.get(arg2));
             	startActivity (launchBlobViewer);
         	}
         }
-        else if (listType == StorageTypeSelector.STORAGE_TYPE_QUEUE)
-        {
+        else if (listType == StorageTypeSelector.STORAGE_TYPE_QUEUE) {
             Intent launchQueueMessageDisplay = new Intent(this, EntityList.class);
             launchQueueMessageDisplay.putExtra("com.windowsazure.samples.sample.entitylist.type", StorageTypeSelector.STORAGE_TYPE_QUEUE);
             launchQueueMessageDisplay.putExtra("com.windowsazure.samples.sample.entitylist.title", items.get(arg2));
@@ -167,18 +141,14 @@ public class ListDisplay extends Activity implements OnItemClickListener
         }
 	}
 
-    private void modifyStorage()
-	{
+    private void modifyStorage() {
     	Intent launchCreateDeleteSelector = new Intent(this, CreateDeleteSelector.class);
     	launchCreateDeleteSelector.putExtra("com.windowsazure.samples.sample.createdeleteselector.type", listType);
-        if (listType == StorageTypeSelector.STORAGE_TYPE_BLOB)
-        {
-        	if (this.getTitle().equals("Blob Storage"))
-        	{
+        if (listType == StorageTypeSelector.STORAGE_TYPE_BLOB) {
+        	if (this.getTitle().equals("Blob Storage")) {
             	launchCreateDeleteSelector.putExtra("com.windowsazure.samples.sample.createdeleteselector.subtype", ModifyItemDisplay.MODIFY_ITEM_SUBTYPE_CONTAINER);
         	}
-        	else
-        	{
+        	else {
             	launchCreateDeleteSelector.putExtra("com.windowsazure.samples.sample.createdeleteselector.subtype", ModifyItemDisplay.MODIFY_ITEM_SUBTYPE_BLOB);
             	launchCreateDeleteSelector.putExtra("com.windowsazure.samples.sample.createdeleteselector.blobname", this.getTitle());
         	}

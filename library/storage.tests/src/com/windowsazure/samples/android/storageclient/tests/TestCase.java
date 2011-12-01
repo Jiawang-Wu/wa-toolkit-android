@@ -33,17 +33,15 @@ public abstract class TestCase extends android.test.AndroidTestCase {
 	protected void assertEventuallyTrue(Callable<Boolean> callable, int timeout) throws Exception {
 		long start = System.currentTimeMillis();
 		long current;
-		do
-		{
-			if (callable.call())
-			{
+		do {
+			if (callable.call()) {
 				return;
 			}
 			current = System.currentTimeMillis();
 		} while (start + timeout > current);
 		Assert.assertTrue(callable.call());
 	}
-	
+
 	protected <T> ArrayList<T> toList(Iterable<T> iterable) {
 		ArrayList<T> list = new ArrayList<T>();
 		for (T element : iterable) {

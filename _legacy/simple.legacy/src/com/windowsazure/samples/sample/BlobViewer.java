@@ -11,14 +11,12 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.widget.ImageView;
 
-public class BlobViewer extends Activity
-{
+public class BlobViewer extends Activity {
 
 	String containerName = null;
 	String blobName = null;
 
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.blobviewer);
         Bundle optionSet = getIntent().getExtras();
@@ -27,12 +25,10 @@ public class BlobViewer extends Activity
         this.setTitle(optionSet.getString("com.windowsazure.samples.sample.blobviewer.blob"));
     }
 
-	public void onStart()
-	{
+	public void onStart() {
 		super.onStart();
 		ImageView imageView = (ImageView)findViewById(R.id.BlobImageView);
-		try
-		{
+		try {
 			CloudBlockBlob blob = ProxySelector.blobClient.getContainerReference(containerName).getBlockBlobReference(blobName);
 			ByteArrayOutputStream contentStream = new ByteArrayOutputStream();
 			blob.download(contentStream);
@@ -40,8 +36,7 @@ public class BlobViewer extends Activity
 			Bitmap bitmap = BitmapFactory.decodeByteArray(content, 0, content.length);
 	        imageView.setImageBitmap(bitmap);
 		}
-        catch (Exception e)
-        {
+        catch (Exception e) {
         	System.out.println(e.toString());
         }
 	}

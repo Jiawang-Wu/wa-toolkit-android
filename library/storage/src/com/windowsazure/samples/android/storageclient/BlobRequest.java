@@ -24,8 +24,7 @@ final class BlobRequest implements AbstractBlobRequest {
 	}
 
     public static HttpGet get(URI endpoint, long rangeStart, long length)
-        throws IOException, URISyntaxException, IllegalArgumentException, StorageException
-    {
+        throws IOException, URISyntaxException, IllegalArgumentException, StorageException {
     	HttpGet request = BaseRequest.setURIAndHeaders(new HttpGet(), endpoint, null);
         String rangeToRead = String.format(Utility.LOCALE_US, "bytes=%d-%d", rangeStart, rangeStart + length - 1L);
         request.setHeader("x-ms-range", rangeToRead);
@@ -33,21 +32,18 @@ final class BlobRequest implements AbstractBlobRequest {
     }
 
     public static HttpPut copyFrom(URI endpoint, String sourceBlobCanonicalName)
-        throws StorageException, IllegalArgumentException, IOException, URISyntaxException
-    {
+        throws StorageException, IllegalArgumentException, IOException, URISyntaxException {
     	HttpPut request = BaseRequest.setURIAndHeaders(new HttpPut(), endpoint, null);
     	request.setHeader("x-ms-copy-source", sourceBlobCanonicalName);
         return request;
     }
-    
+
     public static HttpPut setProperties(URI endpoint, BlobProperties properties)
-            throws IllegalArgumentException, IOException, URISyntaxException, StorageException
-        {
+            throws IllegalArgumentException, IOException, URISyntaxException, StorageException {
             UriQueryBuilder uriQueryBuilder = new UriQueryBuilder();
             uriQueryBuilder.add("comp", "properties");
             HttpPut request= BaseRequest.setURIAndHeaders(new HttpPut(), endpoint, uriQueryBuilder);
-            if (properties.getBlobType() == BlobType.PAGE_BLOB)
-            {
+            if (properties.getBlobType() == BlobType.PAGE_BLOB) {
             	BaseRequest.addOptionalHeader(request, "x-ms-blob-content-length", "" + properties.length);
             }
             BaseRequest.addOptionalHeader(request, "x-ms-blob-cache-control", properties.cacheControl);

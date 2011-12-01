@@ -34,8 +34,7 @@ public abstract class CloudQueueMessagesTests<T extends CloudClientAccountProvid
 
 		private CloudQueueMessagesTests<T> thisTest;
 
-		public void testBase64Encoding() throws UnsupportedEncodingException, StorageException, NotImplementedException, URISyntaxException, IOException
-		{
+		public void testBase64Encoding() throws UnsupportedEncodingException, StorageException, NotImplementedException, URISyntaxException, IOException {
 			String content = "Sample Content";
 			String otherContent = "Other sample Content";
 
@@ -54,7 +53,7 @@ public abstract class CloudQueueMessagesTests<T extends CloudClientAccountProvid
 			message = queueWithEncoding.getMessage();
 			Assert.assertEquals(otherContent, message.getAsString());
 		}
-		
+
 		public void testAddedMessageIsListedAndDeletedIsNot()
 				throws Exception {
 			final CloudQueue queue = this.createQueue("testaddedmessageislistedanddeletedisnot2");
@@ -63,7 +62,7 @@ public abstract class CloudQueueMessagesTests<T extends CloudClientAccountProvid
 
 			String someContent = "some text";
 			queue.addMessage(new CloudQueueMessage(someContent));
-			
+
 			ArrayList<CloudQueueMessage> messages = this.toList(queue.getMessages(2, 1));
 			Assert.assertEquals(1, messages.size());
 			Assert.assertEquals(someContent, messages.get(0).getAsString());
@@ -76,7 +75,7 @@ public abstract class CloudQueueMessagesTests<T extends CloudClientAccountProvid
 					return peekedMessages.size() == 1;
 				}
 			}, 10000);
-			
+
 			ArrayList<CloudQueueMessage> peekedMessages = this.toList(queue.peekMessages(2));
 			Assert.assertEquals(1, peekedMessages.size());
 			Assert.assertEquals(someContent, peekedMessages.get(0).getAsString());
@@ -85,7 +84,7 @@ public abstract class CloudQueueMessagesTests<T extends CloudClientAccountProvid
 			Assert.assertFalse(queue.peekMessages(1).iterator().hasNext());
 			Assert.assertFalse(queue.getMessages(1).iterator().hasNext());
 		}
-		
+
 		public void testClearDeletesAllMessages()
 				throws Exception {
 			final CloudQueue queue = this.createQueue("testcleardeletesallmessages");
@@ -95,15 +94,15 @@ public abstract class CloudQueueMessagesTests<T extends CloudClientAccountProvid
 			queue.addMessage(new CloudQueueMessage(content1));
 			queue.addMessage(new CloudQueueMessage(content2));
 			queue.addMessage(new CloudQueueMessage(content3));
-			
+
 			Assert.assertEquals(3, this.toList(queue.peekMessages(4)).size());
 			queue.clear();
-			
+
 			queue.downloadApproximateMessageCount();
 			Assert.assertEquals(0, queue.getApproximateMessageCount());
 			Assert.assertEquals(0, this.toList(queue.peekMessages(1)).size());
 		}
-		
+
 		public void testAddSeveralMessageAndListThem()
 				throws Exception {
 			final CloudQueue queue = this.createQueue("testaddseveralmessageandlistthem");
@@ -113,7 +112,7 @@ public abstract class CloudQueueMessagesTests<T extends CloudClientAccountProvid
 			queue.addMessage(new CloudQueueMessage(content1));
 			queue.addMessage(new CloudQueueMessage(content2));
 			queue.addMessage(new CloudQueueMessage(content3));
-			
+
 			queue.downloadApproximateMessageCount();
 			Assert.assertEquals(3, queue.getApproximateMessageCount());
 
@@ -126,7 +125,7 @@ public abstract class CloudQueueMessagesTests<T extends CloudClientAccountProvid
 			Assert.assertEquals(content1, message.getAsString());
 			queue.deleteMessage(message);
 			Assert.assertEquals(3, queue.getApproximateMessageCount());
-			
+
 			message = queue.peekMessage();
 			Assert.assertEquals(content2, message.getAsString());
 			queue.downloadApproximateMessageCount();
@@ -181,20 +180,18 @@ public abstract class CloudQueueMessagesTests<T extends CloudClientAccountProvid
 			final int messagesLength[] = new int[]{ 4, 8, 0, 230, 512, 513, 5, 4, 3, 10 };
 			final CloudQueue queue = this.createQueue("testlistingmessagesisaccuratewhilecreatinganddeletingseveral");
 			queue.setEncodeMessage(true);
-			
+
 			class CreateAndDeleteMessagesHelper {
-				
+
 				ArrayList<Integer> expectedMessagesInQueue = new ArrayList<Integer>();
 				ArrayList<byte[]> messageContents = new ArrayList<byte[]>();
 				ArrayList<CloudQueueMessage> currentQueueMessages;
 				Map<Integer, String> indexToIdMapping = new HashMap<Integer, String>();
 				Set<String> knownMessageIds = new HashSet<String>();
 
-				CreateAndDeleteMessagesHelper()
-				{
+				CreateAndDeleteMessagesHelper() {
 					Random random = new Random();
-					for (int length : messagesLength)
-					{
+					for (int length : messagesLength) {
 						byte[] content = new byte[length];
 						random.nextBytes(content);
 						messageContents.add(content);
@@ -205,10 +202,8 @@ public abstract class CloudQueueMessagesTests<T extends CloudClientAccountProvid
 					queue.addMessage(new CloudQueueMessage(messageContents.get(index)));
 					expectedMessagesInQueue.add(index);
 					ArrayList<CloudQueueMessage> messages = thisTest.toList(queue.peekMessages(expectedMessagesInQueue.size() + 1));
-					for (CloudQueueMessage message : messages)
-					{
-						if (!knownMessageIds.contains(message.getId()))
-						{
+					for (CloudQueueMessage message : messages) {
+						if (!knownMessageIds.contains(message.getId())) {
 							knownMessageIds.add(message.getId());
 							indexToIdMapping.put(index, message.getId());
 							this.assertListingGivesExpectedMessages();
@@ -220,16 +215,12 @@ public abstract class CloudQueueMessagesTests<T extends CloudClientAccountProvid
 
 				void delete(int index) throws Exception {
 					String messageId = indexToIdMapping.get(index);
-					for (int messageIndex = 0; messageIndex < currentQueueMessages.size(); ++messageIndex)
-					{
+					for (int messageIndex = 0; messageIndex < currentQueueMessages.size(); ++messageIndex) {
 						String otherMessageId = currentQueueMessages.get(messageIndex).getId();
-						if (messageId.equals(otherMessageId))
-						{
+						if (messageId.equals(otherMessageId)) {
 							queue.deleteMessage(currentQueueMessages.get(messageIndex));
-							for (int i = 0; i < expectedMessagesInQueue.size(); ++i)
-							{
-								if (expectedMessagesInQueue.get(i).intValue() == index)
-								{
+							for (int i = 0; i < expectedMessagesInQueue.size(); ++i) {
+								if (expectedMessagesInQueue.get(i).intValue() == index) {
 									expectedMessagesInQueue.remove(i);
 									this.assertListingGivesExpectedMessages();
 									return;
@@ -237,54 +228,47 @@ public abstract class CloudQueueMessagesTests<T extends CloudClientAccountProvid
 							}
 						}
 					}
-					
+
 					Assert.fail("The expected message wasn't found");
 				}
 
-				Comparator<byte[]> getComparator()
-				{
+				Comparator<byte[]> getComparator() {
 					return new Comparator<byte[]>() {
 						@Override
 						public int compare(byte[] left, byte[] right) {
-							if (left.length == right.length)
-							{
-								for (int index = 0; index < left.length; ++index)
-								{
-									if (left[index] != right[index])
-									{
+							if (left.length == right.length) {
+								for (int index = 0; index < left.length; ++index) {
+									if (left[index] != right[index]) {
 										return left[index] < right[index] ? 1 : -1;
 									}
 								}
 								return 0;
 							}
-							else
-							{
+							else {
 								return left.length < right.length ? 1 : -1;
 							}
 						}
-						
+
 					};
 				}
-				
+
 				void assertListingGivesExpectedMessages()
 						throws NotImplementedException, Exception {
 					currentQueueMessages = thisTest.toList(queue.getMessages(expectedMessagesInQueue.size() + 1, 1));
 
 					List<byte[]> retrievedMessageContents = thisTest.getMessageContents(currentQueueMessages);
 					Assert.assertEquals(expectedMessagesInQueue.size(), retrievedMessageContents.size());
-					
+
 					ArrayList<byte[]> expectedMessageContents = new ArrayList<byte[]>();
-					
-					for (int index = 0; index < expectedMessagesInQueue.size(); ++index)
-					{
+
+					for (int index = 0; index < expectedMessagesInQueue.size(); ++index) {
 						expectedMessageContents.add(messageContents.get(expectedMessagesInQueue.get(index)));
 					}
 
 					Collections.sort(retrievedMessageContents, this.getComparator());
 					Collections.sort(expectedMessageContents, this.getComparator());
-					
-					for (int index = 0; index < expectedMessageContents.size(); ++index)
-					{
+
+					for (int index = 0; index < expectedMessageContents.size(); ++index) {
 						Assert.assertTrue(Arrays.equals(expectedMessageContents.get(index), retrievedMessageContents.get(index)));
 					}
 
@@ -292,7 +276,7 @@ public abstract class CloudQueueMessagesTests<T extends CloudClientAccountProvid
 			};
 
 			CreateAndDeleteMessagesHelper helper = new CreateAndDeleteMessagesHelper();
-			
+
 			helper.add(0);
 			helper.delete(0);
 			helper.add(0);
@@ -322,10 +306,9 @@ public abstract class CloudQueueMessagesTests<T extends CloudClientAccountProvid
 		public ArrayList<byte[]> getMessageContents(
 				Iterable<CloudQueueMessage> messages) {
 			ArrayList<byte[]> contents = new ArrayList<byte[]>();
-			for (CloudQueueMessage message : messages)
-			{
+			for (CloudQueueMessage message : messages) {
 				contents.add(message.getAsBytes());
 			}
 			return contents;
-		}		
+		}
 }

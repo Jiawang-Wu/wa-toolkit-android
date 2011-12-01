@@ -25,15 +25,13 @@ import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.SimpleExpandableListAdapter;
 
-public class EntityList extends Activity implements OnChildClickListener
-{
+public class EntityList extends Activity implements OnChildClickListener {
 
 	List<List<Map<String, String>>> items = new ArrayList<List<Map<String, String>>>();
 	String entityName = null;
 	int listType = 0;
 
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.entitylist);
         Button addButton = (Button)findViewById(R.id.AddItemButton);
@@ -48,26 +46,21 @@ public class EntityList extends Activity implements OnChildClickListener
         	});
    }
 
-	public void onStart()
-	{
+	public void onStart() {
 		super.onStart();
 		items.clear();
-        try
-        {
+        try {
 	        List<Map<String, String>> groupData = new ArrayList<Map<String, String>>();
-	        if (listType == StorageTypeSelector.STORAGE_TYPE_TABLE)
-	        {
+	        if (listType == StorageTypeSelector.STORAGE_TYPE_TABLE) {
         		AzureTableEntityCollection entities = new AzureTableManager(ProxySelector.credential).queryAllEntities((String)this.getTitle());
         		Iterator<AzureTableEntity> entityIterator = entities.iterator();
-        		while (entityIterator.hasNext())
-        		{
+        		while (entityIterator.hasNext()) {
         			Map<String, String> groupFields = new HashMap<String, String>();
 	       			List<Map<String, String>> entry = new ArrayList<Map<String, String>>();
         			AzureTableEntity entity = entityIterator.next();
         			PropertyCollection properties = entity.getProperties();
             		Iterator<Property<?>> propertyIterator = properties.iterator();
-            		while (propertyIterator.hasNext())
-		       		{
+            		while (propertyIterator.hasNext()) {
             			Property<?> property = propertyIterator.next();
 		    			Map<String, String> lineItem = new HashMap<String, String>();
 			       		lineItem.put("Name", property.getName());
@@ -80,12 +73,10 @@ public class EntityList extends Activity implements OnChildClickListener
 		       		groupData.add(groupFields);
         		}
 	        }
-	        else if (listType == StorageTypeSelector.STORAGE_TYPE_QUEUE)
-	        {
+	        else if (listType == StorageTypeSelector.STORAGE_TYPE_QUEUE) {
         		AzureQueueMessageCollection messages = new AzureQueueManager(ProxySelector.credential).peekMessages((String)this.getTitle(), 32);
         		Iterator<AzureQueueMessage> iterator = messages.iterator();
-          		while (iterator.hasNext())
-        		{
+          		while (iterator.hasNext()) {
         			Map<String, String> groupFields = new HashMap<String, String>();
 	       			List<Map<String, String>> entry = new ArrayList<Map<String, String>>();
         			AzureQueueMessage message = iterator.next();
@@ -95,15 +86,13 @@ public class EntityList extends Activity implements OnChildClickListener
 	       			entry.add(lineItem);
 	    			lineItem = new HashMap<String, String>();
 		       		lineItem.put("Name", "Insetion Time");
-		       		if (message.getInsertionTime() != null)
-		       		{
+		       		if (message.getInsertionTime() != null) {
 		       			lineItem.put("Value", message.getInsertionTime().toString());
 		       		}
 	       			entry.add(lineItem);
 	    			lineItem = new HashMap<String, String>();
 		       		lineItem.put("Name", "Expiration Time");
-		       		if (message.getExpirationTime() != null)
-		       		{
+		       		if (message.getExpirationTime() != null) {
 		       			lineItem.put("Value", message.getExpirationTime().toString());
 		       		}
 	       			entry.add(lineItem);
@@ -113,8 +102,7 @@ public class EntityList extends Activity implements OnChildClickListener
 	       			entry.add(lineItem);
 	    			lineItem = new HashMap<String, String>();
 		       		lineItem.put("Name", "Time Next Visible");
-		       		if (message.getTimeNextVisible() != null)
-		       		{
+		       		if (message.getTimeNextVisible() != null) {
 		       			lineItem.put("Value", message.getTimeNextVisible().toString());
 		       		}
 	       			entry.add(lineItem);
@@ -128,23 +116,19 @@ public class EntityList extends Activity implements OnChildClickListener
         		}
 	        }
 	       	ExpandableListView table = (ExpandableListView)findViewById(R.id.EntityListView);
-	        if (listType == StorageTypeSelector.STORAGE_TYPE_TABLE)
-	        {
+	        if (listType == StorageTypeSelector.STORAGE_TYPE_TABLE) {
 	        	table.setAdapter(new SimpleExpandableListAdapter(this, groupData, android.R.layout.simple_expandable_list_item_1, new String[] {"PartitionKey", "RowKey"}, new int[] {android.R.id.text1, android.R.id.text2}, items, android.R.layout.simple_expandable_list_item_2, new String[] {"Name", "Value"}, new int[] {android.R.id.text1, android.R.id.text2}));
 	        }
-	        else if (listType == StorageTypeSelector.STORAGE_TYPE_QUEUE)
-	        {
+	        else if (listType == StorageTypeSelector.STORAGE_TYPE_QUEUE) {
 	        	table.setAdapter(new SimpleExpandableListAdapter(this, groupData, android.R.layout.simple_expandable_list_item_1, new String[] {"Message"}, new int[] {android.R.id.text1}, items, android.R.layout.simple_expandable_list_item_2, new String[] {"Name", "Value"}, new int[] {android.R.id.text1, android.R.id.text2}));
 	        }
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
         	System.out.println(e.toString());
         }
 	}
 
-    private void addItem()
-	{
+    private void addItem() {
     	Intent addItemDisplay = new Intent(this, ModifyItemDisplay.class);
     	addItemDisplay.putExtra("com.windowsazure.samples.sample.modifyitemdisplay.mode", ModifyItemDisplay.MODIFY_ITEM_MODE_ADD);
     	addItemDisplay.putExtra("com.windowsazure.samples.sample.modifyitemdisplay.type", listType);
@@ -153,8 +137,7 @@ public class EntityList extends Activity implements OnChildClickListener
 	}
 
 	@Override
-	public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id)
-	{
+	public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
     	Intent updateItemDisplay = new Intent(this, ModifyItemDisplay.class);
     	updateItemDisplay.putExtra("com.windowsazure.samples.sample.modifyitemdisplay.mode", ModifyItemDisplay.MODIFY_ITEM_MODE_UPDATE);
     	updateItemDisplay.putExtra("com.windowsazure.samples.sample.modifyitemdisplay.selection", groupPosition);

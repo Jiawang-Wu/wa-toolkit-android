@@ -38,22 +38,20 @@ public abstract class CloudBlobContainerUsingSASServiceTests<T extends WAZServic
 		Assert.assertTrue(container.createIfNotExist());
 	}
 
-	public void testAccessingContainerPropertiesThrowsException() throws Exception
-	{
+	public void testAccessingContainerPropertiesThrowsException() throws Exception {
 		final CloudBlobContainer container = this.createQueue("testaccessingcontainerpropertiesthrowsexception");
-		
+
 		this.assertThrows(new RunnableWithExpectedException() {
-			
+
 			public void run() throws Exception {
 				container.downloadAttributes();
 			}
 		}, StorageException.class);
 	}
-	
-	public void testExistsMethodThrowsException() throws Exception
-	{
+
+	public void testExistsMethodThrowsException() throws Exception {
 		final CloudBlobContainer container = this.createQueue("testexistsmethodthrowsexception");
-		
+
 		this.assertThrows(new RunnableWithExpectedException() {
 			public void run() throws Exception {
 				container.exists();

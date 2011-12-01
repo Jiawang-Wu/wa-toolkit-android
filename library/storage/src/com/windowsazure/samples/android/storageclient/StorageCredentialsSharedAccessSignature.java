@@ -10,14 +10,12 @@ public final class StorageCredentialsSharedAccessSignature extends
 
 	private String m_Token;
 
-	boolean equals(StorageCredentials rightCredentials)
-	{
+	boolean equals(StorageCredentials rightCredentials) {
 		return rightCredentials instanceof StorageCredentialsSharedAccessSignature
 				&& this.equals((StorageCredentialsSharedAccessSignature) rightCredentials);
 	}
 
-	boolean equals(StorageCredentialsSharedAccessSignature rightCredentials)
-	{
+	boolean equals(StorageCredentialsSharedAccessSignature rightCredentials) {
 		return this.m_Token.equals(rightCredentials.m_Token);
 	}
 
@@ -92,17 +90,17 @@ public final class StorageCredentialsSharedAccessSignature extends
 	@Override
 	public void signRequestLite(HttpRequestBase request, long length) {
 	}
-	
+
 	@Override
 	public void signTableRequest(HttpRequestBase request) {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
+
 	@Override
 	public void signTableRequestLite(HttpRequestBase request) {
 	// TODO Auto-generated method stub
-	
+
 	}
 
 	@Override

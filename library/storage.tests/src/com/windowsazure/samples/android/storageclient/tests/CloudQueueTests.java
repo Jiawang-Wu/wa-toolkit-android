@@ -24,8 +24,7 @@ public abstract class CloudQueueTests<T extends CloudClientAccountProvider> exte
 	}
 
 	private CloudQueueTests<T> thisTest;
-	public void testCreatedQueueIncludesMetadata() throws StorageException, UnsupportedEncodingException, IOException, URISyntaxException
-	{
+	public void testCreatedQueueIncludesMetadata() throws StorageException, UnsupportedEncodingException, IOException, URISyntaxException {
 		Map<String, String> metadata = new HashMap<String, String>();
 		metadata.put("someKey", "someString");
 		metadata.put("otherKey", "otherSteram");
@@ -68,8 +67,7 @@ public abstract class CloudQueueTests<T extends CloudClientAccountProvider> exte
 		this.AssertHashMapsAreEquivalent(sameQueue.getMetadata(), new HashMap<String, String>());
 	}
 
-	public void testListingQueuesIncludesMetadata() throws URISyntaxException, UnsupportedEncodingException, StorageException, IOException, NotImplementedException
-	{
+	public void testListingQueuesIncludesMetadata() throws URISyntaxException, UnsupportedEncodingException, StorageException, IOException, NotImplementedException {
 		Map<String, String> metadata = new HashMap<String, String>();
 		metadata.put("someKey", "someString");
 		metadata.put("otherKey", "otherSteram");
@@ -77,7 +75,7 @@ public abstract class CloudQueueTests<T extends CloudClientAccountProvider> exte
 		CloudQueue queue = this.createQueue("testlistingqueuesincludesmetadata");
 		queue.getMetadata().putAll(metadata);
 		queue.uploadMetadata();
-		
+
 		CloudQueue sameQueue = cloudQueueClient.listQueues().iterator().next();
 		this.AssertHashMapsAreEquivalent(metadata, sameQueue.getMetadata());
 	}
@@ -104,7 +102,7 @@ public abstract class CloudQueueTests<T extends CloudClientAccountProvider> exte
 
 	public void testCanDeleteQueueFromOtherObject()
 			throws Exception {
-		
+
 		Assert.assertFalse(cloudQueueClient.listQueues().iterator().hasNext());
 
 		CloudQueue queue = this.createQueue("testcandeletequeuefromotherobject");
@@ -169,7 +167,7 @@ public abstract class CloudQueueTests<T extends CloudClientAccountProvider> exte
 				thisTest.createQueue(queueName);
 			}
 		}, StorageException.class);
-		
+
 		this.assertThrows(new RunnableWithExpectedException() {
 			@Override
 			public void run() throws Exception {
@@ -177,7 +175,7 @@ public abstract class CloudQueueTests<T extends CloudClientAccountProvider> exte
 			}
 		}, StorageException.class);
 	}
-	
+
 	public void testCreateQueueIfNotExists()
 			throws Exception {
 
@@ -196,7 +194,7 @@ public abstract class CloudQueueTests<T extends CloudClientAccountProvider> exte
 		final String queueName = "testcreatequeuetwicewithdifferentmetadatathrowsexception";
 		final CloudQueue queue = this.createQueue(queueName);
 		this.addResourceCleaner(queue, cleanerFor(queue));
-		
+
 		final CloudQueue sameQueue = cloudQueueClient.getQueueReference(queueName);
 		sameQueue.getMetadata().put("someKey", "someValue");
 		this.assertThrows(new RunnableWithExpectedException() {

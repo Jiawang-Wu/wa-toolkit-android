@@ -40,8 +40,7 @@ public final class BlobInputStream extends InputStream {
 		m_ReadSize = 0x400000;
 		blob.downloadAttributes();
 		m_StreamLength = blob.getProperties().length;
-		if (m_ParentBlobRef.getProperties().blobType == BlobType.PAGE_BLOB)
-		{
+		if (m_ParentBlobRef.getProperties().blobType == BlobType.PAGE_BLOB) {
 			throw new StorageInnerException("Page blob's aren't supported");
 		}
 		reposition(0L);
@@ -53,8 +52,7 @@ public final class BlobInputStream extends InputStream {
 	}
 
 	private synchronized void checkStreamState() throws IOException {
-		if (m_StreamFaulted)
-		{
+		if (m_StreamFaulted) {
 			throw m_LastError;
 		}
 	}
@@ -65,7 +63,7 @@ public final class BlobInputStream extends InputStream {
 		m_StreamFaulted = true;
 		m_LastError = new IOException("Stream is closed");
 	}
-	
+
 	private synchronized void dispatchRead(int length)
 			throws IOException {
 		try {
@@ -103,22 +101,18 @@ public final class BlobInputStream extends InputStream {
 	}
 	public int read(byte buffer[], int length, int startingOffset)
 			throws IOException {
-		if (length < 0 || startingOffset < 0 || startingOffset > buffer.length - length)
-		{
+		if (length < 0 || startingOffset < 0 || startingOffset > buffer.length - length) {
 			throw new IndexOutOfBoundsException();
 		}
-		else
-		{
+		else {
 			return readInternal(buffer, length, startingOffset);
 		}
 	}
-	
-	private synchronized int readInternal(byte buffer[], int length, int startingOffset) throws IOException
-			{
+
+	private synchronized int readInternal(byte buffer[], int length, int startingOffset) throws IOException {
 		checkStreamState();
 		if ((m_CurrentBuffer == null || m_CurrentBuffer.available() == 0)
-				&& m_CurrentAbsoluteReadPosition < m_StreamLength)
-		{
+				&& m_CurrentAbsoluteReadPosition < m_StreamLength) {
 			dispatchRead((int) Math.min(m_ReadSize, m_StreamLength
 							- m_CurrentAbsoluteReadPosition));
 		}
@@ -149,8 +143,7 @@ public final class BlobInputStream extends InputStream {
 	}
 	@Override
 	public synchronized long skip(long length) throws IOException {
-		if (length == 0L)
-		{
+		if (length == 0L) {
 			return 0L;
 		}
 		if (length < 0L || m_CurrentAbsoluteReadPosition + length > m_StreamLength) {
