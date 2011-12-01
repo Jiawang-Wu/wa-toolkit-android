@@ -1,8 +1,0 @@
-<LinearLayout android:id="@+id/ListDisplayLayout" android:layout_width="fill_parent" android:layout_height="fill_parent" android:orientation="vertical" xmlns:android="http://schemas.android.com/apk/res/android">
-
-<LinearLayout android:layout_height="wrap_content" android:gravity="center" android:id="@+id/ListDisplayButtonLayout" android:layout_width="fill_parent">
-    <ListView android:layout_weight="1" android:id="@+id/ListDisplayListView" android:layout_height="wrap_content" android:layout_width="fill_parent"></ListView>
-</LinearLayout>
-<Button android:layout_height="wrap_content" android:layout_width="150dp" android:text="Modify" android:id="@+id/ModifyButton"></Button>
-
-</LinearLayout>
