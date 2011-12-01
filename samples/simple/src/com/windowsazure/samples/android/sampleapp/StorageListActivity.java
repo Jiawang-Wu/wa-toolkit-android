@@ -39,6 +39,7 @@ public class StorageListActivity extends SecuritableActivity implements OnItemCl
 	private ListView listView;
 	private Button addButton;
 	private Button backButton;
+	private TextView noRecords;
 	private AsyncTask<Integer, Integer, AlertDialog.Builder> currentTask;
 
     @Override
@@ -59,6 +60,8 @@ public class StorageListActivity extends SecuritableActivity implements OnItemCl
         Bundle optionSet = optionSet();
         String text = optionSet.getString(StorageListActivity.TITLE_NAMESPACE);
         title.setText(text);
+
+        noRecords = (TextView) findViewById(R.id.storage_has_no_records);
 
         listType = optionSet.getInt(TYPE_NAMESPACE);
         listView = (ListView)findViewById(R.id.storage_list_list_view);
@@ -120,13 +123,21 @@ public class StorageListActivity extends SecuritableActivity implements OnItemCl
 		     protected void onPreExecute() {
 		    	 listView.setVisibility(View.GONE);
 		    	 progressBar.setVisibility(View.VISIBLE);
+		         noRecords.setVisibility(View.GONE);
 		     }
 
 		     protected void onPostExecute(AlertDialog.Builder dialogBuilder) {
 		    	 if (dialogBuilder == null) {
-			    	items = listedItems;
-				    listView.setAdapter(new ArrayAdapter<String>(thisActivity, android.R.layout.simple_list_item_1, items));
-			    	listView.setVisibility(View.VISIBLE);
+		    		 TextView noRecords = (TextView) findViewById(R.id.storage_has_no_records);
+		    		 if (listedItems.isEmpty()) {
+			    		 noRecords.setText(R.string.storage_has_no_records);
+			    		 noRecords.setVisibility(View.VISIBLE);
+			    		 listView.setVisibility(View.GONE);
+		    		 } else {
+				    	items = listedItems;
+					    listView.setAdapter(new ArrayAdapter<String>(thisActivity, android.R.layout.simple_list_item_1, items));
+				    	listView.setVisibility(View.VISIBLE);
+		    		 }
 		    	 }
 		    	 else {
 		    		 Dialog dialog = dialogBuilder.create();

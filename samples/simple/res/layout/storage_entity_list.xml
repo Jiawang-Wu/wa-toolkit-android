@@ -7,6 +7,14 @@
 	
 	<include android:id="@+id/header" layout="@layout/navigation_header"/>
 	
+    <TextView
+        android:id="@+id/storage_has_no_records"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="30dp"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+	
     <ProgressBar
         android:id="@+id/storage_entity_list_progress"
         style="?android:attr/progressBarStyleLarge"
