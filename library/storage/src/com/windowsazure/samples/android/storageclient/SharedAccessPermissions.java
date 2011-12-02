@@ -1,6 +1,5 @@
 package com.windowsazure.samples.android.storageclient;
 
-
-public enum SharedAccessPermissions {
+enum SharedAccessPermissions {
 	READ, WRITE, DELETE, LIST
 }

@@ -5,7 +5,7 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-public class PathUtility {
+public final class PathUtility {
 	public static URI addToQuery(URI uri, HashMap<String, String[]> queryArguments)
 			throws URISyntaxException, StorageException {
 		UriQueryBuilder uriQueryBuilder = new UriQueryBuilder();

@@ -13,7 +13,7 @@ import org.apache.http.entity.ByteArrayEntity;
 
 import android.util.Base64;
 
-public class QueueRequest {
+final class QueueRequest {
 
 	public static HttpPut create(URI uri) throws IllegalArgumentException, IOException, URISyntaxException, StorageException {
 		return BaseRequest.create(uri, null);

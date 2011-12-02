@@ -21,7 +21,7 @@ import org.xml.sax.SAXException;
 
 import android.util.Base64;
 
-public class QueueResponse {
+final class QueueResponse {
 
 	public static Iterable<CloudQueue> getList(InputStream responseStream, CloudQueueClient serviceClient) throws SAXException, IOException, ParserConfigurationException, URISyntaxException {
 

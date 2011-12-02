@@ -5,7 +5,7 @@ import java.security.InvalidParameterException;
 
 import org.apache.http.client.methods.HttpRequestBase;
 
-public class TableFullCanonicalizer extends Canonicalizer {
+final class TableFullCanonicalizer extends Canonicalizer {
 
 	TableFullCanonicalizer() {
 	}
