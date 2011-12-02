@@ -65,7 +65,7 @@ Assuming that you have a compatible version of the Eclipse IDE installed, as des
 
 	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/1_7.png "Title")
 	
-3.	Select the Accept All option for package descriptions and licenses and click the Install button.
+3.	Select the **Accept All** option for package descriptions and licenses and click the **Install** button.
 	
 	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/1_8.png "Title")
 	
@@ -93,7 +93,7 @@ Assuming that you have a compatible version of the Eclipse IDE installed, as des
 
 	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/1_13.png "Title")
 
-11.	Since the project is targeted to the **API 10**, select from the **Android 2.3.3 (API 10)*** node only the **SDK Platform** and **Google APIs by Google Inc.*** items, then click the **Install 4 packages…** button.
+11.	Since the project is targeted to the **API 10**, select from the **Android 2.3.3 (API 10)** node only the **SDK Platform** and **Google APIs by Google Inc.** items, then click the **Install 4 packages…** button.
 
 	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/1_14.png "Title")
 	
@@ -108,24 +108,24 @@ Assuming that you have a compatible version of the Eclipse IDE installed, as des
 14.	Close the Log window and the **Android SDK Manager**.
 15.	Open the **AVD Manager** from the **Window** menu item.
 
-	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/1_16.png "Title")
+	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/1_17.png "Title")
 	
 16.	Click the **New…** button to create a new virtual device targeted to the API 10.
 17.	Provide a valid name; select the **Android 2.3.3 – API Level 10** from the drop-down list and click on **Create AVD** button.
 
-	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/1_17.png "Title")
+	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/1_18.png "Title")
 	
 18.	Start the virtual device to check that it is working fine.
 
-	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/1_18.png "Title")
+	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/1_19.png "Title")
 	
 19.	If you want, you can scale the device to the real size.
 
-	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/1_19.png "Title")
+	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/1_20.png "Title")
 	
 20.	This is how the virtual device should look like.
 
-	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/1_20.png "Title")
+	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/1_21.png "Title")
 	
 	> **Note**: It may take a few minutes to load.
 
@@ -138,15 +138,15 @@ If your computer is behind a proxy server, you should follow these steps.
 1.	Open the **Window -> Preferences** menu option.
 2.	Select Network Connections on the left pane.
 
-	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/1_21.png "Title")
+	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/1_22.png "Title")
 
 3.	Choose **Manual** from the drop-down list.
 
-	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/1_22.png "Title")
+	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/1_23.png "Title")
 
 4.	Select HTTP in the list, click the Edit button, and provide your proxy configuration.
 
-	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/1_23.png "Title")
+	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/1_24.png "Title")
 	
 5.	Click **OK**.
 6.	If you want to access to an https address you should perform the steps described above but clicking on **HTTPS** instead.
