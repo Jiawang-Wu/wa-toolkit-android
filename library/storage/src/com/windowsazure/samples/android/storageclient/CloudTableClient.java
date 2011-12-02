@@ -31,7 +31,7 @@ public class CloudTableClient {
 	 *  
 	                          
 	@see    StorageCredentials
-	 */
+	 */ 
 	public CloudTableClient(URI baseUri, StorageCredentials credentials) {
 		Utility.assertNotNull("baseUri", baseUri);
 		Utility.assertNotNull("credentials", credentials);
