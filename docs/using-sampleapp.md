@@ -1,0 +1,101 @@
+#Using the sample application
+
+##Introduction
+
+The following section describes how to configure and run the sample application included as part of the Windows Azure Toolkit for Android.
+
+##Sample Location
+
+The sample application’s source code is located at the $/samples/simple folder on the master branch on GitHub.
+If you followed the steps described in the “Getting started with the toolkit & using bits on GitHub” section and while on the import step you selected the simple folder, the sample should be already there in your workspace.
+
+![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/4_1.png "Title")
+
+##Authentication Mechanisms
+
+Before running the application you must select which authentication method will be used to consume the Windows Azure Storage Services. The toolkit works in two ways – the toolkit can be used to access Windows Azure storage directly, or alternatively, can go through a proxy server. The proxy server code is the same code as used in the [Windows Azure Toolkit for Windows Phone](http://watwp.codeplex.com/) and negates the need for the developer to store the Windows Azure storage credentials locally on the device. If you are planning to test using the proxy server, you will need to download and deploy the services found in the [wa-toolkit-cloudreadypackages](https://github.com/microsoft-dpe/wa-toolkit-cloudreadypackages) on GitHub.
+
+If you go for the proxy services, you can use either **Membership** or **Access Control Service** authentication mechanism.
+
+##Configuring the application using Windows Azure credentials (Direct-Mode)
+
+1.	Navigate the **res/values** folder inside the **Windows Azure Storage for Android Sample App** project and double-click the **strings.xml** file. 
+
+	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/4_2.png "Title")
+
+2.	Locate and click the **toolkit_connection_type** entry.
+
+	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/4_3.png "Title")
+ 
+3.	On the right pane, change the placeholder text by ‘**Direct**’ value.
+
+	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/4_4.png "Title")
+
+4.	Perform the same steps described above to provide the Windows Azure account information:
+	*	**direct_account_name**: The storage account name.
+	*	**direct_access_key**: The storage account access key.
+
+##Configuring the application using the Proxy Services with Membership
+
+1.	Navigate the **res/values** folder inside the **Windows Azure Storage for Android Sample App** project and double-click the **strings.xml** file. 
+
+	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/4_5.png "Title")
+
+2.	Locate and click the **toolkit_connection_type** entry.
+	
+	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/4_6.png "Title")
+	
+3.	On the right pane, change the placeholder text by ‘**CloudReadySimple**’ value.
+	
+	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/4_7.png "Title")
+	
+4.	Perform the same steps described above to provide the proxy service information:
+	*	**cloud_ready_simple_proxy_service**:  The full address where the proxy service is hosted (*e.g. https://yourproxyservice.cloudapp.net*).
+
+##Configuring the application using the Proxy Services with Access Control
+
+1.	Navigate the **res/values** folder inside the **Windows Azure Storage for Android Sample App** project and double-click the **strings.xml** file. 
+
+	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/4_8.png "Title")
+ 
+2.	Locate and click the **toolkit_connection_type** entry.
+
+	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/4_9.png "Title")
+ 
+3.	On the right pane, change the placeholder text by ‘**CloudReadyACS**’ value.
+
+	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/4_10.png "Title") 
+
+4.	Perform the same steps described above to provide the proxy service and Access Control configuration. 
+	*	**cloud_ready_simple_acs_namespace**: The Access Control namespace subdomain name. For instance if the namespace URL is https://wazmobiletoolkitdev.accesscontrol.windows.net you should provide wazmobiletoolkitdev as the value.
+	*	**cloud_ready_simple_acs_realm**: The URI for which the security token that ACS issues is valid.
+	*	**cloud_ready_simple_acs_symmetric_key**:  The 256-bit symmetric key for this namespace.
+	*	**cloud_ready_simple_acs_proxy_service**: The full address where the proxy service is hosted (*e.g. https://yourproxyservice.cloudapp.net*).
+
+##Running the sample application
+
+1.	Open the **Android Virtual Device Manager** by navigating the **Window -> AVD Manager**.
+
+	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/4_11.png "Title") 
+	
+2.	Start one of the supported virtual machines (2.2 or above except the 2.3.3).
+
+	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/4_12.png "Title") 
+
+	> **Note**: If you have not installed any virtual machine, you can follow the steps provided as part of the Installing and configuring the Android SDK section. 
+
+3.	Unlock the emulator.
+
+	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/4_13.png "Title") 
+
+4.	Right-click on the **Windows Azure Storage for Android Sample App** project and select **Run As -> Android Application**.
+
+	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/4_14.png "Title") 
+
+5.	If you configured the application to use a service proxy, you must login either providing your username & password or against one of the identity providers configured when using Access Control.
+
+	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/4_15.png "Title")
+	*Username & Password Login Activity*
+
+	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/4_16.png "Title")
+	*Identity Provider selector Activity*
