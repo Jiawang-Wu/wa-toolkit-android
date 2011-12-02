@@ -148,7 +148,7 @@ public final class StorageCredentialsSharedAccessSignature extends
 	/**
 	* Signs a request using the specified credentials under the Shared Key authentication scheme.
 	* 
-	* @param connection
+	* @param request
 	*            the HttpURLConnection object to sign
 	* @param contentLength
 	*            the length of the content written to the output stream. If unknown specify -1;
@@ -157,7 +157,7 @@ public final class StorageCredentialsSharedAccessSignature extends
 	* @throws StorageException
 	*/
 	@Override
-	public void signRequest(HttpRequestBase request, long length) {
+	public void signRequest(HttpRequestBase request, long contentLength) {
 	}
 
 	@Override

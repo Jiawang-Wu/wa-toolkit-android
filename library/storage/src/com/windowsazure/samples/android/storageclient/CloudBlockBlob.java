@@ -74,12 +74,10 @@ public final class CloudBlockBlob extends CloudBlob {
 	/**
 	* Initializes a new instance of the CloudBlockBlob class.
 	*
-	* @param uri
+	* @param blobUri
 	*          the address for the blob
-	* @param client
+	* @param serviceClient
 	*          the associated service client.
-	* @param container
-	*          the parent container for the object.
 	* @param snapshotId
 	*          the snapshotId of the blob's snapshot
 	* @throws StorageException
@@ -119,7 +117,7 @@ public final class CloudBlockBlob extends CloudBlob {
 	/**
 	* Uploads a blocklist to the service.
 	* 
-	* @param blockList
+	* @param blockEntriesList
 	*            the blocklist definition.
 	* @param leaseID
 	*            the leaseID to access the blob
