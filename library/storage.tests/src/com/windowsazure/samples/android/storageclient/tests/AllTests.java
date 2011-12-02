@@ -51,6 +51,18 @@ public class AllTests {
 		suite.addTestSuite(CloudBlobContainerUsingSASServiceByHttpsTests.class);
 		suite.addTestSuite(CloudBlockBlobUsingSASServiceByHttpsTests.class);
 
+		// Tables - ACS
+		suite.addTestSuite(CloudTableClientUsingWAZServiceWithACSTests.class);
+		suite.addTestSuite(CloudTableObjectUsingWAZServiceWithACSTests.class);
+		
+		// Queues - ACS
+		suite.addTestSuite(CloudQueueUsingWAZServiceWithACSTests.class);
+		suite.addTestSuite(CloudQueueMessagesUsingWAZServiceWithACSTests.class);
+		
+		// Blobs - ACS
+		suite.addTestSuite(CloudBlobContainerUsingSASServiceWithACSTests.class);
+		suite.addTestSuite(CloudBlockBlobUsingSASServiceWithACSTests.class);
+		
 		// $JUnit-END$
 		return suite;
 	}

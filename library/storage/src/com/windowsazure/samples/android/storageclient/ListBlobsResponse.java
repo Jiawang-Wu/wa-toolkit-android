@@ -78,8 +78,11 @@ class ListBlobsResponse {
 
 			CloudBlob blob;
 
-			URI blobUri = PathUtility.stripURIQueryAndFragment(new URI(
-					urlString));
+			// This trick is because Azure sends the URLs without any encoding in the XML
+			String encodedUrlString = urlString.replace(name, Utility.safeEncode(name));
+			
+			URI blobUri = PathUtility.stripURIQueryAndFragment(new URI(encodedUrlString));
+			
 			if (blockTypeString.equals("BlockBlob")) {
 				blob = new CloudBlockBlob(blobUri, client, container);
 			} else if (blockTypeString.equals("PageBlob")) {
