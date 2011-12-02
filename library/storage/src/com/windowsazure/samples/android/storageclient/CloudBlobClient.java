@@ -45,7 +45,7 @@ public final class CloudBlobClient {
 	* 
 	* @param baseUri
 	*            The Blob service endpoint to use to create the client
-	* @param credentials
+	* @param storageCredentials
 	*            The account credentials.
 	*/
 	public CloudBlobClient(URI baseUri,
@@ -106,7 +106,7 @@ public final class CloudBlobClient {
 	* 
 	* @param blobName
 	*            the name of the blob
-	* @param snapshotID
+	* @param snapshotId
 	*            the snapshot ID of the blob
 	* @return a reference to a block blob in this container.
 	* @throws URISyntaxException
@@ -128,7 +128,6 @@ public final class CloudBlobClient {
 	* 
 	* @param containerName
 	*            the name of the container
-	* @return
 	* @throws URISyntaxException
 	* @throws StorageException
 	*/
@@ -176,7 +175,7 @@ public final class CloudBlobClient {
 	* 
 	* @param blobName
 	*            the name of the blob
-	* @param snapshotID
+	* @param snapshotId
 	*            the snapshot ID of the blob
 	* @return a reference to a page blob in this container.
 	* @throws URISyntaxException

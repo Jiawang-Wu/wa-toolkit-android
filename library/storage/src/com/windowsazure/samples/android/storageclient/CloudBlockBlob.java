@@ -234,7 +234,7 @@ public final class CloudBlockBlob extends CloudBlob {
 	*            the IntputStream to read from.
 	* @param length
 	*            the length of the Stream data, -1 if unknown.
-	* @param leaseId
+	* @param leaseID
 	*            The lease ID, if the blob has an active lease.
 	* @throws StorageException
 	*             an exception representing any error which occurred during the

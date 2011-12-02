@@ -79,9 +79,9 @@ public final class StorageCredentialsAccountAndKey extends StorageCredentials {
 	*             if the key is not a valid base64 encoded string.
 	*/
 	@Override
-	public String computeHmac256(String string) throws InvalidKeyException,
+	public String computeHmac256(String value) throws InvalidKeyException,
 			IllegalArgumentException {
-		return StorageKey.computeMacSha256(m_Credentials.getKey(), string);
+		return StorageKey.computeMacSha256(m_Credentials.getKey(), value);
 	}
 
 	/**
@@ -95,9 +95,9 @@ public final class StorageCredentialsAccountAndKey extends StorageCredentials {
 	*             if the key is not a valid base64 encoded string.
 	*/
 	@Override
-	public String computeHmac512(String string) throws InvalidKeyException,
+	public String computeHmac512(String value) throws InvalidKeyException,
 			IllegalArgumentException {
-		return StorageKey.computeMacSha512(m_Credentials.getKey(), string);
+		return StorageKey.computeMacSha512(m_Credentials.getKey(), value);
 	}
 
 	@Override
@@ -153,7 +153,7 @@ public final class StorageCredentialsAccountAndKey extends StorageCredentials {
 	}
 
 	/**
-	* @param m_Credentials
+	* @param credentials
 	*            the m_Credentials to set
 	*/
 	public void setCredentials(Credentials credentials) {
@@ -163,7 +163,7 @@ public final class StorageCredentialsAccountAndKey extends StorageCredentials {
 	/**
 	* Signs a request using the specified credentials under the Shared Key authentication scheme.
 	* 
-	* @param connection
+	* @param request
 	*            the HttpRequestBase object to sign
 	* @param contentLength
 	*            the length of the content written to the output stream. If unknown specify -1;
@@ -172,10 +172,10 @@ public final class StorageCredentialsAccountAndKey extends StorageCredentials {
 	* @throws StorageException
 	*/
 	@Override
-	public void signRequest(HttpRequestBase request, long length)
+	public void signRequest(HttpRequestBase request, long contentLength)
 			throws InvalidKeyException, StorageException, MalformedURLException {
 		BaseRequest.signRequestForBlobAndQueue(request, m_Credentials,
-				length);
+				contentLength);
 	}
 
 	/**
