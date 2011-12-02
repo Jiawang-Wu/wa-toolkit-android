@@ -40,7 +40,7 @@ Assuming that you have a compatible version of the Eclipse IDE installed, as des
 
 4.	Click **OK**.
 
-> **Note**: If you have trouble acquiring the plugin, try using "http" in the Location URL, instead of "https" (https is preferred for security reasons) or if you are behind a proxy server you can follow the steps described in the How to configure proxy settings in eclipse section. 
+	> **Note**: If you have trouble acquiring the plugin, try using "http" in the Location URL, instead of "https" (https is preferred for security reasons) or if you are behind a proxy server you can follow the steps described in the How to configure proxy settings in eclipse section. 
 
 5.	In the Available Software dialog, select the checkbox next to Developer Tools and click **Next**.
 	
