@@ -318,10 +318,16 @@ public final class CloudBlobContainer {
 		throw new NotImplementedException();
 	}
 
+	/**
+	Returns the container's metadata
+	*/
 	public HashMap<String, String> getMetadata() {
 		return m_Metadata;
 	}
 
+	/**
+	Returns the container's name
+	*/
 	public String getName() {
 		return m_Name;
 	}
@@ -338,10 +344,16 @@ public final class CloudBlobContainer {
 		throw new NotImplementedException();
 	}
 
+	/**
+	Returns the container's properties
+	*/
 	public BlobContainerProperties getProperties() {
         return m_Properties;
 	}
 
+	/**
+	Returns the container's service client
+	*/
 	public CloudBlobClient getServiceClient(){
 		return m_ServiceClient;
 	}
@@ -372,6 +384,9 @@ public final class CloudBlobContainer {
 		}
 	}
 
+	/**
+	Returns the container's uri
+	*/
 	public URI getUri() throws StorageException, UnsupportedEncodingException, IOException,
 			IllegalArgumentException, URISyntaxException {
 		if (m_ContainerRequest.isUsingWasServiceDirectly()) {
@@ -539,15 +554,22 @@ public final class CloudBlobContainer {
 			m_ServiceClient.setTimeoutInMs(serviceClient.getTimeoutInMs());
 		}
 	}
+
+	/**
+	Sets the container's metadata
+	*/
 	public void setMetadata(HashMap<String, String> metadata) {
 		m_Metadata = metadata;
 	}
+
 	protected void setName(String containerName) {
 		m_Name = containerName;
 	}
+	
 	protected void setProperties(BlobContainerProperties properties) {
 		m_Properties = properties;
 	}
+	
 	protected void setUri(URI containerUri) throws NotImplementedException,
 			NotImplementedException {
 		throw new NotImplementedException();

@@ -55,7 +55,7 @@ public abstract class StorageCredentials {
 	* @throws InvalidKeyException
 	*             if the account key specified in the connectionString is not valid.
 	*/
-	public static StorageCredentials tryParseCredentials(String configurationString)
+	public static StorageCredentials tryParseCredentials(String connectionString)
 			throws NotImplementedException, InvalidKeyException,
 			StorageException {
 		throw new NotImplementedException();
@@ -104,7 +104,7 @@ public abstract class StorageCredentials {
 	* @throws InvalidKeyException
 	*             if the key is not a valid base64 encoded string.
 	*/
-	public abstract String computeHmac256(String string) throws InvalidKeyException,
+	public abstract String computeHmac256(String value) throws InvalidKeyException,
 			NotImplementedException;
 
 	/**
@@ -117,7 +117,7 @@ public abstract class StorageCredentials {
 	* @throws InvalidKeyException
 	*             if the key is not a valid base64 encoded string.
 	*/
-	public abstract String computeHmac512(String string) throws InvalidKeyException,
+	public abstract String computeHmac512(String value) throws InvalidKeyException,
 			NotImplementedException;
 
 	public abstract String containerEndpointPostfix();
@@ -158,7 +158,7 @@ public abstract class StorageCredentials {
 	*             if the given key is invalid.
 	* @throws StorageException
 	*/
-	public abstract void signRequest(HttpRequestBase request, long length)
+	public abstract void signRequest(HttpRequestBase request, long contentLength)
 			throws NotImplementedException, InvalidKeyException,
 			StorageException, MalformedURLException;
 

@@ -80,7 +80,7 @@ public final class StorageCredentialsSharedAccessSignature extends
 	*             if the key is not a valid base64 encoded string.
 	*/
 	@Override
-	public String computeHmac256(String string) {
+	public String computeHmac256(String value) {
 		return null;
 	}
 
@@ -95,7 +95,7 @@ public final class StorageCredentialsSharedAccessSignature extends
 	*             if the key is not a valid base64 encoded string.
 	*/
 	@Override
-	public String computeHmac512(String length) {
+	public String computeHmac512(String value) {
 		return null;
 	}
 

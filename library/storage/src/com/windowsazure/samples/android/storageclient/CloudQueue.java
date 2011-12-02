@@ -27,7 +27,7 @@ public class CloudQueue {
 	Initializes a new instance of the CloudQueue class.
 	@param queueName the name of the queue that will be referenced by this instance
 	@param credentials The account credentials used to create the Queue service client.
-	@see StorageCredentials, CloudQueueClient 
+	@see StorageCredentials CloudQueueClient 
 	*/
 	public CloudQueue(String queueName, StorageCredentials credentials) throws URISyntaxException {
 		this(queueName, new CloudQueueClient(credentials));

@@ -116,7 +116,7 @@ public abstract class CloudBlob implements IListBlobItem {
 	* @throws URISyntaxException
 	*             if the resource URI is invalid.
 	*/
-	public CloudBlob(URI uri, String snapshotId,
+	public CloudBlob(URI uri, String snapshotID,
 			CloudBlobClient client) throws StorageException,
 			NotImplementedException {
 		throw new NotImplementedException();

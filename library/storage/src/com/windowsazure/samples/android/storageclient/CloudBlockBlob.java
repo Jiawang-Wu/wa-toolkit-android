@@ -71,6 +71,23 @@ public final class CloudBlockBlob extends CloudBlob {
 		m_Properties.blobType = BlobType.BLOCK_BLOB;
 	}
 
+	/**
+	* Initializes a new instance of the CloudBlockBlob class.
+	*
+	* @param uri
+	*          the address for the blob
+	* @param client
+	*          the associated service client.
+	* @param container
+	*          the parent container for the object.
+	* @param snapshotId
+	*          the snapshotId of the blob's snapshot
+	* @throws StorageException
+	*             an exception representing any error which occurred during the
+	*             operation.
+	* @throws URISyntaxException
+	*             if the resource URI is invalid.
+	*/
 	public CloudBlockBlob(URI blobUri, String snapshotId, CloudBlobClient serviceClient)
 			throws NotImplementedException, StorageException {
 		throw new NotImplementedException();
@@ -99,6 +116,17 @@ public final class CloudBlockBlob extends CloudBlob {
 		commitBlockList(blockList, null);
 	}
 
+	/**
+	* Uploads a blocklist to the service.
+	* 
+	* @param blockList
+	*            the blocklist definition.
+	* @param leaseID
+	*            the leaseID to access the blob
+	* @throws StorageException
+	*             an exception representing any error which occurred during the
+	*             operation.
+	*/
 	public void commitBlockList(final Iterable<BlockEntry> blockEntriesList,
 			final String leaseID) throws StorageException, UnsupportedEncodingException, IOException {
 		final CloudBlockBlob blob = this;
@@ -206,7 +234,7 @@ public final class CloudBlockBlob extends CloudBlob {
 	*            the IntputStream to read from.
 	* @param length
 	*            the length of the Stream data, -1 if unknown.
-	* @param leaseId
+	* @param leaseID
 	*            The lease ID, if the blob has an active lease.
 	* @throws StorageException
 	*             an exception representing any error which occurred during the
@@ -292,9 +320,16 @@ public final class CloudBlockBlob extends CloudBlob {
         storageOperation.executeTranslatingExceptions();
 	}
 
+	/**
+	* Returns the block id encoded in Base64
+	*/ 
 	public static String encodedBlockId(String blockId) {
 		return encodedBlockId(blockId.getBytes());
 	}
+
+	/**
+	* Returns the block id bytes encoded in Base64
+	*/ 
 	public static String encodedBlockId(byte[] blockIdBytes) {
 		return Base64.encodeToString(blockIdBytes, Base64.URL_SAFE
 				| Base64.NO_WRAP);
