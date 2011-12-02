@@ -122,7 +122,6 @@ public class StorageEntityListActivity extends SecuritableActivity implements On
 			    	 if (dialogBuilder == null) {
 			    		 TextView noRecords = (TextView) findViewById(R.id.storage_has_no_records);
 			    		 if (noData) {
-				    		 noRecords.setText(R.string.storage_has_no_records);
 				    		 noRecords.setVisibility(View.VISIBLE);
 				    		 listView.setVisibility(View.GONE);
 			    		 } else {

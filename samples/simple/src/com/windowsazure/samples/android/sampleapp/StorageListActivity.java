@@ -130,7 +130,6 @@ public class StorageListActivity extends SecuritableActivity implements OnItemCl
 		    	 if (dialogBuilder == null) {
 		    		 TextView noRecords = (TextView) findViewById(R.id.storage_has_no_records);
 		    		 if (listedItems.isEmpty()) {
-			    		 noRecords.setText(R.string.storage_has_no_records);
 			    		 noRecords.setVisibility(View.VISIBLE);
 			    		 listView.setVisibility(View.GONE);
 		    		 } else {
