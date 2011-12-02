@@ -4,7 +4,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-public class QueueAttributes {
+final class QueueAttributes {
 	private Map<String, String> m_Metadata;
 	private URI m_Uri;
 

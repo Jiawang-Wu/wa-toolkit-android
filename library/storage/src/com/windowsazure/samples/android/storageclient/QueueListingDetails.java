@@ -4,7 +4,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
-public enum QueueListingDetails {
+enum QueueListingDetails {
     None(0), Metadata(1), All(Metadata);
 
     private static final Map<Integer,QueueListingDetails> lookup
