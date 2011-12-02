@@ -22,10 +22,22 @@ public class CloudQueue {
 	private int m_ApproximateMessageCount;
 	private boolean m_EncodeMessage;
 
+	/**
+	Initializes a new instance of the CloudQueue class.
+	@param queueName the name of the queue that will be referenced by this instance
+	@param credentials The account credentials used to create the Queue service client.
+	@see StorageCredentials, CloudQueueClient 
+	*/
 	public CloudQueue(String queueName, StorageCredentials credentials) throws URISyntaxException {
 		this(queueName, new CloudQueueClient(credentials));
 	}
 
+	/**
+	Initializes a new instance of the CloudQueue class.
+	@param queueName the name of the queue that will be referenced by this instance
+	@param serviceClient the Queue service instance that will be used to perform the operations of this instance
+	@see CloudQueueClient 
+	*/
 	public CloudQueue(String queueName, CloudQueueClient serviceClient) throws URISyntaxException {
 		m_Name = queueName;
 		Utility.assertNotNullOrEmpty("queueName", queueName);
@@ -36,40 +48,74 @@ public class CloudQueue {
 		m_EncodeMessage = true;
 	}
 
+	/**
+	Gets the CloudQueueClient object that represents the Queue service.
+	@return CloudQueueClient
+	@see CloudQueueClient 
+	*/
 	public CloudQueueClient getServiceClient() {
 		return null;
 	}
 
+	/**
+	Gets the queue name.
+	@return String
+	*/
 	public String getName() {
 		return m_Name;
 	}
 
+	/**
+	Gets the URI that identifies the queue.
+	@return URI
+	*/
 	public URI getUri() {
 		return m_Uri;
 	}
 
+	/**
+	Gets the queue's attributes, including its user-defined metadata.
+	@return QueueAttributes
+	@see QueueAttributes
+	*/
 	public QueueAttributes getAttributes() throws UnsupportedEncodingException, StorageException, IOException {
 		this.downloadMetadata();
 		return new QueueAttributes(this.getUri(), this.getMetadata());
 	}
 
+	/**
+	Gets the queue's user-defined metadata.
+	@return Map<String, String>
+	*/
 	public Map<String, String> getMetadata() {
 		return m_Metadata;
 	}
 
+	/**
+	Gets the approximate message count for the queue.
+	@return int
+	*/
 	public int getApproximateMessageCount() throws UnsupportedEncodingException, StorageException, IOException {
 		return m_ApproximateMessageCount;
 	}
 
+	/**
+	Gets a value indicating whether to apply Base64 encoding when adding or retrieving messages.
+	@return boolean
+	*/
 	public boolean getEncodeMessage() {
 		return m_EncodeMessage;
 	}
 
+	/**
+	Sets a value indicating whether to apply Base64 encoding when adding or retrieving messages.
+	@param encodeMessage true to apply Base64 encoding, false to not apply it
+	*/
 	public void setEncodeMessage(boolean encodeMessage) {
 		m_EncodeMessage = encodeMessage;
 	}
 
-	public boolean create(final boolean createIfNotExist) throws UnsupportedEncodingException, StorageException, IOException {
+	private boolean create(final boolean createIfNotExist) throws UnsupportedEncodingException, StorageException, IOException {
 		final CloudQueue queue = this;
 		StorageOperation<Boolean> storageOperation = new StorageOperation<Boolean>() {
 			public Boolean execute() throws Exception {
@@ -98,14 +144,24 @@ public class CloudQueue {
         return storageOperation.executeTranslatingExceptions();
     }
 
+	/**
+	Creates a queue.
+	*/
 	public void create() throws UnsupportedEncodingException, StorageException, IOException {
 		this.create(false);
 	}
 
+	/**
+	Creates the queue if it does not exist.
+	@return boolean true if the queue was created, false if the queue already existed
+	*/
 	public boolean createIfNotExist() throws UnsupportedEncodingException, StorageException, IOException {
 		return this.create(true);
 	}
 
+	/**
+	Deletes the queue.
+	*/
 	public void delete() throws UnsupportedEncodingException, StorageException, IOException {
 		final CloudQueue queue = this;
 		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
@@ -126,10 +182,9 @@ public class CloudQueue {
         storageOperation.executeTranslatingExceptions();
 	}
 
-	public boolean exists() {
-		return false;
-	}
-
+	/**
+	Fetches the queue's metadata.
+	*/
 	public void downloadMetadata() throws UnsupportedEncodingException, StorageException, IOException {
 		this.downloadAttributes(true, false);
 	}
@@ -162,6 +217,9 @@ public class CloudQueue {
         storageOperation.executeTranslatingExceptions();
 	}
 
+	/**
+	Sets the queue's metadata.
+	*/
 	public void uploadMetadata() throws UnsupportedEncodingException, StorageException, IOException {
 		final CloudQueue queue = this;
 		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
@@ -183,11 +241,19 @@ public class CloudQueue {
         storageOperation.executeTranslatingExceptions();
 	}
 
+	/**
+	Retrieves the approximate message count for the queue.
+	@return int the approximate message count
+	*/
 	public int downloadApproximateMessageCount() throws UnsupportedEncodingException, StorageException, IOException {
 		this.downloadAttributes(false, true);
 		return m_ApproximateMessageCount;
 	}
 
+	/**
+	Adds a message to the queue.
+	@param message message to be added to the queue
+	*/
 	public void addMessage(CloudQueueMessage message) throws UnsupportedEncodingException, StorageException, IOException {
 		this.addMessage(message, this.getDefaultTimeToLiveInSeconds());
 	}
@@ -196,6 +262,11 @@ public class CloudQueue {
 		return CloudQueueMessage.MaxTimeToLiveInSeconds;
 	}
 
+	/**
+	Adds a message to the queue.
+	@param message message to be added to the queue
+	@param timeToLiveInSeconds how much time in seconds will the message exist before being automatically deleted
+	*/
 	public void addMessage(final CloudQueueMessage message,
 			final int timeToLiveInSeconds) throws UnsupportedEncodingException, StorageException, IOException {
 		final CloudQueue queue = this;
@@ -217,6 +288,12 @@ public class CloudQueue {
         storageOperation.executeTranslatingExceptions();
 	}
 
+	/**
+	Gets a list of messages from the queue.
+	@param messageCount the amount of messageCount at maximum that will be retrieved
+	@return Iterable<CloudQueueMessage> the messages retrieved from the queue
+	@see CloudQueueMessage
+	*/
 	public Iterable<CloudQueueMessage> getMessages(int messageCount) throws UnsupportedEncodingException, StorageException, IOException {
 		return this.getMessages(messageCount, this.getDefaultVisibilityTimeoutInSeconds());
 	}
@@ -225,11 +302,23 @@ public class CloudQueue {
 		return 6000;
 	}
 
+	/**
+	Gets a list of messages from the queue.
+	@param messageCount the amount of messageCount at maximum that will be retrieved
+	@param visibilityTimeoutInSeconds how much time will the messages retrieved will be marked as "invisible" before reappearing in the queue
+	@return Iterable<CloudQueueMessage> the messages retrieved from the queue
+	@see CloudQueueMessage
+	*/
 	public Iterable<CloudQueueMessage> getMessages(int messageCount,
 			int visibilityTimeoutInSeconds) throws UnsupportedEncodingException, StorageException, IOException {
 		return this.getOrPeekMessages(messageCount, false, visibilityTimeoutInSeconds);
 	}
 
+	/**
+	Gets a single message from the queue.
+	@return CloudQueueMessage the message retrieved from the queue
+	@see CloudQueueMessage
+	*/
 	public CloudQueueMessage getMessage() throws UnsupportedEncodingException, StorageException, IOException {
 		Iterator<CloudQueueMessage> iterator = this.getMessages(1).iterator();
 		CloudQueueMessage message = iterator.next();
@@ -239,19 +328,36 @@ public class CloudQueue {
 		return message;
 	}
 
+	/**
+	Gets a single message from the queue.
+	@param visibilityTimeoutInSeconds how much time will the message retrieved will be marked as "invisible" before reappearing in the queue
+	@return CloudQueueMessage the message retrieved from the queue
+	@see CloudQueueMessage
+	*/
 	public CloudQueueMessage getMessage(int visibilityTimeoutInSeconds) throws UnsupportedEncodingException, StorageException, IOException {
 		return this.getMessages(1, visibilityTimeoutInSeconds).iterator().next();
 	}
 
+	/**
+	Peeks a message from the queue.
+	@return CloudQueueMessage the message peeked from the queue
+	@see CloudQueueMessage
+	*/
 	public CloudQueueMessage peekMessage() throws UnsupportedEncodingException, StorageException, IOException {
 		return this.peekMessages(1).iterator().next();
 	}
 
+	/**
+	Peeks a message from the queue.
+	@param messageCount the amount of messages at maximum that will be peeked from the queue
+	@return CloudQueueMessage the message peeked from the queue
+	@see CloudQueueMessage
+	*/
 	public Iterable<CloudQueueMessage> peekMessages(final int messageCount) throws UnsupportedEncodingException, StorageException, IOException {
 		return this.getOrPeekMessages(messageCount, true, 0);
 	}
 
-	public Iterable<CloudQueueMessage> getOrPeekMessages(final int messageCount, final boolean peekMessages, final int visibilityTimeoutInSeconds) throws UnsupportedEncodingException, StorageException, IOException {
+	private Iterable<CloudQueueMessage> getOrPeekMessages(final int messageCount, final boolean peekMessages, final int visibilityTimeoutInSeconds) throws UnsupportedEncodingException, StorageException, IOException {
 		final CloudQueue queue = this;
 		StorageOperation<Iterable<CloudQueueMessage>> storageOperation = new StorageOperation<Iterable<CloudQueueMessage>>() {
 			public Iterable<CloudQueueMessage> execute() throws Exception {
@@ -271,10 +377,21 @@ public class CloudQueue {
         return storageOperation.executeTranslatingExceptions();
     }
 
+	/**
+	Deletes a message.
+	@param message the message that will be deleted. This message needs to have been obtained with the getMessage(s) methods
+	@see CloudQueueMessage
+	*/
 	public void deleteMessage(CloudQueueMessage message) throws UnsupportedEncodingException, StorageException, IOException {
 		this.deleteMessage(message.getId(), message.getPopReceipt());
 	}
 
+	/**
+	Deletes a message.
+	@param messageId the messageId of the message that will be deleted.
+	@param popReceipt the popReceipt of the message that will be deleted.
+	@see CloudQueueMessage
+	*/
 	public void deleteMessage(final String messageId, final String popReceipt) throws UnsupportedEncodingException, StorageException, IOException {
 		final CloudQueue queue = this;
 		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
@@ -295,6 +412,9 @@ public class CloudQueue {
         storageOperation.executeTranslatingExceptions();
 	}
 
+	/**
+	Clears all messages from the queue.
+	*/
 	public void clear() throws UnsupportedEncodingException, StorageException, IOException {
 		final CloudQueue queue = this;
 		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
