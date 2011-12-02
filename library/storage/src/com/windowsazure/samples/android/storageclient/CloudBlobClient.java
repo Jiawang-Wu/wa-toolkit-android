@@ -9,6 +9,7 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpGet;
 
 public final class CloudBlobClient {
+	
 	private URI m_Endpoint;
 
 	private StorageCredentials m_Credentials;
@@ -327,4 +328,5 @@ public final class CloudBlobClient {
 			return;
 		}
 	}
+	
 }
