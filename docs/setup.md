@@ -49,7 +49,7 @@ Assuming that you have a compatible version of the Eclipse IDE installed, as des
 6.	In the next window, you will see a list of the tools. Click Next.
 7.	Read and accept the license agreements, then click Finish.
 
-> **Note**: If you get a security warning saying that the authenticity or validity of the software cannot be established, click **OK**.
+	> **Note**: If you get a security warning saying that the authenticity or validity of the software cannot be established, click **OK**.
 
 8.	When the installation completes, restart Eclipse.
 
@@ -59,7 +59,7 @@ Assuming that you have a compatible version of the Eclipse IDE installed, as des
 
 	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/1_6.png "Title")
 
-> **Note**: It is recommended to choose a location without blank spaces, since there were known issues in previous versions.
+	> **Note**: It is recommended to choose a location without blank spaces, since there were known issues in previous versions.
 
 2.	Choose if you are going to contribute with Google’s statistics.
 
@@ -69,7 +69,7 @@ Assuming that you have a compatible version of the Eclipse IDE installed, as des
 	
 	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/1_8.png "Title")
 	
-> **Note**: It takes a couple of minutes to start the installation.
+	> **Note**: It takes a couple of minutes to start the installation.
 
 4.	Restart **ADB**.
 
@@ -127,7 +127,7 @@ Assuming that you have a compatible version of the Eclipse IDE installed, as des
 
 	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/1_20.png "Title")
 	
-> **Note**: It may take a few minutes to load.
+	> **Note**: It may take a few minutes to load.
 
 You can find more information about Android development in Android’s Developers website at [http://developer.android.com/index.html](http://developer.android.com/index.html)
 
