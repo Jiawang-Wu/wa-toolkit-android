@@ -6,6 +6,7 @@ Base class for entity classes to be used with CloudTableObject instances.
 */	
 
 public abstract class CloudTableEntity {
+	
 	public String PartitionKey;
 	public String RowKey;
 	
@@ -13,4 +14,5 @@ public abstract class CloudTableEntity {
 		PartitionKey = e.PartitionKey;
 		RowKey = e.RowKey;
 	}
+	
 }
