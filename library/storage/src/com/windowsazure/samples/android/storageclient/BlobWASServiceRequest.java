@@ -22,4 +22,5 @@ public class BlobWASServiceRequest implements AbstractBlobRequest {
 		return BaseRequest.setURIAndHeaders(new HttpGet(), listBlobsUri,
 				uriQueryBuilder);
 	}
+	
 }

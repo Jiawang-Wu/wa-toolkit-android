@@ -7,6 +7,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.message.AbstractHttpMessage;
 
 class BaseResponse {
+	
 	public static String getContentMD5(HttpResponse response) {
 		return getHeaderValueOrNullIfNonExistent(response, "Content-MD5");
 	}
@@ -49,4 +50,5 @@ class BaseResponse {
 		}
 		return headersByPrefix;
 	}
+	
 }

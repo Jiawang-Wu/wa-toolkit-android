@@ -23,4 +23,5 @@ final class BlobQueueLiteCanonicalizer extends Canonicalizer {
 							"Content-Type"), contentLength.longValue(), null,
 					request);
 	}
+	
 }

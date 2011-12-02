@@ -7,4 +7,5 @@ public class BlobContainerPermissions {
 	public BlobContainerPermissions() {
 		publicAccess = BlobContainerPublicAccessType.OFF;
 	}
+	
 }

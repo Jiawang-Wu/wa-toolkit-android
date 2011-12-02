@@ -41,4 +41,5 @@ public final class BlobProperties {
 		length = properties.length;
 		lastModified = properties.lastModified;
 	}
+	
 }

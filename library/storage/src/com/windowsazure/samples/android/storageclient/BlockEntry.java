@@ -12,4 +12,5 @@ public final class BlockEntry {
 		id = encodedBlockId;
 		searchMode = blockSearchMode;
 	}
+	
 }

@@ -163,4 +163,5 @@ final class BlobInputStream extends InputStream {
 
 		return offset;
 	}
+	
 }

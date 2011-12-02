@@ -18,6 +18,7 @@ import org.apache.http.Header;
 import org.apache.http.client.methods.HttpRequestBase;
 
 abstract class Canonicalizer {
+	
 	private static void addCanonicalizedHeaders(HttpRequestBase request,
 			StringBuilder stringBuilder) {
 		Header[] headers = request.getAllHeaders();
@@ -200,9 +201,9 @@ abstract class Canonicalizer {
 		return trimmedValues;
 	}
 
-	Canonicalizer() {
-	}
+	Canonicalizer() { }
 
 	protected abstract String canonicalize(HttpRequestBase request, String accountName,
 			Long contentLength) throws StorageException, MalformedURLException;
+	
 }
