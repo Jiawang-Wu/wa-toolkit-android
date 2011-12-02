@@ -15,12 +15,23 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 
+/**
+Provides a client for accessing a Windows Azure Table entities. 
+@see CloudTableEntity
+*/	
 public class CloudTableObject<E extends CloudTableEntity> {
 	
 	private String m_TableName;
 	private URI m_Endpoint;
 	private StorageCredentials m_Credentials;
-	
+
+	/**
+	Initializes a new instance of the CloudTableObject class using the specified Table service endpoint and account credentials for a specific Table.
+	@param tableName the table name to handle
+	@param baseUri an absolute {@link URI} giving the base location of the table storage
+	@param credentials the {@link StorageCredentials} used to access the storage repository
+	@see StorageCredentials
+	*/ 
 	public CloudTableObject(String tableName, URI baseUri, StorageCredentials credentials) {
 		Utility.assertNotNull("baseUri", baseUri);
 		Utility.assertNotNull("credentials", credentials);
@@ -33,29 +44,65 @@ public class CloudTableObject<E extends CloudTableEntity> {
 		m_Credentials = credentials;
 		m_TableName = tableName;
 	}
-	
+
+	/**
+	Gets the table name of the handled Table.
+	@return	table name for handled Table
+	*/ 
 	public String getTableName() {
 		return m_TableName;
 	}
 	
+	/**
+	Gets the base location of the table storage.
+	@return	the URI value of the table storage
+	*/	                          
 	public URI getBaseUri() {
 		return m_Endpoint;
 	}
 	
+	/**
+	Gets the credentials used to access the table storage.
+	@return	the credentials for accesing the table storage
+	*/	                          
 	public StorageCredentials getCredentials() {
 		return m_Credentials;
 	}
 	
+	/**
+	Returns an iterable collection of table entities for the storage account.
+	@param baseUri an absolute {@link URI} giving the base location of the table storage
+	@param credentials the {@link StorageCredentials} used to access the storage repository
+	@param tableName the table name to query entities from
+	@return	an iterable collection of table entities 
+	*/	                          
 	public static Iterable<Map<String, Object>> query(URI baseUri, StorageCredentials credentials, String tableName) 
 			throws UnsupportedEncodingException, StorageException, IOException {
 		return query(baseUri, credentials, tableName, null);
 	}
 	
+	/**
+	Returns an iterable collection of table entities for the storage account that satisfy a the specified filter.
+	@param baseUri an absolute {@link URI} giving the base location of the table storage
+	@param credentials the {@link StorageCredentials} used to access the storage repository
+	@param tableName the table name to query entities from
+	@param filter the filter that entities must satisfy
+	@return	an iterable collection of table entities 
+	*/	                          
 	public static Iterable<Map<String, Object>> query(URI baseUri, StorageCredentials credentials, String tableName, String filter) 
 			throws UnsupportedEncodingException, StorageException, IOException {
 		return query(baseUri, credentials, tableName, filter, 0);
 	}
 
+	/**
+	Returns an iterable collection of the first N (specified by parameter top) table entities for the storage account that satisfy a the specified filter.
+	@param baseUri an absolute {@link URI} giving the base location of the table storage
+	@param credentials the {@link StorageCredentials} used to access the storage repository
+	@param tableName the table name to query entities from
+	@param filter the filter that entities must satisfy
+	@param top the max number of entities to retrieve
+	@return	an iterable collection of table entities 
+	*/	                          
 	public static Iterable<Map<String, Object>> query(URI baseUri, StorageCredentials credentials, String tableName, String filter, int top) 
 			throws UnsupportedEncodingException, StorageException, IOException {
 		final URI thatUri = baseUri;
@@ -73,6 +120,13 @@ public class CloudTableObject<E extends CloudTableEntity> {
 		return storageOperation.executeTranslatingExceptions();		
 	}
 
+	/**
+	Inserts a new table entity for the storage account.
+	@param baseUri an absolute {@link URI} giving the base location of the table storage
+	@param credentials the {@link StorageCredentials} used to access the storage repository
+	@param tableName the table name to query entities from
+	@param properties a map that represents the properties (key/value) of an entity
+	*/	                          
 	public static void insert(URI baseUri, StorageCredentials credentials, String tableName, Map<String, Object> properties) 
 			throws UnsupportedEncodingException, StorageException, IOException {
 		final URI thatUri = baseUri;
@@ -89,6 +143,13 @@ public class CloudTableObject<E extends CloudTableEntity> {
 		storageOperation.executeTranslatingExceptions();
 	}
 	
+	/**
+	Updates a table entity for the storage account.
+	@param baseUri an absolute {@link URI} giving the base location of the table storage
+	@param credentials the {@link StorageCredentials} used to access the storage repository
+	@param tableName the table name to query entities from
+	@param properties a map that represents the properties (key/value) of an entity
+	*/	                          
 	public static void update(URI baseUri, StorageCredentials credentials, String tableName, Map<String, Object> properties) 
 			throws UnsupportedEncodingException, StorageException, IOException {
 		final URI thatUri = baseUri;
@@ -105,14 +166,32 @@ public class CloudTableObject<E extends CloudTableEntity> {
 		storageOperation.executeTranslatingExceptions();
 	}
 	
+	/**
+	Returns an iterable collection of table entities for the storage account.
+	@param clazz the type of the entity object to retrieve
+	@return	an iterable collection of table entities 
+	*/	                          
 	public Iterable<E> query(Class<E> clazz) throws Exception {
 		return query(clazz, null);
 	}
 	
+	/**
+	Returns an iterable collection of table entities for the storage account that satisfy a the specified filter.
+	@param clazz the type of the entity object to retrieve
+	@param filter the filter that entities must satisfy
+	@return	an iterable collection of table entities 
+	*/	                          
 	public Iterable<E> query(Class<E> clazz, String filter) throws Exception {
 		return query(clazz, filter, 0);
 	}
 	
+	/**
+	Returns an iterable collection of the first N (specified by parameter top) table entities for the storage account that satisfy a the specified filter.
+	@param clazz the type of the entity object to retrieve
+	@param filter the filter that entities must satisfy
+	@param top the max number of entities to retrieve
+	@return	an iterable collection of table entities 
+	*/	                          
 	public Iterable<E> query(Class<E> clazz, String filter, int top) throws Exception {
 		final String thatFilter = filter;
 		final Class<E> thatClazz = clazz; 
@@ -127,6 +206,10 @@ public class CloudTableObject<E extends CloudTableEntity> {
 		return storageOperation.executeTranslatingExceptions();
 	}
 	
+	/**
+	Inserts a new table entity for the storage account.
+	@param entity the entity to insert into the table
+	*/	                          
 	public void insert(E entity) throws UnsupportedEncodingException, StorageException, IOException {		
 		final E thatEntity = entity;
 		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
@@ -139,6 +222,10 @@ public class CloudTableObject<E extends CloudTableEntity> {
 		storageOperation.executeTranslatingExceptions();
 	}
 	
+	/**
+	Inserts or replaces a table entity for the storage account.
+	@param entity the entity to insert or replace into the table
+	*/	                          
 	public void insertOrReplace(E entity) throws UnsupportedEncodingException, StorageException, IOException {		
 		final E thatEntity = entity;
 		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
@@ -151,6 +238,10 @@ public class CloudTableObject<E extends CloudTableEntity> {
 		storageOperation.executeTranslatingExceptions();
 	}
 
+	/**
+	Inserts or merges a table entity for the storage account.
+	@param entity the entity to insert or merge into the table
+	*/	                          
 	public void insertOrMerge(E entity) throws UnsupportedEncodingException, StorageException, IOException {		
 		final E thatEntity = entity;
 		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
@@ -163,6 +254,10 @@ public class CloudTableObject<E extends CloudTableEntity> {
 		storageOperation.executeTranslatingExceptions();
 	}
 
+	/**
+	Updates a table entity for the storage account.
+	@param entity the entity to update in the table
+	*/	                          
 	public void update(E entity) throws UnsupportedEncodingException, StorageException, IOException {
 		final E thatEntity = entity;
 		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
@@ -175,6 +270,10 @@ public class CloudTableObject<E extends CloudTableEntity> {
 		storageOperation.executeTranslatingExceptions();
 	}
 
+	/**
+	Merges a table entity for the storage account.
+	@param entity the entity to merge in the table
+	*/	                          
 	public void merge(E entity) throws UnsupportedEncodingException, StorageException, IOException {
 		final E thatEntity = entity;
 		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
@@ -187,6 +286,10 @@ public class CloudTableObject<E extends CloudTableEntity> {
 		storageOperation.executeTranslatingExceptions();		
 	}
 
+	/**
+	Deletes a table entity for the storage account.
+	@param entity the entity to delete from the table
+	*/	                          
 	public void delete(E entity) throws UnsupportedEncodingException, StorageException, IOException {
 		final E thatEntity = entity;
 		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
@@ -199,6 +302,11 @@ public class CloudTableObject<E extends CloudTableEntity> {
 		storageOperation.executeTranslatingExceptions();
 	}
 	
+	/**
+	Deletes a table entity for the storage account.
+	@param partitionKey the partition key of the entity to delete
+	@param rowKey the row key of the entity to delete
+	*/	                          
 	public void delete(String partitionKey, String rowKey) throws UnsupportedEncodingException, StorageException, IOException {
 		final String thatPartitionKey =  partitionKey;
 		final String thatRowKey = rowKey;
@@ -238,10 +346,6 @@ public class CloudTableObject<E extends CloudTableEntity> {
 			throw new StorageInnerException(String.format(errorMessage));
 		} 
 		
-	}
-
-	public static String encodeValueForFilter(String value) {
-		return value.replace("'", "''");
 	}
 
 }
