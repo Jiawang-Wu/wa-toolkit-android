@@ -63,12 +63,15 @@ The following section describes how you can build and run the applications and t
 	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/2_13.png "Title")
 	
 16.	Click **OK**.
-17.	Finally, from the **Project** Menu select **Build All**.
 
 	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/2_14.png "Title")
+
+17.	Finally, from the **Project** Menu select **Build All**.
+
+	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/2_15.png "Title")
 	
 ##Running the Tests
 
 18.	Right-click the test project and select **Run As -> Android JUnit Test**.
 
-	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/2_15.png "Title")
+	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/2_16.png "Title")
