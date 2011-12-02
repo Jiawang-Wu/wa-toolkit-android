@@ -372,7 +372,7 @@ public final class CloudBlobContainer {
 		StorageOperation<Iterable<CloudBlob>> storageOperation = new StorageOperation<Iterable<CloudBlob>>() {
 			public Iterable<CloudBlob> execute() throws Exception {
 		HttpGet request = m_BlobRequest.list(container.getServiceClient()
-				.getEndpoint(), container, prefix, useFlatBlobListing);
+				.getBaseURI(), container, prefix, useFlatBlobListing);
 		container.getServiceClient().getCredentials().signRequest(request, -1L);
 		this.processRequest(request);
 		if (result.statusCode != HttpStatus.SC_OK) {
