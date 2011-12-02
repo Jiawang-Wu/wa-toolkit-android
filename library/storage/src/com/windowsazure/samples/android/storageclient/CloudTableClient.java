@@ -18,6 +18,20 @@ public class CloudTableClient {
 	private URI m_Endpoint;
 	private StorageCredentials m_Credentials;
 
+	/**
+	 * Returns a new instance of the CloudTableClient that is used to handle the tables at table storage.
+	                          
+	@param  baseUri		an absolute URI giving the base location of the table storage
+	 *  
+	                          
+	@param  credentials	the location of the image, relative to the url argument
+	 *  
+	                          
+	@return	a new instance of a CloudTableClient object to manage tables
+	 *  
+	                          
+	@see    StorageCredentials
+	 */
 	public CloudTableClient(URI baseUri, StorageCredentials credentials) {
 		Utility.assertNotNull("baseUri", baseUri);
 		Utility.assertNotNull("credentials", credentials);
