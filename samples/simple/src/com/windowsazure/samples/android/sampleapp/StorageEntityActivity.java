@@ -109,8 +109,8 @@ public class StorageEntityActivity extends SecuritableActivity {
 					switch (operationType){
 						case OPERATION_TYPE_EDIT: {
 							String filter = String.format("PartitionKey eq '%s' and RowKey eq '%s'", 
-									CloudTableObject.encodeValueForFilter(partitionKey), 
-									CloudTableObject.encodeValueForFilter(rowKey));
+									encodeValueForFilter(partitionKey), 
+									encodeValueForFilter(rowKey));
 							entities = CloudTableObject.query(tableClient.getEndpoint(), tableCredentials, tableName, filter);
 							break;
 						}
@@ -305,4 +305,9 @@ public class StorageEntityActivity extends SecuritableActivity {
 		}
 		return editViews;
     }
+    
+	private static String encodeValueForFilter(String value) {
+		return value.replace("'", "''");
+	}
+
 }
