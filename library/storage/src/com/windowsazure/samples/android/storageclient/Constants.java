@@ -1,6 +1,7 @@
 package com.windowsazure.samples.android.storageclient;
 
-public final class Constants {
+final class Constants {
+	
 	public static class BlobConstants {
 
 		public static final int DEFAULT_CONCURRENT_REQUEST_COUNT = 1;
@@ -151,6 +152,7 @@ public final class Constants {
 	public static final String UNCOMMITTED_ELEMENT = "Uncommitted";
 	public static final String UNLOCKED_VALUE = "Unlocked";
 	public static final String URL_ELEMENT = "Url";
-	public Constants() throws NotImplementedException {
-	}
+	
+	public Constants() throws NotImplementedException {	}
+	
 }

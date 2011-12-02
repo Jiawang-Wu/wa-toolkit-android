@@ -1,5 +1,7 @@
 package com.windowsazure.samples.android.storageclient;
+
 import java.io.IOException;
+
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.security.*;
@@ -11,7 +13,8 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import org.apache.http.conn.ssl.SSLSocketFactory;
-public class EasySSLSocketFactory extends SSLSocketFactory {
+
+final class EasySSLSocketFactory extends SSLSocketFactory {
         SSLContext sslContext = SSLContext.getInstance("TLS");
 
         public EasySSLSocketFactory(KeyStore truststore)

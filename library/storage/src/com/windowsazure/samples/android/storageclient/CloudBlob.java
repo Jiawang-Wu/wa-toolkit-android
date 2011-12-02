@@ -700,4 +700,5 @@ public abstract class CloudBlob implements IListBlobItem {
 			throws NotImplementedException, StorageException {
 		throw new NotImplementedException();
 	}
+	
 }

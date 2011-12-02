@@ -12,6 +12,7 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 
 final class ContainerRequest implements AbstractContainerRequest {
+	
 	public static void addMetadata(HttpRequestBase request, HashMap<String, String> metadata) {
 		BaseRequest.addMetadata(request, metadata);
 	}
@@ -101,4 +102,5 @@ final class ContainerRequest implements AbstractContainerRequest {
 		}
 		return request;
 	}
+	
 }

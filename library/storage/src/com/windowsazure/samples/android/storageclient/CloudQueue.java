@@ -15,6 +15,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 
 public class CloudQueue {
+	
 	Map<String, String> m_Metadata;
 	protected CloudQueueClient m_ServiceClient;
 	private URI m_Uri;
@@ -434,4 +435,5 @@ public class CloudQueue {
 
         storageOperation.executeTranslatingExceptions();
 	}
+	
 }
