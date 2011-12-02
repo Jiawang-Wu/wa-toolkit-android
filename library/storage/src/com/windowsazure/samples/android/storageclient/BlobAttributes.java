@@ -10,6 +10,10 @@ final class BlobAttributes {
 	protected BlobProperties properties;
 	protected URI uri;
 	public String snapshotID;
+
+	/**
+	* Initializes a new instance of the BlobAttributes class
+	*/
 	public BlobAttributes() {
 		metadata = new HashMap<String, String>();
 		properties = new BlobProperties();

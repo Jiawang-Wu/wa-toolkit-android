@@ -57,24 +57,67 @@ public abstract class CloudBlob implements IListBlobItem {
 		m_Name = blob.m_Name;
 	}
 
-	public CloudBlob(URI blobAbsoluteUri, CloudBlobClient serviceClient)
+	/**
+	* Initializes a new instance of the CloudBlob class.
+	*
+	*@param uri
+	*          the address for the blob
+	*@param client
+	*          the associated service client.
+	* @throws StorageException
+	*             an exception representing any error which occurred during the
+	*             operation.
+	* @throws URISyntaxException
+	*             if the resource URI is invalid.
+	*/
+	public CloudBlob(URI uri, CloudBlobClient client)
 			throws StorageException {
 		this();
-		Utility.assertNotNull("blobAbsoluteUri", blobAbsoluteUri);
-		Utility.assertNotNull("serviceClient", serviceClient);
-		m_ServiceClient = serviceClient;
-		m_Uri = blobAbsoluteUri;
-		parseURIQueryStringAndVerify(blobAbsoluteUri, serviceClient);
+		Utility.assertNotNull("blobAbsoluteUri", uri);
+		Utility.assertNotNull("serviceClient", client);
+		m_ServiceClient = client;
+		m_Uri = uri;
+		parseURIQueryStringAndVerify(uri, client);
 	}
 
-	public CloudBlob(URI blobAbsoluteUri, CloudBlobClient serviceClient,
+	/**
+	* Initializes a new instance of the CloudBlob class.
+	*
+	*@param uri
+	*          the address for the blob
+	*@param client
+	*          the associated service client.
+	*@param container
+	*          the parent container for the object.
+	* @throws StorageException
+	*             an exception representing any error which occurred during the
+	*             operation.
+	* @throws URISyntaxException
+	*             if the resource URI is invalid.
+	*/
+	public CloudBlob(URI uri, CloudBlobClient client,
 			CloudBlobContainer container) throws StorageException {
-		this(blobAbsoluteUri, serviceClient);
+		this(uri, client);
 		m_Container = container;
 	}
 
-	public CloudBlob(URI blobAbsoluteUri, String snapshotId,
-			CloudBlobClient serviceClient) throws StorageException,
+	/**
+	* Initializes a new instance of the CloudBlob class.
+	*
+	*@param uri
+	*          the address for the blob
+	*@param snapshotID
+	*          the snapshot version if applicable.
+	*@param client
+	*          the associated service client.
+	* @throws StorageException
+	*             an exception representing any error which occurred during the
+	*             operation.
+	* @throws URISyntaxException
+	*             if the resource URI is invalid.
+	*/
+	public CloudBlob(URI uri, String snapshotId,
+			CloudBlobClient client) throws StorageException,
 			NotImplementedException {
 		throw new NotImplementedException();
 	}
@@ -109,6 +152,16 @@ public abstract class CloudBlob implements IListBlobItem {
 		throw new NotImplementedException();
 	}
 
+	/**
+	*  Copies an existing blob's contents, properties, and metadata to a new
+	*  blob.
+	*  
+	*  @param sourceBlob
+	*             The source blob.
+	*  @throws StorageException
+	*              an exception representing any error which occurred during the
+	*              operation.
+	*/
 	public void copyFromBlob(final CloudBlob sourceBlob)
 			throws NotImplementedException, StorageException,
 			UnsupportedEncodingException, IOException {
@@ -145,6 +198,13 @@ public abstract class CloudBlob implements IListBlobItem {
 		throw new NotImplementedException();
 	}
 
+	/**
+	*  Deletes the blob.
+	*  
+	*  @throws StorageException
+	*              an exception representing any error which occurred during the
+	*              operation.
+	*/
 	public void delete() throws StorageException, UnsupportedEncodingException,
 			IOException {
 		final CloudBlob blob = this;
@@ -168,6 +228,13 @@ public abstract class CloudBlob implements IListBlobItem {
 		throw new NotImplementedException();
 	}
 
+	/**
+	*  Deletes the blob if it exists.
+	*  
+	*  @throws StorageException
+	*              an exception representing any error which occurred during the
+	*              operation.
+	*/
 	public boolean deleteIfExists() throws NotImplementedException,
 			StorageException {
 		throw new NotImplementedException();
@@ -178,7 +245,16 @@ public abstract class CloudBlob implements IListBlobItem {
 		throw new NotImplementedException();
 	}
 
-	public void download(final OutputStream outputStream)
+	/**
+	*  Downloads the contents of a blob to a stream.
+	*  
+	*  @param outStream
+	*             the OutputStream to write the blob to.
+	*  @throws StorageException
+	*              an exception representing any error which occurred during the
+	*              operation.
+	*/
+	public void download(final OutputStream outStream)
 			throws StorageException, IOException {
 		final CloudBlob blob = this;
 		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
@@ -192,7 +268,7 @@ public abstract class CloudBlob implements IListBlobItem {
 				m_Properties.copyFrom(attributes.properties);
 				blob.m_Metadata = attributes.metadata;
 				if (result.statusCode == HttpStatus.SC_OK) {
-					result.httpResponse.getEntity().writeTo(outputStream);
+					result.httpResponse.getEntity().writeTo(outStream);
 				} else {
 					throw new StorageInnerException("Couldn't download a blob");
 				}
@@ -202,6 +278,13 @@ public abstract class CloudBlob implements IListBlobItem {
 		storageOperation.executeTranslatingExceptions();
 	}
 
+	/**
+	*  Populates a blob's properties and metadata.
+	*  
+	*  @throws StorageException
+	*              an exception representing any error which occurred during the
+	*              operation.
+	*/
 	public void downloadAttributes() throws StorageException,
 			UnsupportedEncodingException, IOException {
 		final CloudBlob blob = this;
@@ -316,6 +399,11 @@ public abstract class CloudBlob implements IListBlobItem {
 		return String.format("/%s%s", accountName, containerNameAndBlobName);
 	}
 
+	/**
+	* Gets the blob item's container.
+	* 
+	* @return the blob item's container.
+	*/
 	public CloudBlobContainer getContainer() throws StorageException,
 			URISyntaxException {
 		if (m_Container == null) {
@@ -349,6 +437,11 @@ public abstract class CloudBlob implements IListBlobItem {
 		throw new NotImplementedException();
 	}
 
+	/**
+	* Returns the CloudBlobClient service client associated with the blob.
+	* 
+	* @return the CloudBlobClient service client associated with the blob.
+	*/
 	public CloudBlobClient getServiceClient() {
 		if (m_Container != null) {
 			return m_Container.getServiceClient();
@@ -378,15 +471,33 @@ public abstract class CloudBlob implements IListBlobItem {
 		}
 	}
 
+	/**
+	* Gets the uri for this blob.
+	*/
 	public URI getUri() {
 		return m_Uri;
 	}
 
+	/**
+	* Indicates if this blob is a snapshot or not.
+	* 
+	* @return <Code>True</Code> if the blob is a snapshot, otherwise
+	*         <CODE>False</CODE>
+	*/
 	public boolean isSnapshot() throws NotImplementedException,
 			NotImplementedException {
 		throw new NotImplementedException();
 	}
 
+	/**
+	*  Opens a BlobInputStream to download the Blob. See
+	*  CloudBlobClient.setMinimumReadSize to configure read size.
+	*  
+	*  @return a BlobInputStream to download the Blob.
+	*  @throws StorageException
+	*              an exception representing any error which occurred during the
+	*              operation.
+	*/
 	public BlobInputStream openInputStream() throws StorageException,
 			UnsupportedEncodingException, IOException, StorageInnerException {
 		return new BlobInputStream(this);
@@ -474,7 +585,19 @@ public abstract class CloudBlob implements IListBlobItem {
 		throw new NotImplementedException();
 	}
 
-	public abstract void upload(InputStream inputStream, long length)
+	/**
+	*  Uploads the sourceStream data to the blob.
+	*  
+	*  @param sourceStream
+	*             the IntputStream to read from.
+	*  @param length
+	*             the length of the Stream data, -1 if uknown.
+	*  @throws StorageException
+	*              an exception representing any error which occurred during the
+	*              operation.
+	*  @throws IOException
+	*/
+	public abstract void upload(InputStream sourceStream, long length)
 			throws NotImplementedException, StorageException, IOException;
 
 	public abstract void upload(InputStream inputStream, long length,
@@ -513,6 +636,13 @@ public abstract class CloudBlob implements IListBlobItem {
 		}
 	}
 
+	/**
+	*  Sets the blobs Metadata on the service.
+	*  
+	*  @throws StorageException
+	*              an exception representing any error which occurred during the
+	*              operation.
+	*/
 	public void uploadMetadata() throws StorageException,
 			UnsupportedEncodingException, IOException {
 		final String leaseId = "";
@@ -539,6 +669,13 @@ public abstract class CloudBlob implements IListBlobItem {
 		throw new NotImplementedException();
 	}
 
+	/**
+	*  Updates the blob's properties.
+	*  
+	*  @throws StorageException
+	*              an exception representing any error which occurred during the
+	*              operation.
+	*/
 	public void uploadProperties() throws StorageException,
 			UnsupportedEncodingException, IOException {
 		final CloudBlob blob = this;
