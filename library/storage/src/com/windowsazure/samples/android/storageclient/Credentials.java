@@ -2,7 +2,7 @@ package com.windowsazure.samples.android.storageclient;
 
 import android.util.Base64;
 
-public final class Credentials {
+final class Credentials {
 
 	private String m_AccountName;
 

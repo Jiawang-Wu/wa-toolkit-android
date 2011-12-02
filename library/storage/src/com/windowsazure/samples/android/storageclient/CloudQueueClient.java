@@ -9,6 +9,7 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpGet;
 
 public class CloudQueueClient {
+	
 	private URI m_BaseUri;
 	private StorageCredentials m_Credentials;
 
@@ -117,4 +118,5 @@ public class CloudQueueClient {
 
         return storageOperation.executeTranslatingExceptions();
 	}
+	
 }

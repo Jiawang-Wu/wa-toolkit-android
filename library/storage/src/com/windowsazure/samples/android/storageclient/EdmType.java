@@ -1,6 +1,6 @@
 package com.windowsazure.samples.android.storageclient;
 
-public enum EdmType {
+enum EdmType {
 	EdmBinary("Edm.Binary"),
 	EdmBoolean("Edm.Boolean"),
 	EdmDateTime("Edm.DateTime"),

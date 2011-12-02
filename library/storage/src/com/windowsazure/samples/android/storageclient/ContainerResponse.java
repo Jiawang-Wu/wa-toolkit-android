@@ -6,6 +6,7 @@ import java.util.Date;
 import org.apache.http.message.AbstractHttpMessage;
 
 final class ContainerResponse extends BaseResponse {
+	
 	public static BlobContainerAttributes getAttributes(URI endpoint,
 			RequestResult result) throws StorageException {
 		BlobContainerAttributes attributes = new BlobContainerAttributes();
@@ -24,4 +25,5 @@ final class ContainerResponse extends BaseResponse {
     public static String getAcl(AbstractHttpMessage response) {
     	return Utility.getFirstHeaderValueOrEmpty(response, "x-ms-blob-public-access");
     }
+    
 }

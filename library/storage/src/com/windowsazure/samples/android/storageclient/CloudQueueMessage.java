@@ -3,6 +3,7 @@ package com.windowsazure.samples.android.storageclient;
 import java.sql.Timestamp;
 
 public class CloudQueueMessage {
+	
 	public static final long MaxMessageSize = 8 * 1024; // 8 kb
 	public static final int MaxTimeToLiveInSeconds = 7 * 24 * 60 * 60; //7 Days;
 	public static final int MaxNumberOfMessagesToPeek = 32;
@@ -125,4 +126,5 @@ public class CloudQueueMessage {
 				m_PopReceipt,
 				m_NextVisibleTime);
 	}
+	
 }
