@@ -46,6 +46,15 @@ public abstract class StorageCredentials {
 		}
 	}
 
+	/**
+	* Tries to parse a connectionString to create the appropriate StorageCredentials object
+	* 
+	* @param connectionString
+	*            a string of key value pairs representing the StorageCredentials
+	* @return a StorageCredentials object represented by the connectionString
+	* @throws InvalidKeyException
+	*             if the account key specified in the connectionString is not valid.
+	*/
 	public static StorageCredentials tryParseCredentials(String configurationString)
 			throws NotImplementedException, InvalidKeyException,
 			StorageException {
@@ -55,18 +64,59 @@ public abstract class StorageCredentials {
 	public StorageCredentials() {
 	}
 
+	/**
+	* RESERVED, for internal use only.  Gets a value indicating whether the <Code>ComputeHmac</Code> method will return a valid HMAC-encoded
+	* signature string when called using the specified credentials.
+	* 
+	* @return <Code>True</Code> if these credentials will yield a valid signature string; otherwise,
+	*         <Code>false</Code>
+	*/
 	protected abstract boolean canCredentialsComputeHmac()
 			throws NotImplementedException;
 
+	/**
+	* RESERVED, for internal use only.  Gets a value indicating whether a request can be signed under the Shared Key authentication scheme
+	* using the specified credentials.
+	* 
+	* @return <Code>True</Code> if a request can be signed with these credentials; otherwise,
+	*         <Code>false</Code>
+	*/
 	protected abstract boolean canCredentialsSignRequest()
 			throws NotImplementedException;
 
+	/**
+	* RESERVED, for internal use only.  Gets a value indicating whether a request can be signed under the Shared Key Lite authentication scheme
+	* using the specified credentials.
+	* 
+	* @return <Code>True</Code> if a request can be signed with these credentials; otherwise,
+	*         <Code>false</Code>
+	*/
 	protected abstract boolean canCredentialsSignRequestLite()
 			throws NotImplementedException;
 
+	/**
+	* Encodes a Shared Key or Shared Key Lite signature string by using the HMAC-SHA256 algorithm over a
+	* UTF-8-encoded string-to-sign.
+	* 
+	* @param value
+	*            UTF-8-encoded string-to-sign.
+	* @return An HMAC-encoded signature string
+	* @throws InvalidKeyException
+	*             if the key is not a valid base64 encoded string.
+	*/
 	public abstract String computeHmac256(String string) throws InvalidKeyException,
 			NotImplementedException;
 
+	/**
+	* Encodes a Shared Key signature string by using the HMAC-SHA256 algorithm over a UTF-8-encoded
+	* string-to-sign.
+	* 
+	* @param value
+	*            UTF-8-encoded string-to-sign.
+	* @return An HMAC-encoded signature string
+	* @throws InvalidKeyException
+	*             if the key is not a valid base64 encoded string.
+	*/
 	public abstract String computeHmac512(String string) throws InvalidKeyException,
 			NotImplementedException;
 
@@ -78,18 +128,46 @@ public abstract class StorageCredentials {
 			URISyntaxException, StorageException,
 			IOException;
 
+	/**
+	* RESERVED, for internal use only.  Gets a value indicating whether the <Code>TransformUri</Code> method should be called to transform a
+	* resource URI to a URI that includes a token for a shared access signature.
+	* 
+	* @return <Code>True</Code> if the URI must be transformed; otherwise, <Code>false</Code>
+	*/
 	protected abstract boolean doCredentialsNeedTransformUri();
 
+	/**
+	* Gets the associated account name for the credentials.
+	* 
+	* @return the associated account name for the credentials.
+	*/
 	public abstract String getAccountName();
 
 	abstract AbstractBlobRequest getBlobRequest();
 
 	abstract AbstractContainerRequest getContainerRequest();
 
+	/**
+	* Signs a request using the specified credentials under the Shared Key authentication scheme.
+	* 
+	* @param request
+	*            the HttpRequestBase object to sign
+	* @param contentLength
+	*            the length of the content written to the output stream. If unknown specify -1;
+	* @throws InvalidKeyException
+	*             if the given key is invalid.
+	* @throws StorageException
+	*/
 	public abstract void signRequest(HttpRequestBase request, long length)
 			throws NotImplementedException, InvalidKeyException,
 			StorageException, MalformedURLException;
 
+	/**
+	* Signs a request using the specified credentials under the Shared Key Lite authentication scheme.
+	* 
+	* @param request
+	*            the HttpRequestBase object to sign
+	*/
 	public abstract void signRequestLite(HttpRequestBase request, long length)
 			throws NotImplementedException, StorageException,
 			InvalidKeyException;
@@ -99,7 +177,25 @@ public abstract class StorageCredentials {
 
 	public abstract void signTableRequestLite(HttpRequestBase request);
 
-	public abstract String toString(boolean showSignature);
+	/**
+	* Returns a String that represents this instance.
+	* 
+	* @param exportSecrets
+	*            <Code>True</Code> to include sensitive data in the string; otherwise, <Code>false</Code>
+	* @return a string for the credentials, optionally with sensitive data.
+	*/
+	public abstract String toString(boolean exportSecrets);
 
-	public abstract URI transformUri(URI uri) throws URISyntaxException, StorageException;
+	/**
+	* Transforms a resource URI into a shared access signature URI, by appending a shared access token.
+	* 
+	* @param resourceUri
+	*            The resource URI to be transformed.
+	* @return The URI for a shared access signature, including the resource URI and the shared access token.
+	* @throws URISyntaxException
+	*             if the resourceURI is not properly formatted.
+	* @throws StorageException
+	* @throws IllegalArgumentException
+	*/
+	public abstract URI transformUri(URI resourceUri) throws URISyntaxException, StorageException;
 }

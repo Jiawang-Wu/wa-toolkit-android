@@ -108,14 +108,21 @@ public final class CloudStorageAccount implements CloudClientAccount {
 		return m_devStoreAccount;
 	}
 
-	public static CloudStorageAccount getDevelopmentStorageAccount(URI uri)
+	/**
+	* Returns a CloudStorageAccount with development storage credentials using the specified proxy Uri.
+	* 
+	* @param proxyUri
+	*            The proxy endpoint to use.
+	* @returns a CloudStorageAccount with development storage credentials.
+	*/
+	public static CloudStorageAccount getDevelopmentStorageAccount(URI proxyUri)
 			throws URISyntaxException, IllegalArgumentException,
 			NotImplementedException {
-		if (uri == null) {
+		if (proxyUri == null) {
 			return getDevelopmentStorageAccount();
 		} else {
-			String schemeWithSeparator = uri.getScheme().concat("://");
-			schemeWithSeparator = schemeWithSeparator.concat(uri.getHost());
+			String schemeWithSeparator = proxyUri.getScheme().concat("://");
+			schemeWithSeparator = schemeWithSeparator.concat(proxyUri.getHost());
 			return new CloudStorageAccount(
 					new StorageCredentialsAccountAndKey(
 							"devstoreaccount1",
@@ -145,6 +152,21 @@ public final class CloudStorageAccount implements CloudClientAccount {
 		return argumentsMap;
 	}
 
+	/**
+	* Parses a connection string and returns a CloudStorageAccount created the connection string.
+	* 
+	* @param name
+	*            A valid connection string.
+	* @param connectionString
+	*            A valid connection string.
+	* @return A CloudStorageAccount object constructed from the values provided in the connection string.
+	* @throws URISyntaxException
+	*             if the connectionString specifies an invalid URI
+	* @throws InvalidKeyException
+	*             if credentials in the connectionString contain an invalid key
+	* @throws IllegalArgumentException
+	*             if connectionString is null, empty or cannot be parsed
+	*/
 	public static CloudStorageAccount parse(String configurationString)
 			throws URISyntaxException, InvalidKeyException,
 			IllegalArgumentException, NotImplementedException {
@@ -234,6 +256,14 @@ public final class CloudStorageAccount implements CloudClientAccount {
 	private URI m_QueueEndpoint;
 	private URI m_TableEndpoint;
 
+	/**
+	* Initializes a new instance of the CloudStorageAccount class using the specified account credentials
+	* 
+	* @param m_storageCredentials
+	*            the StorageCredentials to use to authenticate this account
+	* @throws URISyntaxException
+	*             if storageCredentials specify an invalid account name
+	*/
 	public CloudStorageAccount(StorageCredentials storagecredentials)
 			throws URISyntaxException {
 		m_Credentials = storagecredentials;
@@ -245,6 +275,19 @@ public final class CloudStorageAccount implements CloudClientAccount {
 				m_Credentials.getAccountName()));
 	}
 
+	/**
+	* Initializes a new instance of the CloudStorageAccount class using the specified account credentials and
+	* service endpoints.
+	* 
+	* @param storageCredentials
+	*            The account credentials.
+	* @param blobEndpoint
+	*            The Blob service endpoint.
+	* @param queueEndpoint
+	*            The Queue service endpoint.
+	* @param tableEndpoint
+	*            The Table service endpoint.
+	*/
 	public CloudStorageAccount(StorageCredentials credentials,
 			URI blobEndpoint, URI queueEndpoint, URI tableEndpoint) {
 		m_Credentials = credentials;
@@ -253,6 +296,18 @@ public final class CloudStorageAccount implements CloudClientAccount {
 		m_TableEndpoint = tableEndpoint;
 	}
 
+	/**
+	* Initializes a new instance of theCloudStorageAccount class using the specified account credentials and
+	* the default service endpoints.
+	* 
+	* @param storageCredentials
+	*            The account credentials.
+	* @param useHttps
+	*            <Code>True</Code> to use HTTPS to connect to storage service endpoints; otherwise,
+	*            <Code>false</Code>
+	* @throws URISyntaxException
+	*             if storageCredentials specify an invalid account name
+	*/
 	public CloudStorageAccount(StorageCredentialsAccountAndKey accountAndKey,
 			boolean useHttps) throws URISyntaxException {
 		this((accountAndKey), new URI(getDefaultBlobEndpoint(useHttps ? "https"
@@ -263,6 +318,11 @@ public final class CloudStorageAccount implements CloudClientAccount {
 						accountAndKey.getAccountName())));
 	}
 
+	/**
+	* Creates a new Blob service client.
+	* 
+	* @return A client object that uses the Blob service endpoint.
+	*/
 	public CloudBlobClient createCloudBlobClient()
 			throws NotImplementedException {
 		if (getBlobEndpoint() == null)
@@ -302,6 +362,11 @@ public final class CloudStorageAccount implements CloudClientAccount {
 			return new CloudTableClient(getTableEndpoint(), getCredentials());
 	}
 
+	/**
+	* Gets the endpoint for the Blob service, as configured for the storage account.
+	* 
+	* @return the BlobEndpoint associated with this account
+	*/
 	public URI getBlobEndpoint() {
 		if (getCredentials() instanceof StorageCredentialsSharedAccessSignature) {
 			throw new IllegalArgumentException(
@@ -311,10 +376,20 @@ public final class CloudStorageAccount implements CloudClientAccount {
 		}
 	}
 
+	/**
+	* Gets the endpoint for the Blob service, as configured for the storage account.
+	* 
+	* @return the BlobEndpoint associated with this account
+	*/
 	public StorageCredentials getCredentials() {
 		return m_Credentials;
 	}
 
+	/**
+	* Gets the endpoint for the Queue service, as configured for the storage account.
+	* 
+	* @return the Queue endpoint associated with this account
+	*/
 	public URI getQueueEndpoint() {
 		if (getCredentials() instanceof StorageCredentialsSharedAccessSignature) {
 			throw new IllegalArgumentException(
@@ -324,6 +399,11 @@ public final class CloudStorageAccount implements CloudClientAccount {
 		}
 	}
 
+	/**
+	* Gets the endpoint for the Table service, as configured for the storage account.
+	* 
+	* @return the TableEndpoint associated with this account
+	*/
 	public URI getTableEndpoint() {
 		if (getCredentials() instanceof StorageCredentialsSharedAccessSignature) {
 			throw new IllegalArgumentException(
@@ -333,15 +413,36 @@ public final class CloudStorageAccount implements CloudClientAccount {
 		}
 	}
 
+	/**
+	* Sets the StorageCredentials to use with this account. Warning internal use only, updating the
+	* credentials to a new account can potentially invalidate a bunch of pre-existingobjects.
+	* 
+	* @param m_Credentials
+	*            the m_Credentials to set
+	*/
 	protected void setCredentials(StorageCredentials storagecredentials) {
 		m_Credentials = storagecredentials;
 	}
 
+	/**
+	* Returns a connection string for this storage account, without sensitive data.
+	* 
+	* @return a connection string for this storage account, without sensitive data.
+	* @see java.lang.Object#toString()
+	*/
 	@Override
 	public String toString() {
 		return toString(false);
 	}
 
+	/**
+	* Returns a connection string for this storage account, optionally with sensitive data.
+	* 
+	* @return a connection string for this storage account, optionally with sensitive data.
+	* @param exportSecrets
+	*            <Code>True</Code> to include sensitive data in the string; otherwise, <Code>false</Code>
+	* @see java.lang.Object#toString()
+	*/
 	public String toString(boolean showSignature) {
 		if (m_Credentials != null
 				&& Utility.isNullOrEmpty(m_Credentials.getAccountName()))

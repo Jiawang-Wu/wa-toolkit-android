@@ -24,10 +24,30 @@ public final class StorageCredentialsAccountAndKey extends StorageCredentials {
 		return this.toString(true).equals(rightCredentials.toString(true));
 	}
 
+	/**
+	* Initializes a new instance of the StorageCredentialsAccountAndKey class, using the storage account name
+	* and access key.
+	* 
+	* @param accountName
+	*            The name of the storage account.
+	* @param key
+	*            The account access key, as an array of bytes.
+	*/
 	public StorageCredentialsAccountAndKey(String accountName, byte key[]) {
 		m_Credentials = new Credentials(accountName, key);
 	}
 
+	/**
+	* Initializes a new instance of the StorageCredentialsAccountAndKeyclass, using the storage account name
+	* and access key.
+	* 
+	* @param accountName
+	*            The name of the storage account.
+	* @param key
+	*            The account access key, as a Base64-encoded string.
+	* @throws IOException
+	*             if the key is not correclty encoded.
+	*/
 	public StorageCredentialsAccountAndKey(String accountName, String key)
 			throws IllegalArgumentException {
 		this(accountName, Base64.decode(key, Base64.NO_WRAP));
@@ -48,12 +68,32 @@ public final class StorageCredentialsAccountAndKey extends StorageCredentials {
 		return true;
 	}
 
+	/**
+	* Encodes a Shared Key or Shared Key Lite signature string by using the HMAC-SHA256 algorithm over a
+	* UTF-8-encoded string-to-sign.
+	* 
+	* @param value
+	*            UTF-8-encoded string-to-sign.
+	* @return An HMAC-encoded signature string
+	* @throws InvalidKeyException
+	*             if the key is not a valid base64 encoded string.
+	*/
 	@Override
 	public String computeHmac256(String string) throws InvalidKeyException,
 			IllegalArgumentException {
 		return StorageKey.computeMacSha256(m_Credentials.getKey(), string);
 	}
 
+	/**
+	* Encodes a Shared Key signature string by using the HMAC-SHA256 algorithm over a UTF-8-encoded
+	* string-to-sign.
+	* 
+	* @param value
+	*            UTF-8-encoded string-to-sign.
+	* @return An HMAC-encoded signature string
+	* @throws InvalidKeyException
+	*             if the key is not a valid base64 encoded string.
+	*/
 	@Override
 	public String computeHmac512(String string) throws InvalidKeyException,
 			IllegalArgumentException {
@@ -79,6 +119,11 @@ public final class StorageCredentialsAccountAndKey extends StorageCredentials {
 		return false;
 	}
 
+	/**
+	* Gets the associated account name for the credentials.
+	* 
+	* @return the associated account name for the credentials.
+	*/
 	@Override
 	public String getAccountName() {
 		return m_Credentials.getAccountName();
@@ -98,14 +143,34 @@ public final class StorageCredentialsAccountAndKey extends StorageCredentials {
 		return new ContainerRequest();
 	}
 
+	/**
+	* Returns the internal Credentials associated with the StorageCredentials.
+	* 
+	* @return the internal Credentials associated with the StorageCredentials.
+	*/
 	public Credentials getCredentials() {
 		return m_Credentials;
 	}
 
+	/**
+	* @param m_Credentials
+	*            the m_Credentials to set
+	*/
 	public void setCredentials(Credentials credentials) {
 		m_Credentials = credentials;
 	}
 
+	/**
+	* Signs a request using the specified credentials under the Shared Key authentication scheme.
+	* 
+	* @param connection
+	*            the HttpRequestBase object to sign
+	* @param contentLength
+	*            the length of the content written to the output stream. If unknown specify -1;
+	* @throws InvalidKeyException
+	*             if the given key is invalid.
+	* @throws StorageException
+	*/
 	@Override
 	public void signRequest(HttpRequestBase request, long length)
 			throws InvalidKeyException, StorageException, MalformedURLException {
@@ -113,6 +178,12 @@ public final class StorageCredentialsAccountAndKey extends StorageCredentials {
 				length);
 	}
 
+	/**
+	* Signs a request using the specified credentials under the Shared Key Lite authentication scheme.
+	* 
+	* @param request
+	*            the HttpRequestBase object to sign
+	*/
 	@Override
 	public void signRequestLite(HttpRequestBase request, long length)
 			throws StorageException, InvalidKeyException,
@@ -134,19 +205,37 @@ public final class StorageCredentialsAccountAndKey extends StorageCredentials {
 
 	}
 
+	/**
+	* Returns a String that represents this instance.
+	* 
+	* @param exportSecrets
+	*            <Code>True</Code> to include sensitive data in the string; otherwise, <Code>false</Code>
+	* @return a string for the credentials, optionally with sensitive data.
+	*/
 	@Override
-	public String toString(boolean showKey) {
+	public String toString(boolean exportSecrets) {
 		return String.format("%s=%s;%s=%s", new Object[] {
 				"AccountName",
 				getAccountName(),
 				"AccountKey",
-				showKey ? m_Credentials.getKey()
+				exportSecrets ? m_Credentials.getKey()
 						.getBase64EncodedKey() : "[key hidden]" });
 	}
 
+	/**
+	* Transforms a resource URI into a shared access signature URI, by appending a shared access token.
+	* 
+	* @param resourceUri
+	*            The resource URI to be transformed.
+	* @return The URI for a shared access signature, including the resource URI and the shared access token.
+	* @throws URISyntaxException
+	*             if the resourceURI is not properly formatted.
+	* @throws StorageException
+	* @throws IllegalArgumentException
+	*/
 	@Override
-	public URI transformUri(URI uri) {
-		return uri;
+	public URI transformUri(URI resourceUri) {
+		return resourceUri;
 	}
 
 }

@@ -27,11 +27,26 @@ public final class CloudBlobClient {
 
 	private AbstractContainerRequest containerRequest;
 
+	/**
+	* Initializes a new instance of the CloudBlobClient class using the specified Blob service endpoint
+	* 
+	* @param baseUri
+	*            The Blob service endpoint to use to create the client
+	*/
 	public CloudBlobClient(URI baseUri) throws NotImplementedException,
 			NotImplementedException {
 		throw new NotImplementedException();
 	}
 
+	/**
+	* Initializes a new instance of the CloudBlobClient class using the specified Blob service endpoint and
+	* account credentials.
+	* 
+	* @param baseUri
+	*            The Blob service endpoint to use to create the client
+	* @param credentials
+	*            The account credentials.
+	*/
 	public CloudBlobClient(URI baseUri,
 			StorageCredentials storageCredentials) {
 		Utility.assertNotNull("baseUri", baseUri);
@@ -72,12 +87,30 @@ public final class CloudBlobClient {
 		}
 	}
 
+	/**
+	* Gets a reference to a block blob in this container.
+	* @param blobName the name of the blob
+	* @return a reference to a block blob in this container.
+	* @throws URISyntaxException
+	* @throws StorageException
+	*/
 	public CloudBlockBlob getBlockBlobReference(String blobName)
 			throws NotImplementedException, URISyntaxException,
 			StorageException {
 		throw new NotImplementedException();
 	}
 
+	/**
+	* Gets a reference to a block blob in this container.
+	* 
+	* @param blobName
+	*            the name of the blob
+	* @param snapshotID
+	*            the snapshot ID of the blob
+	* @return a reference to a block blob in this container.
+	* @throws URISyntaxException
+	* @throws StorageException
+	*/
 	public CloudBlockBlob getBlockBlobReference(String blobName, String snapshotId)
 			throws NotImplementedException, StorageException,
 			URISyntaxException {
@@ -85,10 +118,19 @@ public final class CloudBlobClient {
 	}
 
 	public URI getContainerEndpoint() throws URISyntaxException {
-		return PathUtility.appendPathToUri(this.getEndpoint(), this
+		return PathUtility.appendPathToUri(this.getBaseURI(), this
 				.getCredentials().containerEndpointPostfix());
 	}
 
+	/**
+	* Returns a reference to a CloudBlobContainer object with the specified address.
+	* 
+	* @param containerName
+	*            the name of the container
+	* @return
+	* @throws URISyntaxException
+	* @throws StorageException
+	*/
 	public CloudBlobContainer getContainerReference(String containerName)
 			throws NotImplementedException, URISyntaxException,
 			StorageException {
@@ -96,6 +138,9 @@ public final class CloudBlobClient {
 		return new CloudBlobContainer(containerName, this);
 	}
 
+	/**
+	* @return the Storage Credentials Associated with this Client
+	*/
 	public StorageCredentials getCredentials() {
 		return m_Credentials;
 	}
@@ -104,16 +149,38 @@ public final class CloudBlobClient {
 		return m_DirectoryDelimiter;
 	}
 
-	public URI getEndpoint() {
+	/**
+	* @return Gets the base URI for the Blob service client.
+	*/
+
+	public URI getBaseURI() {
 		return m_Endpoint;
 	}
 
+	/**
+	* Gets a reference to a page blob in this container.
+	* @param blobName the name of the blob
+	* @return a reference to a page blob in this container.
+	* @throws URISyntaxException
+	* @throws StorageException
+	*/
 	public CloudPageBlob getPageBlobReference(String blobName)
 			throws NotImplementedException, URISyntaxException,
 			StorageException {
 		throw new NotImplementedException();
 	}
 
+	/**
+	* Gets a reference to a page blob in this container.
+	* 
+	* @param blobName
+	*            the name of the blob
+	* @param snapshotID
+	*            the snapshot ID of the blob
+	* @return a reference to a page blob in this container.
+	* @throws URISyntaxException
+	* @throws StorageException
+	*/
 	public CloudPageBlob getPageBlobReference(String blobName, String snapshotId)
 			throws NotImplementedException, URISyntaxException,
 			StorageException {
@@ -124,10 +191,17 @@ public final class CloudBlobClient {
 		return m_PageBlobStreamWriteSizeInBytes;
 	}
 
+	/**
+	* @return the maximum size of a blob in bytes that may be uploaded as a single blob.
+	*/
 	public int getSingleBlobPutThresholdInBytes() {
 		return m_SingleBlobPutThresholdInBytes;
 	}
 
+	/**
+	* 
+	* @return the minimum read size when using BlobReadStreams
+	*/
 	public int getStreamMinimumReadSizeInBytes() {
 		return m_StreamMinimumReadSizeInBytes;
 	}
@@ -136,32 +210,57 @@ public final class CloudBlobClient {
 		return m_TimeoutInMs;
 	}
 
+	/**
+	* @return the maximum block size for writing to a block blob.
+	*/
 	public int getWriteBlockSizeInBytes() {
 		return m_WriteBlockSizeInBytes;
 	}
 
+	/**
+	* Returns an Iterable collection of containers.
+	* 
+	* @return an Iterable collection of containers.
+	*/
 	public Iterable<CloudBlobContainer> listContainers() throws Exception,
 			NotImplementedException {
 		return listContainersWithPrefix(null, ContainerListingDetails.NONE);
 	}
 
+	/**
+	* Returns an Iterable Collection of containers whose names begin with the specified prefix.
+	* 
+	* @param prefix
+	*            The container name prefix.
+	* @return an Iterable Collection of containers whose names begin with the specified prefix.
+	*/
 	public Iterable<CloudBlobContainer> listContainers(String prefix)
 			throws Exception, NotImplementedException {
 		return listContainersWithPrefix(prefix, ContainerListingDetails.NONE);
 	}
 
+	/**
+	* Returns an Iterable Collection of containers whose names begin with the specified prefix.
+	* 
+	* @param prefix
+	*            The container name prefix.
+	* @param detailsIncluded
+	*            a value that indicates whether to return container metadata with the listing.
+	* @return an Iterable Collection of containers whose names begin with the specified prefix.
+	*/
 	public Iterable<CloudBlobContainer> listContainers(String prefix,
-			ContainerListingDetails listingDetails) throws Exception,
+			ContainerListingDetails detailsIncluded) throws Exception,
 			NotImplementedException {
-		return listContainersWithPrefix(prefix, listingDetails);
+		return listContainersWithPrefix(prefix, detailsIncluded);
 	}
+	
 	protected Iterable<CloudBlobContainer> listContainersWithPrefix(final String prefix,
 			final ContainerListingDetails listingDetails)
 			throws StorageInnerException, Exception {
 		final CloudBlobClient client = this;
 		StorageOperation<Iterable<CloudBlobContainer>> storageOperation = new StorageOperation<Iterable<CloudBlobContainer>>() {
 			public Iterable<CloudBlobContainer> execute() throws Exception {
-		HttpGet request = containerRequest.list(getEndpoint(), prefix,
+		HttpGet request = containerRequest.list(getBaseURI(), prefix,
 				listingDetails);
 		getCredentials().signRequest(request, -1L);
 		this.processRequest(request);
@@ -202,6 +301,11 @@ public final class CloudBlobClient {
 			return;
 		}
 	}
+
+	/**
+	* @param minimumReadSize
+	*            the minimum read size when using BlobReadStreams
+	*/
 	public void setStreamMinimumReadSizeInBytes(int minimumReadSize) {
 		if (minimumReadSize > 0x4000000 || minimumReadSize < 512) {
 			throw new IllegalArgumentException("MinimumReadSize");
@@ -210,6 +314,7 @@ public final class CloudBlobClient {
 			return;
 		}
 	}
+	
 	public void setTimeoutInMs(int timeoutInMs) {
 		m_TimeoutInMs = timeoutInMs;
 	}
