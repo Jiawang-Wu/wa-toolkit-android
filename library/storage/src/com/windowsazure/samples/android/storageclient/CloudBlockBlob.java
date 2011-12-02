@@ -18,20 +18,56 @@ import android.util.Log;
 
 public final class CloudBlockBlob extends CloudBlob {
 
-	public CloudBlockBlob(CloudBlockBlob blob)
+	/**
+	* Initializes a new instance of the CloudBlockBlob class.
+	*
+	* @param otherBlob
+	*          An existing reference to a blob.
+	* @throws StorageException
+	*           an exception representing any error which occurred during the operation.
+	*/
+	public CloudBlockBlob(CloudBlockBlob otherBlob)
 			throws NotImplementedException, StorageException {
 		throw new NotImplementedException();
 	}
 
-	public CloudBlockBlob(URI blobUri, CloudBlobClient serviceClient)
+	/**
+	* Initializes a new instance of the CloudBlockBlob class.
+	*
+	* @param uri
+	*          the address for the blob
+	* @param client
+	*          the associated service client.
+	* @throws StorageException
+	*             an exception representing any error which occurred during the
+	*             operation.
+	* @throws URISyntaxException
+	*             if the resource URI is invalid.
+	*/
+	public CloudBlockBlob(URI uri, CloudBlobClient client)
 			throws NotImplementedException, StorageException {
 		throw new NotImplementedException();
 	}
 
-	public CloudBlockBlob(URI blobUri, CloudBlobClient serviceClient,
-			CloudBlobContainer cloudblobcontainer)
+	/**
+	* Initializes a new instance of the CloudBlockBlob class.
+	*
+	* @param uri
+	*          the address for the blob
+	* @param client
+	*          the associated service client.
+	* @param container
+	*          the parent container for the object.
+	* @throws StorageException
+	*             an exception representing any error which occurred during the
+	*             operation.
+	* @throws URISyntaxException
+	*             if the resource URI is invalid.
+	*/
+	public CloudBlockBlob(URI uri, CloudBlobClient client,
+			CloudBlobContainer container)
 			throws StorageException {
-		super(blobUri, serviceClient, cloudblobcontainer);
+		super(uri, client, container);
 		m_Properties.blobType = BlobType.BLOCK_BLOB;
 	}
 
@@ -48,10 +84,19 @@ public final class CloudBlockBlob extends CloudBlob {
 		}
 	}
 
-	public void commitBlockList(Iterable<BlockEntry> blockEntriesList)
+	/**
+	* Uploads a blocklist to the service.
+	* 
+	* @param blockList
+	*            the blocklist definition.
+	* @throws StorageException
+	*             an exception representing any error which occurred during the
+	*             operation.
+	*/
+	public void commitBlockList(Iterable<BlockEntry> blockList)
 			throws StorageException,
 			UnsupportedEncodingException, IOException {
-		commitBlockList(blockEntriesList, null);
+		commitBlockList(blockList, null);
 	}
 
 	public void commitBlockList(final Iterable<BlockEntry> blockEntriesList,
@@ -106,6 +151,14 @@ public final class CloudBlockBlob extends CloudBlob {
 		}
 	}
 
+	/**
+	* Opens a BlobOutputStream object to write data to the blob.
+	* 
+	* @return a BlobOutputStream object to write data to the blob.
+	* @throws StorageException
+	*             an exception representing any error which occurred during the
+	*             operation.
+	*/
 	public BlobOutputStream openOutputStream() throws StorageException, NotImplementedException {
 		return new BlobOutputStream(this);
 	}
@@ -127,27 +180,67 @@ public final class CloudBlockBlob extends CloudBlob {
 		return length;
 	}
 
+	/**
+	* Uploads the sourceStream data to the blob.
+	* 
+	* @param sourceStream
+	*            the IntputStream to read from.
+	* @param length
+	*            the length of the Stream data, -1 if uknown.
+	* @throws StorageException
+	*             an exception representing any error which occurred during the
+	*             operation.
+	* @throws IOException
+	*             if an I/O error occurs.
+	*/
 	@Override
-	public void upload(InputStream inputstream, long length)
+	public void upload(InputStream sourceStream, long length)
 			throws NotImplementedException, StorageException, IOException {
-		upload(inputstream, length, null);
+		upload(sourceStream, length, null);
 	}
 
+	/**
+	* Uploads the sourceStream data to the blob.
+	* 
+	* @param sourceStream
+	*            the IntputStream to read from.
+	* @param length
+	*            the length of the Stream data, -1 if unknown.
+	* @param leaseId
+	*            The lease ID, if the blob has an active lease.
+	* @throws StorageException
+	*             an exception representing any error which occurred during the
+	*             operation.
+	* @throws IOException
+	*             if an I/O error occurs.
+	*/
 	@Override
-	public void upload(InputStream inputStream, long length, String leaseID)
+	public void upload(InputStream sourceStream, long length, String leaseID)
 			throws NotImplementedException, StorageException, IOException {
 		if (length < -1L) {
 			throw new IllegalArgumentException(
 					"Invalid stream length, specify -1 for unkown length stream, or a positive number of bytes");
 		} else if (length < 0L) {
-			inputStream = this.adaptedToSupportMarking(inputStream);
-			length = this.totalLengthOf(inputStream);
+			sourceStream = this.adaptedToSupportMarking(sourceStream);
+			length = this.totalLengthOf(sourceStream);
 		}
 
-		uploadFullBlob(inputStream, length, leaseID);
+		uploadFullBlob(sourceStream, length, leaseID);
 	}
 
-	public void uploadBlock(String blockId, InputStream inputStream, long length)
+	/**
+	* Uploads a block of the blob to the server.
+	* 
+	* @param blockId
+	*            the Base64 Encoded Block ID
+	* @param sourceStream
+	*            the InputStream to read from
+	* @param length
+	*            the length of the stream, -1 if unknown.
+	* @throws StorageException
+	* @throws IOException
+	*/
+	public void uploadBlock(String blockId, InputStream sourceStream, long length)
 			throws StorageException, IOException {
 		if (Utility.isNullOrEmpty(blockId)
 				|| !this.isBase64URLSafeString(blockId)) {
@@ -155,8 +248,8 @@ public final class CloudBlockBlob extends CloudBlob {
 					"Invalid blockID, BlockID must be a valid Base64 String.");
 		}
 		if (length == -1L) {
-			inputStream = this.adaptedToSupportMarking(inputStream);
-			length = this.totalLengthOf(inputStream);
+			sourceStream = this.adaptedToSupportMarking(sourceStream);
+			length = this.totalLengthOf(sourceStream);
 		}
 
 		if (length < -1L) {
@@ -167,7 +260,7 @@ public final class CloudBlockBlob extends CloudBlob {
 					"Invalid stream length, length must be less than or equal to 4 MB in size.");
 		}
 
-		uploadBlockInternal(blockId, inputStream, length);
+		uploadBlockInternal(blockId, sourceStream, length);
 	}
 
 	private void uploadBlockInternal(final String blockId,

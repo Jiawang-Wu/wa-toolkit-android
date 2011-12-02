@@ -64,23 +64,41 @@ public final class CloudBlobContainer {
 		m_BlobRequest = serviceClient.getCredentials().getBlobRequest();
 	}
 
+	/**
+	* Initializes a new instance of the CloudBlobContainer class.
+	* 
+	* @param containerName
+	*            the container name
+	* @param client
+	*            the reference to the associated service client.
+	* @throws URISyntaxException
+	*             if the resulting uri is invalid
+	* @throws StorageException
+	*             if there is an issue retrieving a UTF8 encoder
+	*/
 	public CloudBlobContainer(String containerName,
-			CloudBlobClient serviceClient) throws URISyntaxException,
+			CloudBlobClient client) throws URISyntaxException,
 			StorageException {
-		this(serviceClient);
+		this(client);
 		Utility.assertNotNullOrEmpty("containerName", containerName);
 		URI uri = PathUtility.appendPathToUri(
-				serviceClient.getContainerEndpoint(), containerName);
+				client.getContainerEndpoint(), containerName);
 		m_ContainerOperationsUri = uri;
 		m_Name = containerName;
-		parseQueryAndVerify(m_ContainerOperationsUri, serviceClient);
+		parseQueryAndVerify(m_ContainerOperationsUri, client);
 	}
 
+	/**
+	* Creates the container.
+	* 
+	* @throws StorageException
+	*             an exception representing any error which occurred during the operation.
+	*/
 	public void create() throws StorageException, UnsupportedEncodingException, IOException {
 		this.create(false);
 	}
 
-	public boolean create(final boolean createIfNotExist)
+	private boolean create(final boolean createIfNotExist)
 			throws StorageException, UnsupportedEncodingException, IOException {
 		final CloudBlobContainer container = this;
 		StorageOperation<Boolean> storageOperation = new StorageOperation<Boolean>() {
@@ -120,10 +138,22 @@ public final class CloudBlobContainer {
         return storageOperation.executeTranslatingExceptions();
 	}
 
+	/**
+	* Creates the container if it does not exist.
+	* 
+	* @throws StorageException
+	*             an exception representing any error which occurred during the operation.
+	*/
 	public boolean createIfNotExist() throws StorageException, UnsupportedEncodingException, IOException {
 		return this.create(true);
 	}
 
+	/**
+	* Deletes the container.
+	* 
+	* @throws StorageException
+	*             an exception representing any error which occurred during the operation.
+	*/
 	public void delete() throws StorageException,
 			UnsupportedEncodingException, IOException, StorageInnerException {
 		final CloudBlobContainer container = this;
@@ -145,6 +175,12 @@ public final class CloudBlobContainer {
         storageOperation.executeTranslatingExceptions();
 	}
 
+	/**
+	* Downloads the container's attributes.
+	* 
+	* @throws StorageException
+	*             an exception representing any error which occurred during the operation.
+	*/
 	public void downloadAttributes() throws StorageException, UnsupportedEncodingException, IOException {
 		final CloudBlobContainer container = this;
 		StorageOperation<Void>  storageOperation = new StorageOperation<Void>() {
@@ -169,6 +205,13 @@ public final class CloudBlobContainer {
         storageOperation.executeTranslatingExceptions();
 	}
 
+	/**
+	* Downloads the permissions settings for the container.
+	* 
+	* @return The container's permissions.
+	* @throws StorageException
+	*             an exception representing any error which occurred during the operation.
+	*/
 	public BlobContainerPermissions downloadPermissions()
 			throws StorageException, UnsupportedEncodingException, IOException {
 		final CloudBlobContainer container = this;
@@ -189,6 +232,13 @@ public final class CloudBlobContainer {
         return storageOperation.executeTranslatingExceptions();
 	}
 
+	/**
+	* Checks to see if the container exists.
+	* 
+	* @return <Code>True</Code> if the container exists, <Code>False</Code> otherwise
+	* @throws StorageException
+	*             an exception representing any error which occurred during the operation.
+	*/
 	public boolean exists() throws StorageException,
 			UnsupportedEncodingException, IOException {
 		final CloudBlobContainer container = this;
@@ -246,6 +296,13 @@ public final class CloudBlobContainer {
 		}
 	}
 
+	/**
+	* Gets a reference to a block blob in this container.
+	* @param blobName the name of the blob
+	* @return a reference to a block blob in this container.
+	* @throws URISyntaxException
+	* @throws StorageException
+	*/
 	public CloudBlockBlob getBlockBlobReference(String blobName)
 			throws URISyntaxException,
 			StorageException, UnsupportedEncodingException, IOException {
@@ -356,16 +413,40 @@ public final class CloudBlobContainer {
         return storageOperation.executeTranslatingExceptions();
 	}
 
+	/**
+	* Returns an Iterable collection of blob items
+	* 
+	* @return an Iterable collection of blob items
+	*/
 	public Iterable<CloudBlob> listBlobs() throws StorageInnerException,
 			Exception {
 		return this.listBlobs(null);
 	}
 
+	/**
+	* Returns an Iterable collection of blob items whose names begin with the specified prefix.
+	* 
+	* @param prefix
+	*            The blob name prefix. This value must be preceded either by the name of the container or by
+	*            the absolute path to the container.
+	* @return an Iterable collection of blob items whose names begin with the specified prefix.
+	*/
 	public Iterable<CloudBlob> listBlobs(String prefix)
 			throws StorageInnerException, Exception {
 		return this.listBlobs(prefix, false);
 	}
 
+	/**
+	* Returns an Iterable collection of blob items whose names begin with the specified prefix.
+	* 
+	* @param prefix
+	*            The blob name prefix. This value must be preceded either by the name of the container or by
+	*            the absolute path to the container.
+	* @param useFlatBlobListing
+	*            a value indicating whether the blob listing operation will list all blobs in a container in
+	*            a flat listing, or whether it will list blobs hierarchically, by virtual directory.
+	* @return an Iterable collection of blob items whose names begin with the specified prefix.
+	*/
 	public Iterable<CloudBlob> listBlobs(final String prefix, final boolean useFlatBlobListing)
 			throws StorageInnerException, Exception {
 		final CloudBlobContainer container = this;
@@ -386,17 +467,38 @@ public final class CloudBlobContainer {
 		return storageOperation.executeTranslatingExceptions();
 	}
 
+	/**
+	* Returns an Iterable collection of containers.
+	* 
+	* @return an Iterable collection of containers.
+	*/
 	public Iterable<CloudBlobContainer> listContainers() throws Exception {
 		return m_ServiceClient.listContainers();
 	}
 
+	/**
+	* Returns an Iterable Collection of containers whose names begin with the specified prefix.
+	* 
+	* @param prefix
+	*            The container name prefix.
+	* @return an Iterable Collection of containers whose names begin with the specified prefix.
+	*/
 	public Iterable<CloudBlobContainer> listContainers(String prefix) throws Exception {
 		return m_ServiceClient.listContainers(prefix);
 	}
 
+	/**
+	* Returns an Iterable Collection of containers whose names begin with the specified prefix.
+	* 
+	* @param prefix
+	*            The container name prefix.
+	* @param detailsIncluded
+	*            a value that indicates whether to return container metadata with the listing.
+	* @return an Iterable Collection of containers whose names begin with the specified prefix.
+	*/
 	public Iterable<CloudBlobContainer> listContainers(String prefix,
-			ContainerListingDetails listingDetails) throws Exception {
-		return m_ServiceClient.listContainers(prefix, listingDetails);
+			ContainerListingDetails detailsIncluded) throws Exception {
+		return m_ServiceClient.listContainers(prefix, detailsIncluded);
 	}
 
 	private void parseQueryAndVerify(URI completeUri,
@@ -450,6 +552,13 @@ public final class CloudBlobContainer {
 			NotImplementedException {
 		throw new NotImplementedException();
 	}
+
+	/**
+	* Uploads the containers metadata.
+	* 
+	* @throws StorageException
+	*             an exception representing any error which occurred during the operation.
+	*/
 	public void uploadMetadata() throws StorageException, UnsupportedEncodingException, IOException {
 		final CloudBlobContainer container = this;
 		StorageOperation<Void> storageOperation = new StorageOperation<Void>() {
@@ -469,6 +578,15 @@ public final class CloudBlobContainer {
 		};
         storageOperation.executeTranslatingExceptions();
 	}
+
+	/**
+	* Uploads the BlobContainerPermissions for the container.
+	* 
+	* @param permissions
+	*            the BlobContainerPermissions to upload
+	* @throws StorageException
+	*             an exception representing any error which occurred during the operation.
+	*/
 	public void uploadPermissions(final BlobContainerPermissions permissions)
 			throws StorageException,
 			UnsupportedEncodingException, IOException {
