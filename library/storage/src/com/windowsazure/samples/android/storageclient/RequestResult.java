@@ -4,7 +4,7 @@ import java.util.Date;
 
 import org.apache.http.HttpResponse;
 
-public class RequestResult {
+final class RequestResult {
 
 	public Exception exception;
 
@@ -18,6 +18,8 @@ public class RequestResult {
 	public Date stopDate;
 	protected volatile int m_CurrentOperationByteCount;
 	public HttpResponse httpResponse;
+	
 	public RequestResult() {
 	}
+	
 }

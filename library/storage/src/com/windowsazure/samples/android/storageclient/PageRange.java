@@ -1,6 +1,6 @@
 package com.windowsazure.samples.android.storageclient;
 
-public class PageRange {
+final class PageRange {
 
 	public long startOffset;
 

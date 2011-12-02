@@ -32,7 +32,7 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
 
-public class Utility {
+public final class Utility {
 	protected static final TimeZone GMT_ZONE = TimeZone.getTimeZone("GMT");
 	protected static final TimeZone UTC_ZONE = TimeZone.getTimeZone("UTC");
 	protected static final Locale LOCALE_US = Locale.US;

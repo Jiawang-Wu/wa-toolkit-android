@@ -16,7 +16,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-class ListBlobsResponse {
+final class ListBlobsResponse {
 
 	private ArrayList<CloudBlob> m_Blobs;
 

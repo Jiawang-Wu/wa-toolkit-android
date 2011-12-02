@@ -6,7 +6,7 @@ import java.net.URISyntaxException;
 
 import org.apache.http.client.methods.HttpGet;
 
-public interface AbstractBlobRequest {
+interface AbstractBlobRequest {
 
 	HttpGet list(URI endpoint, CloudBlobContainer container, String prefix,
 			boolean useFlatBlobListing) throws URISyntaxException,

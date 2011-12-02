@@ -1,6 +1,6 @@
 package com.windowsazure.samples.android.storageclient;
 
-public final class StorageErrorCodeStrings {
+final class StorageErrorCodeStrings {
 
 	public static final String AUTHENTICATION_FAILED = "AuthenticationFailed";
 

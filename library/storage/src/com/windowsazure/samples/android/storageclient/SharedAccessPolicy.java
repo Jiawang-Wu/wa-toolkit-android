@@ -3,7 +3,7 @@ package com.windowsazure.samples.android.storageclient;
 import java.util.Date;
 import java.util.EnumSet;
 
-public class SharedAccessPolicy {
+final class SharedAccessPolicy {
 
 	public static EnumSet<SharedAccessPermissions> permissionsFromString(String policyString) {
 		EnumSet<SharedAccessPermissions> permissions = EnumSet.noneOf(SharedAccessPermissions.class);

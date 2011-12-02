@@ -11,7 +11,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import android.util.Base64;
 
-public final class StorageKey {
+final class StorageKey {
 
 	public static synchronized String computeMacSha256(StorageKey key,
 			String canonicalRequestString) throws InvalidKeyException, IllegalArgumentException {
