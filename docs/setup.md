@@ -125,7 +125,7 @@ Assuming that you have a compatible version of the Eclipse IDE installed, as des
 	
 20.	This is how the virtual device should look like.
 
-	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/1_19.png "Title")
+	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/1_20.png "Title")
 	
 > **Note**: It may take a few minutes to load.
 
@@ -138,15 +138,15 @@ If your computer is behind a proxy server, you should follow these steps.
 1.	Open the **Window -> Preferences** menu option.
 2.	Select Network Connections on the left pane.
 
-	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/1_20.png "Title")
+	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/1_21.png "Title")
 
 3.	Choose **Manual** from the drop-down list.
 
-	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/1_21.png "Title")
+	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/1_22.png "Title")
 
 4.	Select HTTP in the list, click the Edit button, and provide your proxy configuration.
 
-	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/1_22.png "Title")
+	![alt text](https://github.com/microsoft-dpe/wa-toolkit-android/raw/develop/docs/img/1_23.png "Title")
 	
 5.	Click **OK**.
 6.	If you want to access to an https address you should perform the steps described above but clicking on **HTTPS** instead.
