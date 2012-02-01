@@ -24,4 +24,5 @@ public enum BlockSearchMode {
 	public String toValue() {
 		return value;
 	}
+	
 }

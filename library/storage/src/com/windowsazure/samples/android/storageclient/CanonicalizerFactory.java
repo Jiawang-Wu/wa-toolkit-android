@@ -65,7 +65,7 @@ final class CanonicalizerFactory {
 		}
 		return false;
 	}
-	CanonicalizerFactory() {
-	}
+	
+	CanonicalizerFactory() { }
 
 }

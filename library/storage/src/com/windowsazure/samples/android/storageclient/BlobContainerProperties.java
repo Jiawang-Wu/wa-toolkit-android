@@ -7,6 +7,8 @@ public final class BlobContainerProperties {
 	public String eTag;
 
 	public Date lastModified;
+	
 	public BlobContainerProperties() {
 	}
+	
 }

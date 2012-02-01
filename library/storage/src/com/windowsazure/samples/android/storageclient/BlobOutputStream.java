@@ -17,7 +17,7 @@ import java.util.concurrent.Future;
 
 import android.util.Log;
 
-public final class BlobOutputStream extends OutputStream {
+final class BlobOutputStream extends OutputStream {
 
 	private static Random m_BlockSequenceGenerator = new Random();
 

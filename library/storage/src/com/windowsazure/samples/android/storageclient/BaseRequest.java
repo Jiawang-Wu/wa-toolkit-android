@@ -19,6 +19,7 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 
 final class BaseRequest {
+	
 	private static String m_UserAgent;
 
 	public static void addLeaseId(HttpRequestBase request, String leaseId) {

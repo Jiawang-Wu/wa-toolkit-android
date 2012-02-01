@@ -74,6 +74,6 @@ final class BlobResponse extends BaseResponse {
 		return Utility.getFirstHeaderValueOrEmpty(response, "x-ms-snapshot");
 	}
 
-	BlobResponse() {
-	}
+	BlobResponse() { }
+	
 }
