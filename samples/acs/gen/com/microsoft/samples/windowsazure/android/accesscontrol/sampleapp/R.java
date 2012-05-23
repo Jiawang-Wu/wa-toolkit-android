@@ -43,6 +43,9 @@ public final class R {
         public static final int auto_login=0x7f040005;
         public static final int claim_detail=0x7f04000b;
         /**  configuration acs 
+ <string name="cloud_ready_acs_namespace">the namespace of the ACS service you are using}</string>
+	<string name="cloud_ready_acs_realm">{acs realm}</string>
+	<string name="cloud_ready_acs_symmetric_key">{symmetric key}</string> 
          */
         public static final int cloud_ready_acs_namespace=0x7f04000c;
         public static final int cloud_ready_acs_realm=0x7f04000d;
