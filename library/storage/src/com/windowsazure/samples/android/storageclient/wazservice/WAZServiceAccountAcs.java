@@ -54,15 +54,21 @@ public class WAZServiceAccountAcs implements CloudClientAccount {
 	}
 
 	private URI getBlobEndpoint() throws URISyntaxException {
-    	return PathUtility.appendPathToUri(this.m_WazServiceBaseUri, SHARED_ACCESS_SIGNATURE_SERVICE_PATH);
+    	//return PathUtility.appendPathToUri(this.m_WazServiceBaseUri, SHARED_ACCESS_SIGNATURE_SERVICE_PATH);
+		String path = "https://" + this.m_WazServiceBaseUri + ".cloudapp.net" + SHARED_ACCESS_SIGNATURE_SERVICE_PATH;
+		return new URI(path);
 	}
 
 	private URI getTableEndpoint() throws URISyntaxException {
-	 	return PathUtility.appendPathToUri(this.m_WazServiceBaseUri, TABLES_PROXY_SERVICE_PATH);
+	 	//return PathUtility.appendPathToUri(this.m_WazServiceBaseUri, TABLES_PROXY_SERVICE_PATH);
+		String path = "https://" + this.m_WazServiceBaseUri + ".cloudapp.net" + TABLES_PROXY_SERVICE_PATH;
+		return new URI(path);
 	}
 	
 	private URI getQueueEndpoint() throws URISyntaxException {
-	    	return PathUtility.appendPathToUri(this.m_WazServiceBaseUri, QUEUES_PROXY_SERVICE_PATH);
+	    	//return PathUtility.appendPathToUri(this.m_WazServiceBaseUri, QUEUES_PROXY_SERVICE_PATH);
+		String path = "https://" + this.m_WazServiceBaseUri + ".cloudapp.net" + QUEUES_PROXY_SERVICE_PATH;
+		return new URI(path);
 	}
 	
 	public void registerOnWAZService(String userName, String email) throws Exception {

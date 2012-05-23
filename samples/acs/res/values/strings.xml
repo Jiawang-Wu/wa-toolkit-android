@@ -15,7 +15,7 @@
     <string name="claim_detail">Below are your claims</string>
     
     <!-- configuration acs -->      
-	<string name="cloud_ready_acs_namespace">the namespace of the ACS service you are using}</string>
+	<string name="cloud_ready_acs_namespace">{the namespace of the ACS service you are using}</string>
 	<string name="cloud_ready_acs_realm">{acs realm}</string>
 	<string name="cloud_ready_acs_symmetric_key">{symmetric key}</string>
 
