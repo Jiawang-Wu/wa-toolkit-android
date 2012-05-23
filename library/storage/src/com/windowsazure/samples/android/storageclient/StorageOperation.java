@@ -37,6 +37,13 @@ abstract class StorageOperation<T> {
 			throws IOException {
 		HttpClient httpClient = Utility.getDefaultHttpClient();
 		HttpResponse httpResponse = httpClient.execute(request);
+		//If you're not sure why you're getting a failed response, try uncomenting this to see the body
+		//ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+		//httpResponse.getEntity().writeTo(outStream);
+		//byte [] responseBodyBytes = outstream.toByteArray();
+		//String responseBodyString = new String(responseBodyBytes);
+		//Log.i("StorageOperation-processRequest", responseBodyString);
+		
 		result.startDate = new Date();
 		result.statusCode = httpResponse.getStatusLine().getStatusCode();
 		result.statusMessage = httpResponse.getStatusLine().getReasonPhrase();
