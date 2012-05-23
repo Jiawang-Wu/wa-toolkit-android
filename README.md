@@ -9,4 +9,4 @@ The Windows Azure Toolkit for Android is made available as an open source produc
 
 ## Contact
 
-For additional questions or feedback, please contact the [team](mailto:wwegner@microsoft.com).
+For additional questions or feedback, please contact the [team](mailto:chrisner@microsoft.com).
